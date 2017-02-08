@@ -14,7 +14,7 @@ Built with...
 
 Run dev server
 ```
-npm run start
+npm start
 ```
 
 Build for production
