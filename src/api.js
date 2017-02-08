@@ -3,6 +3,9 @@ import config from './config';
 
 const BASE_URL = process.env.REACT_APP_SERVER_URL;
 
+console.log('app id: ' + process.env.REACT_APP_PARSE_ID);
+console.log('base url: ' + process.env.REACT_APP_SERVER_URL);
+
 const userInstance = axios.create({
   baseURL: BASE_URL,
   headers: {
