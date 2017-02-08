@@ -1,6 +1,6 @@
 {
   "name": "create-react-app-parse-redux",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "devDependencies": {
     "nodemon": "^1.10.2",
@@ -36,7 +36,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-		"deploy": "npm version patch && react-scripts build && git push origin master && git push heroku master"
+    "deploy": "npm version patch && react-scripts build && git push origin master && git push heroku master"
   },
   "eslintConfig": {
     "extends": "react-app"
