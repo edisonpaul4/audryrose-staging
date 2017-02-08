@@ -1,6 +1,4 @@
-# Create-react-app + Parse (and redux)
-
-> Some React crap thrown at a wall till it sticks
+# Audry Rose - Inventory Management System
 
 Built with...
 - [`create-react-app`](https://github.com/facebookincubator/create-react-app)
@@ -12,19 +10,16 @@ Built with...
 - ([Parse Dashboard](https://github.com/ParsePlatform/parse-dashboard) included)
 - [Express](expressjs.com) for serving the ParseServer
 
-# Getting started
+# Scripts
 
-Install dependencies
+Run dev server
 ```
-yarn
-```
-
-Run React app (thanks to react-scripts)
-```
-yarn start
+npm run start
 ```
 
-Start Parse server in another terminal. (You'll need local MongoDB running, too)
+Build for production
 ```
-yarn run api
+npm run build
 ```
+
+
