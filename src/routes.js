@@ -4,6 +4,7 @@ import LoginContainer from './containers/LoginContainer';
 import LogoutContainer from './containers/LogoutContainer';
 import DashboardContainer from './containers/DashboardContainer';
 import OrdersContainer from './containers/OrdersContainer';
+import ProductsContainer from './containers/ProductsContainer';
 import NotFound from './components/NotFound';
 
 export function requireAuth(store) {
@@ -44,6 +45,18 @@ const createRoutes = (store) => {
 						{
 							path: ':subpage',
 							component: OrdersContainer,
+							onEnter: requireAuth(store)
+						}
+					]
+        },
+        {
+          path: 'products',
+          component: ProductsContainer,
+					onEnter: requireAuth(store),
+					childRoutes: [
+						{
+							path: ':subpage',
+							component: ProductsContainer,
 							onEnter: requireAuth(store)
 						}
 					]

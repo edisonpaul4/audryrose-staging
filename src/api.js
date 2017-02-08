@@ -3,9 +3,6 @@ import config from './config';
 
 const BASE_URL = process.env.REACT_APP_SERVER_URL;
 
-console.log('app id: ' + process.env.REACT_APP_PARSE_ID);
-console.log('base url: ' + process.env.REACT_APP_SERVER_URL);
-
 const userInstance = axios.create({
   baseURL: BASE_URL,
   headers: {
@@ -50,10 +47,21 @@ export const getOrders = (token, page) => axios.post('/functions/getOrders', {pa
 	}
 );
 
+export const getProducts = (token, page) => axios.post('/functions/getProducts', {page},
+	{
+		baseURL: BASE_URL,
+	  headers: {
+	    'X-Parse-Application-Id': config.parseAppId,
+			'X-Parse-Session-Token': token
+	  }
+	}
+);
+
 export default {
   signup,
   login,
 	logout,
 	loadSession,
-	getOrders
+	getOrders,
+	getProducts
 }

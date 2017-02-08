@@ -1,23 +1,23 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router';
 import { Grid, Table, Dimmer, Loader, Checkbox, Menu } from 'semantic-ui-react';
-import OrdersNav from './OrdersNav.js';
-import Order from './Order.js';
+import ProductsNav from './ProductsNav.js';
+import Product from './Product.js';
 
-class Orders extends Component {
+class Products extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
 			token: null,
-			isLoadingOrders: null,
-			orders: null,
+			isLoadingProducts: null,
+			products: null,
 			page: 1
     };
   }
 	
 	componentDidMount() {
-		this.props.getOrders(this.props.token, 1);
+		this.props.getProducts(this.props.token, 1);
 	}
 	
 	handlePaginationClick(event) {
@@ -38,48 +38,49 @@ class Orders extends Component {
 		this.setState({
 			page: pageNum
 		});
-		this.props.getOrders(this.props.token, pageNum);
+		this.props.getProducts(this.props.token, pageNum);
 	}
 	
   render() {
-		const { error, isLoadingOrders } = this.props;
-		let orderRows = [];
-		if (this.props.orders) {
-			this.props.orders.map(function(orderRow, i) {
+		const { error, isLoadingProducts } = this.props;
+		let productRows = [];
+		if (this.props.products) {
+			this.props.products.map(function(productRow, i) {
 				// orderRow.expanded = (scope.state.expandedOrders.indexOf(orderRow.orderId) >= 0) ? true : false;
-				return orderRows.push(<Order data={orderRow} key={`${orderRow.orderId}-1`} />);
+				return productRows.push(<Product data={productRow} key={`${productRow.productId}-1`} />);
 				// orderRows.push(<OrderProducts data={orderRow} key={`${orderRow.orderId}-2`} />);
 	    });
 		}
     return (
 			<Grid.Column width='16'>
-				<OrdersNav pathname={this.props.location.pathname} />
+				<ProductsNav pathname={this.props.location.pathname} />
 				{error}
-	      <Dimmer active={isLoadingOrders} inverted>
+	      <Dimmer active={isLoadingProducts} inverted>
 	        <Loader inverted>Loading</Loader>
 	      </Dimmer>
-		    <Table className='orders-table' sortable>
+		    <Table className='products-table' sortable>
 		      <Table.Header>
 		        <Table.Row>
               <Table.HeaderCell><Checkbox></Checkbox></Table.HeaderCell>
-              <Table.HeaderCell>Date</Table.HeaderCell>
-              <Table.HeaderCell>Order #</Table.HeaderCell>
-              <Table.HeaderCell>Customer</Table.HeaderCell>
-              <Table.HeaderCell>Ship to</Table.HeaderCell>
-							<Table.HeaderCell width={4}>Order Notes</Table.HeaderCell>										
-							<Table.HeaderCell>Total</Table.HeaderCell>
-							<Table.HeaderCell>Bigcommerce Status</Table.HeaderCell>
-							<Table.HeaderCell>Label</Table.HeaderCell>
-							<Table.HeaderCell className='text-right'>Items</Table.HeaderCell>
+              <Table.HeaderCell>Image</Table.HeaderCell>
+              <Table.HeaderCell>Bigcommerce SKU</Table.HeaderCell>
+              <Table.HeaderCell>Audry Rose Name</Table.HeaderCell>
+              <Table.HeaderCell>Designer</Table.HeaderCell>
+              <Table.HeaderCell className='text-right'>Price</Table.HeaderCell>
+							<Table.HeaderCell>Class</Table.HeaderCell>										
+							<Table.HeaderCell>Size Scale</Table.HeaderCell>
+							<Table.HeaderCell>Status</Table.HeaderCell>
+							<Table.HeaderCell>Labels</Table.HeaderCell>
+							<Table.HeaderCell className='text-right'>Stock</Table.HeaderCell>
 							<Table.HeaderCell className='text-right'>&nbsp;</Table.HeaderCell>
 		        </Table.Row>
 		      </Table.Header>
 		      <Table.Body>
-						{orderRows}
+						{productRows}
 		      </Table.Body>
 					<Table.Footer fullWidth>
 						<Table.Row>
-							<Table.HeaderCell colSpan='11'>
+							<Table.HeaderCell colSpan='12'>
 					      <Menu pagination>
 					        <Menu.Item name='prev' disabled={this.state.page === 1} onClick={this.handlePaginationClick} />
 									<Menu.Item name='1' active={this.state.page === 1} onClick={this.handlePaginationClick} />
@@ -97,4 +98,4 @@ class Orders extends Component {
   }
 }
 
-export default withRouter(Orders);
+export default withRouter(Products);
