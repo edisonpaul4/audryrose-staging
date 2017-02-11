@@ -1,64 +1,34 @@
-import axios from 'axios';
 import config from './config';
+import { Parse } from 'parse';
 
 const BASE_URL = process.env.REACT_APP_SERVER_URL;
+Parse.initialize(config.parseAppId);
+Parse.serverURL = BASE_URL;
 
-const userInstance = axios.create({
-  baseURL: BASE_URL,
-  headers: {
-    'X-Parse-Application-Id': config.parseAppId,
-		'X-Parse-Revocable-Session': '1'
+// export const signup = (username, password) => Parse.User.signUp( username, password );
+
+export const login = (username, password) => Parse.User.logIn( username, password );
+
+export const logout = (token) => Parse.User.logOut( token );
+
+export const loadSession = (token) => Parse.User.become( token );
+
+export const getOrders = (token, page) => Parse.Cloud.run('getOrders', 
+  {
+    sessionToken: token,
+    page
   }
-});
-
-export const signup = (username, password) => userInstance.post('/users', {
-  username,
-  password
-});
-
-export const login = (username, password) => userInstance.get('/login', {
-  params: {
-    username,
-    password
-  }
-});
-
-export const logout = (token) => userInstance.post('/logout', {
-  params: {
-    token
-  }
-});
-
-export const loadSession = (token) => axios.get('/users/me', {
-	baseURL: BASE_URL,
-  headers: {
-    'X-Parse-Application-Id': config.parseAppId,
-		'X-Parse-Session-Token': token
-  }
-});
-
-export const getOrders = (token, page) => axios.post('/functions/getOrders', {page},
-	{
-		baseURL: BASE_URL,
-	  headers: {
-	    'X-Parse-Application-Id': config.parseAppId,
-			'X-Parse-Session-Token': token
-	  }
-	}
 );
 
-export const getProducts = (token, page) => axios.post('/functions/getProducts', {page},
-	{
-		baseURL: BASE_URL,
-	  headers: {
-	    'X-Parse-Application-Id': config.parseAppId,
-			'X-Parse-Session-Token': token
-	  }
-	}
+export const getProducts = (token, page) => Parse.Cloud.run('getProducts', 
+  {
+    sessionToken: token,
+    page
+  }
 );
 
 export default {
-  signup,
+//   signup,
   login,
 	logout,
 	loadSession,

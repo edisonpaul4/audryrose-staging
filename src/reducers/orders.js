@@ -16,7 +16,7 @@ const orders = (state = initialState, action) => {
       return {
         ...state,
         isLoadingOrders: false,
-        orders: action.res.data.result
+        orders: action.res
       };
 
     case 'ORDERS_FAILURE':

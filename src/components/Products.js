@@ -46,8 +46,9 @@ class Products extends Component {
 		let productRows = [];
 		if (this.props.products) {
 			this.props.products.map(function(productRow, i) {
+  			let productJSON = productRow.toJSON();
 				// orderRow.expanded = (scope.state.expandedOrders.indexOf(orderRow.orderId) >= 0) ? true : false;
-				return productRows.push(<Product data={productRow} key={`${productRow.productId}-1`} />);
+				return productRows.push(<Product data={productJSON} key={`${productJSON.productId}-1`} />);
 				// orderRows.push(<OrderProducts data={orderRow} key={`${orderRow.orderId}-2`} />);
 	    });
 		}

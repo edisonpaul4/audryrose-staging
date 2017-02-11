@@ -16,7 +16,7 @@ const products = (state = initialState, action) => {
       return {
         ...state,
         isLoadingProducts: false,
-        products: action.res.data.result
+        products: action.res
       };
 
     case 'PRODUCTS_FAILURE':
