@@ -34,7 +34,10 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "deploy": "npm version patch && react-scripts build && git push origin master && git push heroku master"
+    "deploy": "npm version patch && react-scripts build && git push origin master && git push heroku master",
+    "start:server": "node server",
+    "eject": "react-scripts eject",
+    "test": "mocha test"
   },
   "eslintConfig": {
     "extends": "react-app"
