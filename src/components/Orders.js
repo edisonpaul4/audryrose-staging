@@ -68,11 +68,11 @@ class Orders extends Component {
               <Table.HeaderCell>Customer</Table.HeaderCell>
               <Table.HeaderCell>Ship to</Table.HeaderCell>
 							<Table.HeaderCell width={4}>Order Notes</Table.HeaderCell>										
-							<Table.HeaderCell>Total</Table.HeaderCell>
+							<Table.HeaderCell className='right aligned'>Total</Table.HeaderCell>
 							<Table.HeaderCell>Bigcommerce Status</Table.HeaderCell>
 							<Table.HeaderCell>Label</Table.HeaderCell>
-							<Table.HeaderCell className='text-right'>Items</Table.HeaderCell>
-							<Table.HeaderCell className='text-right'>&nbsp;</Table.HeaderCell>
+							<Table.HeaderCell className='right aligned'>Items</Table.HeaderCell>
+							<Table.HeaderCell className='right aligned'>&nbsp;</Table.HeaderCell>
 		        </Table.Row>
 		      </Table.Header>
 		      <Table.Body>

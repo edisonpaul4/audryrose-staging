@@ -67,13 +67,13 @@ class Products extends Component {
               <Table.HeaderCell>Bigcommerce SKU</Table.HeaderCell>
               <Table.HeaderCell>Audry Rose Name</Table.HeaderCell>
               <Table.HeaderCell>Designer</Table.HeaderCell>
-              <Table.HeaderCell className='text-right'>Price</Table.HeaderCell>
+              <Table.HeaderCell className='right aligned'>Price</Table.HeaderCell>
 							<Table.HeaderCell>Class</Table.HeaderCell>										
 							<Table.HeaderCell>Size Scale</Table.HeaderCell>
 							<Table.HeaderCell>Status</Table.HeaderCell>
 							<Table.HeaderCell>Labels</Table.HeaderCell>
-							<Table.HeaderCell className='text-right'>Stock</Table.HeaderCell>
-							<Table.HeaderCell className='text-right'>&nbsp;</Table.HeaderCell>
+							<Table.HeaderCell className='right aligned'>Stock</Table.HeaderCell>
+							<Table.HeaderCell className='right aligned'>&nbsp;</Table.HeaderCell>
 		        </Table.Row>
 		      </Table.Header>
 		      <Table.Body>

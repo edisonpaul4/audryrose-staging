@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Table, Checkbox, Button } from 'semantic-ui-react';
+import numeral from 'numeral';
 // import moment from 'moment';
 
 class Product extends Component {
@@ -44,13 +45,13 @@ class Product extends Component {
         <Table.Cell>{data.sku}</Table.Cell>
 				<Table.Cell>{data.name}</Table.Cell>
 				<Table.Cell>[not loaded yet]</Table.Cell>
-				<Table.Cell>${data.price}</Table.Cell>
+				<Table.Cell className='right aligned'>{numeral(data.price).format('$0,0.00')}</Table.Cell>
 				<Table.Cell>[not loaded yet]</Table.Cell>
 				<Table.Cell>[not loaded yet]</Table.Cell>
 				<Table.Cell>[not loaded yet]</Table.Cell>
 				<Table.Cell>[not loaded yet]</Table.Cell>
-				<Table.Cell>[not loaded yet]</Table.Cell>
-				<Table.Cell><Button circular icon='plus' basic size='mini' onClick={this.handleToggleClick} /></Table.Cell>
+				<Table.Cell className='right aligned'>[not loaded yet]</Table.Cell>
+				<Table.Cell className='right aligned'><Button circular icon='plus' basic size='mini' onClick={this.handleToggleClick} /></Table.Cell>
       </Table.Row>
     );
   }
