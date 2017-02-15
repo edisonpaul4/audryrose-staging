@@ -52,7 +52,7 @@ class Product extends Component {
 		let sizes = [];
 		if (data.variants.length > 1) {
 			data.variants.map(function(variant, i) {
-  			variant.variantOptions.map(function(variantOption, j) {
+  			return variant.variantOptions.map(function(variantOption, j) {
     			if (variantOption.option_id === 32) sizes.push(parseInt(variantOption.value, 10));
     			return true;
   			});
