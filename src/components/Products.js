@@ -3,6 +3,7 @@ import { withRouter } from 'react-router';
 import { Grid, Table, Dimmer, Loader, Checkbox, Menu } from 'semantic-ui-react';
 import ProductsNav from './ProductsNav.js';
 import Product from './Product.js';
+import ProductVariants from './ProductVariants.js';
 
 class Products extends Component {
   constructor(props) {
@@ -12,12 +13,27 @@ class Products extends Component {
 			token: null,
 			isLoadingProducts: null,
 			products: null,
-			page: 1
+			page: 1,
+			expandedProducts: []
     };
+    this._onToggle = this._onToggle.bind(this);
   }
 	
 	componentDidMount() {
 		this.props.getProducts(this.props.token, 1);
+	}
+	
+	_onToggle(productId) {
+		let currentlyExpanded = this.state.expandedProducts;
+		var index = currentlyExpanded.indexOf(productId);
+		if (index >= 0) {
+			currentlyExpanded.splice(index, 1);
+		} else {
+			currentlyExpanded.push(productId);
+		}
+		this.setState({
+			expandedProducts: currentlyExpanded
+		});
 	}
 	
 	handlePaginationClick(event) {
@@ -43,13 +59,16 @@ class Products extends Component {
 	
   render() {
 		const { error, isLoadingProducts } = this.props;
+		let scope = this;
 		let productRows = [];
 		if (this.props.products) {
 			this.props.products.map(function(productRow, i) {
   			let productJSON = productRow.toJSON();
-				// orderRow.expanded = (scope.state.expandedOrders.indexOf(orderRow.orderId) >= 0) ? true : false;
-				return productRows.push(<Product data={productJSON} key={`${productJSON.productId}-1`} />);
-				// orderRows.push(<OrderProducts data={orderRow} key={`${orderRow.orderId}-2`} />);
+  			let variants = productJSON.variants;
+  			let expanded = (scope.state.expandedProducts.indexOf(productJSON.productId) >= 0) ? true : false;
+				productRows.push(<Product data={productJSON} expanded={expanded} key={`${productJSON.productId}-1`} onToggle={scope._onToggle} />);
+				productRows.push(<ProductVariants variants={variants} expanded={expanded} key={`${productJSON.productId}-2`} />);
+				return productRows;
 	    });
 		}
     return (
@@ -59,7 +78,7 @@ class Products extends Component {
 	      <Dimmer active={isLoadingProducts} inverted>
 	        <Loader inverted>Loading</Loader>
 	      </Dimmer>
-		    <Table className='products-table' sortable>
+		    <Table className='products-table'>
 		      <Table.Header>
 		        <Table.Row>
               <Table.HeaderCell><Checkbox></Checkbox></Table.HeaderCell>
@@ -68,7 +87,7 @@ class Products extends Component {
               <Table.HeaderCell>Audry Rose Name</Table.HeaderCell>
               <Table.HeaderCell>Designer</Table.HeaderCell>
               <Table.HeaderCell className='right aligned'>Price</Table.HeaderCell>
-							<Table.HeaderCell>Class</Table.HeaderCell>										
+							{/*<Table.HeaderCell>Class</Table.HeaderCell>*/}
 							<Table.HeaderCell>Size Scale</Table.HeaderCell>
 							<Table.HeaderCell>Status</Table.HeaderCell>
 							<Table.HeaderCell>Labels</Table.HeaderCell>
