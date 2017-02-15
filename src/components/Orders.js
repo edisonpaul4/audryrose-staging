@@ -12,12 +12,27 @@ class Orders extends Component {
 			token: null,
 			isLoadingOrders: null,
 			orders: null,
-			page: 1
+			page: 1,
+			expandedOrders: []
     };
+    this._onToggle = this._onToggle.bind(this);
   }
 	
 	componentDidMount() {
 		this.props.getOrders(this.props.token, 1);
+	}
+	
+	_onToggle(orderId) {
+		let currentlyExpanded = this.state.expandedOrders;
+		var index = currentlyExpanded.indexOf(orderId);
+		if (index >= 0) {
+			currentlyExpanded.splice(index, 1);
+		} else {
+			currentlyExpanded.push(orderId);
+		}
+		this.setState({
+			expandedOrders: currentlyExpanded
+		});
 	}
 	
 	handlePaginationClick(event) {
@@ -43,12 +58,13 @@ class Orders extends Component {
 	
   render() {
 		const { error, isLoadingOrders } = this.props;
+		let scope = this;
 		let orderRows = [];
 		if (this.props.orders) {
 			this.props.orders.map(function(orderRow, i) {
   			let orderJSON = orderRow.toJSON();
-				// orderRow.expanded = (scope.state.expandedOrders.indexOf(orderRow.orderId) >= 0) ? true : false;
-				return orderRows.push(<Order data={orderJSON} key={`${orderJSON.orderId}-1`} />);
+				let expanded = (scope.state.expandedOrders.indexOf(orderJSON.orderId) >= 0) ? true : false;
+				return orderRows.push(<Order data={orderJSON} expanded={expanded} key={`${orderJSON.orderId}-1`} onToggle={scope._onToggle} />);
 				// orderRows.push(<OrderProducts data={orderRow} key={`${orderRow.orderId}-2`} />);
 	    });
 		}

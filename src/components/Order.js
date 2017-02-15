@@ -4,11 +4,17 @@ import numeral from 'numeral';
 import moment from 'moment';
 
 class Order extends Component {
-	handleToggleClick(event) {
-    event.preventDefault();
-	  event.stopPropagation();
-		console.log('click');
-		// this.props.onToggle(this.props.data.orderId)
+  constructor(props) {
+    super(props);
+    this.state = {
+      expanded: false
+    };
+    this.handleToggleClick = this.handleToggleClick.bind(this);
+  }
+	handleToggleClick(orderId) {
+//     event.preventDefault();
+// 	  event.stopPropagation();
+		this.props.onToggle(orderId);
 	}
 	render() {
 		// let labels = this.props.data.labels.map(function(label, i) {
@@ -36,11 +42,11 @@ class Order extends Component {
 		// 	}
 		// 	return <Label key={i} bsStyle={labelStyle}> {labelName} </Label>;
 		//     });
-		// let expandIcon = this.props.data.expanded ? 'glyphicon-minus-sign' : 'glyphicon-plus-sign';
+		let expandIcon = this.props.expanded ? 'minus' : 'plus';
     return (
       <Table.Row warning={this.props.data.customer_message ? true : undefined}>
         <Table.Cell verticalAlign='top'><Checkbox /></Table.Cell>
-        <Table.Cell verticalAlign='top' singleLine>{moment.utc(this.props.data.date_created.iso).calendar()}</Table.Cell>
+        <Table.Cell verticalAlign='top' singleLine>{moment(this.props.data.date_created.iso).calendar()}</Table.Cell>
         <Table.Cell verticalAlign='top'>{this.props.data.orderId}</Table.Cell>
 				<Table.Cell verticalAlign='top'>{this.props.data.billing_address.first_name} {this.props.data.billing_address.last_name}</Table.Cell>
 				<Table.Cell verticalAlign='top'>[Shipping Address]</Table.Cell>
@@ -49,7 +55,7 @@ class Order extends Component {
 				<Table.Cell verticalAlign='top'><em>{this.props.data.status}</em></Table.Cell>
 				<Table.Cell verticalAlign='top'>[Labels]</Table.Cell>
 				<Table.Cell className='right aligned' verticalAlign='top'>{this.props.data.items_total}</Table.Cell>
-				<Table.Cell verticalAlign='top'><Button circular icon='plus' basic size='mini' onClick={this.handleToggleClick} /></Table.Cell>
+				<Table.Cell verticalAlign='top'><Button circular icon={expandIcon} basic size='mini' onClick={() => this.handleToggleClick(this.props.data.orderId)} /></Table.Cell>
       </Table.Row>
     );
   }
