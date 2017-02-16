@@ -1,18 +1,23 @@
 import React, { Component } from 'react';
 import { Table, Input, Button, Dropdown, Dimmer, Segment, Loader } from 'semantic-ui-react';
 import classNames from 'classnames';
-// import numeral from 'numeral';
+import numeral from 'numeral';
 // import moment from 'moment';
 
 class VariantRow extends Component {
 	render() {  	
 		const data = this.props.data;
+		// Create an array of other options values
 		let otherOptions = [];
 		if (data.gemstone_value) otherOptions.push(data.gemstone_value);
 		if (data.singlepair_value) otherOptions.push(data.singlepair_value);
 		if (data.letter_value) otherOptions.push(data.letter_value);
 		if (data.length_value) otherOptions.push(data.length_value);
 		if (data.font_value) otherOptions.push(data.font_value);
+		
+		let price = this.props.basePrice;
+		if (this.props.adjuster && this.props.adjuster === 'absolute') price = this.props.adjusterValue;
+		if (this.props.adjuster && this.props.adjuster === 'relative') price += this.props.adjusterValue;
     return (
       <Table.Row>
         <Table.Cell>asdf</Table.Cell>
@@ -20,7 +25,7 @@ class VariantRow extends Component {
         <Table.Cell>{data.size_value ? data.size_value : 'OS'}</Table.Cell>
         <Table.Cell>{otherOptions ? otherOptions.join(', ') : null}</Table.Cell>
 				<Table.Cell><Input type='number' transparent defaultValue={0} /></Table.Cell>
-				<Table.Cell className='right aligned'>[not loaded yet]</Table.Cell>
+				<Table.Cell className='right aligned'>{numeral(price).format('$0,0.00')}</Table.Cell>
 				<Table.Cell className='right aligned'>
           <Button.Group color='grey' size='mini' compact>
             <Button content='Order' />
@@ -39,6 +44,7 @@ class VariantRow extends Component {
 
 class VariantsTable extends Component {
 	render() {  	
+  	var scope = this;
 		const variants = this.props.variants;
 		// Sort the data
 // 		console.log(variants);
@@ -49,9 +55,17 @@ class VariantsTable extends Component {
     }
 		let variantRows = [];
 		if (variants) {
-  		// Determine variant groupings
 			variants.map(function(variantRow, i) {
-				variantRows.push(<VariantRow data={variantRow} key={i} />);
+  			let adjuster = null;
+  			let adjusterValue = 0;
+  			if (variantRow.variantOptions) {
+    			variantRow.variantOptions.map(function(variantOption, j) {
+      			if (variantOption.adjuster) adjuster = variantOption.adjuster;
+      			if (variantOption.adjuster_value) adjusterValue = variantOption.adjuster_value;
+      			return variantOption;
+    			});
+  			}
+				variantRows.push(<VariantRow data={variantRow} basePrice={scope.props.basePrice} adjuster={adjuster} adjusterValue={adjusterValue} key={i} />);
 				return variantRows;
 	    });
 		}
@@ -92,6 +106,7 @@ class ProductVariants extends Component {
 		this.props.handleReloadClick(productId);
 	}
 	render() {
+  	var scope = this;
   	let show = this.props.expanded ? true : false;
   	const variants = this.props.data.variants;
 		var rowClass = classNames(
@@ -102,19 +117,15 @@ class ProductVariants extends Component {
 		);
 		var variantsTables = [];
 		if (variants) {
-  		console.log(this.props.data.name + " total variants: " + variants.length);
   		let variantGroupings = [];
   		// Determine variant groupings
 			variants.map(function(variantItem, i) {
   			const color = (variantItem.color_value) ? variantItem.color_value : null;
-  			
   			if (color && variantGroupings.indexOf(color) < 0) {
-    			console.log('push ' + color);
     			variantGroupings.push(color);
   			}
 				return variantItem;
 	    });
-	    console.log(this.props.data.name + " total groupings: " + variantGroupings.length);
 	    
 	    if (variantGroupings.length > 0) {
   	    // If there are groupings, create a VariantsTable for each group
@@ -124,12 +135,12 @@ class ProductVariants extends Component {
       	    if (variantItem.color_value === variantGroup) variantsInGroup.push(variantItem);
       	    return variantItem;
     	    });
-    	    variantsTables.push(<VariantsTable variants={variantsInGroup} title={variantGroup} key={i} />);
+    	    variantsTables.push(<VariantsTable variants={variantsInGroup} title={variantGroup} basePrice={scope.props.data.price} key={i} />);
     	    return variantGroup;
   	    });
 	    } else {
   	    // If no groupings, create one VariantsTable
-  	    variantsTables.push(<VariantsTable variants={variants} key={1} />);
+  	    variantsTables.push(<VariantsTable variants={variants} basePrice={this.props.data.price} key={1} />);
 	    }
 		}
     return (
