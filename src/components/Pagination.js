@@ -43,11 +43,11 @@ class Pagination extends Component {
     var pageLinks = [];
     
     // Limit number of page links to display
-    let highestPage = Math.floor(page + NUM_MENU_ITEMS / 2);
+    let highestPage = Math.round(page + NUM_MENU_ITEMS / 2);
     if (highestPage < NUM_MENU_ITEMS) highestPage = NUM_MENU_ITEMS;
     if (highestPage > totalPages) highestPage = totalPages;
-    let lowestPage = Math.ceil(page - NUM_MENU_ITEMS / 2);
-    if ((highestPage - lowestPage) < NUM_MENU_ITEMS || lowestPage < 1) lowestPage = 1;
+    let lowestPage = Math.round(page - NUM_MENU_ITEMS / 2);
+    if (lowestPage < 1) lowestPage = 1;
     
     for (let i = 1; i <= totalPages; i++) {
       if (i <= highestPage && i >= lowestPage) {
@@ -56,9 +56,11 @@ class Pagination extends Component {
     }
     return (      
       <Menu pagination borderless size='mini'>
+        <Menu.Item link={page !== 1} icon='angle double left' active={page === 1} onClick={()=>this.handleClick(1)} />
         <Menu.Item link={page !== 1} name='prev' active={page === 1} onClick={()=>this.handleClick('prev')} />
   			{pageLinks}
   			<Menu.Item link={page !== totalPages} name='next' active={page === totalPages} onClick={()=>this.handleClick('next')} />
+  			<Menu.Item link={page !== totalPages} icon='angle double right' active={page === totalPages} onClick={()=>this.handleClick({totalPages})} />
       </Menu>
     );
   }
