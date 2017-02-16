@@ -1,26 +1,26 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router';
-import { Grid, Table, Dimmer, Loader, Checkbox, Menu } from 'semantic-ui-react';
+import { Grid, Table, Dimmer, Loader, Checkbox } from 'semantic-ui-react';
 import ProductsNav from './ProductsNav.js';
 import Product from './Product.js';
 import ProductVariants from './ProductVariants.js';
+import Pagination from './Pagination.js';
 
 class Products extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
-			token: null,
-			isLoadingProducts: null,
-			products: null,
-			page: 1,
+			page: null,
 			expandedProducts: []
     };
     this._onToggle = this._onToggle.bind(this);
+    this.handlePaginationClick = this.handlePaginationClick.bind(this);
   }
 	
 	componentDidMount() {
-		this.props.getProducts(this.props.token, 1);
+  	let page = parseFloat(this.props.location.query.page);
+  	if (!page) page = 1;
+		this.props.getProducts(this.props.token, page);
 	}
 	
 	_onToggle(productId) {
@@ -36,29 +36,30 @@ class Products extends Component {
 		});
 	}
 	
-	handlePaginationClick(event) {
-    event.preventDefault();
-	  event.stopPropagation();
-		var pageNum;
-		switch (event.target.name) {
-			case 'prev':
-				pageNum = parseInt(event.target.name, 10) - 1;
-				break;
-			case 'next':
-				pageNum = parseInt(event.target.name, 10) + 1;
-				break;
-			default :
-				pageNum = parseInt(event.target.name, 10);
-				break;
-		}
-		this.setState({
-			page: pageNum
-		});
-		this.props.getProducts(this.props.token, pageNum);
+	handlePaginationClick(page) {
+		const router = this.props.router;
+		const queries = router.location.query;
+		queries.page = page;
+		
+    router.replace({
+      pathname: router.location.pathname,
+      query: queries
+    })
+	}
+	
+	componentWillReceiveProps(nextProps) {
+  	let nextPage = parseFloat(nextProps.location.query.page);
+  	if (!nextPage) nextPage = 1;
+  	if (nextPage !== this.state.page) {
+  		this.setState({
+  			page: nextPage
+  		});
+    	this.props.getProducts(this.props.token, nextPage);
+  	}
 	}
 	
   render() {
-		const { error, isLoadingProducts } = this.props;
+		const { error, isLoadingProducts, totalPages } = this.props;
 		let scope = this;
 		let productRows = [];
 		if (this.props.products) {
@@ -87,7 +88,7 @@ class Products extends Component {
               <Table.HeaderCell>Audry Rose Name</Table.HeaderCell>
               <Table.HeaderCell>Designer</Table.HeaderCell>
               <Table.HeaderCell className='right aligned'>Price</Table.HeaderCell>
-							{/*<Table.HeaderCell>Class</Table.HeaderCell>*/}
+							<Table.HeaderCell>Class</Table.HeaderCell>
 							<Table.HeaderCell>Size Scale</Table.HeaderCell>
 							<Table.HeaderCell>Status</Table.HeaderCell>
 							<Table.HeaderCell>Labels</Table.HeaderCell>
@@ -101,14 +102,7 @@ class Products extends Component {
 					<Table.Footer fullWidth>
 						<Table.Row>
 							<Table.HeaderCell colSpan='12'>
-					      <Menu pagination>
-					        <Menu.Item name='prev' disabled={this.state.page === 1} onClick={this.handlePaginationClick} />
-									<Menu.Item name='1' active={this.state.page === 1} onClick={this.handlePaginationClick} />
-					        <Menu.Item name='2' active={this.state.page === 2} onClick={this.handlePaginationClick} />
-					        <Menu.Item name='3' active={this.state.page === 3} onClick={this.handlePaginationClick} />
-					        <Menu.Item name='4' active={this.state.page === 4} onClick={this.handlePaginationClick} />
-									<Menu.Item name='next' disabled={this.state.page === 4} onClick={this.handlePaginationClick} />
-					      </Menu>
+                <Pagination page={this.state.page} onPaginationClick={this.handlePaginationClick} totalPages={totalPages} />
 							</Table.HeaderCell>
 						</Table.Row>
 					</Table.Footer>

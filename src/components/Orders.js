@@ -1,25 +1,24 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router';
-import { Grid, Table, Dimmer, Loader, Checkbox, Menu } from 'semantic-ui-react';
+import { Grid, Table, Dimmer, Loader, Checkbox } from 'semantic-ui-react';
 import OrdersNav from './OrdersNav.js';
 import Order from './Order.js';
+import Pagination from './Pagination.js';
 
 class Orders extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-			token: null,
-			isLoadingOrders: null,
-			orders: null,
-			page: 1,
+			page: null,
 			expandedOrders: []
     };
     this._onToggle = this._onToggle.bind(this);
+    this.handlePaginationClick = this.handlePaginationClick.bind(this);
   }
 	
 	componentDidMount() {
-		this.props.getOrders(this.props.token, 1);
+		this.props.getOrders(this.props.token, this.state.page);
 	}
 	
 	_onToggle(orderId) {
@@ -35,29 +34,30 @@ class Orders extends Component {
 		});
 	}
 	
-	handlePaginationClick(event) {
-    event.preventDefault();
-	  event.stopPropagation();
-		var pageNum;
-		switch (event.target.name) {
-			case 'prev':
-				pageNum = parseInt(event.target.name, 10) - 1;
-				break;
-			case 'next':
-				pageNum = parseInt(event.target.name, 10) + 1;
-				break;
-			default :
-				pageNum = parseInt(event.target.name, 10);
-				break;
-		}
-		this.setState({
-			page: pageNum
-		});
-		this.props.getOrders(this.props.token, pageNum);
+	handlePaginationClick(page) {
+		const router = this.props.router;
+		const queries = router.location.query;
+		queries.page = page;
+		
+    router.replace({
+      pathname: router.location.pathname,
+      query: queries
+    })
+	}
+	
+	componentWillReceiveProps(nextProps) {
+  	let nextPage = parseFloat(nextProps.location.query.page);
+  	if (!nextPage) nextPage = 1;
+  	if (nextPage !== this.state.page) {
+  		this.setState({
+  			page: nextPage
+  		});
+    	this.props.getOrders(this.props.token, nextPage);
+  	}
 	}
 	
   render() {
-		const { error, isLoadingOrders } = this.props;
+		const { error, isLoadingOrders, totalPages } = this.props;
 		let scope = this;
 		let orderRows = [];
 		if (this.props.orders) {
@@ -97,14 +97,7 @@ class Orders extends Component {
 					<Table.Footer fullWidth>
 						<Table.Row>
 							<Table.HeaderCell colSpan='11'>
-					      <Menu pagination>
-					        <Menu.Item name='prev' disabled={this.state.page === 1} onClick={this.handlePaginationClick} />
-									<Menu.Item name='1' active={this.state.page === 1} onClick={this.handlePaginationClick} />
-					        <Menu.Item name='2' active={this.state.page === 2} onClick={this.handlePaginationClick} />
-					        <Menu.Item name='3' active={this.state.page === 3} onClick={this.handlePaginationClick} />
-					        <Menu.Item name='4' active={this.state.page === 4} onClick={this.handlePaginationClick} />
-									<Menu.Item name='next' disabled={this.state.page === 4} onClick={this.handlePaginationClick} />
-					      </Menu>
+					      <Pagination page={this.state.page} onPaginationClick={this.handlePaginationClick} totalPages={totalPages} />
 							</Table.HeaderCell>
 						</Table.Row>
 					</Table.Footer>

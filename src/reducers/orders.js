@@ -16,7 +16,8 @@ const orders = (state = initialState, action) => {
       return {
         ...state,
         isLoadingOrders: false,
-        orders: action.res
+        orders: action.res.orders,
+        totalPages: action.res.totalPages
       };
 
     case 'ORDERS_FAILURE':

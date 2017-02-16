@@ -12,8 +12,6 @@ class Order extends Component {
     this.handleToggleClick = this.handleToggleClick.bind(this);
   }
 	handleToggleClick(orderId) {
-//     event.preventDefault();
-// 	  event.stopPropagation();
 		this.props.onToggle(orderId);
 	}
 	render() {

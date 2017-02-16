@@ -12,11 +12,7 @@ class Product extends Component {
     this.handleToggleClick = this.handleToggleClick.bind(this);
   }
 	handleToggleClick(productId) {
-//     event.preventDefault();
-// 	  event.stopPropagation();
 		this.props.onToggle(productId);
-		
-		// this.props.onToggle(this.props.data.orderId)
 	}
 	render() {
 		// let labels = this.props.data.labels.map(function(label, i) {
@@ -50,26 +46,26 @@ class Product extends Component {
 		
 		// Get the product size scale
 		let sizes = [];
-		if (data.variants.length > 1) {
+		if (data.variants && data.variants.length > 1) {
 			data.variants.map(function(variant, i) {
   			return variant.variantOptions.map(function(variantOption, j) {
-    			if (variantOption.option_id === 32) sizes.push(parseInt(variantOption.value, 10));
+    			if (variantOption.option_id === 32) sizes.push(parseFloat(variantOption.value));
     			return true;
   			});
 			});
 		}
-		sizes.sort()
+		sizes.sort((a, b) => (a - b));
 		const sizeScale = (sizes.length > 0) ? sizes[0] + '-' + sizes[sizes.length-1] : 'OS' ;
 		
     return (
       <Table.Row>
         <Table.Cell><Checkbox /></Table.Cell>
-        <Table.Cell><img src={data.primary_image.tiny_url ? data.primary_image.tiny_url : '/imgs/no-image.png'} width='40' alt={data.name} /></Table.Cell>
+        <Table.Cell><img src={data.primary_image.tiny_url ? data.primary_image.tiny_url.replace(/^http:\/\//i, 'https://') : '/imgs/no-image.png'} width='40' alt={data.name} /></Table.Cell>
         <Table.Cell>{data.sku}</Table.Cell>
 				<Table.Cell>{data.name}</Table.Cell>
 				<Table.Cell>[not loaded yet]</Table.Cell>
 				<Table.Cell className='right aligned'>{numeral(data.price).format('$0,0.00')}</Table.Cell>
-				{/*<Table.Cell>[not loaded yet]</Table.Cell>*/}
+				<Table.Cell>[not loaded yet]</Table.Cell>
 				<Table.Cell>{sizeScale}</Table.Cell>
 				<Table.Cell>[not loaded yet]</Table.Cell>
 				<Table.Cell>[not loaded yet]</Table.Cell>

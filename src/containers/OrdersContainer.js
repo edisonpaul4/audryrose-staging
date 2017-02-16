@@ -6,6 +6,7 @@ const select = state => ({
   token: state.auth.token,
 	isLoadingOrders: state.orders.isLoadingOrders,
 	orders: state.orders.orders,
+	totalPages: state.orders.totalPages,
 	error: state.error
 });
 
