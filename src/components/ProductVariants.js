@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Input, Divider } from 'semantic-ui-react';
+import { Table, Input, Divider, Button } from 'semantic-ui-react';
 import classNames from 'classnames';
 // import numeral from 'numeral';
 // import moment from 'moment';
@@ -24,7 +24,8 @@ class VariantsTable extends Component {
 	render() {  	
 		const variants = this.props.variants;
 		// Sort the data
-		if (variants && variants[0].size_value) {
+// 		console.log(variants);
+		if (variants.length && variants[0].size_value) {
       variants.sort(function(a, b) {
         return parseFloat(a.size_value) - parseFloat(b.size_value);
       });
@@ -68,16 +69,14 @@ class ProductVariants extends Component {
     this.state = {
       show: false
     };
+    this.handleReloadClick = this.handleReloadClick.bind(this);
   }
-	handleToggleClick(event) {
-    event.preventDefault();
-	  event.stopPropagation();
-		console.log('click');
-		// this.props.onToggle(this.props.data.orderId)
+	handleReloadClick(productId) {
+		this.props.handleReloadClick(productId);
 	}
 	render() {
   	let show = this.props.expanded ? true : false;
-  	const variants = this.props.variants;
+  	const variants = this.props.data.variants;
 		var rowClass = classNames(
 			{
 				'': show,
@@ -113,6 +112,7 @@ class ProductVariants extends Component {
     return (
       <Table.Row className={rowClass}>
         <Table.Cell colSpan='12' className='variant-row'>
+          <Button icon='refresh' floated='right' size='mini' content='Reload' loading={this.props.isReloading} onClick={()=>this.handleReloadClick(this.props.data.productId)} />
           <Divider horizontal>Inventory</Divider>
           {variantsTables}
         </Table.Cell>

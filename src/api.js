@@ -27,11 +27,19 @@ export const getProducts = (token, page) => Parse.Cloud.run('getProducts',
   }
 );
 
+export const reloadProduct = (token, productId) => Parse.Cloud.run('reloadProduct', 
+  {
+    sessionToken: token,
+    productId
+  }
+);
+
 export default {
 //   signup,
   login,
 	logout,
 	loadSession,
 	getOrders,
-	getProducts
+	getProducts,
+	reloadProduct
 }

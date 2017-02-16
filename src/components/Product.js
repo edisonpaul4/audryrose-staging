@@ -12,7 +12,7 @@ class Product extends Component {
     this.handleToggleClick = this.handleToggleClick.bind(this);
   }
 	handleToggleClick(productId) {
-		this.props.onToggle(productId);
+		this.props.handleToggleClick(productId);
 	}
 	render() {
 		// let labels = this.props.data.labels.map(function(label, i) {
@@ -70,7 +70,7 @@ class Product extends Component {
 				<Table.Cell>[not loaded yet]</Table.Cell>
 				<Table.Cell>[not loaded yet]</Table.Cell>
 				<Table.Cell className='right aligned'>[not loaded yet]</Table.Cell>
-				<Table.Cell className='right aligned'><Button circular icon={expandIcon} basic size='mini' onClick={() => this.handleToggleClick(data.productId)} /></Table.Cell>
+				<Table.Cell className='right aligned'><Button circular icon={expandIcon} basic size='mini' onClick={()=>this.handleToggleClick(data.productId)} /></Table.Cell>
       </Table.Row>
     );
   }

@@ -1,5 +1,6 @@
 const initialState = {
   isLoadingProducts: false,
+  isReloading: false,
 	products: null
 };
 
@@ -24,6 +25,25 @@ const products = (state = initialState, action) => {
       return {
         ...state,
         isLoadingProducts: false
+      }
+      
+    case 'PRODUCT_RELOAD_REQUEST':
+      return {
+        ...state,
+        isReloading: true
+      }
+
+    case 'PRODUCT_RELOAD_SUCCESS':
+      return {
+        ...state,
+        isReloading: false,
+        updatedProduct: action.res
+      };
+
+    case 'PRODUCT_RELOAD_FAILURE':
+      return {
+        ...state,
+        isReloading: false
       }
 			
     default:

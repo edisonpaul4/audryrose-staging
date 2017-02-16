@@ -9,21 +9,25 @@ import Pagination from './Pagination.js';
 class Products extends Component {
   constructor(props) {
     super(props);
+  	let page = parseFloat(this.props.location.query.page);
+  	if (!page) page = 1;
     this.state = {
-			page: null,
-			expandedProducts: []
+			page: page,
+			products: null,
+			updatedProduct: null,
+			expandedProducts: [],
+			isReloading: []
     };
-    this._onToggle = this._onToggle.bind(this);
+    this.handleToggleClick = this.handleToggleClick.bind(this);
     this.handlePaginationClick = this.handlePaginationClick.bind(this);
+    this.handleReloadClick = this.handleReloadClick.bind(this);
   }
 	
 	componentDidMount() {
-  	let page = parseFloat(this.props.location.query.page);
-  	if (!page) page = 1;
-		this.props.getProducts(this.props.token, page);
+		this.props.getProducts(this.props.token, this.state.page);
 	}
 	
-	_onToggle(productId) {
+	handleToggleClick(productId) {
 		let currentlyExpanded = this.state.expandedProducts;
 		var index = currentlyExpanded.indexOf(productId);
 		if (index >= 0) {
@@ -47,28 +51,72 @@ class Products extends Component {
     })
 	}
 	
+	handleReloadClick(productId) {
+		let currentlyReloading = this.state.isReloading;
+		const index = currentlyReloading.indexOf(productId);
+		if (index < 0) {
+			currentlyReloading.push(productId);
+		}
+  	this.setState({
+    	isReloading: currentlyReloading
+  	});
+		this.props.reloadProduct(this.props.token, productId);
+	}
+	
 	componentWillReceiveProps(nextProps) {
   	let nextPage = parseFloat(nextProps.location.query.page);
   	if (!nextPage) nextPage = 1;
+  	let expandedProducts = this.state.expandedProducts;
   	if (nextPage !== this.state.page) {
-  		this.setState({
-  			page: nextPage
-  		});
+    	expandedProducts = [];
     	this.props.getProducts(this.props.token, nextPage);
   	}
+  	
+  	let products = [];
+  	let currentlyReloading = this.state.isReloading;
+  	if (nextProps.updatedProduct) {
+    	// If updated product exists, push it into the state products array
+    	const updatedProductJSON = nextProps.updatedProduct.toJSON();
+      nextProps.products.map(function(product, i) {
+        const productJSON = product.toJSON();
+        if (updatedProductJSON.productId === productJSON.productId) {
+          products.push(nextProps.updatedProduct);
+        } else {
+          products.push(product);
+        }
+        return product;
+      });
+      
+      // If currently reloading and has successfully updated product, remove updated product
+    	if (currentlyReloading.length) {
+      	const index = currentlyReloading.indexOf(updatedProductJSON.productId);
+        if (index >= 0) currentlyReloading.splice(index, 1);;
+      }
+      
+    } else {
+      products = nextProps.products;
+    }
+    
+		this.setState({
+			page: nextPage,
+			products: products,
+			updatedProduct: nextProps.updatedProduct,
+			expandedProducts: expandedProducts,
+			isReloading: currentlyReloading
+		});	
 	}
 	
   render() {
 		const { error, isLoadingProducts, totalPages } = this.props;
 		let scope = this;
 		let productRows = [];
-		if (this.props.products) {
-			this.props.products.map(function(productRow, i) {
+		if (this.state.products) {
+			this.state.products.map(function(productRow, i) {
   			let productJSON = productRow.toJSON();
-  			let variants = productJSON.variants;
+  			let isReloading = (scope.state.isReloading.indexOf(productJSON.productId) >= 0) ? true : false;
   			let expanded = (scope.state.expandedProducts.indexOf(productJSON.productId) >= 0) ? true : false;
-				productRows.push(<Product data={productJSON} expanded={expanded} key={`${productJSON.productId}-1`} onToggle={scope._onToggle} />);
-				productRows.push(<ProductVariants variants={variants} expanded={expanded} key={`${productJSON.productId}-2`} />);
+				productRows.push(<Product data={productJSON} expanded={expanded} key={`${productJSON.productId}-1`} handleToggleClick={scope.handleToggleClick} />);
+				if (expanded) productRows.push(<ProductVariants data={productJSON} expanded={expanded} key={`${productJSON.productId}-2`} isReloading={isReloading} handleReloadClick={scope.handleReloadClick} />);
 				return productRows;
 	    });
 		}
