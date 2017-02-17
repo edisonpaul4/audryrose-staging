@@ -71,7 +71,7 @@ class VariantsTable extends Component {
 		}
 		const tableTitle = (this.props.title) ? <h3>{this.props.title}</h3> : null;
     return (
-      <Segment>
+      <Segment secondary>
         {tableTitle}
         <Table className='variants-table' basic='very' compact size='small' columns={6}>
           <Table.Header>
@@ -94,25 +94,71 @@ class VariantsTable extends Component {
   }
 }
 
-class ProductVariants extends Component {
+/*
+class ProductEditor extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      show: false
+      edited: false
+    };
+  }
+  handleSelectChange(event) {
+    console.log(event.target);
+  }
+  handleSelectChange = (e, { value }) => {
+    console.log(e);
+    console.log(value);
+    this.setState({ 
+      edited: true,
+      value
+    });
+  }
+	render() {
+    const classifications = [
+      { key: 'one', text: 'One', value: 'one' },
+      { key: 'two', text: 'Two', value: 'two' },
+    ]; 
+    return (
+      <Segment hidden={this.props.hidden} color={this.state.edited ? 'blue' : null} >
+        <Form>
+          <Form.Group>
+            <Form.Select required label='Classification' options={classifications} placeholder='Select Classification' onChange={this.handleSelectChange} />
+          </Form.Group>
+          <Form.Button disabled={this.state.edited ? null : true} primary>Save</Form.Button>
+        </Form>
+      </Segment>
+    );
+  }
+}
+*/
+
+class ProductDetails extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      showVariants: false,
+      showEditor: false
     };
     this.handleReloadClick = this.handleReloadClick.bind(this);
   }
 	handleReloadClick(productId) {
 		this.props.handleReloadClick(productId);
 	}
+	handleToggleEditorClick() {
+  	const showEditor = !this.state.showEditor;
+  	
+  	this.setState({
+    	showEditor: showEditor
+  	});
+	}	
 	render() {
-  	var scope = this;
-  	let show = this.props.expanded ? true : false;
+  	const scope = this;
+  	const showVariants = this.props.expanded ? true : false;
   	const variants = this.props.data.variants;
 		var rowClass = classNames(
 			{
-				'': show,
-				'hidden': !show
+				'': showVariants,
+				'hidden': !showVariants
 			}
 		);
 		var variantsTables = [];
@@ -143,10 +189,23 @@ class ProductVariants extends Component {
   	    variantsTables.push(<VariantsTable variants={variants} basePrice={this.props.data.price} key={1} />);
 	    }
 		}
+// 		const productEditor = this.state.showEditor ? <ProductEditor/> : null;
     return (
       <Table.Row className={rowClass}>
         <Table.Cell colSpan='12' className='variant-row'>
-          <Button icon='refresh' size='mini' content='Reload' loading={this.props.isReloading} onClick={()=>this.handleReloadClick(this.props.data.productId)} />
+          <Button circular compact basic size='tiny' 
+            icon='refresh' 
+            content='Sync' 
+            loading={this.props.isReloading} 
+            onClick={()=>this.handleReloadClick(this.props.data.productId)} 
+          />
+          {/*<Button circular compact basic size='tiny' 
+            icon={this.state.showEditor ? 'close' : 'edit'} 
+            color={this.state.showEditor ? 'black' : null} 
+            content={this.state.showEditor ? 'Cancel' : 'Edit'} 
+            onClick={this.handleToggleEditorClick.bind(this)} 
+          />
+          {productEditor}*/}
           <Dimmer.Dimmable as={Segment} vertical blurring dimmed={this.props.isReloading}>
             <Dimmer active={this.props.isReloading} inverted>
               <Loader>Loading</Loader>
@@ -159,4 +218,4 @@ class ProductVariants extends Component {
   }
 }
 
-export default ProductVariants;
+export default ProductDetails;

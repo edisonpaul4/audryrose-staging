@@ -3,7 +3,7 @@ import { withRouter } from 'react-router';
 import { Grid, Table, Dimmer, Loader, Checkbox } from 'semantic-ui-react';
 import ProductsNav from './ProductsNav.js';
 import Product from './Product.js';
-import ProductVariants from './ProductVariants.js';
+import ProductDetails from './ProductDetails.js';
 import Pagination from './Pagination.js';
 
 class Products extends Component {
@@ -116,7 +116,7 @@ class Products extends Component {
   			let isReloading = (scope.state.isReloading.indexOf(productJSON.productId) >= 0) ? true : false;
   			let expanded = (scope.state.expandedProducts.indexOf(productJSON.productId) >= 0) ? true : false;
 				productRows.push(<Product data={productJSON} expanded={expanded} key={`${productJSON.productId}-1`} handleToggleClick={scope.handleToggleClick} />);
-				if (expanded) productRows.push(<ProductVariants data={productJSON} expanded={expanded} key={`${productJSON.productId}-2`} isReloading={isReloading} handleReloadClick={scope.handleReloadClick} />);
+				if (expanded) productRows.push(<ProductDetails data={productJSON} expanded={expanded} key={`${productJSON.productId}-2`} isReloading={isReloading} handleReloadClick={scope.handleReloadClick} />);
 				return productRows;
 	    });
 		}
