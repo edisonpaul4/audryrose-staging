@@ -78,7 +78,7 @@ class VariantsTable extends Component {
             <Table.Row>
               <Table.HeaderCell>Style-Color</Table.HeaderCell>
               <Table.HeaderCell>Color</Table.HeaderCell>
-              <Table.HeaderCell sorted="descending">Size</Table.HeaderCell>
+              <Table.HeaderCell>Size</Table.HeaderCell>
               <Table.HeaderCell>Other Options</Table.HeaderCell>
               <Table.HeaderCell>ACT OH</Table.HeaderCell>
               <Table.HeaderCell className='right aligned'>RETAIL $</Table.HeaderCell>
