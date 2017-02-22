@@ -43,6 +43,13 @@ export const saveProductStatus = (token, productId, status) => Parse.Cloud.run('
   }
 );
 
+export const getDesigners = (token, page) => Parse.Cloud.run('getDesigners', 
+  {
+    sessionToken: token,
+    page
+  }
+);
+
 export default {
 //   signup,
   login,
@@ -51,5 +58,6 @@ export default {
 	getOrders,
 	getProducts,
 	reloadProduct,
-	saveProductStatus
+	saveProductStatus,
+	getDesigners
 }

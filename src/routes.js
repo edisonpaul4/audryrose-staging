@@ -5,6 +5,7 @@ import LogoutContainer from './containers/LogoutContainer';
 import DashboardContainer from './containers/DashboardContainer';
 import OrdersContainer from './containers/OrdersContainer';
 import ProductsContainer from './containers/ProductsContainer';
+import DesignersContainer from './containers/DesignersContainer';
 import NotFound from './components/NotFound';
 
 export function requireAuth(store) {
@@ -60,6 +61,11 @@ const createRoutes = (store) => {
 							onEnter: requireAuth(store)
 						}
 					]
+        },
+        {
+          path: 'designers',
+          component: DesignersContainer,
+					onEnter: requireAuth(store),
         },
         {
           path: 'signup',

@@ -16,6 +16,7 @@ class Product extends Component {
 		this.props.handleToggleClick(productId);
 	}
 	handleStatusChange(e, {value}) {
+  	console.log(value);
 		this.props.handleStatusChange(this.props.data.productId, value);
 	}
 	render() {
@@ -66,6 +67,7 @@ class Product extends Component {
 		const name = data.is_visible ? <a href={storeUrl} target="_blank">{data.name} <Icon link name='eye' /></a> : data.name;
 		const bcManageUrl = 'https://www.loveaudryrose.com/manage/products/' + data.productId + '/edit';
 		const sku = <a href={bcManageUrl} target="_blank">{data.sku} <Icon link name='configure' /></a>;
+		const designer = data.designer ? <a href={'/designers/' + data.designer.designerId}>{data.designer.name}</a> : '';
     const status = [
       { key: 'a', text: 'Active', value: 'active' },
       { key: 'd', text: 'Done', value: 'done' },
@@ -83,7 +85,7 @@ class Product extends Component {
         </Table.Cell>
         <Table.Cell>{sku}</Table.Cell>
 				<Table.Cell>{name}</Table.Cell>
-				<Table.Cell>[not loaded yet]</Table.Cell>
+				<Table.Cell>{designer}</Table.Cell>
 				<Table.Cell className='right aligned'>{numeral(data.price).format('$0,0.00')}</Table.Cell>
 				<Table.Cell>{data.classification ? data.classification.name : 'Unknown'}</Table.Cell>
 				<Table.Cell>{sizeScale}</Table.Cell>
