@@ -1,9 +1,9 @@
 import api from '../api';
 
-export function getProducts(token, page) {
+export function getProducts(token, page, sort) {
   return {
     types: ['PRODUCTS_REQUEST', 'PRODUCTS_SUCCESS', 'PRODUCTS_FAILURE'],
-    promise: api.getProducts(token, page)
+    promise: api.getProducts(token, page, sort)
   }
 }
 

@@ -7,6 +7,18 @@
   display: none;
 }
 
+.no-wrap {
+  white-space: nowrap;
+}
+
 table .variant-row {
   border-top: none !important;
+}
+
+a i.link.icon {
+  opacity: 0 !important;
+}
+
+a:hover i.link.icon {
+  opacity: 0.8 !important;
 }

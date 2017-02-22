@@ -20,10 +20,11 @@ export const getOrders = (token, page) => Parse.Cloud.run('getOrders',
   }
 );
 
-export const getProducts = (token, page) => Parse.Cloud.run('getProducts', 
+export const getProducts = (token, page, sort) => Parse.Cloud.run('getProducts', 
   {
     sessionToken: token,
-    page
+    page,
+    sort
   }
 );
 

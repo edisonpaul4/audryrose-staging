@@ -11,8 +11,11 @@ class Products extends Component {
     super(props);
   	let page = parseFloat(this.props.location.query.page);
   	if (!page) page = 1;
+  	let sort = this.props.location.query.sort;
+  	if (!sort) sort = 'date-added-desc';
     this.state = {
 			page: page,
+			sort: sort,
 			products: null,
 			updatedProduct: null,
 			expandedProducts: [],
@@ -24,7 +27,7 @@ class Products extends Component {
   }
 	
 	componentDidMount() {
-		this.props.getProducts(this.props.token, this.state.page);
+		this.props.getProducts(this.props.token, this.state.page, this.state.sort);
 	}
 	
 	handleToggleClick(productId) {
@@ -48,7 +51,7 @@ class Products extends Component {
     router.replace({
       pathname: router.location.pathname,
       query: queries
-    })
+    });
 	}
 	
 	handleReloadClick(productId) {
@@ -63,13 +66,32 @@ class Products extends Component {
 		this.props.reloadProduct(this.props.token, productId);
 	}
 	
+	handleSortClick(sort) {
+		console.log(sort);
+		this.setState({
+  		sort: sort,
+  		page: 1
+		});
+		
+		const router = this.props.router;
+		const queries = router.location.query;
+		queries.sort = sort;
+		queries.page = 1;
+    router.replace({
+      pathname: router.location.pathname,
+      page: 1,
+      query: queries
+    });
+    this.props.getProducts(this.props.token, 1, sort);
+	}
+	
 	componentWillReceiveProps(nextProps) {
   	let nextPage = parseFloat(nextProps.location.query.page);
   	if (!nextPage) nextPage = 1;
   	let expandedProducts = this.state.expandedProducts;
   	if (nextPage !== this.state.page) {
     	expandedProducts = [];
-    	this.props.getProducts(this.props.token, nextPage);
+    	this.props.getProducts(this.props.token, nextPage, this.state.sort);
   	}
   	
   	let products = [];
@@ -90,7 +112,7 @@ class Products extends Component {
       // If currently reloading and has successfully updated product, remove updated product
     	if (currentlyReloading.length) {
       	const index = currentlyReloading.indexOf(updatedProductJSON.productId);
-        if (index >= 0) currentlyReloading.splice(index, 1);;
+        if (index >= 0) currentlyReloading.splice(index, 1);
       }
       
     } else {
@@ -120,6 +142,10 @@ class Products extends Component {
 				return productRows;
 	    });
 		}
+		let sortColumn = '';
+		sortColumn = (this.state.sort.includes('date-added')) ? 'date-added' : sortColumn;
+		sortColumn = (this.state.sort.includes('price')) ? 'price' : sortColumn;
+		sortColumn = (this.state.sort.includes('stock')) ? 'stock' : sortColumn;
     return (
 			<Grid.Column width='16'>
 				<ProductsNav pathname={this.props.location.pathname} />
@@ -127,20 +153,35 @@ class Products extends Component {
 	      <Dimmer active={isLoadingProducts} inverted>
 	        <Loader inverted>Loading</Loader>
 	      </Dimmer>
-		    <Table className='products-table'>
+		    <Table className='products-table' sortable>
 		      <Table.Header>
 		        <Table.Row>
               <Table.HeaderCell><Checkbox></Checkbox></Table.HeaderCell>
+              <Table.HeaderCell 
+                sorted={sortColumn === 'date-added' ? (this.state.sort === 'date-added-asc' ? 'ascending' : 'descending') : null} 
+                onClick={this.state.sort === 'date-added-desc' ? ()=>this.handleSortClick('date-added-asc') : ()=>this.handleSortClick('date-added-desc')}>
+                Date Added
+              </Table.HeaderCell>
               <Table.HeaderCell>Image</Table.HeaderCell>
               <Table.HeaderCell>Bigcommerce SKU</Table.HeaderCell>
               <Table.HeaderCell>Audry Rose Name</Table.HeaderCell>
               <Table.HeaderCell>Designer</Table.HeaderCell>
-              <Table.HeaderCell className='right aligned'>Price</Table.HeaderCell>
+              <Table.HeaderCell 
+                className='center aligned'
+                sorted={sortColumn === 'price' ? (this.state.sort === 'price-asc' ? 'ascending' : 'descending') : null} 
+                onClick={this.state.sort === 'price-desc' ? ()=>this.handleSortClick('price-asc') : ()=>this.handleSortClick('price-desc')}>
+                Price
+              </Table.HeaderCell>
 							<Table.HeaderCell>Class</Table.HeaderCell>
 							<Table.HeaderCell>Size Scale</Table.HeaderCell>
 							<Table.HeaderCell>Status</Table.HeaderCell>
 							<Table.HeaderCell>Labels</Table.HeaderCell>
-							<Table.HeaderCell className='right aligned'>Stock</Table.HeaderCell>
+              <Table.HeaderCell 
+                className='right aligned'
+                sorted={sortColumn === 'stock' ? (this.state.sort === 'stock-asc' ? 'ascending' : 'descending') : null} 
+                onClick={this.state.sort === 'stock-desc' ? ()=>this.handleSortClick('stock-asc') : ()=>this.handleSortClick('stock-desc')}>
+                Stock
+              </Table.HeaderCell>
 							<Table.HeaderCell className='right aligned'>&nbsp;</Table.HeaderCell>
 		        </Table.Row>
 		      </Table.Header>
