@@ -85,7 +85,7 @@ class Product extends Component {
 				<Table.Cell>{name}</Table.Cell>
 				<Table.Cell>[not loaded yet]</Table.Cell>
 				<Table.Cell className='right aligned'>{numeral(data.price).format('$0,0.00')}</Table.Cell>
-				<Table.Cell>[not loaded yet]</Table.Cell>
+				<Table.Cell>{data.classification ? data.classification.name : 'Unknown'}</Table.Cell>
 				<Table.Cell>{sizeScale}</Table.Cell>
 				<Table.Cell>
 				  <Form.Select name='status' 
