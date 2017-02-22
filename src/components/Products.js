@@ -24,6 +24,7 @@ class Products extends Component {
     this.handleToggleClick = this.handleToggleClick.bind(this);
     this.handlePaginationClick = this.handlePaginationClick.bind(this);
     this.handleReloadClick = this.handleReloadClick.bind(this);
+    this.handleStatusChange = this.handleStatusChange.bind(this);
   }
 	
 	componentDidMount() {
@@ -85,6 +86,18 @@ class Products extends Component {
     this.props.getProducts(this.props.token, 1, sort);
 	}
 	
+	handleStatusChange(productId, status) {
+		let currentlyReloading = this.state.isReloading;
+		const index = currentlyReloading.indexOf(productId);
+		if (index < 0) {
+			currentlyReloading.push(productId);
+		}
+  	this.setState({
+    	isReloading: currentlyReloading
+  	});
+		this.props.saveProductStatus(this.props.token, productId, status);
+	}
+	
 	componentWillReceiveProps(nextProps) {
   	let nextPage = parseFloat(nextProps.location.query.page);
   	if (!nextPage) nextPage = 1;
@@ -137,7 +150,7 @@ class Products extends Component {
   			let productJSON = productRow.toJSON();
   			let isReloading = (scope.state.isReloading.indexOf(productJSON.productId) >= 0) ? true : false;
   			let expanded = (scope.state.expandedProducts.indexOf(productJSON.productId) >= 0) ? true : false;
-				productRows.push(<Product data={productJSON} expanded={expanded} key={`${productJSON.productId}-1`} handleToggleClick={scope.handleToggleClick} />);
+				productRows.push(<Product data={productJSON} expanded={expanded} key={`${productJSON.productId}-1`} handleToggleClick={scope.handleToggleClick} handleStatusChange={scope.handleStatusChange} />);
 				if (expanded) productRows.push(<ProductDetails data={productJSON} expanded={expanded} key={`${productJSON.productId}-2`} isReloading={isReloading} handleReloadClick={scope.handleReloadClick} />);
 				return productRows;
 	    });

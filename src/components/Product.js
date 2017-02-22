@@ -10,9 +10,13 @@ class Product extends Component {
       expanded: false
     };
     this.handleToggleClick = this.handleToggleClick.bind(this);
+    this.handleStatusChange = this.handleStatusChange.bind(this);
   }
 	handleToggleClick(productId) {
 		this.props.handleToggleClick(productId);
+	}
+	handleStatusChange(e, {value}) {
+		this.props.handleStatusChange(this.props.data.productId, value);
 	}
 	render() {
 		// let labels = this.props.data.labels.map(function(label, i) {
@@ -65,22 +69,37 @@ class Product extends Component {
     const status = [
       { key: 'a', text: 'Active', value: 'active' },
       { key: 'd', text: 'Done', value: 'done' },
-    ]
+    ];
     return (
       <Table.Row>
-        <Table.Cell><Checkbox /></Table.Cell>
-        <Table.Cell><span className='no-wrap'>{moment(data.date_created.iso).format('M/D/YY h:mm a')}</span></Table.Cell>
-        <Table.Cell><img src={data.primary_image.tiny_url ? data.primary_image.tiny_url.replace(/^http:\/\//i, 'https://') : '/imgs/no-image.png'} width='40' alt={data.name} /></Table.Cell>
+        <Table.Cell>
+          <Checkbox />
+        </Table.Cell>
+        <Table.Cell>
+          <span className='no-wrap'>{moment(data.date_created.iso).format('M/D/YY h:mm a')}</span>
+        </Table.Cell>
+        <Table.Cell>
+          <img src={data.primary_image.tiny_url ? data.primary_image.tiny_url.replace(/^http:\/\//i, 'https://') : '/imgs/no-image.png'} width='40' alt={data.name} />
+        </Table.Cell>
         <Table.Cell>{sku}</Table.Cell>
 				<Table.Cell>{name}</Table.Cell>
 				<Table.Cell>[not loaded yet]</Table.Cell>
 				<Table.Cell className='right aligned'>{numeral(data.price).format('$0,0.00')}</Table.Cell>
 				<Table.Cell>[not loaded yet]</Table.Cell>
 				<Table.Cell>{sizeScale}</Table.Cell>
-				<Table.Cell><Form.Select name='status' options={status} placeholder='Select Status' size='tiny' /></Table.Cell>
+				<Table.Cell>
+				  <Form.Select name='status' 
+				    options={status} 
+				    defaultValue={data.is_active === false ? 'done' : (data.is_active === true ? 'active' : undefined)} 
+				    placeholder='Select product status' size='tiny' 
+				    onChange={this.handleStatusChange}
+			    />
+		    </Table.Cell>
 				<Table.Cell>[not loaded yet]</Table.Cell>
 				<Table.Cell className='right aligned'>{totalInventoryLevel}</Table.Cell>
-				<Table.Cell className='right aligned'><Button circular icon={expandIcon} basic size='mini' onClick={()=>this.handleToggleClick(data.productId)} /></Table.Cell>
+				<Table.Cell className='right aligned'>
+				  <Button circular icon={expandIcon} basic size='mini' onClick={()=>this.handleToggleClick(data.productId)} />
+			  </Table.Cell>
       </Table.Row>
     );
   }

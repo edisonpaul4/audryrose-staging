@@ -45,6 +45,25 @@ const products = (state = initialState, action) => {
         ...state,
         isReloading: false
       }
+      
+    case 'PRODUCT_STATUS_REQUEST':
+      return {
+        ...state,
+        isReloading: true
+      }
+
+    case 'PRODUCT_STATUS_SUCCESS':
+      return {
+        ...state,
+        isReloading: false,
+        updatedProduct: action.res
+      };
+
+    case 'PRODUCT_STATUS_FAILURE':
+      return {
+        ...state,
+        isReloading: false
+      }
 			
     default:
       return state;

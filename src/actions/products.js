@@ -13,3 +13,10 @@ export function reloadProduct(token, productId) {
     promise: api.reloadProduct(token, productId)
   }
 }
+
+export function saveProductStatus(token, productId, status) {
+  return {
+    types: ['PRODUCT_STATUS_REQUEST', 'PRODUCT_STATUS_SUCCESS', 'PRODUCT_STATUS_FAILURE'],
+    promise: api.saveProductStatus(token, productId, status)
+  }
+}

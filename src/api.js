@@ -35,6 +35,14 @@ export const reloadProduct = (token, productId) => Parse.Cloud.run('reloadProduc
   }
 );
 
+export const saveProductStatus = (token, productId, status) => Parse.Cloud.run('saveProductStatus', 
+  {
+    sessionToken: token,
+    productId,
+    status
+  }
+);
+
 export default {
 //   signup,
   login,
@@ -42,5 +50,6 @@ export default {
 	loadSession,
 	getOrders,
 	getProducts,
-	reloadProduct
+	reloadProduct,
+	saveProductStatus
 }
