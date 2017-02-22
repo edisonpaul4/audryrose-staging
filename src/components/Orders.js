@@ -75,15 +75,14 @@ class Orders extends Component {
 	      <Dimmer active={isLoadingOrders} inverted>
 	        <Loader inverted>Loading</Loader>
 	      </Dimmer>
-		    <Table className='orders-table' sortable>
+		    <Table className='orders-table'>
 		      <Table.Header>
 		        <Table.Row>
               <Table.HeaderCell><Checkbox></Checkbox></Table.HeaderCell>
               <Table.HeaderCell>Date</Table.HeaderCell>
               <Table.HeaderCell>Order #</Table.HeaderCell>
               <Table.HeaderCell>Customer</Table.HeaderCell>
-              <Table.HeaderCell>Ship to</Table.HeaderCell>
-							<Table.HeaderCell width={4}>Order Notes</Table.HeaderCell>										
+							<Table.HeaderCell>Order Notes</Table.HeaderCell>										
 							<Table.HeaderCell className='right aligned'>Total</Table.HeaderCell>
 							<Table.HeaderCell>Bigcommerce Status</Table.HeaderCell>
 							<Table.HeaderCell>Label</Table.HeaderCell>
