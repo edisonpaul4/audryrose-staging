@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import { Table, Input, Button, Dropdown, Dimmer, Segment, Loader } from 'semantic-ui-react';
 import classNames from 'classnames';
 import numeral from 'numeral';
-// import moment from 'moment';
+import moment from 'moment';
+
+const yearLetters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
 
 class VariantRow extends Component {
 	render() {  	
@@ -20,7 +22,7 @@ class VariantRow extends Component {
 		if (this.props.adjuster && this.props.adjuster === 'relative') price += this.props.adjusterValue;
     return (
       <Table.Row>
-        <Table.Cell>asdf</Table.Cell>
+        <Table.Cell>{this.props.styleNumber}</Table.Cell>
         <Table.Cell>{data.color_value ? data.color_value : ''}</Table.Cell>
         <Table.Cell>{data.size_value ? data.size_value : 'OS'}</Table.Cell>
         <Table.Cell>{otherOptions ? otherOptions.join(', ') : null}</Table.Cell>
@@ -53,6 +55,7 @@ class VariantsTable extends Component {
         return parseFloat(a.size_value) - parseFloat(b.size_value);
       });
     }
+    
 		let variantRows = [];
 		if (variants) {
 			variants.map(function(variantRow, i) {
@@ -65,11 +68,12 @@ class VariantsTable extends Component {
       			return variantOption;
     			});
   			}
-				variantRows.push(<VariantRow data={variantRow} basePrice={scope.props.basePrice} adjuster={adjuster} adjusterValue={adjusterValue} key={i} />);
+				variantRows.push(<VariantRow data={variantRow} basePrice={scope.props.basePrice} adjuster={adjuster} adjusterValue={adjusterValue} styleNumber={scope.props.styleNumber} key={i} />);
 				return variantRows;
 	    });
 		}
 		const tableTitle = (this.props.title) ? <h3>{this.props.title}</h3> : null;
+		
     return (
       <Segment secondary>
         {tableTitle}
@@ -161,6 +165,17 @@ class ProductDetails extends Component {
 				'hidden': !showVariants
 			}
 		);
+		
+		// Create style number
+		var styleNumber = '';
+		styleNumber += (this.props.data.designer) ? this.props.data.designer.abbreviation : '[DESIGNER]';
+    var yearNum = parseFloat(moment(this.props.data.date_created.iso).format('YYYY')) - 2015;
+    styleNumber += yearLetters[yearNum];
+    var seasonNum = parseFloat(moment(this.props.data.date_created.iso).format('M'))
+    styleNumber += seasonNum;
+    styleNumber += (this.props.data.department) ? this.props.data.department.letter : '[DEPARTMENT]';
+    styleNumber += (this.props.data.classification_number) ? this.props.data.classification_number : '[CLASS]';
+		
 		var variantsTables = [];
 		if (variants) {
   		let variantGroupings = [];
@@ -181,12 +196,12 @@ class ProductDetails extends Component {
       	    if (variantItem.color_value === variantGroup) variantsInGroup.push(variantItem);
       	    return variantItem;
     	    });
-    	    variantsTables.push(<VariantsTable variants={variantsInGroup} title={variantGroup} basePrice={scope.props.data.price} key={i} />);
+    	    variantsTables.push(<VariantsTable variants={variantsInGroup} title={variantGroup} basePrice={scope.props.data.price} styleNumber={styleNumber} key={i} />);
     	    return variantGroup;
   	    });
 	    } else {
   	    // If no groupings, create one VariantsTable
-  	    variantsTables.push(<VariantsTable variants={variants} basePrice={this.props.data.price} key={1} />);
+  	    variantsTables.push(<VariantsTable variants={variants} basePrice={this.props.data.price} styleNumber={styleNumber} key={1} />);
 	    }
 		}
 // 		const productEditor = this.state.showEditor ? <ProductEditor/> : null;
