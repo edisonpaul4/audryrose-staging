@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router';
-import { Grid, Table, Dimmer, Loader, Checkbox } from 'semantic-ui-react';
+import { Grid, Table, Dimmer, Loader, Checkbox, Segment, Form, Select } from 'semantic-ui-react';
 import ProductsNav from './ProductsNav.js';
 import Product from './Product.js';
 import ProductDetails from './ProductDetails.js';
@@ -13,10 +13,14 @@ class Products extends Component {
   	if (!page) page = 1;
   	let sort = this.props.location.query.sort;
   	if (!sort) sort = 'date-added-desc';
+  	let search = this.props.location.query.q;
+  	let filters = {vendor: this.props.location.query.vendor, price: this.props.location.query.price, class: this.props.location.query.class };
     this.state = {
 			page: page,
 			sort: sort,
+			search: search,
 			products: null,
+			filters: filters,
 			updatedProduct: null,
 			expandedProducts: [],
 			isReloading: []
@@ -25,10 +29,11 @@ class Products extends Component {
     this.handlePaginationClick = this.handlePaginationClick.bind(this);
     this.handleReloadClick = this.handleReloadClick.bind(this);
     this.handleStatusChange = this.handleStatusChange.bind(this);
+//     this.handleSearchSubmit = this.handleSearchSubmit.bind(this);
   }
 	
 	componentDidMount() {
-		this.props.getProducts(this.props.token, this.state.page, this.state.sort);
+		this.props.getProducts(this.props.token, this.state.page, this.state.sort, this.state.search);
 	}
 	
 	handleToggleClick(productId) {
@@ -68,7 +73,6 @@ class Products extends Component {
 	}
 	
 	handleSortClick(sort) {
-		console.log(sort);
 		this.setState({
   		sort: sort,
   		page: 1
@@ -159,9 +163,49 @@ class Products extends Component {
 		sortColumn = (this.state.sort.includes('date-added')) ? 'date-added' : sortColumn;
 		sortColumn = (this.state.sort.includes('price')) ? 'price' : sortColumn;
 		sortColumn = (this.state.sort.includes('stock')) ? 'stock' : sortColumn;
+		const filterVendors = [
+		  { key: 0, value: 'all', text: 'All' },
+		  { key: 1, value: 'ea', text: 'EMILY AMEY' },
+		  { key: 2, value: 'rj', text: 'ROSEDALE JEWELRY' }
+	  ];
+		const filterPrice = [
+		  { key: 0, value: 'all', text: 'All' },
+		  { key: 1, value: '1', text: '$0-$100' },
+      { key: 2, value: '2', text: '$101-$1,000' },
+      { key: 3, value: '3', text: '$1,001-$10,000' },
+      { key: 4, value: '4', text: '$10,001-$50,000' },
+	  ];
+		const filterClass = [
+		  { key: 0, value: 'All', text: 'All' },
+		  { key: 1, value: 'Rings', text: 'Rings' },
+		  { key: 2, value: 'Necklaces', text: 'Necklaces' },
+		  { key: 3, value: 'Earrings', text: 'Earrings' },
+		  { key: 4, value: 'Bracelet', text: 'Bracelet' },
+		  { key: 5, value: 'Bags', text: 'Bags' },
+		  { key: 6, value: 'Scarves', text: 'Scarves' },
+		  { key: 7, value: 'Home', text: 'Home' }
+	  ];
     return (
 			<Grid.Column width='16'>
-				<ProductsNav pathname={this.props.location.pathname} />
+				<ProductsNav pathname={this.props.location.pathname} query={this.props.location.query} />
+			  {/*<Segment attached basic size='small' className='toolbar-products'>
+          <Form className='filter-form' size='tiny'>
+            <Form.Group inline>
+              <Form.Field>
+                <label>Vendor:</label>
+                <Select options={filterVendors} defaultValue={filterVendors[0].value} />
+              </Form.Field>
+              <Form.Field>
+                <label>Price:</label>
+                <Select options={filterPrice} defaultValue={filterPrice[0].value} />
+              </Form.Field>
+              <Form.Field>
+                <label>Class:</label>
+                <Select options={filterClass} defaultValue={filterClass[0].value} />
+              </Form.Field>
+            </Form.Group>
+          </Form>
+        </Segment>*/}
 				{error}
 	      <Dimmer active={isLoadingProducts} inverted>
 	        <Loader inverted>Loading</Loader>

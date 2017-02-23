@@ -22,3 +22,11 @@ a i.link.icon {
 a:hover i.link.icon {
   opacity: 0.8 !important;
 }
+
+.ui.form.filter-form .inline.fields {
+  margin-bottom: 0;
+}
+
+.ui.attached.segment.toolbar-products {
+  border: none;
+}

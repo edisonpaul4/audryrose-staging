@@ -20,31 +20,33 @@ class Product extends Component {
 		this.props.handleStatusChange(this.props.data.productId, value);
 	}
 	render() {
-		// let labels = this.props.data.labels.map(function(label, i) {
-		// 	var labelName = label.replace('-', ' ');
-		// 	let labelStyle;
-		// 	switch (label) {
-		// 	case 'resizable':
-		// 		labelStyle = 'warning';
-		// 		break;
-		// 	case 'fully-shippable':
-		// 		labelStyle = 'success';
-		// 		break;
-		// 	case 'partially-shippable':
-		// 		labelStyle = 'success';
-		// 		break;
-		// 	case 'cannot-ship':
-		// 		labelStyle = 'danger';
-		// 		break;
-		// 	case 'emails':
-		// 		labelStyle = 'info';
-		// 		break;
-		// 	case 'fulfilled':
-		// 		labelStyle = 'success';
-		// 		break;
-		// 	}
-		// 	return <Label key={i} bsStyle={labelStyle}> {labelName} </Label>;
-		//     });
+/*
+		let labels = this.props.data.labels.map(function(label, i) {
+			var labelName = label.replace('-', ' ');
+			let labelStyle;
+			switch (label) {
+			case 'resizable':
+				labelStyle = 'warning';
+				break;
+			case 'fully-shippable':
+				labelStyle = 'success';
+				break;
+			case 'partially-shippable':
+				labelStyle = 'success';
+				break;
+			case 'cannot-ship':
+				labelStyle = 'danger';
+				break;
+			case 'emails':
+				labelStyle = 'info';
+				break;
+			case 'fulfilled':
+				labelStyle = 'success';
+				break;
+			}
+			return <Label key={i} bsStyle={labelStyle}> {labelName} </Label>;
+		    });
+*/
 		let expandIcon = this.props.expanded ? 'minus' : 'plus';
 		
 		const data = this.props.data;
@@ -93,7 +95,8 @@ class Product extends Component {
 				  <Form.Select name='status' 
 				    options={status} 
 				    defaultValue={data.is_active === false ? 'done' : (data.is_active === true ? 'active' : undefined)} 
-				    placeholder='Select product status' size='tiny' 
+				    placeholder='Select product status' 
+				    size='tiny' 
 				    onChange={this.handleStatusChange}
 			    />
 		    </Table.Cell>
