@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Checkbox, Button, Icon, Form } from 'semantic-ui-react';
+import { Table, Checkbox, Button, Icon } from 'semantic-ui-react';
 import numeral from 'numeral';
 import moment from 'moment';
 
@@ -16,8 +16,7 @@ class Product extends Component {
 		this.props.handleToggleClick(productId);
 	}
 	handleStatusChange(e, {value}) {
-  	console.log(value);
-		this.props.handleStatusChange(this.props.data.productId, value);
+		this.props.handleStatusChange(this.props.data.productId, !this.props.data.is_active);
 	}
 	render() {
 /*
@@ -70,10 +69,6 @@ class Product extends Component {
 		const bcManageUrl = 'https://www.loveaudryrose.com/manage/products/' + data.productId + '/edit';
 		const sku = <a href={bcManageUrl} target="_blank">{data.sku} <Icon link name='configure' /></a>;
 		const designer = data.designer ? <a href={'/designers/' + data.designer.designerId}>{data.designer.name}</a> : '';
-    const status = [
-      { key: 'a', text: 'Active', value: 'active' },
-      { key: 'd', text: 'Done', value: 'done' },
-    ];
     return (
       <Table.Row>
         <Table.Cell>
@@ -92,13 +87,14 @@ class Product extends Component {
 				<Table.Cell>{data.classification ? data.classification.name : 'Unknown'}</Table.Cell>
 				<Table.Cell>{sizeScale}</Table.Cell>
 				<Table.Cell>
-				  <Form.Select name='status' 
-				    options={status} 
-				    defaultValue={data.is_active === false ? 'done' : (data.is_active === true ? 'active' : undefined)} 
-				    placeholder='Select product status' 
-				    size='tiny' 
-				    onChange={this.handleStatusChange}
-			    />
+  				<Checkbox 
+  				  toggle 
+  				  label={data.is_active === false ? 'Done' : (data.is_active === true ? 'Active' : 'Unknown')}  
+  				  checked={data.is_active === false ? false : (data.is_active === true ? true : false)}  
+  				  name='is_active' 
+  				  disabled={this.props.isReloading} 
+  				  onChange={this.handleStatusChange}
+				  />
 		    </Table.Cell>
 				<Table.Cell>[not loaded yet]</Table.Cell>
 				<Table.Cell className='right aligned'>{totalInventoryLevel}</Table.Cell>

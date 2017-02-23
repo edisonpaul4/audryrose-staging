@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router';
-import { Grid, Table, Dimmer, Loader, Checkbox, Segment, Form, Select } from 'semantic-ui-react';
+import { Grid, Table, Dimmer, Loader, Checkbox/* , Segment, Form, Select */ } from 'semantic-ui-react';
 import ProductsNav from './ProductsNav.js';
 import Product from './Product.js';
 import ProductDetails from './ProductDetails.js';
@@ -90,7 +90,7 @@ class Products extends Component {
     this.props.getProducts(this.props.token, 1, sort);
 	}
 	
-	handleStatusChange(productId, status) {
+	handleStatusChange(productId, isActive) {
 		let currentlyReloading = this.state.isReloading;
 		const index = currentlyReloading.indexOf(productId);
 		if (index < 0) {
@@ -99,6 +99,7 @@ class Products extends Component {
   	this.setState({
     	isReloading: currentlyReloading
   	});
+  	var status = isActive ? 'active' : 'done';
 		this.props.saveProductStatus(this.props.token, productId, status);
 	}
 	
@@ -154,7 +155,7 @@ class Products extends Component {
   			let productJSON = productRow.toJSON();
   			let isReloading = (scope.state.isReloading.indexOf(productJSON.productId) >= 0) ? true : false;
   			let expanded = (scope.state.expandedProducts.indexOf(productJSON.productId) >= 0) ? true : false;
-				productRows.push(<Product data={productJSON} expanded={expanded} key={`${productJSON.productId}-1`} handleToggleClick={scope.handleToggleClick} handleStatusChange={scope.handleStatusChange} />);
+				productRows.push(<Product data={productJSON} expanded={expanded} key={`${productJSON.productId}-1`} isReloading={isReloading} handleToggleClick={scope.handleToggleClick} handleStatusChange={scope.handleStatusChange} />);
 				if (expanded) productRows.push(<ProductDetails data={productJSON} expanded={expanded} key={`${productJSON.productId}-2`} isReloading={isReloading} handleReloadClick={scope.handleReloadClick} />);
 				return productRows;
 	    });
@@ -163,6 +164,7 @@ class Products extends Component {
 		sortColumn = (this.state.sort.includes('date-added')) ? 'date-added' : sortColumn;
 		sortColumn = (this.state.sort.includes('price')) ? 'price' : sortColumn;
 		sortColumn = (this.state.sort.includes('stock')) ? 'stock' : sortColumn;
+/*
 		const filterVendors = [
 		  { key: 0, value: 'all', text: 'All' },
 		  { key: 1, value: 'ea', text: 'EMILY AMEY' },
@@ -185,6 +187,7 @@ class Products extends Component {
 		  { key: 6, value: 'Scarves', text: 'Scarves' },
 		  { key: 7, value: 'Home', text: 'Home' }
 	  ];
+*/
     return (
 			<Grid.Column width='16'>
 				<ProductsNav pathname={this.props.location.pathname} query={this.props.location.query} />
