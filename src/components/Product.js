@@ -88,7 +88,7 @@ class Product extends Component {
 				<Table.Cell>{sizeScale}</Table.Cell>
 				<Table.Cell>
   				<Checkbox 
-  				  toggle 
+  				  slider 
   				  label={data.is_active === false ? 'Done' : (data.is_active === true ? 'Active' : 'Unknown')}  
   				  checked={data.is_active === false ? false : (data.is_active === true ? true : false)}  
   				  name='is_active' 

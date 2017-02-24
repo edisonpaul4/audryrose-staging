@@ -52,9 +52,9 @@ class ProductsNav extends Component {
       					All<Label horizontal>23</Label>
       				</Menu.Item>
               <Menu.Menu position='right'>
-                <Menu.Item>
-                  <Form action='/products/search' method='get'>
-                    <Form.Input action={{ icon: 'search', basic: true }} name='q' defaultValue={search} placeholder='Search by name or sku...' />
+                <Menu.Item fitted className='subnav-search'>
+                  <Form action='/products/search' method='get' size='small'>
+                    <Form.Input action={{ icon: 'search', basic: true, size: 'small' }} name='q' defaultValue={search} placeholder='Search by name or sku...' />
                   </Form>
                 </Menu.Item>
               </Menu.Menu>

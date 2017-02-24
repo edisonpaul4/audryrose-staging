@@ -15,8 +15,20 @@ table .variant-row {
   border-top: none !important;
 }
 
+.ui.sortable.table .table thead th {
+  cursor: auto;
+  border-left: none;
+}
+.ui.sortable.table .table thead th:hover {
+  background: rgba(0, 0, 0, 0);
+}
+
 a i.link.icon {
   opacity: 0 !important;
+}
+
+i.disabled.icon.caret.down {
+  opacity: 0.25 !important;
 }
 
 a:hover i.link.icon {
@@ -29,4 +41,8 @@ a:hover i.link.icon {
 
 .ui.attached.segment.toolbar-products {
   border: none;
+}
+
+.ui.secondary.pointing.menu .item.subnav-search {
+  padding: 0 0 5px;
 }

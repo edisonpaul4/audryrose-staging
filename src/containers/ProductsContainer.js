@@ -8,6 +8,7 @@ const select = state => ({
 	products: state.products.products,
 	updatedProduct: state.products.updatedProduct,
 	totalPages: state.products.totalPages,
+	totalProducts: state.products.totalProducts,
 	error: state.error
 });
 

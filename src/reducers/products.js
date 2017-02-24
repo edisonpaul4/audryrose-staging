@@ -18,7 +18,8 @@ const products = (state = initialState, action) => {
         ...state,
         isLoadingProducts: false,
         products: action.res.products,
-        totalPages: action.res.totalPages
+        totalPages: action.res.totalPages,
+        totalProducts: action.res.totalProducts
       };
 
     case 'PRODUCTS_FAILURE':

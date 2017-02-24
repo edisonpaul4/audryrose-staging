@@ -77,7 +77,7 @@ class VariantsTable extends Component {
     return (
       <Segment secondary>
         {tableTitle}
-        <Table className='variants-table' basic='very' compact size='small' columns={6}>
+        <Table className='variants-table' basic='very' compact size='small' columns={7}>
           <Table.Header>
             <Table.Row>
               <Table.HeaderCell>Style-Color</Table.HeaderCell>
@@ -207,7 +207,7 @@ class ProductDetails extends Component {
 // 		const productEditor = this.state.showEditor ? <ProductEditor/> : null;
     return (
       <Table.Row className={rowClass}>
-        <Table.Cell colSpan='12' className='variant-row'>
+        <Table.Cell colSpan='13' className='variant-row'>
           <Button circular compact basic size='tiny' 
             icon='refresh' 
             content='Sync' 

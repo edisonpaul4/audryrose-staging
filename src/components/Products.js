@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router';
-import { Grid, Table, Dimmer, Loader, Checkbox/* , Segment, Form, Select */ } from 'semantic-ui-react';
+import { Grid, Table, Dimmer, Loader, Checkbox, Header, Icon/* , Segment, Form, Select */ } from 'semantic-ui-react';
 import ProductsNav from './ProductsNav.js';
 import Product from './Product.js';
 import ProductDetails from './ProductDetails.js';
@@ -147,7 +147,7 @@ class Products extends Component {
 	}
 	
   render() {
-		const { error, isLoadingProducts, totalPages } = this.props;
+		const { error, isLoadingProducts, totalPages, totalProducts } = this.props;
 		let scope = this;
 		let productRows = [];
 		if (this.state.products) {
@@ -188,6 +188,10 @@ class Products extends Component {
 		  { key: 7, value: 'Home', text: 'Home' }
 	  ];
 */
+    const searchHeader = this.state.search ? <Header as='h2'>{totalProducts} results for "{this.props.location.query.q}"</Header> : null;
+    const dateIcon = this.state.sort === 'date-added-desc' || this.state.sort === 'date-added-asc' ? null : <Icon disabled name='caret down' />;
+    const priceIcon = this.state.sort === 'price-desc' || this.state.sort === 'price-asc' ? null : <Icon disabled name='caret down' />;
+    const stockIcon = this.state.sort === 'stock-desc' || this.state.sort === 'stock-asc' ? null : <Icon disabled name='caret down' />;
     return (
 			<Grid.Column width='16'>
 				<ProductsNav pathname={this.props.location.pathname} query={this.props.location.query} />
@@ -209,6 +213,7 @@ class Products extends Component {
             </Form.Group>
           </Form>
         </Segment>*/}
+				{searchHeader}
 				{error}
 	      <Dimmer active={isLoadingProducts} inverted>
 	        <Loader inverted>Loading</Loader>
@@ -220,7 +225,7 @@ class Products extends Component {
               <Table.HeaderCell 
                 sorted={sortColumn === 'date-added' ? (this.state.sort === 'date-added-asc' ? 'ascending' : 'descending') : null} 
                 onClick={this.state.sort === 'date-added-desc' ? ()=>this.handleSortClick('date-added-asc') : ()=>this.handleSortClick('date-added-desc')}>
-                Date Added
+                Date Added {dateIcon}
               </Table.HeaderCell>
               <Table.HeaderCell>Image</Table.HeaderCell>
               <Table.HeaderCell>Bigcommerce SKU</Table.HeaderCell>
@@ -230,7 +235,7 @@ class Products extends Component {
                 className='center aligned'
                 sorted={sortColumn === 'price' ? (this.state.sort === 'price-asc' ? 'ascending' : 'descending') : null} 
                 onClick={this.state.sort === 'price-desc' ? ()=>this.handleSortClick('price-asc') : ()=>this.handleSortClick('price-desc')}>
-                Price
+                Price {priceIcon}
               </Table.HeaderCell>
 							<Table.HeaderCell>Class</Table.HeaderCell>
 							<Table.HeaderCell>Size Scale</Table.HeaderCell>
@@ -240,7 +245,7 @@ class Products extends Component {
                 className='right aligned'
                 sorted={sortColumn === 'stock' ? (this.state.sort === 'stock-asc' ? 'ascending' : 'descending') : null} 
                 onClick={this.state.sort === 'stock-desc' ? ()=>this.handleSortClick('stock-asc') : ()=>this.handleSortClick('stock-desc')}>
-                Stock
+                Stock {stockIcon}
               </Table.HeaderCell>
 							<Table.HeaderCell className='right aligned'>&nbsp;</Table.HeaderCell>
 		        </Table.Row>
@@ -250,7 +255,7 @@ class Products extends Component {
 		      </Table.Body>
 					<Table.Footer fullWidth>
 						<Table.Row>
-							<Table.HeaderCell colSpan='12'>
+							<Table.HeaderCell colSpan='13'>
                 <Pagination page={this.state.page} onPaginationClick={this.handlePaginationClick} totalPages={totalPages} />
 							</Table.HeaderCell>
 						</Table.Row>
