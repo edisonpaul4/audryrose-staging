@@ -51,16 +51,16 @@ class Pagination extends Component {
     
     for (let i = 1; i <= totalPages; i++) {
       if (i <= highestPage && i >= lowestPage) {
-        pageLinks.push(<Menu.Item link={page !== i} name={i.toString()} active={page === i} onClick={()=>this.handleClick(i)} key={i}/>);
+        pageLinks.push(<Menu.Item name={i.toString()} active={page === i} onClick={()=>this.handleClick(i)} key={i}/>);
       }
     }
     return (      
       <Menu pagination borderless size='mini'>
-        <Menu.Item link={page !== 1} icon='angle double left' active={page === 1} onClick={()=>this.handleClick(1)} />
-        <Menu.Item link={page !== 1} name='prev' active={page === 1} onClick={()=>this.handleClick('prev')} />
+        <Menu.Item icon='angle double left' disabled={page === 1} onClick={page !== 1 ? ()=>this.handleClick(1) : null} />
+        <Menu.Item name='prev' disabled={page === 1} onClick={page !== 1 ? ()=>this.handleClick('prev') : null} />
   			{pageLinks}
-  			<Menu.Item link={page !== totalPages} name='next' active={page === totalPages} onClick={()=>this.handleClick('next')} />
-  			<Menu.Item link={page !== totalPages} icon='angle double right' active={page === totalPages} onClick={()=>this.handleClick({totalPages})} />
+  			<Menu.Item name='next' disabled={page === totalPages} onClick={page !== totalPages ? ()=>this.handleClick('next') : null} />
+  			<Menu.Item icon='angle double right' disabled={page === totalPages} onClick={page !== totalPages ? ()=>this.handleClick(totalPages) : null} />
       </Menu>
     );
   }
