@@ -3,11 +3,6 @@ import { Link } from 'react-router';
 import { Menu, Label, Grid, Form } from 'semantic-ui-react';
 
 class ProductsNav extends Component {
-/*
-	handleSearchSubmit(search) {
-		this.props.handleSearchSubmit(search);
-	}
-*/
 	render() {
 		const pathName = this.props.pathname;
 		const search = this.props.query.q;
