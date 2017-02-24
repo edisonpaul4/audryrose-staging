@@ -5,7 +5,7 @@ import { Menu, Label, Grid, Form } from 'semantic-ui-react';
 class ProductsNav extends Component {
 	render() {
 		const pathName = this.props.pathname;
-		const search = this.props.query.q;
+		const search = this.props.query.q ? this.props.query.q : '';
     return (
       <Grid>
         <Grid.Row>
@@ -49,7 +49,12 @@ class ProductsNav extends Component {
               <Menu.Menu position='right'>
                 <Menu.Item fitted className='subnav-search'>
                   <Form action='/products/search' method='get' size='small'>
-                    <Form.Input action={{ icon: 'search', basic: true, size: 'small' }} name='q' defaultValue={search} placeholder='Search by name or sku...' />
+                    <Form.Input 
+                      action={{ icon: 'search', basic: true, size: 'small' }} 
+                      name='q' 
+                      defaultValue={search} 
+                      placeholder='Search by name or sku...' 
+                    />
                   </Form>
                 </Menu.Item>
               </Menu.Menu>

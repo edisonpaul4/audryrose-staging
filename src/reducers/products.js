@@ -1,7 +1,8 @@
 const initialState = {
   isLoadingProducts: false,
   isReloading: false,
-	products: null
+	products: null,
+	filterData: null
 };
 
 const products = (state = initialState, action) => {
@@ -26,6 +27,22 @@ const products = (state = initialState, action) => {
       return {
         ...state,
         isLoadingProducts: false
+      }
+      
+    case 'PRODUCT_FILTERS_REQUEST':
+      return {
+        ...state
+      }
+
+    case 'PRODUCT_FILTERS_SUCCESS':
+      return {
+        ...state,
+        filterData: action.res
+      };
+
+    case 'PRODUCT_FILTERS_FAILURE':
+      return {
+        ...state
       }
       
     case 'PRODUCT_RELOAD_REQUEST':

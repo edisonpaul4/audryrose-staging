@@ -1,9 +1,16 @@
 import api from '../api';
 
-export function getProducts(token, page, sort, search) {
+export function getProducts(token, subpage, page, sort, search, filters) {
   return {
     types: ['PRODUCTS_REQUEST', 'PRODUCTS_SUCCESS', 'PRODUCTS_FAILURE'],
-    promise: api.getProducts(token, page, sort, search)
+    promise: api.getProducts(token, subpage, page, sort, search, filters)
+  }
+}
+
+export function getProductFilters(token) {
+  return {
+    types: ['PRODUCT_FILTERS_REQUEST', 'PRODUCT_FILTERS_SUCCESS', 'PRODUCT_FILTERS_FAILURE'],
+    promise: api.getProductFilters(token)
   }
 }
 

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router';
-import { Grid, Table, Dimmer, Loader, Checkbox, Header, Icon/* , Segment, Form, Select */ } from 'semantic-ui-react';
+import { Grid, Table, Dimmer, Loader, Checkbox, Header, Icon, Segment, Form, Select } from 'semantic-ui-react';
 import ProductsNav from './ProductsNav.js';
 import Product from './Product.js';
 import ProductDetails from './ProductDetails.js';
@@ -9,18 +9,21 @@ import Pagination from './Pagination.js';
 class Products extends Component {
   constructor(props) {
     super(props);
+    let subpage = this.props.router.params.subpage;
   	let page = parseFloat(this.props.location.query.page);
   	if (!page) page = 1;
   	let sort = this.props.location.query.sort;
   	if (!sort) sort = 'date-added-desc';
   	let search = this.props.location.query.q;
-  	let filters = {vendor: this.props.location.query.vendor, price: this.props.location.query.price, class: this.props.location.query.class };
+  	let filters = {designer: this.props.location.query.designer, price: this.props.location.query.price, class: this.props.location.query.class };
     this.state = {
+      subpage: subpage,
 			page: page,
 			sort: sort,
+			filters: filters,
 			search: search,
 			products: null,
-			filters: filters,
+			filterData: null,
 			updatedProduct: null,
 			expandedProducts: [],
 			isReloading: []
@@ -29,11 +32,14 @@ class Products extends Component {
     this.handlePaginationClick = this.handlePaginationClick.bind(this);
     this.handleReloadClick = this.handleReloadClick.bind(this);
     this.handleStatusChange = this.handleStatusChange.bind(this);
-//     this.handleSearchSubmit = this.handleSearchSubmit.bind(this);
+    this.handleFilterDesignerChange = this.handleFilterDesignerChange.bind(this);
+    this.handleFilterPriceChange = this.handleFilterPriceChange.bind(this);
+    this.handleFilterClassChange = this.handleFilterClassChange.bind(this);
   }
 	
 	componentDidMount() {
-		this.props.getProducts(this.props.token, this.state.page, this.state.sort, this.state.search);
+		this.props.getProducts(this.props.token, this.state.subpage, this.state.page, this.state.sort, this.state.search, this.state.filters);
+		this.props.getProductFilters(this.props.token);
 	}
 	
 	handleToggleClick(productId) {
@@ -52,11 +58,16 @@ class Products extends Component {
 	handlePaginationClick(page) {
 		const router = this.props.router;
 		const queries = router.location.query;
-		queries.page = page;
+		queries.page = parseFloat(page);
 		
     router.replace({
       pathname: router.location.pathname,
       query: queries
+    });
+    this.props.getProducts(this.props.token, this.state.subpage, queries.page, this.state.sort, this.state.search, this.state.filters);
+    this.setState({
+      page: page,
+      expandedProducts: []
     });
 	}
 	
@@ -75,7 +86,8 @@ class Products extends Component {
 	handleSortClick(sort) {
 		this.setState({
   		sort: sort,
-  		page: 1
+  		page: 1,
+  		expandedProducts: []
 		});
 		
 		const router = this.props.router;
@@ -87,8 +99,71 @@ class Products extends Component {
       page: 1,
       query: queries
     });
-    this.props.getProducts(this.props.token, 1, sort);
+    this.props.getProducts(this.props.token, this.state.subpage, 1, sort, this.state.search, this.state.filters);
 	}
+	
+  handleFilterDesignerChange(e, {value}) {
+		const router = this.props.router;
+		const queries = router.location.query;
+		queries.page = 1;
+		queries.designer = value;
+    router.replace({
+      pathname: router.location.pathname,
+      page: 1,
+      query: queries
+    });
+    var filters = this.state.filters;
+    filters.designer = value;
+    this.setState({
+      page: 1,
+      filters: filters,
+      search: null,
+      expandedProducts: []
+    });
+    this.props.getProducts(this.props.token, this.state.subpage, 1, this.state.sort, this.state.search, filters);
+	}	
+	
+  handleFilterPriceChange(e, {value}) {
+		const router = this.props.router;
+		const queries = router.location.query;
+		queries.page = 1;
+		queries.price = value;
+    router.replace({
+      pathname: router.location.pathname,
+      page: 1,
+      query: queries
+    });
+    var filters = this.state.filters;
+    filters.price = value;
+    this.setState({
+      page: 1,
+      filters: filters,
+      search: null,
+      expandedProducts: []
+    });
+    this.props.getProducts(this.props.token, this.state.subpage, 1, this.state.sort, this.state.search, filters);
+	}	
+	
+  handleFilterClassChange(e, {value}) {
+		const router = this.props.router;
+		const queries = router.location.query;
+		queries.page = 1;
+		queries.class = value;
+    router.replace({
+      pathname: router.location.pathname,
+      page: 1,
+      query: queries
+    });
+    var filters = this.state.filters;
+    filters.class = value;
+    this.setState({
+      page: 1,
+      filters: filters,
+      search: null,
+      expandedProducts: []
+    });
+    this.props.getProducts(this.props.token, this.state.subpage, 1, this.state.sort, this.state.search, filters);
+	}	
 	
 	handleStatusChange(productId, isActive) {
 		let currentlyReloading = this.state.isReloading;
@@ -107,10 +182,6 @@ class Products extends Component {
   	let nextPage = parseFloat(nextProps.location.query.page);
   	if (!nextPage) nextPage = 1;
   	let expandedProducts = this.state.expandedProducts;
-  	if (nextPage !== this.state.page) {
-    	expandedProducts = [];
-    	this.props.getProducts(this.props.token, nextPage, this.state.sort);
-  	}
   	
   	let products = [];
   	let currentlyReloading = this.state.isReloading;
@@ -137,13 +208,36 @@ class Products extends Component {
       products = nextProps.products;
     }
     
+/*
+  	if (nextPage !== this.state.page || nextProps.router.params.subpage !== this.state.subpage) {
+    	expandedProducts = [];
+    	this.props.getProducts(this.props.token, nextProps.router.params.subpage, nextPage, this.state.sort, this.state.filters);
+  	}
+*/
+  	
+  	// Process filters data
+  	var filterData = null;
+  	if (nextProps.filterData && !this.state.filterData) {
+    	var designers = nextProps.filterData.designers.map(function(designer) {
+      	return designer.toJSON();
+    	});
+    	var classes = nextProps.filterData.classes.map(function(classObj) {
+      	return classObj.toJSON();
+    	});
+    	filterData = {designers: designers, classes: classes};
+  	}
+    
 		this.setState({
+  		subpage: nextProps.router.params.subpage,
 			page: nextPage,
+			search: nextProps.router.params.subpage ? null : this.state.search,
 			products: products,
+			filterData: filterData ? filterData : this.state.filterData,
 			updatedProduct: nextProps.updatedProduct,
 			expandedProducts: expandedProducts,
 			isReloading: currentlyReloading
 		});	
+		
 	}
 	
   render() {
@@ -160,59 +254,62 @@ class Products extends Component {
 				return productRows;
 	    });
 		}
+		
+		// Get sort column name without sort direction
 		let sortColumn = '';
 		sortColumn = (this.state.sort.includes('date-added')) ? 'date-added' : sortColumn;
 		sortColumn = (this.state.sort.includes('price')) ? 'price' : sortColumn;
 		sortColumn = (this.state.sort.includes('stock')) ? 'stock' : sortColumn;
-/*
-		const filterVendors = [
-		  { key: 0, value: 'all', text: 'All' },
-		  { key: 1, value: 'ea', text: 'EMILY AMEY' },
-		  { key: 2, value: 'rj', text: 'ROSEDALE JEWELRY' }
-	  ];
+		
+		// Populate filter selects from state
+		let filterDesigners = [{ key: 0, value: 'all', text: 'All' }];
+		let filterClass = [{ key: 0, value: 'all', text: 'All' }];
 		const filterPrice = [
 		  { key: 0, value: 'all', text: 'All' },
-		  { key: 1, value: '1', text: '$0-$100' },
-      { key: 2, value: '2', text: '$101-$1,000' },
-      { key: 3, value: '3', text: '$1,001-$10,000' },
-      { key: 4, value: '4', text: '$10,001-$50,000' },
+		  { key: 1, value: '0-150', text: '$0-$150' },
+      { key: 2, value: '151-350', text: '$151-$350' },
+      { key: 3, value: '351-550', text: '$351-$550' },
+      { key: 4, value: '551-850', text: '$551-$850' },
+      { key: 5, value: '851-1500', text: '$851-$1,500' },
+      { key: 6, value: '1500', text: '$1,500+' },
 	  ];
-		const filterClass = [
-		  { key: 0, value: 'All', text: 'All' },
-		  { key: 1, value: 'Rings', text: 'Rings' },
-		  { key: 2, value: 'Necklaces', text: 'Necklaces' },
-		  { key: 3, value: 'Earrings', text: 'Earrings' },
-		  { key: 4, value: 'Bracelet', text: 'Bracelet' },
-		  { key: 5, value: 'Bags', text: 'Bags' },
-		  { key: 6, value: 'Scarves', text: 'Scarves' },
-		  { key: 7, value: 'Home', text: 'Home' }
-	  ];
-*/
+	  let defaultDesigner = scope.props.location.query.designer ? scope.props.location.query.designer : 'all';
+	  let defaultClass = scope.props.location.query.class ? scope.props.location.query.class : 'all';
+	  let defaultPrice = scope.props.location.query.price ? scope.props.location.query.price : 'all';
+	  if (this.state.filterData) {
+  		this.state.filterData.designers.map(function(designer, i) {
+    		return filterDesigners.push({ key: designer.designerId, value: designer.name, text: designer.name });
+  		});
+  		this.state.filterData.classes.map(function(classObj, i) {
+    		return filterClass.push({ key: i+1, value: classObj.name, text: classObj.name });
+  		});
+		}
+		
     const searchHeader = this.state.search ? <Header as='h2'>{totalProducts} results for "{this.props.location.query.q}"</Header> : null;
     const dateIcon = this.state.sort === 'date-added-desc' || this.state.sort === 'date-added-asc' ? null : <Icon disabled name='caret down' />;
     const priceIcon = this.state.sort === 'price-desc' || this.state.sort === 'price-asc' ? null : <Icon disabled name='caret down' />;
     const stockIcon = this.state.sort === 'stock-desc' || this.state.sort === 'stock-asc' ? null : <Icon disabled name='caret down' />;
     return (
 			<Grid.Column width='16'>
-				<ProductsNav pathname={this.props.location.pathname} query={this.props.location.query} />
-			  {/*<Segment attached basic size='small' className='toolbar-products'>
+				<ProductsNav key={this.props.location.pathname} pathname={this.props.location.pathname} query={this.props.location.query} />
+			  <Segment attached basic size='small' className='toolbar-products'>
           <Form className='filter-form' size='tiny'>
             <Form.Group inline>
               <Form.Field>
-                <label>Vendor:</label>
-                <Select options={filterVendors} defaultValue={filterVendors[0].value} />
+                <label>Designer:</label>
+                <Select options={filterDesigners} defaultValue={defaultDesigner} onChange={this.handleFilterDesignerChange}/>
               </Form.Field>
               <Form.Field>
                 <label>Price:</label>
-                <Select options={filterPrice} defaultValue={filterPrice[0].value} />
+                <Select options={filterPrice} defaultValue={defaultPrice} onChange={this.handleFilterPriceChange} />
               </Form.Field>
               <Form.Field>
                 <label>Class:</label>
-                <Select options={filterClass} defaultValue={filterClass[0].value} />
+                <Select options={filterClass} defaultValue={defaultClass} onChange={this.handleFilterClassChange} />
               </Form.Field>
             </Form.Group>
           </Form>
-        </Segment>*/}
+        </Segment>
 				{searchHeader}
 				{error}
 	      <Dimmer active={isLoadingProducts} inverted>

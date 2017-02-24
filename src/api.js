@@ -20,12 +20,20 @@ export const getOrders = (token, page) => Parse.Cloud.run('getOrders',
   }
 );
 
-export const getProducts = (token, page, sort, search) => Parse.Cloud.run('getProducts', 
+export const getProducts = (token, subpage, page, sort, search, filters) => Parse.Cloud.run('getProducts', 
   {
     sessionToken: token,
+    subpage,
     page,
     sort,
-    search
+    search,
+    filters
+  }
+);
+
+export const getProductFilters = (token) => Parse.Cloud.run('getProductFilters', 
+  {
+    sessionToken: token
   }
 );
 
@@ -58,6 +66,7 @@ export default {
 	loadSession,
 	getOrders,
 	getProducts,
+	getProductFilters,
 	reloadProduct,
 	saveProductStatus,
 	getDesigners
