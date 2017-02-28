@@ -207,13 +207,6 @@ class Products extends Component {
     } else {
       products = nextProps.products;
     }
-    
-/*
-  	if (nextPage !== this.state.page || nextProps.router.params.subpage !== this.state.subpage) {
-    	expandedProducts = [];
-    	this.props.getProducts(this.props.token, nextProps.router.params.subpage, nextPage, this.state.sort, this.state.filters);
-  	}
-*/
   	
   	// Process filters data
   	var filterData = null;
@@ -230,13 +223,18 @@ class Products extends Component {
 		this.setState({
   		subpage: nextProps.router.params.subpage,
 			page: nextPage,
-			search: nextProps.router.params.subpage ? null : this.state.search,
+			search: nextProps.router.params.subpage !== 'search' ? null : this.state.search,
 			products: products,
 			filterData: filterData ? filterData : this.state.filterData,
 			updatedProduct: nextProps.updatedProduct,
 			expandedProducts: expandedProducts,
 			isReloading: currentlyReloading
 		});	
+		
+  	if (nextPage !== this.state.page || nextProps.router.params.subpage !== this.state.subpage) {
+    	expandedProducts = [];
+    	this.props.getProducts(this.props.token, nextProps.router.params.subpage, nextPage, this.state.sort, this.state.search, this.state.filters);
+  	}
 		
 	}
 	
@@ -285,14 +283,15 @@ class Products extends Component {
   		});
 		}
 		
-    const searchHeader = this.state.search ? <Header as='h2'>{totalProducts} results for "{this.props.location.query.q}"</Header> : null;
+    const searchHeader = this.state.search ? <Header as='h2'>{totalProducts} results for "{this.state.search}"</Header> : null;
+    const filterBarClassNames = this.state.search ? 'toolbar-products' : 'toolbar-products hidden';
     const dateIcon = this.state.sort === 'date-added-desc' || this.state.sort === 'date-added-asc' ? null : <Icon disabled name='caret down' />;
     const priceIcon = this.state.sort === 'price-desc' || this.state.sort === 'price-asc' ? null : <Icon disabled name='caret down' />;
     const stockIcon = this.state.sort === 'stock-desc' || this.state.sort === 'stock-asc' ? null : <Icon disabled name='caret down' />;
     return (
 			<Grid.Column width='16'>
 				<ProductsNav key={this.props.location.pathname} pathname={this.props.location.pathname} query={this.props.location.query} />
-			  <Segment attached basic size='small' className='toolbar-products'>
+			  <Segment attached basic size='small' className={filterBarClassNames}>
           <Form className='filter-form' size='tiny'>
             <Form.Group inline>
               <Form.Field>
@@ -310,11 +309,11 @@ class Products extends Component {
             </Form.Group>
           </Form>
         </Segment>
-				{searchHeader}
 				{error}
 	      <Dimmer active={isLoadingProducts} inverted>
 	        <Loader inverted>Loading</Loader>
 	      </Dimmer>
+	      {searchHeader}
 		    <Table className='products-table' sortable>
 		      <Table.Header>
 		        <Table.Row>
