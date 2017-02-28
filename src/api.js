@@ -13,10 +13,13 @@ export const logout = (token) => Parse.User.logOut( token );
 
 export const loadSession = (token) => Parse.User.become( token );
 
-export const getOrders = (token, page) => Parse.Cloud.run('getOrders', 
+export const getOrders = (token, subpage, page, sort, search) => Parse.Cloud.run('getOrders', 
   {
     sessionToken: token,
-    page
+    subpage,
+    page,
+    sort,
+    search
   }
 );
 

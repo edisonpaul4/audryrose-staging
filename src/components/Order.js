@@ -12,7 +12,7 @@ class Order extends Component {
     this.handleToggleClick = this.handleToggleClick.bind(this);
   }
 	handleToggleClick(orderId) {
-		this.props.onToggle(orderId);
+		this.props.handleToggleClick(orderId);
 	}
 	render() {
 		// let labels = this.props.data.labels.map(function(label, i) {

@@ -11,7 +11,8 @@
   white-space: nowrap;
 }
 
-table .variant-row {
+table .variant-row,
+table .order-product-row {
   border-top: none !important;
 }
 
