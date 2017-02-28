@@ -173,7 +173,6 @@ class Orders extends Component {
     const dateIcon = this.state.sort === 'date-added-desc' || this.state.sort === 'date-added-asc' ? null : <Icon disabled name='caret down' />;
     const totalIcon = this.state.sort === 'total-desc' || this.state.sort === 'total-asc' ? null : <Icon disabled name='caret down' />;
 		
-		console.log(this.props.location.query)
     return (
 			<Grid.Column width='16'>
 				<OrdersNav key={this.props.location.pathname} pathname={this.props.location.pathname} query={this.props.location.query} />
