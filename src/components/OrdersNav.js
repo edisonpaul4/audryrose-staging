@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router';
-import { Menu, Label } from 'semantic-ui-react';
+import { Menu, Label, Form } from 'semantic-ui-react';
 
 class OrdersNav extends Component {
 	// handleItemClick(event) {
@@ -11,6 +11,7 @@ class OrdersNav extends Component {
 	// }
 	render() {
 		const pathName = this.props.pathname;
+		const search = this.props.query.q ? this.props.query.q : '';
     return (
 	    <Menu pointing secondary>
 	      <Menu.Item 
@@ -55,6 +56,18 @@ class OrdersNav extends Component {
 					link>
 					Fulfilled <Label horizontal>23</Label>
 				</Menu.Item>
+        <Menu.Menu position='right'>
+          <Menu.Item fitted className='subnav-search'>
+            <Form action='/orders/search' method='get' size='small'>
+              <Form.Input 
+                action={{ icon: 'search', basic: true, size: 'small' }} 
+                name='q' 
+                defaultValue={search} 
+                placeholder='Search by name, order id, product, email ...' 
+              />
+            </Form>
+          </Menu.Item>
+        </Menu.Menu>
 	    </Menu>
     );
   }
