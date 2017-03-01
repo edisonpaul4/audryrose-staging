@@ -25,12 +25,15 @@ class Products extends Component {
 			products: null,
 			filterData: null,
 			updatedProduct: null,
+			updatedVariant: null,
 			expandedProducts: [],
-			isReloading: []
+			isReloading: [],
+			isSavingVariants: []
     };
     this.handleToggleClick = this.handleToggleClick.bind(this);
     this.handlePaginationClick = this.handlePaginationClick.bind(this);
     this.handleReloadClick = this.handleReloadClick.bind(this);
+    this.handleSaveVariantClick = this.handleSaveVariantClick.bind(this);
     this.handleStatusChange = this.handleStatusChange.bind(this);
     this.handleFilterDesignerChange = this.handleFilterDesignerChange.bind(this);
     this.handleFilterPriceChange = this.handleFilterPriceChange.bind(this);
@@ -81,6 +84,18 @@ class Products extends Component {
     	isReloading: currentlyReloading
   	});
 		this.props.reloadProduct(this.props.token, productId);
+	}
+	
+	handleSaveVariantClick(objectId, inventory) {
+		let currentlySaving = this.state.isSavingVariants;
+		const index = currentlySaving.indexOf(objectId);
+		if (index < 0) {
+			currentlySaving.push(objectId);
+		}
+  	this.setState({
+    	isSavingVariants: currentlySaving
+  	});
+		this.props.saveVariant(this.props.token, objectId, inventory);
 	}
 	
 	handleSortClick(sort) {
@@ -207,6 +222,15 @@ class Products extends Component {
     } else {
       products = nextProps.products;
     }
+    
+    let isSavingVariants = this.state.isSavingVariants;
+  	if (nextProps.updatedVariant) {
+    	const updatedVariantJSON = nextProps.updatedVariant.toJSON();
+    	if (isSavingVariants.length) {
+      	const index = isSavingVariants.indexOf(updatedVariantJSON.objectId);
+        if (index >= 0) isSavingVariants.splice(index, 1);
+      }
+    }
   	
   	// Process filters data
   	var filterData = null;
@@ -219,7 +243,6 @@ class Products extends Component {
     	});
     	filterData = {designers: designers, classes: classes};
   	}
-    
 		this.setState({
   		subpage: nextProps.router.params.subpage,
 			page: nextPage,
@@ -227,8 +250,10 @@ class Products extends Component {
 			products: products,
 			filterData: filterData ? filterData : this.state.filterData,
 			updatedProduct: nextProps.updatedProduct,
+			updatedVariant: nextProps.updatedVariant,
 			expandedProducts: expandedProducts,
-			isReloading: currentlyReloading
+			isReloading: currentlyReloading,
+			isSavingVariants: isSavingVariants
 		});	
 		
   	if (nextPage !== this.state.page || nextProps.router.params.subpage !== this.state.subpage) {
@@ -247,8 +272,30 @@ class Products extends Component {
   			let productJSON = productRow.toJSON();
   			let isReloading = (scope.state.isReloading.indexOf(productJSON.productId) >= 0) ? true : false;
   			let expanded = (scope.state.expandedProducts.indexOf(productJSON.productId) >= 0) ? true : false;
-				productRows.push(<Product data={productJSON} expanded={expanded} key={`${productJSON.productId}-1`} isReloading={isReloading} handleToggleClick={scope.handleToggleClick} handleStatusChange={scope.handleStatusChange} />);
-				if (expanded) productRows.push(<ProductDetails data={productJSON} expanded={expanded} key={`${productJSON.productId}-2`} isReloading={isReloading} handleReloadClick={scope.handleReloadClick} />);
+				productRows.push(
+				  <Product 
+				    data={productJSON} 
+				    expanded={expanded} 
+				    key={`${productJSON.productId}-1`} 
+				    isReloading={isReloading} 
+				    handleToggleClick={scope.handleToggleClick} 
+				    handleStatusChange={scope.handleStatusChange} 
+			    />
+		    );
+				if (expanded) {
+  				productRows.push(
+  				  <ProductDetails 
+  				    data={productJSON} 
+  				    expanded={expanded} 
+  				    key={`${productJSON.productId}-2`} 
+  				    isReloading={isReloading} 
+  				    handleReloadClick={scope.handleReloadClick} 
+  				    handleSaveVariantClick={scope.handleSaveVariantClick} 
+  				    savingVariants={scope.state.isSavingVariants} 
+  				    updatedVariant={scope.state.updatedVariant} 
+				    />
+			    );
+				}
 				return productRows;
 	    });
 		}

@@ -5,6 +5,45 @@ import numeral from 'numeral';
 // import moment from 'moment';
 
 class VariantRow extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      variantData: this.props.data,
+      inventory: this.props.data.inventory_value,
+      inventoryEdited: false,
+      inventorySaved: false
+    };
+    this.handleInventoryChange = this.handleInventoryChange.bind(this);
+    this.handleSaveVariantClick = this.handleSaveVariantClick.bind(this);
+  }
+  handleInventoryChange(e, {value}) {
+    if (parseFloat(value) !== parseFloat(this.props.data.inventory_value)) {
+      this.setState({
+        inventory: parseFloat(value),
+        inventoryEdited: true
+      });
+    } else {
+      this.setState({
+        inventory: parseFloat(value),
+        inventoryEdited: false
+      });
+    }
+  }
+	handleSaveVariantClick(e, {value}) {
+		this.props.handleSaveVariantClick(this.props.data.objectId, this.state.inventory);
+	}
+	componentWillReceiveProps(nextProps) {
+  	if (nextProps.updatedVariant) {
+    	let updatedVariantJSON = nextProps.updatedVariant.toJSON();
+    	if (this.state.variantData.objectId === updatedVariantJSON.objectId) {
+      	this.setState({
+        	variantData: updatedVariantJSON,
+        	inventoryEdited: false,
+        	inventorySaved: true
+      	});
+      }
+  	}
+	}
 	render() {  	
 		const data = this.props.data;
 		// Create an array of other options values
@@ -18,18 +57,21 @@ class VariantRow extends Component {
 		let price = this.props.basePrice;
 		if (this.props.adjuster && this.props.adjuster === 'absolute') price = this.props.adjusterValue;
 		if (this.props.adjuster && this.props.adjuster === 'relative') price += this.props.adjusterValue;
+		
+		const saveButton = this.state.inventoryEdited ? <Button content='Save' size='mini' primary compact loading={this.props.isSaving} disabled={this.props.isSaving} onClick={this.handleSaveVariantClick} /> : null;
     return (
-      <Table.Row>
+      <Table.Row warning={this.state.inventoryEdited ? true: false} positive={this.state.inventorySaved ? true: false} disabled={this.props.isSaving}>
         <Table.Cell>{data.styleNumber ? data.styleNumber : ''}</Table.Cell>
         <Table.Cell>{data.color_value ? data.color_value : ''}</Table.Cell>
         <Table.Cell>{data.size_value ? data.size_value : 'OS'}</Table.Cell>
         <Table.Cell>{otherOptions ? otherOptions.join(', ') : null}</Table.Cell>
-				<Table.Cell><Input type='number' transparent defaultValue={0} /></Table.Cell>
+				<Table.Cell><Input type='number' transparent defaultValue={data.inventory_level} onChange={this.handleInventoryChange} min={0} disabled={this.props.isSaving} /></Table.Cell>
 				<Table.Cell className='right aligned'>{numeral(price).format('$0,0.00')}</Table.Cell>
 				<Table.Cell className='right aligned'>
+				  {saveButton}
           <Button.Group color='grey' size='mini' compact>
-            <Button content='Order' />
-            <Dropdown floating button compact className='icon'>
+            <Button content='Order' disabled={this.props.isSaving} />
+            <Dropdown floating button compact className='icon' disabled={this.props.isSaving}>
               <Dropdown.Menu>
                 <Dropdown.Item icon='exchange' text='Resize' />
                 <Dropdown.Item icon='hide' text='Hide' />
@@ -43,11 +85,17 @@ class VariantRow extends Component {
 }
 
 class VariantsTable extends Component {
+  constructor(props) {
+    super(props);
+    this.handleSaveVariantClick = this.handleSaveVariantClick.bind(this);
+  }
+	handleSaveVariantClick(objectId, inventory) {
+		this.props.handleSaveVariantClick(objectId, inventory);
+	}
 	render() {  	
   	var scope = this;
 		const variants = this.props.variants;
 		// Sort the data
-// 		console.log(variants);
 		if (variants.length && variants[0].size_value) {
       variants.sort(function(a, b) {
         return parseFloat(a.size_value) - parseFloat(b.size_value);
@@ -59,6 +107,10 @@ class VariantsTable extends Component {
 			variants.map(function(variantRow, i) {
   			let adjuster = null;
   			let adjusterValue = 0;
+  			if (scope.props.updatedVariant) {
+    			let updatedVariantRowJSON = scope.props.updatedVariant.toJSON();
+    			if (updatedVariantRowJSON.objectId === variantRow.objectId) variantRow = updatedVariantRowJSON;
+  			}
   			if (variantRow.variantOptions) {
     			variantRow.variantOptions.map(function(variantOption, j) {
       			if (variantOption.adjuster) adjuster = variantOption.adjuster;
@@ -66,7 +118,19 @@ class VariantsTable extends Component {
       			return variantOption;
     			});
   			}
-				variantRows.push(<VariantRow data={variantRow} basePrice={scope.props.basePrice} adjuster={adjuster} adjusterValue={adjusterValue} key={i} />);
+  			let isSaving = scope.props.savingVariants.indexOf(variantRow.objectId) >= 0 ? true : false;
+				variantRows.push(
+				  <VariantRow 
+				    data={variantRow} 
+				    basePrice={scope.props.basePrice} 
+				    adjuster={adjuster} 
+				    adjusterValue={adjusterValue} 
+				    key={i} 
+				    handleSaveVariantClick={scope.handleSaveVariantClick} 
+				    isSaving={isSaving} 
+				    updatedVariant={scope.props.updatedVariant}
+			    />
+		    );
 				return variantRows;
 	    });
 		}
@@ -142,9 +206,13 @@ class ProductDetails extends Component {
       showEditor: false
     };
     this.handleReloadClick = this.handleReloadClick.bind(this);
+    this.handleSaveVariantClick = this.handleSaveVariantClick.bind(this);
   }
 	handleReloadClick(productId) {
 		this.props.handleReloadClick(productId);
+	}
+	handleSaveVariantClick(objectId, inventory) {
+		this.props.handleSaveVariantClick(objectId, inventory);
 	}
 	handleToggleEditorClick() {
   	const showEditor = !this.state.showEditor;
@@ -184,12 +252,31 @@ class ProductDetails extends Component {
       	    if (variantItem.color_value === variantGroup) variantsInGroup.push(variantItem);
       	    return variantItem;
     	    });
-    	    variantsTables.push(<VariantsTable variants={variantsInGroup} title={variantGroup} basePrice={scope.props.data.price} key={i} />);
+    	    variantsTables.push(
+    	      <VariantsTable 
+    	        variants={variantsInGroup} 
+    	        title={variantGroup} 
+    	        basePrice={scope.props.data.price} 
+    	        key={i} 
+    	        handleSaveVariantClick={scope.handleSaveVariantClick} 
+    	        savingVariants={scope.props.savingVariants} 
+    	        updatedVariant={scope.props.updatedVariant}
+  	        />
+	        );
     	    return variantGroup;
   	    });
 	    } else {
   	    // If no groupings, create one VariantsTable
-  	    variantsTables.push(<VariantsTable variants={variants} basePrice={this.props.data.price} key={1} />);
+  	    variantsTables.push(
+  	      <VariantsTable 
+  	        variants={variants} 
+  	        basePrice={scope.props.data.price} 
+  	        key={1} 
+  	        handleSaveVariantClick={scope.handleSaveVariantClick} 
+  	        savingVariants={scope.props.savingVariants} 
+  	        updatedVariant={scope.props.updatedVariant}
+	        />
+        );
 	    }
 		}
 // 		const productEditor = this.state.showEditor ? <ProductEditor/> : null;

@@ -82,6 +82,22 @@ const products = (state = initialState, action) => {
         ...state,
         isReloading: false
       }
+      
+    case 'VARIANT_SAVE_REQUEST':
+      return {
+        ...state
+      }
+
+    case 'VARIANT_SAVE_SUCCESS':
+      return {
+        ...state,
+        updatedVariant: action.res
+      };
+
+    case 'VARIANT_SAVE_FAILURE':
+      return {
+        ...state
+      }
 			
     default:
       return state;

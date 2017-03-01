@@ -46,7 +46,7 @@ class Order extends Component {
 		const customerName = <a href={customerLink} target='_blank'>{data.billing_address.first_name} {data.billing_address.last_name} <Icon link name='configure' /></a>
 		const orderLink = 'https://www.loveaudryrose.com/manage/orders/' + data.orderId;
 		const orderId = <a href={orderLink} target='_blank'>{data.orderId} <Icon link name='external' /></a>
-		const orderNote = data.customer_message ? <Popup trigger={<Icon name='sticky note outline' link />} on='click' content={data.customer_message} positioning='top center' /> : null;
+		const orderNote = data.customer_message ? <Popup trigger={<Icon name='sticky note outline' link />} on='click' content={data.customer_message} position='top center' /> : null;
     return (
       <Table.Row warning={data.customer_message ? true : undefined}>
         <Table.Cell verticalAlign='top'><Checkbox /></Table.Cell>

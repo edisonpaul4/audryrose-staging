@@ -5,7 +5,7 @@ const BASE_URL = process.env.REACT_APP_SERVER_URL;
 Parse.initialize(config.parseAppId);
 Parse.serverURL = BASE_URL;
 
-// export const signup = (username, password) => Parse.User.signUp( username, password );
+export const signup = (username, password) => Parse.User.signUp( username, password );
 
 export const login = (username, password) => Parse.User.logIn( username, password );
 
@@ -55,6 +55,14 @@ export const saveProductStatus = (token, productId, status) => Parse.Cloud.run('
   }
 );
 
+export const saveVariant = (token, objectId, inventory) => Parse.Cloud.run('saveVariant', 
+  {
+    sessionToken: token,
+    objectId,
+    inventory
+  }
+);
+
 export const getDesigners = (token, page) => Parse.Cloud.run('getDesigners', 
   {
     sessionToken: token,
@@ -63,7 +71,7 @@ export const getDesigners = (token, page) => Parse.Cloud.run('getDesigners',
 );
 
 export default {
-//   signup,
+  signup,
   login,
 	logout,
 	loadSession,
@@ -72,5 +80,6 @@ export default {
 	getProductFilters,
 	reloadProduct,
 	saveProductStatus,
+	saveVariant,
 	getDesigners
 }
