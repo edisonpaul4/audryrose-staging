@@ -18,7 +18,8 @@ const orders = (state = initialState, action) => {
         isLoadingOrders: false,
         orders: action.res.orders,
         totalPages: action.res.totalPages,
-        totalOrders: action.res.totalOrders
+        totalOrders: action.res.totalOrders,
+        tabCounts: action.res.tabCounts
       };
 
     case 'ORDERS_FAILURE':

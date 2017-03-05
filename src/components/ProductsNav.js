@@ -6,6 +6,7 @@ class ProductsNav extends Component {
 	render() {
 		const pathName = this.props.pathname;
 		const search = this.props.query.q ? this.props.query.q : '';
+		const tabCounts = this.props.tabCounts;
     return (
       <Grid>
         <Grid.Row>
@@ -16,35 +17,35 @@ class ProductsNav extends Component {
       					to='/products/in-stock' 
       					active={pathName === '/products' || pathName === '/products/in-stock'} 
       					link>
-      					In Stock<Label horizontal>23</Label>
+      					In Stock<Label horizontal>{tabCounts ? tabCounts.inStock : null}</Label>
       				</Menu.Item>
       				<Menu.Item 
       					as={Link} 
       					to='/products/need-to-order' 
       					active={pathName === '/products/need-to-order'} 
       					link>
-      					Need To Order<Label horizontal>23</Label>
+      					Need To Order<Label horizontal>{tabCounts ? tabCounts.needToOrder : null}</Label>
       				</Menu.Item>
       				<Menu.Item 
       					as={Link} 
       					to='/products/waiting-to-receive' 
       					active={pathName === '/products/waiting-to-receive'} 
       					link>
-      					Waiting To Receive<Label horizontal>23</Label>
+      					Waiting To Receive<Label horizontal>{tabCounts ? tabCounts.waitingToReceive : null}</Label>
       				</Menu.Item>
       				<Menu.Item 
       					as={Link} 
       					to='/products/being-resized' 
       					active={pathName === '/products/being-resized'} 
       					link>
-      					Being Resized<Label horizontal>23</Label>
+      					Being Resized<Label horizontal>{tabCounts ? tabCounts.beingResized : null}</Label>
       				</Menu.Item>
       				<Menu.Item
       					as={Link} 
       					to='/products/all' 
       					active={pathName === '/products/all'} 
       					link>
-      					All<Label horizontal>23</Label>
+      					All<Label horizontal>{tabCounts ? tabCounts.all : null}</Label>
       				</Menu.Item>
               <Menu.Menu position='right'>
                 <Menu.Item fitted className='subnav-search'>

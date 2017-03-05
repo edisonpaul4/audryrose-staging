@@ -10,6 +10,7 @@ class Products extends Component {
   constructor(props) {
     super(props);
     let subpage = this.props.router.params.subpage;
+    if (!subpage) subpage = 'in-stock';
   	let page = parseFloat(this.props.location.query.page);
   	if (!page) page = 1;
   	let sort = this.props.location.query.sort;
@@ -264,7 +265,7 @@ class Products extends Component {
 	}
 	
   render() {
-		const { error, isLoadingProducts, totalPages, totalProducts } = this.props;
+		const { error, isLoadingProducts, totalPages, totalProducts, tabCounts } = this.props;
 		let scope = this;
 		let productRows = [];
 		if (this.state.products) {
@@ -337,7 +338,7 @@ class Products extends Component {
     const stockIcon = this.state.sort === 'stock-desc' || this.state.sort === 'stock-asc' ? null : <Icon disabled name='caret down' />;
     return (
 			<Grid.Column width='16'>
-				<ProductsNav key={this.props.location.pathname} pathname={this.props.location.pathname} query={this.props.location.query} />
+				<ProductsNav key={this.props.location.pathname} pathname={this.props.location.pathname} query={this.props.location.query} tabCounts={tabCounts} />
 			  <Segment attached basic size='small' className={filterBarClassNames}>
           <Form className='filter-form' size='tiny'>
             <Form.Group inline>

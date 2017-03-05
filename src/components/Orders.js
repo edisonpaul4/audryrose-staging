@@ -151,7 +151,7 @@ class Orders extends Component {
 	}
 	
   render() {
-		const { error, isLoadingOrders, totalPages, totalOrders } = this.props;
+		const { error, isLoadingOrders, totalPages, totalOrders, tabCounts } = this.props;
 		let scope = this;
 		let orderRows = [];
 		if (this.state.orders) {
@@ -175,7 +175,7 @@ class Orders extends Component {
 		
     return (
 			<Grid.Column width='16'>
-				<OrdersNav key={this.props.location.pathname} pathname={this.props.location.pathname} query={this.props.location.query} />
+				<OrdersNav key={this.props.location.pathname} pathname={this.props.location.pathname} query={this.props.location.query} tabCounts={tabCounts} />
 				{searchHeader}
 				{error}
 	      <Dimmer active={isLoadingOrders} inverted>

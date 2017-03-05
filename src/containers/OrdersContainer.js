@@ -8,6 +8,7 @@ const select = state => ({
 	orders: state.orders.orders,
 	totalPages: state.orders.totalPages,
 	totalOrders: state.orders.totalOrders,
+	tabCounts: state.orders.tabCounts,
 	error: state.error
 });
 

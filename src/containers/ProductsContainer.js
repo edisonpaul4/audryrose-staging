@@ -11,6 +11,7 @@ const select = state => ({
 	updatedVariant: state.products.updatedVariant,
 	totalPages: state.products.totalPages,
 	totalProducts: state.products.totalProducts,
+	tabCounts: state.products.tabCounts,
 	error: state.error
 });
 
