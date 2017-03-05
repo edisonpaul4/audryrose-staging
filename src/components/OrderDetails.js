@@ -15,16 +15,29 @@ class ProductRow extends Component {
 				return options;
 	    });
 		}
+		const productName = data.name ? data.name : '';
+		const productUrl = '/products/search?q=' + data.product_id;
+		const productLink = data.variant ? <a href={productUrl}>{productName}</a> : productName;
+		
+		const alwaysResize = data.variant ? data.variant.alwaysResize : '';
+		
+		const inventory = data.variant ? data.variant.inventory_level : '';
+		
+		const designerName = data.variant ? data.variant.designer ? data.variant.designer.name : '' : '';
 		
     return (
       <Table.Row>
-        <Table.Cell>{data.name ? data.name : ''}</Table.Cell>
-        <Table.Cell>{options ? options.join('/n') : ''}</Table.Cell>
+        <Table.Cell>{productLink}</Table.Cell>
+        <Table.Cell>
+          {options.map(function(option, i) {
+            return <span key={i}>{option}<br/></span>;
+          })}
+        </Table.Cell>
         <Table.Cell>{data.quantity ? data.quantity : ''}</Table.Cell>
         <Table.Cell></Table.Cell>
-				<Table.Cell></Table.Cell>
-				<Table.Cell></Table.Cell>
-				<Table.Cell></Table.Cell>
+				<Table.Cell>{alwaysResize}</Table.Cell>
+				<Table.Cell>{inventory}</Table.Cell>
+				<Table.Cell>{designerName}</Table.Cell>
 				<Table.Cell className='right aligned'>
           <Button.Group color='grey' size='mini' compact>
             <Button icon='shipping' content='Ship Item' />
@@ -65,7 +78,6 @@ class OrderDetails extends Component {
 	}
 	render() {
   	const showProducts = this.props.expanded ? true : false;
-  	console.log(showProducts);
   	const products = this.props.data.orderProducts;
 		var rowClass = classNames(
 			{
@@ -110,8 +122,8 @@ class OrderDetails extends Component {
                     <Table.HeaderCell>Quantity</Table.HeaderCell>
                     <Table.HeaderCell>Resizable</Table.HeaderCell>
                     <Table.HeaderCell>Always Resize</Table.HeaderCell>
-                    <Table.HeaderCell>Stock</Table.HeaderCell>
-                    <Table.HeaderCell>Vendor</Table.HeaderCell>
+                    <Table.HeaderCell>Inventory</Table.HeaderCell>
+                    <Table.HeaderCell>Designer</Table.HeaderCell>
                     <Table.HeaderCell className='right aligned'>Actions</Table.HeaderCell>
                   </Table.Row>
                 </Table.Header>
