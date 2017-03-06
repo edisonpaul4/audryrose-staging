@@ -4,7 +4,7 @@ import Designers from '../components/Designers';
 
 const select = state => ({
   token: state.auth.token,
-	isLoadingDesigners: state.orders.isLoadingDesigners,
+	isLoadingDesigners: state.designers.isLoadingDesigners,
 	designers: state.designers.designers,
 	totalPages: state.designers.totalPages,
 	error: state.error

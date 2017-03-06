@@ -3,7 +3,7 @@ const initialState = {
 	designers: null
 };
 
-const orders = (state = initialState, action) => {
+const designers = (state = initialState, action) => {
   switch(action.type) {
 
     case 'DESIGNERS_REQUEST':
@@ -31,4 +31,4 @@ const orders = (state = initialState, action) => {
   }
 }
 
-export default orders;
+export default designers;

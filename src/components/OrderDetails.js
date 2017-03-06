@@ -1,30 +1,78 @@
 import React, { Component } from 'react';
-import { Table, Button, Dropdown, Dimmer, Segment, Loader } from 'semantic-ui-react';
+import { Table, Button, Dropdown, Dimmer, Segment, Loader, Modal, List } from 'semantic-ui-react';
 import classNames from 'classnames';
 // import numeral from 'numeral';
-// import moment from 'moment';
+import moment from 'moment';
 
 class ProductRow extends Component {
 	render() {  	
-		const data = this.props.data;
+		const product = this.props.product;
+		const shipment = this.props.shipment;
 		// Create an array of other options values
 		let options = [];
-		if (data.product_options) {
-			data.product_options.map(function(option, i) {
+		if (product.product_options) {
+			product.product_options.map(function(option, i) {
 				options.push(option.display_name + ': ' + option.display_value);
 				return options;
 	    });
 		}
-		const productName = data.name ? data.name : '';
-		const productUrl = '/products/search?q=' + data.product_id;
-		const productLink = data.variant ? <a href={productUrl}>{productName}</a> : productName;
+		const productName = product.name ? product.name : '';
+		const productUrl = '/products/search?q=' + product.product_id;
+		const productLink = product.variant ? <a href={productUrl}>{productName}</a> : productName;
 		
-		const alwaysResize = data.variant ? data.variant.alwaysResize : '';
+		const alwaysResize = product.variant ? product.variant.alwaysResize : '';
 		
-		const inventory = data.variant ? data.variant.inventory_level : '';
+		const inventory = product.variant ? product.variant.inventory_level : '';
 		
-		const designerName = data.variant ? data.variant.designer ? data.variant.designer.name : '' : '';
+		const designerName = product.variant ? product.variant.designer ? product.variant.designer.name : '' : '';
 		
+		let shipmentButton = <Button icon='shipping' content='Ship Item' />;
+		if (shipment) {
+  		let totalItems = 0;
+  		shipment.items.map(function(item) {
+    		totalItems += item.quantity;
+    		return totalItems;
+  		});
+  		shipmentButton = 
+		    <Modal trigger={<Button icon='shipping' content='View Shipment' />} size='small' closeIcon='close'>
+          <Modal.Header>{totalItems} Item{totalItems > 1 ? 's' : ''} in Shipment</Modal.Header>
+          <Modal.Content image>
+            <Modal.Description>
+              <List relaxed>
+                  <List.Item>
+                    <List.Header>Date Shipped</List.Header>
+                    {moment(shipment.date_created.iso).calendar()}<br/>
+                  </List.Item>
+                  <List.Item>
+                    <List.Header>ID</List.Header>
+                    {shipment.shipmentId}<br/>
+                  </List.Item>
+                  <List.Item>
+                    <List.Header>Address</List.Header>
+                    {shipment.shipping_address.first_name} {shipment.shipping_address.last_name} {shipment.company}<br/>
+                    {shipment.shipping_address.street_1} {shipment.shipping_address.street_2}<br/>
+                    {shipment.shipping_address.city}, {shipment.shipping_address.state} {shipment.shipping_address.zip} {shipment.shipping_address.country}<br/>
+                    {shipment.shipping_address.email}<br/>
+                    {shipment.shipping_address.phone !== 'undefined' ? shipment.shipping_address.phone : null}<br/>
+                  </List.Item>
+                  <List.Item>
+                    <List.Header>Shipping Provider</List.Header>
+                    {shipment.shipping_provider}<br/>
+                  </List.Item>
+                  <List.Item>
+                    <List.Header>Tracking Carrier</List.Header>
+                    {shipment.tracking_carrier}<br/>
+                  </List.Item>
+                  <List.Item>
+                    <List.Header>Tracking Number</List.Header>
+                    {shipment.tracking_number}<br/>
+                  </List.Item>
+              </List>
+            </Modal.Description>
+          </Modal.Content>
+        </Modal>;
+	  }
+
     return (
       <Table.Row>
         <Table.Cell>{productLink}</Table.Cell>
@@ -33,21 +81,21 @@ class ProductRow extends Component {
             return <span key={i}>{option}<br/></span>;
           })}
         </Table.Cell>
-        <Table.Cell>{data.quantity ? data.quantity : ''}</Table.Cell>
+        <Table.Cell>{product.quantity ? product.quantity : ''}</Table.Cell>
         <Table.Cell></Table.Cell>
 				<Table.Cell>{alwaysResize}</Table.Cell>
 				<Table.Cell>{inventory}</Table.Cell>
 				<Table.Cell>{designerName}</Table.Cell>
 				<Table.Cell className='right aligned'>
           <Button.Group color='grey' size='mini' compact>
-            <Button icon='shipping' content='Ship Item' />
-            <Dropdown floating button compact className='icon'>
+            {shipmentButton}
+            {!shipment ? <Dropdown floating button compact className='icon'>
               <Dropdown.Menu>
                 <Dropdown.Item icon='add to cart' text='Order' />
                 <Dropdown.Item icon='exchange' text='Resize' />
-                <Dropdown.Item icon='hide' text='Hide' />
               </Dropdown.Menu>
             </Dropdown>
+            : null}
           </Button.Group>
 				</Table.Cell>
       </Table.Row>
@@ -79,6 +127,7 @@ class OrderDetails extends Component {
 	render() {
   	const showProducts = this.props.expanded ? true : false;
   	const products = this.props.data.orderProducts;
+  	const shipments = this.props.data.orderShipments;
 		var rowClass = classNames(
 			{
 				'': showProducts,
@@ -96,7 +145,18 @@ class OrderDetails extends Component {
 		let productRows = [];
 		if (products) {
 			products.map(function(productRow, i) {
-				productRows.push(<ProductRow data={productRow} key={i} />);
+  			// Match an OrderShipment to this OrderProduct
+  			var shipment = null;
+  			if (shipments) {
+    			shipments.map(function(shipmentObj) {
+      			shipmentObj.items.map(function(item) {
+        			if (productRow.orderProductId === item.order_product_id) shipment = shipmentObj;
+        			return item;
+      			});
+      			return shipmentObj;
+    			});
+  			}
+				productRows.push(<ProductRow product={productRow} shipment={shipment} key={i} />);
 				return productRows;
 	    });
 		}
