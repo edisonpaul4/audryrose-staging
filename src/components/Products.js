@@ -332,7 +332,7 @@ class Products extends Component {
 		}
 		
     const searchHeader = this.state.search ? <Header as='h2'>{totalProducts} results for "{this.state.search}"</Header> : null;
-    const filterBarClassNames = this.state.search ? 'toolbar-products' : 'toolbar-products hidden';
+    const filterBarClassNames = this.state.search ? 'toolbar-products hidden' : 'toolbar-products';
     const dateIcon = this.state.sort === 'date-added-desc' || this.state.sort === 'date-added-asc' ? null : <Icon disabled name='caret down' />;
     const priceIcon = this.state.sort === 'price-desc' || this.state.sort === 'price-asc' ? null : <Icon disabled name='caret down' />;
     const stockIcon = this.state.sort === 'stock-desc' || this.state.sort === 'stock-asc' ? null : <Icon disabled name='caret down' />;
