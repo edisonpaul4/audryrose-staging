@@ -1,6 +1,5 @@
 const initialState = {
   isLoadingProducts: false,
-  isReloading: false,
 	products: null,
 	filterData: null
 };
@@ -48,40 +47,34 @@ const products = (state = initialState, action) => {
       
     case 'PRODUCT_RELOAD_REQUEST':
       return {
-        ...state,
-        isReloading: true
+        ...state
       }
 
     case 'PRODUCT_RELOAD_SUCCESS':
       return {
         ...state,
-        isReloading: false,
         updatedProduct: action.res
       };
 
     case 'PRODUCT_RELOAD_FAILURE':
       return {
-        ...state,
-        isReloading: false
+        ...state
       }
       
     case 'PRODUCT_STATUS_REQUEST':
       return {
-        ...state,
-        isReloading: true
+        ...state
       }
 
     case 'PRODUCT_STATUS_SUCCESS':
       return {
         ...state,
-        isReloading: false,
         updatedProduct: action.res
       };
 
     case 'PRODUCT_STATUS_FAILURE':
       return {
-        ...state,
-        isReloading: false
+        ...state
       }
       
     case 'VARIANT_SAVE_REQUEST':

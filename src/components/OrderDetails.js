@@ -110,13 +110,11 @@ class OrderDetails extends Component {
       showProducts: false,
       showEditor: false
     };
-//     this.handleReloadClick = this.handleReloadClick.bind(this);
+    this.handleReloadClick = this.handleReloadClick.bind(this);
   }
-/*
 	handleReloadClick(productId) {
 		this.props.handleReloadClick(productId);
 	}
-*/
 	handleToggleEditorClick() {
   	const showEditor = !this.state.showEditor;
   	
@@ -163,12 +161,12 @@ class OrderDetails extends Component {
     return (
       <Table.Row className={rowClass}>
         <Table.Cell colSpan='10' className='order-product-row'>
-          {/*<Button circular compact basic size='tiny' 
+          <Button circular compact basic size='tiny' 
             icon='refresh' 
-            content='Sync' 
-            loading={this.props.isReloading} 
-            onClick={()=>this.handleReloadClick(this.props.data.productId)} 
-          />*/}
+            content='Reload' 
+            disabled={this.props.isReloading} 
+            onClick={()=>this.handleReloadClick(this.props.data.orderId)} 
+          />
           <Dimmer.Dimmable as={Segment} vertical blurring dimmed={this.props.isReloading}>
             <Dimmer active={this.props.isReloading} inverted>
               <Loader>Loading</Loader>

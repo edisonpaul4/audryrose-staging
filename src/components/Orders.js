@@ -29,6 +29,7 @@ class Orders extends Component {
 			isReloading: []
     };
     this.handleToggleClick = this.handleToggleClick.bind(this);
+    this.handleReloadClick = this.handleReloadClick.bind(this);
     this.handlePaginationClick = this.handlePaginationClick.bind(this);
   }
 	
@@ -60,6 +61,18 @@ class Orders extends Component {
     })
 	}
 	
+	handleReloadClick(orderId) {
+		let currentlyReloading = this.state.isReloading;
+		const index = currentlyReloading.indexOf(orderId);
+		if (index < 0) {
+			currentlyReloading.push(orderId);
+		}
+  	this.setState({
+    	isReloading: currentlyReloading
+  	});
+		this.props.reloadOrder(this.props.token, orderId);
+	}
+	
 	handleSortClick(sort) {
 		this.setState({
   		sort: sort,
@@ -86,7 +99,9 @@ class Orders extends Component {
   	
   	let orders = [];
   	let currentlyReloading = this.state.isReloading;
+  	console.log(nextProps.orders)
   	if (nextProps.updatedOrder) {
+    	console.log('has updated order');
     	// If updated product exists, push it into the state products array
     	const updatedOrderJSON = nextProps.updatedOrder.toJSON();
       nextProps.orders.map(function(order, i) {
@@ -99,38 +114,18 @@ class Orders extends Component {
         return order;
       });
       
-      // If currently reloading and has successfully updated product, remove updated product
+      // If currently reloading and has successfully updated order, remove updated order
+      console.log(currentlyReloading);
     	if (currentlyReloading.length) {
       	const index = currentlyReloading.indexOf(updatedOrderJSON.orderId);
+      	console.log('no longer reloading ' + index);
         if (index >= 0) currentlyReloading.splice(index, 1);
       }
       
     } else {
       orders = nextProps.orders;
     }
-  	
-/*
-  	if (nextPage !== this.state.page) {
-  		this.setState({
-  			page: nextPage
-  		});
-    	this.props.getOrders(this.props.token, this.state.subpage, nextPage, this.state.sort, this.state.search);
-  	}
-*/
-  	
-/*
-  	// Process filters data
-  	var filterData = null;
-  	if (nextProps.filterData && !this.state.filterData) {
-    	var designers = nextProps.filterData.designers.map(function(designer) {
-      	return designer.toJSON();
-    	});
-    	var classes = nextProps.filterData.classes.map(function(classObj) {
-      	return classObj.toJSON();
-    	});
-    	filterData = {designers: designers, classes: classes};
-  	}
-*/
+    
   	const search = nextProps.router.params.subpage !== 'search' ? null : this.state.search;
   	
 		this.setState({
@@ -138,7 +133,6 @@ class Orders extends Component {
 			page: nextPage,
 			search: search,
 			orders: orders,
-// 			filterData: filterData ? filterData : this.state.filterData,
 			updatedOrder: nextProps.updatedOrder,
 			expandedOrders: expandedOrders,
 			isReloading: currentlyReloading
@@ -157,9 +151,26 @@ class Orders extends Component {
 		if (this.state.orders) {
 			this.state.orders.map(function(orderRow, i) {
   			let orderJSON = orderRow.toJSON();
+  			let isReloading = (scope.state.isReloading.indexOf(orderJSON.orderId) >= 0) ? true : false;
 				let expanded = (scope.state.expandedOrders.indexOf(orderJSON.orderId) >= 0) ? true : false;
-				orderRows.push(<Order data={orderJSON} expanded={expanded} key={`${orderJSON.orderId}-1`} handleToggleClick={scope.handleToggleClick} />);
-				if (expanded) orderRows.push(<OrderDetails data={orderJSON} expanded={expanded} key={`${orderJSON.orderId}-2`} />);
+				orderRows.push(
+				  <Order 
+				    data={orderJSON} 
+				    expanded={expanded} 
+				    key={`${orderJSON.orderId}-1`} 
+				    isReloading={isReloading} 
+				    handleToggleClick={scope.handleToggleClick} 
+			    />
+		    );
+				if (expanded) orderRows.push(
+				  <OrderDetails 
+				    data={orderJSON} 
+				    expanded={expanded} 
+				    key={`${orderJSON.orderId}-2`} 
+				    isReloading={isReloading} 
+				    handleReloadClick={scope.handleReloadClick} 
+				    />
+			    );
 				return orderRows;
 	    });
 		}

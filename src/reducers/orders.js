@@ -10,7 +10,7 @@ const orders = (state = initialState, action) => {
       return {
         ...state,
         isLoadingOrders: true
-      }
+      };
 
     case 'ORDERS_SUCCESS':
       return {
@@ -26,7 +26,23 @@ const orders = (state = initialState, action) => {
       return {
         ...state,
         isLoadingOrders: false
-      }
+      };
+      
+    case 'ORDER_RELOAD_REQUEST':
+      return {
+        ...state
+      };
+
+    case 'ORDER_RELOAD_SUCCESS':
+      return {
+        ...state,
+        updatedOrder: action.res
+      };
+
+    case 'ORDER_RELOAD_FAILURE':
+      return {
+        ...state
+      };
 			
     default:
       return state;

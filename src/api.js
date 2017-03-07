@@ -23,6 +23,13 @@ export const getOrders = (token, subpage, page, sort, search) => Parse.Cloud.run
   }
 );
 
+export const reloadOrder = (token, orderId) => Parse.Cloud.run('reloadOrder', 
+  {
+    sessionToken: token,
+    orderId
+  }
+);
+
 export const getProducts = (token, subpage, page, sort, search, filters) => Parse.Cloud.run('getProducts', 
   {
     sessionToken: token,
@@ -84,6 +91,7 @@ export default {
 	logout,
 	loadSession,
 	getOrders,
+	reloadOrder,
 	getProducts,
 	getProductFilters,
 	reloadProduct,

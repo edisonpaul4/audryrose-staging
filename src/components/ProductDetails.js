@@ -315,8 +315,8 @@ class ProductDetails extends Component {
         <Table.Cell colSpan='13' className='variant-row'>
           <Button circular compact basic size='tiny' 
             icon='refresh' 
-            content='Sync' 
-            loading={this.props.isReloading} 
+            content='Reload' 
+            disabled={this.props.isReloading} 
             onClick={()=>this.handleReloadClick(this.props.data.productId)} 
           />
           {/*<Button circular compact basic size='tiny' 
