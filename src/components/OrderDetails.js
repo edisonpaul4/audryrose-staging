@@ -22,7 +22,7 @@ class ProductRow extends Component {
 		
 		const alwaysResize = product.variant ? product.variant.alwaysResize : '';
 		
-		const inventory = product.variant ? product.variant.inventory_level : '';
+		const inventory = product.variant ? product.variant.inventoryLevel : '';
 		
 		const designerName = product.variant ? product.variant.designer ? product.variant.designer.name : '' : '';
 		

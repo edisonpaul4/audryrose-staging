@@ -55,7 +55,7 @@ class Product extends Component {
 		let totalInventoryLevel = 0;
 		if (data.variants && data.variants.length > 1) {
 			data.variants.map(function(variant, i) {
-  			if (data.inventory_level) totalInventoryLevel += data.inventory_level;
+  			if (data.inventoryLevel) totalInventoryLevel += data.inventoryLevel;
   			return variant.variantOptions.map(function(variantOption, j) {
     			if (variantOption.option_id === 32) sizes.push(parseFloat(variantOption.value));
     			return true;

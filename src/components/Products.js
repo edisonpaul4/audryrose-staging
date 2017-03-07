@@ -87,7 +87,8 @@ class Products extends Component {
 		this.props.reloadProduct(this.props.token, productId);
 	}
 	
-	handleSaveVariantClick(objectId, inventory) {
+	handleSaveVariantClick(objectId, inventory, colorCode) {
+  	console.log('save inventory: ' + inventory + ' color: ' + colorCode);
 		let currentlySaving = this.state.isSavingVariants;
 		const index = currentlySaving.indexOf(objectId);
 		if (index < 0) {
@@ -96,7 +97,7 @@ class Products extends Component {
   	this.setState({
     	isSavingVariants: currentlySaving
   	});
-		this.props.saveVariant(this.props.token, objectId, inventory);
+		this.props.saveVariant(this.props.token, objectId, inventory, colorCode);
 	}
 	
 	handleSortClick(sort) {

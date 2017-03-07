@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Input, Button, Dropdown, Dimmer, Segment, Loader } from 'semantic-ui-react';
+import { Table, Input, Button, Dropdown, Dimmer, Segment, Loader, Select } from 'semantic-ui-react';
 import classNames from 'classnames';
 import numeral from 'numeral';
 // import moment from 'moment';
@@ -9,28 +9,44 @@ class VariantRow extends Component {
     super(props);
     this.state = {
       variantData: this.props.data,
-      inventory: this.props.data.inventory_value,
-      inventoryEdited: false,
-      inventorySaved: false
+      inventory: this.props.data.inventoryLevel,
+      colorCode: this.props.data.colorCode,
+      variantEdited: false,
+      variantSaved: false
     };
     this.handleInventoryChange = this.handleInventoryChange.bind(this);
+    this.handleColorCodeChange = this.handleColorCodeChange.bind(this);
     this.handleSaveVariantClick = this.handleSaveVariantClick.bind(this);
   }
   handleInventoryChange(e, {value}) {
-    if (parseFloat(value) !== parseFloat(this.props.data.inventory_value)) {
+    if (parseFloat(value) !== parseFloat(this.props.data.inventoryLevel)) {
       this.setState({
         inventory: parseFloat(value),
-        inventoryEdited: true
+        variantEdited: true
       });
     } else {
       this.setState({
         inventory: parseFloat(value),
-        inventoryEdited: false
+        variantEdited: false
+      });
+    }
+  }
+  handleColorCodeChange(e, {value}) {
+    if (value !== this.props.data.colorCode) {
+      this.setState({
+        colorCode: value,
+        variantEdited: true
+      });
+    } else {
+      this.setState({
+        colorCode: value,
+        variantEdited: false
       });
     }
   }
 	handleSaveVariantClick(e, {value}) {
-		this.props.handleSaveVariantClick(this.props.data.objectId, this.state.inventory);
+  	console.log('save ' + this.state.colorCode);
+		this.props.handleSaveVariantClick(this.props.data.objectId, this.state.inventory, this.state.colorCode);
 	}
 	componentWillReceiveProps(nextProps) {
   	if (nextProps.updatedVariant) {
@@ -38,8 +54,8 @@ class VariantRow extends Component {
     	if (this.state.variantData.objectId === updatedVariantJSON.objectId) {
       	this.setState({
         	variantData: updatedVariantJSON,
-        	inventoryEdited: false,
-        	inventorySaved: true
+        	variantEdited: false,
+        	variantSaved: true
       	});
       }
   	}
@@ -58,16 +74,29 @@ class VariantRow extends Component {
 		if (this.props.adjuster && this.props.adjuster === 'absolute') price = this.props.adjusterValue;
 		if (this.props.adjuster && this.props.adjuster === 'relative') price += this.props.adjusterValue;
 		
-		const saveButton = this.state.inventoryEdited ? <Button content='Save' size='mini' primary compact loading={this.props.isSaving} disabled={this.props.isSaving} onClick={this.handleSaveVariantClick} /> : null;
+		let codeCodes = [
+		  'B74', '100', '001', 'D4D', 'CDD', 'D4A', 'C0S', 'C0X', 'WGE', 'B76', 'WGD', 'YSD', 'WGS', 'PLD', 'D4B', '0D0', 'D4T', 'DBD', 'SD0', 'C0C', 'D4Y', 'WGA', 'YGP', 'D00', 'D4C', 'DWS', 'YGE', 'D4B', 'C0B', 'B0E', '66D', 'B5L', 'DEE', 'D4R', 'DRR', 'DBD', 'DHD', 'DAQ', 'C0C', 'CD7', 'C0T', 'CCB', 'C0P', 'D4P', 'C0C', 'D4A', 'WGA', 'D4W', 'B7P', 'WGP', 'D4A', 'B70', '101', 'A9A', 'CAM', '001', 'D4A', 'DPP', 'D4M', 'CDR', 'BRP', 'B5A', 'DPD', 'DBP', 'B7D', 'BTD', 'BED', 'BPD', 'YGT', 'BTM', 'C0D', 'D4B', 'CBC', 'V0P', 'VBJ', 'VAA', 'VLA', 'D4B', 'C0C', 'YGM'
+	  ];
+	  codeCodes = codeCodes.filter(function(item, pos, self) { return self.indexOf(item) === pos; });
+	  const colorCodeOptions = codeCodes.map(function(code, i) {
+  	  return { key: (i+1), value: code, text: code };
+	  });
+    colorCodeOptions.sort(function(a, b) { return (a.text < b.text) ? -1 : (a.text > b.text) ? 1 : 0; });
+    colorCodeOptions.unshift({ key: 0, value: 'None', text: 'None' });
+    console.log('render ' + data.colorCode);
+    let defaultColorCode = data.colorCode ? data.colorCode : 'None';
+		
+		const saveButton = this.state.variantEdited ? <Button content='Save' size='mini' primary compact loading={this.props.isSaving} disabled={this.props.isSaving} onClick={this.handleSaveVariantClick} /> : <Button className='invisible' content='Save' size='mini' primary compact disabled/>;
     return (
-      <Table.Row warning={this.state.inventoryEdited ? true: false} positive={this.state.inventorySaved ? true: false} disabled={this.props.isSaving}>
+      <Table.Row warning={this.state.variantEdited ? true: false} positive={this.state.variantSaved ? true: false} disabled={this.props.isSaving}>
         <Table.Cell>{data.styleNumber ? data.styleNumber : ''}</Table.Cell>
+        <Table.Cell><Select options={colorCodeOptions} defaultValue={defaultColorCode} onChange={this.handleColorCodeChange} /></Table.Cell>
         <Table.Cell>{data.color_value ? data.color_value : ''}</Table.Cell>
         <Table.Cell>{data.size_value ? data.size_value : 'OS'}</Table.Cell>
         <Table.Cell>{otherOptions ? otherOptions.join(', ') : null}</Table.Cell>
-				<Table.Cell><Input type='number' transparent defaultValue={data.inventory_level} onChange={this.handleInventoryChange} min={0} disabled={this.props.isSaving} /></Table.Cell>
+				<Table.Cell><Input type='number' defaultValue={data.inventoryLevel} onChange={this.handleInventoryChange} min={0} disabled={this.props.isSaving} /></Table.Cell>
 				<Table.Cell className='right aligned'>{numeral(price).format('$0,0.00')}</Table.Cell>
-				<Table.Cell className='right aligned'>
+				<Table.Cell className='right aligned' singleLine>
 				  {saveButton}
           <Button.Group color='grey' size='mini' compact>
             <Button content='Order' disabled={this.props.isSaving} />
@@ -89,8 +118,8 @@ class VariantsTable extends Component {
     super(props);
     this.handleSaveVariantClick = this.handleSaveVariantClick.bind(this);
   }
-	handleSaveVariantClick(objectId, inventory) {
-		this.props.handleSaveVariantClick(objectId, inventory);
+	handleSaveVariantClick(objectId, inventory, colorCode) {
+		this.props.handleSaveVariantClick(objectId, inventory, colorCode);
 	}
 	render() {  	
   	var scope = this;
@@ -143,6 +172,7 @@ class VariantsTable extends Component {
           <Table.Header>
             <Table.Row>
               <Table.HeaderCell>Style-Color</Table.HeaderCell>
+              <Table.HeaderCell>Color Code</Table.HeaderCell>
               <Table.HeaderCell>Color</Table.HeaderCell>
               <Table.HeaderCell>Size</Table.HeaderCell>
               <Table.HeaderCell>Other Options</Table.HeaderCell>
@@ -211,8 +241,8 @@ class ProductDetails extends Component {
 	handleReloadClick(productId) {
 		this.props.handleReloadClick(productId);
 	}
-	handleSaveVariantClick(objectId, inventory) {
-		this.props.handleSaveVariantClick(objectId, inventory);
+	handleSaveVariantClick(objectId, inventory, colorCode) {
+		this.props.handleSaveVariantClick(objectId, inventory, colorCode);
 	}
 	handleToggleEditorClick() {
   	const showEditor = !this.state.showEditor;

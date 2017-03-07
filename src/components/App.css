@@ -7,6 +7,10 @@
   display: none;
 }
 
+.invisible {
+  visibility: hidden;
+}
+
 .no-wrap {
   white-space: nowrap;
 }
