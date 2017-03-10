@@ -99,9 +99,7 @@ class Orders extends Component {
   	
   	let orders = [];
   	let currentlyReloading = this.state.isReloading;
-  	console.log(nextProps.orders)
   	if (nextProps.updatedOrder) {
-    	console.log('has updated order');
     	// If updated product exists, push it into the state products array
     	const updatedOrderJSON = nextProps.updatedOrder.toJSON();
       nextProps.orders.map(function(order, i) {
@@ -115,10 +113,8 @@ class Orders extends Component {
       });
       
       // If currently reloading and has successfully updated order, remove updated order
-      console.log(currentlyReloading);
     	if (currentlyReloading.length) {
       	const index = currentlyReloading.indexOf(updatedOrderJSON.orderId);
-      	console.log('no longer reloading ' + index);
         if (index >= 0) currentlyReloading.splice(index, 1);
       }
       
