@@ -334,14 +334,14 @@ class Products extends Component {
 		}
 		
     const searchHeader = this.state.search ? <Header as='h2'>{totalProducts} results for "{this.state.search}"</Header> : null;
-    const filterBarClassNames = this.state.search ? 'toolbar-products hidden' : 'toolbar-products';
+    const filterBarClassNames = this.state.search ? 'toolbar hidden' : 'toolbar';
     const dateIcon = this.state.sort === 'date-added-desc' || this.state.sort === 'date-added-asc' ? null : <Icon disabled name='caret down' />;
     const priceIcon = this.state.sort === 'price-desc' || this.state.sort === 'price-asc' ? null : <Icon disabled name='caret down' />;
     const stockIcon = this.state.sort === 'stock-desc' || this.state.sort === 'stock-asc' ? null : <Icon disabled name='caret down' />;
     return (
 			<Grid.Column width='16'>
 				<ProductsNav key={this.props.location.pathname} pathname={this.props.location.pathname} query={this.props.location.query} tabCounts={tabCounts} />
-			  <Segment attached basic size='small' className={filterBarClassNames}>
+			  <Segment basic size='small' className={filterBarClassNames}>
           <Form className='filter-form' size='tiny'>
             <Form.Group inline>
               <Form.Field>
