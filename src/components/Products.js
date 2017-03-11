@@ -245,10 +245,11 @@ class Products extends Component {
     	});
     	filterData = {designers: designers, classes: classes};
   	}
+  	var search = nextProps.router.params.subpage !== 'search' ? null : this.state.search;
 		this.setState({
   		subpage: nextProps.router.params.subpage,
 			page: nextPage,
-			search: nextProps.router.params.subpage !== 'search' ? null : this.state.search,
+			search: search,
 			products: products,
 			filterData: filterData ? filterData : this.state.filterData,
 			updatedProduct: nextProps.updatedProduct,
@@ -257,10 +258,10 @@ class Products extends Component {
 			isReloading: currentlyReloading,
 			isSavingVariants: isSavingVariants
 		});	
-		
+		console.log(search);
   	if (nextPage !== this.state.page || nextProps.router.params.subpage !== this.state.subpage) {
     	expandedProducts = [];
-    	this.props.getProducts(this.props.token, nextProps.router.params.subpage, nextPage, this.state.sort, this.state.search, this.state.filters);
+    	this.props.getProducts(this.props.token, nextProps.router.params.subpage, nextPage, this.state.sort, search, this.state.filters);
   	}
 		
 	}
