@@ -52,10 +52,8 @@ class Product extends Component {
 		
 		// Get the product size scale
 		let sizes = [];
-		let totalInventoryLevel = 0;
 		if (data.variants && data.variants.length > 1) {
 			data.variants.map(function(variant, i) {
-  			if (data.inventoryLevel) totalInventoryLevel += data.inventoryLevel;
   			return variant.variantOptions.map(function(variantOption, j) {
     			if (variantOption.option_id === 32) sizes.push(parseFloat(variantOption.value));
     			return true;
@@ -97,7 +95,7 @@ class Product extends Component {
 				  />
 		    </Table.Cell>
 				<Table.Cell>[not loaded yet]</Table.Cell>
-				<Table.Cell className='right aligned'>{totalInventoryLevel}</Table.Cell>
+				<Table.Cell className='right aligned'>{data.total_stock}</Table.Cell>
 				<Table.Cell className='right aligned'>
 				  <Button circular icon={expandIcon} basic size='mini' onClick={()=>this.handleToggleClick(data.productId)} />
 			  </Table.Cell>
