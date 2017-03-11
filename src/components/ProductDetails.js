@@ -9,44 +9,43 @@ class VariantRow extends Component {
     super(props);
     this.state = {
       variantData: this.props.data,
-      inventory: this.props.data.inventoryLevel,
-      colorCode: this.props.data.colorCode,
+      inventory: parseFloat(this.props.data.inventoryLevel),
+      colorCode: this.props.data.colorCode ? this.props.data.colorCode : 'None',
       variantEdited: false,
       variantSaved: false
     };
     this.handleInventoryChange = this.handleInventoryChange.bind(this);
     this.handleColorCodeChange = this.handleColorCodeChange.bind(this);
     this.handleSaveVariantClick = this.handleSaveVariantClick.bind(this);
+    this.handleCancelVariantClick = this.handleCancelVariantClick.bind(this);
   }
   handleInventoryChange(e, {value}) {
-    if (parseFloat(value) !== parseFloat(this.props.data.inventoryLevel)) {
-      this.setState({
-        inventory: parseFloat(value),
-        variantEdited: true
-      });
-    } else {
-      this.setState({
-        inventory: parseFloat(value),
-        variantEdited: false
-      });
-    }
+    const defaultColorCode = this.props.data.colorCode ? this.props.data.colorCode : 'None';
+    const edited = (this.state.colorCode !== defaultColorCode || parseFloat(value) !== parseFloat(this.props.data.inventoryLevel)) ? true : false;
+    this.setState({
+      inventory: parseFloat(value),
+      variantEdited: edited
+    });
   }
   handleColorCodeChange(e, {value}) {
-    if (value !== this.props.data.colorCode) {
-      this.setState({
-        colorCode: value,
-        variantEdited: true
-      });
-    } else {
-      this.setState({
-        colorCode: value,
-        variantEdited: false
-      });
-    }
+    const defaultColorCode = this.props.data.colorCode ? this.props.data.colorCode : 'None';
+    const edited = (value !== defaultColorCode || this.state.inventory !== this.props.data.inventoryLevel) ? true : false;
+    this.setState({
+      colorCode: value,
+      variantEdited: edited
+    });
   }
 	handleSaveVariantClick(e, {value}) {
   	console.log('save ' + this.state.colorCode);
 		this.props.handleSaveVariantClick(this.props.data.objectId, this.state.inventory, this.state.colorCode);
+	}
+	handleCancelVariantClick(e, {value}) {
+    this.setState({
+      inventory: parseFloat(this.props.data.inventoryLevel),
+      colorCode: this.props.data.colorCode ? this.props.data.colorCode : 'None',
+      variantEdited: false,
+      variantSaved: false
+    });
 	}
 	componentWillReceiveProps(nextProps) {
   	if (nextProps.updatedVariant) {
@@ -83,24 +82,41 @@ class VariantRow extends Component {
 	  });
     colorCodeOptions.sort(function(a, b) { return (a.text < b.text) ? -1 : (a.text > b.text) ? 1 : 0; });
     colorCodeOptions.unshift({ key: 0, value: 'None', text: 'None' });
-    console.log('render ' + data.colorCode);
-    let defaultColorCode = data.colorCode ? data.colorCode : 'None';
 		
-		const saveButton = this.state.variantEdited ? <Button content='Save' size='mini' primary compact loading={this.props.isSaving} disabled={this.props.isSaving} onClick={this.handleSaveVariantClick} /> : <Button className='invisible' content='Save' size='mini' primary compact disabled/>;
+		const saveCancelClass = this.state.variantEdited ? '' : 'invisible';
+	    
     return (
       <Table.Row warning={this.state.variantEdited ? true: false} positive={this.state.variantSaved ? true: false} disabled={this.props.isSaving}>
         <Table.Cell>{data.styleNumber ? data.styleNumber : ''}</Table.Cell>
-        <Table.Cell><Select options={colorCodeOptions} defaultValue={defaultColorCode} onChange={this.handleColorCodeChange} /></Table.Cell>
+        <Table.Cell><Select options={colorCodeOptions} value={this.state.colorCode} onChange={this.handleColorCodeChange} /></Table.Cell>
         <Table.Cell>{data.color_value ? data.color_value : ''}</Table.Cell>
         <Table.Cell>{data.size_value ? data.size_value : 'OS'}</Table.Cell>
         <Table.Cell>{otherOptions ? otherOptions.join(', ') : null}</Table.Cell>
-				<Table.Cell><Input type='number' defaultValue={data.inventoryLevel} onChange={this.handleInventoryChange} min={0} disabled={this.props.isSaving} /></Table.Cell>
+				<Table.Cell><Input type='number' value={this.state.inventory} onChange={this.handleInventoryChange} min={0} disabled={this.props.isSaving} /></Table.Cell>
 				<Table.Cell className='right aligned'>{numeral(price).format('$0,0.00')}</Table.Cell>
 				<Table.Cell className='right aligned' singleLine>
-				  {saveButton}
+    		  <Button.Group size='mini'>
+    		    <Button 
+    		      content='Save' 
+    		      className={saveCancelClass} 
+    		      primary 
+    		      compact 
+    		      loading={this.props.isSaving} 
+    		      disabled={this.props.isSaving} 
+    		      onClick={this.handleSaveVariantClick} 
+    		      /> 
+    		    <Button content='Cancel' 
+      		    className={saveCancelClass} 
+      		    secondary 
+      		    compact 
+      		    loading={this.props.isSaving} 
+      		    disabled={this.props.isSaving} 
+      		    onClick={this.handleCancelVariantClick} 
+    		    />
+    	    </Button.Group> 
           <Button.Group color='grey' size='mini' compact>
-            <Button content='Order' disabled={this.props.isSaving} />
-            <Dropdown floating button compact className='icon' disabled={this.props.isSaving}>
+            <Button content='Order' disabled={this.props.isSaving || this.state.variantEdited} />
+            <Dropdown floating button compact className='icon' disabled={this.props.isSaving || this.state.variantEdited}>
               <Dropdown.Menu>
                 <Dropdown.Item icon='exchange' text='Resize' />
                 <Dropdown.Item icon='hide' text='Hide' />
@@ -233,7 +249,8 @@ class ProductDetails extends Component {
     super(props);
     this.state = {
       showVariants: false,
-      showEditor: false
+      showEditor: false,
+			editedVariants: [] // GET THIS LIST FROM VARIANT COMPONENTS
     };
     this.handleReloadClick = this.handleReloadClick.bind(this);
     this.handleSaveVariantClick = this.handleSaveVariantClick.bind(this);
@@ -309,23 +326,32 @@ class ProductDetails extends Component {
         );
 	    }
 		}
+		
+		const saveAllButton = this.state.editedVariants.length > 0 ? <Button primary circular compact basic size='small' icon='save' content='Save All' disabled={this.props.isReloading} /> : null;
 // 		const productEditor = this.state.showEditor ? <ProductEditor/> : null;
     return (
       <Table.Row className={rowClass}>
         <Table.Cell colSpan='13' className='variant-row'>
-          <Button circular compact basic size='tiny' 
-            icon='refresh' 
-            content='Reload' 
-            disabled={this.props.isReloading} 
-            onClick={()=>this.handleReloadClick(this.props.data.productId)} 
-          />
-          {/*<Button circular compact basic size='tiny' 
-            icon={this.state.showEditor ? 'close' : 'edit'} 
-            color={this.state.showEditor ? 'black' : null} 
-            content={this.state.showEditor ? 'Cancel' : 'Edit'} 
-            onClick={this.handleToggleEditorClick.bind(this)} 
-          />
-          {productEditor}*/}
+          <Segment.Group horizontal compact className='toolbar'>
+            <Segment basic>
+              <Button circular compact basic size='tiny' 
+                icon='refresh' 
+                content='Reload' 
+                disabled={this.props.isReloading} 
+                onClick={()=>this.handleReloadClick(this.props.data.productId)} 
+              />
+              {/*<Button circular compact basic size='tiny' 
+                icon={this.state.showEditor ? 'close' : 'edit'} 
+                color={this.state.showEditor ? 'black' : null} 
+                content={this.state.showEditor ? 'Cancel' : 'Edit'} 
+                onClick={this.handleToggleEditorClick.bind(this)} 
+              />
+              {productEditor}*/}
+            </Segment>
+            <Segment basic textAlign='right'>
+              {saveAllButton}
+            </Segment>
+          </Segment.Group>
           <Dimmer.Dimmable as={Segment} vertical blurring dimmed={this.props.isReloading}>
             <Dimmer active={this.props.isReloading} inverted>
               <Loader>Loading</Loader>
