@@ -62,12 +62,11 @@ export const saveProductStatus = (token, productId, status) => Parse.Cloud.run('
   }
 );
 
-export const saveVariant = (token, objectId, inventory, colorCode) => Parse.Cloud.run('saveVariant', 
+export const saveVariant = (token, objectId, inventory) => Parse.Cloud.run('saveVariant', 
   {
     sessionToken: token,
     objectId,
-    inventory,
-    colorCode
+    inventory
   }
 );
 

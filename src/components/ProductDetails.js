@@ -9,40 +9,27 @@ class VariantRow extends Component {
     super(props);
     this.state = {
       variantData: this.props.data,
-      inventory: parseFloat(this.props.data.inventoryLevel),
-      colorCode: this.props.data.colorCode ? this.props.data.colorCode : 'None',
+      inventory: this.props.data.inventoryLevel ? parseFloat(this.props.data.inventoryLevel) : undefined,
       variantEdited: false,
       variantSaved: false
     };
     this.handleInventoryChange = this.handleInventoryChange.bind(this);
-    this.handleColorCodeChange = this.handleColorCodeChange.bind(this);
     this.handleSaveVariantClick = this.handleSaveVariantClick.bind(this);
     this.handleCancelVariantClick = this.handleCancelVariantClick.bind(this);
   }
   handleInventoryChange(e, {value}) {
-    const defaultColorCode = this.props.data.colorCode ? this.props.data.colorCode : 'None';
-    const edited = (this.state.colorCode !== defaultColorCode || parseFloat(value) !== parseFloat(this.props.data.inventoryLevel)) ? true : false;
+    const edited = (parseFloat(value) !== parseFloat(this.props.data.inventoryLevel)) ? true : false;
     this.setState({
       inventory: parseFloat(value),
       variantEdited: edited
     });
   }
-  handleColorCodeChange(e, {value}) {
-    const defaultColorCode = this.props.data.colorCode ? this.props.data.colorCode : 'None';
-    const edited = (value !== defaultColorCode || this.state.inventory !== this.props.data.inventoryLevel) ? true : false;
-    this.setState({
-      colorCode: value,
-      variantEdited: edited
-    });
-  }
 	handleSaveVariantClick(e, {value}) {
-  	console.log('save ' + this.state.colorCode);
-		this.props.handleSaveVariantClick(this.props.data.objectId, this.state.inventory, this.state.colorCode);
+		this.props.handleSaveVariantClick(this.props.data.objectId, this.state.inventory);
 	}
 	handleCancelVariantClick(e, {value}) {
     this.setState({
-      inventory: parseFloat(this.props.data.inventoryLevel),
-      colorCode: this.props.data.colorCode ? this.props.data.colorCode : 'None',
+      inventory: this.props.data.inventoryLevel ? parseFloat(this.props.data.inventoryLevel) : undefined,
       variantEdited: false,
       variantSaved: false
     });
@@ -53,6 +40,7 @@ class VariantRow extends Component {
     	if (this.state.variantData.objectId === updatedVariantJSON.objectId) {
       	this.setState({
         	variantData: updatedVariantJSON,
+        	inventory: parseFloat(updatedVariantJSON.inventoryLevel),
         	variantEdited: false,
         	variantSaved: true
       	});
@@ -82,7 +70,7 @@ class VariantRow extends Component {
         <Table.Cell>{data.color_value ? data.color_value : ''}</Table.Cell>
         <Table.Cell>{data.size_value ? data.size_value : 'OS'}</Table.Cell>
         <Table.Cell>{otherOptions ? otherOptions.join(', ') : null}</Table.Cell>
-				<Table.Cell><Input type='number' value={this.state.inventory} onChange={this.handleInventoryChange} min={0} disabled={this.props.isSaving} /></Table.Cell>
+				<Table.Cell><Input type='number' value={this.state.inventory ? this.state.inventory : 0} onChange={this.handleInventoryChange} min={0} disabled={this.props.isSaving} /></Table.Cell>
 				<Table.Cell className='right aligned'>{numeral(price).format('$0,0.00')}</Table.Cell>
 				<Table.Cell className='right aligned' singleLine>
     		  <Button.Group size='mini'>
@@ -103,7 +91,7 @@ class VariantRow extends Component {
       		    disabled={this.props.isSaving} 
       		    onClick={this.handleCancelVariantClick} 
     		    />
-    	    </Button.Group> 
+    	    </Button.Group>  <span>&nbsp;</span>
           <Button.Group color='grey' size='mini' compact>
             <Button content='Order' disabled={this.props.isSaving || this.state.variantEdited} />
             <Dropdown floating button compact className='icon' disabled={this.props.isSaving || this.state.variantEdited}>
@@ -124,8 +112,8 @@ class VariantsTable extends Component {
     super(props);
     this.handleSaveVariantClick = this.handleSaveVariantClick.bind(this);
   }
-	handleSaveVariantClick(objectId, inventory, colorCode) {
-		this.props.handleSaveVariantClick(objectId, inventory, colorCode);
+	handleSaveVariantClick(objectId, inventory) {
+		this.props.handleSaveVariantClick(objectId, inventory);
 	}
 	render() {  	
   	var scope = this;
@@ -247,8 +235,8 @@ class ProductDetails extends Component {
 	handleReloadClick(productId) {
 		this.props.handleReloadClick(productId);
 	}
-	handleSaveVariantClick(objectId, inventory, colorCode) {
-		this.props.handleSaveVariantClick(objectId, inventory, colorCode);
+	handleSaveVariantClick(objectId, inventory) {
+		this.props.handleSaveVariantClick(objectId, inventory);
 	}
 	handleToggleEditorClick() {
   	const showEditor = !this.state.showEditor;
