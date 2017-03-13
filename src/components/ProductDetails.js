@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Input, Button, Dropdown, Dimmer, Segment, Loader, Select } from 'semantic-ui-react';
+import { Table, Input, Button, Dropdown, Dimmer, Segment, Loader } from 'semantic-ui-react';
 import classNames from 'classnames';
 import numeral from 'numeral';
 // import moment from 'moment';
@@ -72,23 +72,13 @@ class VariantRow extends Component {
 		let price = this.props.basePrice;
 		if (this.props.adjuster && this.props.adjuster === 'absolute') price = this.props.adjusterValue;
 		if (this.props.adjuster && this.props.adjuster === 'relative') price += this.props.adjusterValue;
-		
-		let codeCodes = [
-		  'B74', '100', '001', 'D4D', 'CDD', 'D4A', 'C0S', 'C0X', 'WGE', 'B76', 'WGD', 'YSD', 'WGS', 'PLD', 'D4B', '0D0', 'D4T', 'DBD', 'SD0', 'C0C', 'D4Y', 'WGA', 'YGP', 'D00', 'D4C', 'DWS', 'YGE', 'D4B', 'C0B', 'B0E', '66D', 'B5L', 'DEE', 'D4R', 'DRR', 'DBD', 'DHD', 'DAQ', 'C0C', 'CD7', 'C0T', 'CCB', 'C0P', 'D4P', 'C0C', 'D4A', 'WGA', 'D4W', 'B7P', 'WGP', 'D4A', 'B70', '101', 'A9A', 'CAM', '001', 'D4A', 'DPP', 'D4M', 'CDR', 'BRP', 'B5A', 'DPD', 'DBP', 'B7D', 'BTD', 'BED', 'BPD', 'YGT', 'BTM', 'C0D', 'D4B', 'CBC', 'V0P', 'VBJ', 'VAA', 'VLA', 'D4B', 'C0C', 'YGM'
-	  ];
-	  codeCodes = codeCodes.filter(function(item, pos, self) { return self.indexOf(item) === pos; });
-	  const colorCodeOptions = codeCodes.map(function(code, i) {
-  	  return { key: (i+1), value: code, text: code };
-	  });
-    colorCodeOptions.sort(function(a, b) { return (a.text < b.text) ? -1 : (a.text > b.text) ? 1 : 0; });
-    colorCodeOptions.unshift({ key: 0, value: 'None', text: 'None' });
-		
+
+    const stoneColorCode = data.code ? '-' + data.code : null;
 		const saveCancelClass = this.state.variantEdited ? '' : 'invisible';
 	    
     return (
       <Table.Row warning={this.state.variantEdited ? true: false} positive={this.state.variantSaved ? true: false} disabled={this.props.isSaving}>
-        <Table.Cell>{data.styleNumber ? data.styleNumber : ''}</Table.Cell>
-        <Table.Cell><Select options={colorCodeOptions} value={this.state.colorCode} onChange={this.handleColorCodeChange} /></Table.Cell>
+        <Table.Cell>{data.styleNumber ? data.styleNumber : ''}{stoneColorCode}</Table.Cell>
         <Table.Cell>{data.color_value ? data.color_value : ''}</Table.Cell>
         <Table.Cell>{data.size_value ? data.size_value : 'OS'}</Table.Cell>
         <Table.Cell>{otherOptions ? otherOptions.join(', ') : null}</Table.Cell>
@@ -188,7 +178,6 @@ class VariantsTable extends Component {
           <Table.Header>
             <Table.Row>
               <Table.HeaderCell>Style-Color</Table.HeaderCell>
-              <Table.HeaderCell>Color Code</Table.HeaderCell>
               <Table.HeaderCell>Color</Table.HeaderCell>
               <Table.HeaderCell>Size</Table.HeaderCell>
               <Table.HeaderCell>Other Options</Table.HeaderCell>

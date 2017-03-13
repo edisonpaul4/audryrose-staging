@@ -258,7 +258,7 @@ class Products extends Component {
 			isReloading: currentlyReloading,
 			isSavingVariants: isSavingVariants
 		});	
-		console.log(search);
+    
   	if (nextPage !== this.state.page || nextProps.router.params.subpage !== this.state.subpage) {
     	expandedProducts = [];
     	this.props.getProducts(this.props.token, nextProps.router.params.subpage, nextPage, this.state.sort, search, this.state.filters);
