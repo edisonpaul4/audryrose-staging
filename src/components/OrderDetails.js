@@ -26,7 +26,8 @@ class ProductRow extends Component {
 		
 		const designerName = product.variant ? product.variant.designer ? product.variant.designer.name : '' : '';
 		
-		let shipmentButton = <Button icon='shipping' content='Ship Item' />;
+		let shipmentButton;
+		let dropdownItems;
 		if (shipment) {
   		let totalItems = 0;
   		shipment.items.map(function(item) {
@@ -71,6 +72,14 @@ class ProductRow extends Component {
             </Modal.Description>
           </Modal.Content>
         </Modal>;
+	  } else {
+  	  if (inventory > 0) {
+    	  shipmentButton = <Button icon='shipping' content='Ship Item' />;
+    	  dropdownItems = [<Dropdown.Item key='1' icon='edit' text='Edit' />];
+  	  } else {
+    	  shipmentButton = <Button icon='add to cart' content='Order' />;
+    	  dropdownItems = [<Dropdown.Item key='1' icon='exchange' text='Resize' />,<Dropdown.Item key='2' icon='edit' text='Edit' />]
+  	  }
 	  }
 
     return (
@@ -89,10 +98,9 @@ class ProductRow extends Component {
 				<Table.Cell className='right aligned'>
           <Button.Group color='grey' size='mini' compact>
             {shipmentButton}
-            {!shipment ? <Dropdown floating button compact className='icon'>
+            {dropdownItems.length > 0 ? <Dropdown floating button compact pointing className='icon'>
               <Dropdown.Menu>
-                <Dropdown.Item icon='add to cart' text='Order' />
-                <Dropdown.Item icon='exchange' text='Resize' />
+                {dropdownItems}
               </Dropdown.Menu>
             </Dropdown>
             : null}
