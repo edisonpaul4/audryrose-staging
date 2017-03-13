@@ -34,6 +34,7 @@ class Navigation extends Component {
 			        <Dropdown.Menu>
 			          <Dropdown.Item as={Link} to='/users'>Users</Dropdown.Item>
 			          <Dropdown.Item as={Link} to='/background-jobs'>Background Jobs</Dropdown.Item>
+			          <Dropdown.Item as={Link} to='/options'>Product Options</Dropdown.Item>
 								<Dropdown.Item as={Link} to='/webhooks'>Webhooks</Dropdown.Item>
 			        </Dropdown.Menu>
 			      </Dropdown>
