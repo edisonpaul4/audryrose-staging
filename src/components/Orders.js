@@ -122,7 +122,9 @@ class Orders extends Component {
       orders = nextProps.orders;
     }
     
+    // Reset on subpage navigation
   	const search = nextProps.router.params.subpage !== 'search' ? null : this.state.search;
+  	expandedOrders = nextProps.router.params.subpage !== this.state.subpage ? [] : expandedOrders;
   	
 		this.setState({
   		subpage: nextProps.router.params.subpage,
@@ -135,7 +137,6 @@ class Orders extends Component {
 		});	
 		
   	if (nextPage !== this.state.page || nextProps.router.params.subpage !== this.state.subpage) {
-    	expandedOrders = [];
     	this.props.getOrders(this.props.token, nextProps.router.params.subpage, nextPage, this.state.sort, search);
   	}
 	}

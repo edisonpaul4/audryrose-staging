@@ -245,7 +245,11 @@ class Products extends Component {
     	});
     	filterData = {designers: designers, classes: classes};
   	}
+  	
+  	// Reset on subpage navigation
   	var search = nextProps.router.params.subpage !== 'search' ? null : this.state.search;
+  	expandedProducts = nextProps.router.params.subpage !== this.state.subpage ? [] : expandedProducts;
+  	
 		this.setState({
   		subpage: nextProps.router.params.subpage,
 			page: nextPage,
