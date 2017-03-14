@@ -3,6 +3,7 @@ import { Table, Button, Dropdown, Dimmer, Segment, Loader, Modal, List } from 's
 import classNames from 'classnames';
 // import numeral from 'numeral';
 import moment from 'moment';
+import OrderShipModal from './OrderShipModal.js';
 
 class ProductRow extends Component {
 	render() {  	
@@ -73,9 +74,12 @@ class ProductRow extends Component {
           </Modal.Content>
         </Modal>;
 	  } else {
-  	  if (inventory > 0) {
-    	  shipmentButton = <Button icon='shipping' content='Ship Item' />;
+  	  if (product.shippable) {
+    	  shipmentButton = <OrderShipModal order={this.props.order} product={product} />;
     	  dropdownItems = [<Dropdown.Item key='1' icon='edit' text='Edit' />];
+  	  } else if (product.resizable) {
+    	  shipmentButton = <Button icon='exchange' content='Resize' />;
+    	  dropdownItems = [<Dropdown.Item key='1' icon='add to cart' text='Order' />,<Dropdown.Item key='2' icon='edit' text='Edit' />]    	  
   	  } else {
     	  shipmentButton = <Button icon='add to cart' content='Order' />;
     	  dropdownItems = [<Dropdown.Item key='1' icon='exchange' text='Resize' />,<Dropdown.Item key='2' icon='edit' text='Edit' />]
@@ -131,6 +135,7 @@ class OrderDetails extends Component {
   	});
 	}
 	render() {
+  	const scope = this;
   	const showProducts = this.props.expanded ? true : false;
   	const products = this.props.data.orderProducts;
   	const shipments = this.props.data.orderShipments;
@@ -162,7 +167,7 @@ class OrderDetails extends Component {
       			return shipmentObj;
     			});
   			}
-				productRows.push(<ProductRow product={productRow} shipment={shipment} key={i} />);
+				productRows.push(<ProductRow order={scope.props.data} product={productRow} shipment={shipment} key={i} />);
 				return productRows;
 	    });
 		}
