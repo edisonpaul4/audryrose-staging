@@ -85,10 +85,26 @@ const products = (state = initialState, action) => {
     case 'VARIANT_SAVE_SUCCESS':
       return {
         ...state,
-        updatedVariant: action.res
+        updatedVariants: [action.res]
       };
 
     case 'VARIANT_SAVE_FAILURE':
+      return {
+        ...state
+      }
+    
+    case 'VARIANTS_SAVE_REQUEST':
+      return {
+        ...state
+      }
+
+    case 'VARIANTS_SAVE_SUCCESS':
+      return {
+        ...state,
+        updatedVariants: action.res
+      };
+
+    case 'VARIANTS_SAVE_FAILURE':
       return {
         ...state
       }

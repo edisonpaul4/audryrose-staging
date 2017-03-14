@@ -34,3 +34,10 @@ export function saveVariant(token, objectId, inventory) {
     promise: api.saveVariant(token, objectId, inventory)
   }
 }
+
+export function saveVariants(token, variants) {
+  return {
+    types: ['VARIANTS_SAVE_REQUEST', 'VARIANTS_SAVE_SUCCESS', 'VARIANTS_SAVE_FAILURE'],
+    promise: api.saveVariants(token, variants)
+  }
+}

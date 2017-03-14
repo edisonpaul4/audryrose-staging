@@ -18,14 +18,17 @@ class VariantRow extends Component {
     this.handleCancelVariantClick = this.handleCancelVariantClick.bind(this);
   }
   handleInventoryChange(e, {value}) {
-    const edited = (parseFloat(value) !== parseFloat(this.props.data.inventoryLevel)) ? true : false;
+    let edited = (parseFloat(value) !== parseFloat(this.props.data.inventoryLevel)) ? true : false;
+    if (!this.props.data.inventoryLevel && parseFloat(value) === 0) edited = false;
     this.setState({
       inventory: parseFloat(value),
-      variantEdited: edited
+      variantEdited: edited,
+      variantSaved: false
     });
+    this.props.handleVariantEdited({objectId: this.props.data.objectId, inventory: parseFloat(value)}, edited);
   }
 	handleSaveVariantClick(e, {value}) {
-		this.props.handleSaveVariantClick(this.props.data.objectId, this.state.inventory);
+		this.props.handleSaveVariantClick({objectId: this.props.data.objectId, inventory: this.state.inventory});
 	}
 	handleCancelVariantClick(e, {value}) {
     this.setState({
@@ -33,18 +36,16 @@ class VariantRow extends Component {
       variantEdited: false,
       variantSaved: false
     });
+    this.props.handleVariantEdited({objectId: this.props.data.objectId}, false);
 	}
 	componentWillReceiveProps(nextProps) {
-  	if (nextProps.updatedVariant) {
-    	let updatedVariantJSON = nextProps.updatedVariant.toJSON();
-    	if (this.state.variantData.objectId === updatedVariantJSON.objectId) {
-      	this.setState({
-        	variantData: updatedVariantJSON,
-        	inventory: parseFloat(updatedVariantJSON.inventoryLevel),
-        	variantEdited: false,
-        	variantSaved: true
-      	});
-      }
+  	if (nextProps.updatedVariant && this.props.isSaving) {
+    	this.setState({
+      	variantData: nextProps.updatedVariant,
+      	inventory: parseFloat(nextProps.updatedVariant.inventoryLevel),
+      	variantEdited: false,
+      	variantSaved: true
+    	});
   	}
 	}
 	render() {  	
@@ -65,7 +66,7 @@ class VariantRow extends Component {
 		const saveCancelClass = this.state.variantEdited ? '' : 'invisible';
 	    
     return (
-      <Table.Row warning={this.state.variantEdited ? true: false} positive={this.state.variantSaved ? true: false} disabled={this.props.isSaving}>
+      <Table.Row warning={this.state.variantEdited ? true: false} positive={this.state.variantSaved && !this.state.variantEdited ? true: false} disabled={this.props.isSaving}>
         <Table.Cell>{data.styleNumber ? data.styleNumber : ''}{stoneColorCode}</Table.Cell>
         <Table.Cell>{data.color_value ? data.color_value : ''}</Table.Cell>
         <Table.Cell>{data.size_value ? data.size_value : 'OS'}</Table.Cell>
@@ -110,10 +111,38 @@ class VariantRow extends Component {
 class VariantsTable extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      variantsEdited: []
+    };
     this.handleSaveVariantClick = this.handleSaveVariantClick.bind(this);
+    this.handleVariantEdited = this.handleVariantEdited.bind(this);
   }
-	handleSaveVariantClick(objectId, inventory) {
-		this.props.handleSaveVariantClick(objectId, inventory);
+  handleVariantEdited(data, edited) {
+    let variantsEdited = this.state.variantsEdited;
+    let index = -1;
+    variantsEdited.map(function(variant, i) {
+      if (variant.objectId === data.objectId) index = i;
+      return variantsEdited;
+    });
+    let add = [];
+    let remove = [];
+    let replace = [];
+    if (edited && index < 0) {
+      variantsEdited.push(data);
+      add.push(data);
+    } else if (!edited && index >= 0) {
+      variantsEdited.splice(index, 1);
+      remove.push(data);
+    } else if (edited && index >= 0) {
+      replace.push(data);
+    }
+  	this.setState({
+    	variantsEdited: variantsEdited
+  	});
+    this.props.handleVariantsEdited(add, remove, replace);
+  }
+	handleSaveVariantClick(variantEdited) {
+		this.props.handleSaveVariantClick(variantEdited);
 	}
 	render() {  	
   	var scope = this;
@@ -127,31 +156,44 @@ class VariantsTable extends Component {
     
 		let variantRows = [];
 		if (variants) {
-			variants.map(function(variantRow, i) {
+			variants.map(function(variantData, i) {
   			let adjuster = null;
   			let adjusterValue = 0;
-  			if (scope.props.updatedVariant) {
-    			let updatedVariantRowJSON = scope.props.updatedVariant.toJSON();
-    			if (updatedVariantRowJSON.objectId === variantRow.objectId) variantRow = updatedVariantRowJSON;
+  			let updatedVariantMatch;
+  			if (scope.props.updatedVariants && scope.props.updatedVariants.length > 0) {
+        	scope.props.updatedVariants.map(function(updatedVariant, i) {
+          	const updatedVariantDataJSON = updatedVariant.toJSON();
+          	if (updatedVariantDataJSON.objectId === variantData.objectId) {
+            	variantData = updatedVariantDataJSON;
+            	updatedVariantMatch = updatedVariantDataJSON;
+          	}
+            return updatedVariant;
+          });
   			}
-  			if (variantRow.variantOptions) {
-    			variantRow.variantOptions.map(function(variantOption, j) {
+  			if (variantData.variantOptions) {
+    			variantData.variantOptions.map(function(variantOption, j) {
       			if (variantOption.adjuster) adjuster = variantOption.adjuster;
       			if (variantOption.adjuster_value) adjusterValue = variantOption.adjuster_value;
       			return variantOption;
     			});
   			}
-  			let isSaving = scope.props.savingVariants.indexOf(variantRow.objectId) >= 0 ? true : false;
+        let index = -1;
+        scope.props.savingVariants.map(function(savingVariant, i) {
+          if (savingVariant.objectId === variantData.objectId) index = i;
+          return savingVariant;
+        });
+        let isSaving = index >= 0 ? true : false;
 				variantRows.push(
 				  <VariantRow 
-				    data={variantRow} 
+				    data={variantData} 
 				    basePrice={scope.props.basePrice} 
 				    adjuster={adjuster} 
 				    adjusterValue={adjusterValue} 
 				    key={i} 
 				    handleSaveVariantClick={scope.handleSaveVariantClick} 
+				    handleVariantEdited={scope.handleVariantEdited} 
 				    isSaving={isSaving} 
-				    updatedVariant={scope.props.updatedVariant}
+				    updatedVariant={updatedVariantMatch}
 			    />
 		    );
 				return variantRows;
@@ -227,17 +269,52 @@ class ProductDetails extends Component {
     this.state = {
       showVariants: false,
       showEditor: false,
-			editedVariants: [] // GET THIS LIST FROM VARIANT COMPONENTS
+			variantsEdited: []
     };
     this.handleReloadClick = this.handleReloadClick.bind(this);
     this.handleSaveVariantClick = this.handleSaveVariantClick.bind(this);
+    this.handleSaveAllVariantsClick = this.handleSaveAllVariantsClick.bind(this);
+    this.handleVariantsEdited = this.handleVariantsEdited.bind(this);
   }
 	handleReloadClick(productId) {
 		this.props.handleReloadClick(productId);
 	}
-	handleSaveVariantClick(objectId, inventory) {
-		this.props.handleSaveVariantClick(objectId, inventory);
+	handleSaveVariantClick(variantEdited) {
+		this.props.handleSaveVariantClick(variantEdited);
 	}
+	handleSaveAllVariantsClick() {
+		this.props.handleSaveAllVariantsClick(this.state.variantsEdited);
+	}
+  handleVariantsEdited(add, remove, replace) {
+    let variantsEdited = this.state.variantsEdited;
+    if (add.length > 0) variantsEdited = variantsEdited.concat(add);
+    
+    // Remove
+    remove.map(function(removeVariant, i) {
+      let index = -1;
+      variantsEdited.map(function(variant, i) {
+        if (variant.objectId === removeVariant.objectId) index = i;
+        return variantsEdited;
+      });
+      if (index >= 0) variantsEdited.splice(index, 1);
+      return remove;
+    });
+    
+    // Replace
+    replace.map(function(replaceVariant, i) {
+      let index = -1;
+      variantsEdited.map(function(variant, i) {
+        if (variant.objectId === replaceVariant.objectId) index = i;
+        return variantsEdited;
+      });
+      if (index >= 0) variantsEdited[index] = replaceVariant;
+      return remove;
+    });
+    
+  	this.setState({
+    	variantsEdited: variantsEdited
+  	});
+  }
 	handleToggleEditorClick() {
   	const showEditor = !this.state.showEditor;
   	
@@ -283,8 +360,9 @@ class ProductDetails extends Component {
     	        basePrice={scope.props.data.price} 
     	        key={i} 
     	        handleSaveVariantClick={scope.handleSaveVariantClick} 
+    	        handleVariantsEdited={scope.handleVariantsEdited}
     	        savingVariants={scope.props.savingVariants} 
-    	        updatedVariant={scope.props.updatedVariant}
+    	        updatedVariants={scope.props.updatedVariants}
   	        />
 	        );
     	    return variantGroup;
@@ -297,14 +375,15 @@ class ProductDetails extends Component {
   	        basePrice={scope.props.data.price} 
   	        key={1} 
   	        handleSaveVariantClick={scope.handleSaveVariantClick} 
+  	        handleVariantsEdited={scope.handleVariantsEdited}
   	        savingVariants={scope.props.savingVariants} 
-  	        updatedVariant={scope.props.updatedVariant}
+  	        updatedVariants={scope.props.updatedVariants}
 	        />
         );
 	    }
 		}
 		
-		const saveAllButton = this.state.editedVariants.length > 0 ? <Button primary circular compact basic size='small' icon='save' content='Save All' disabled={this.props.isReloading} /> : null;
+		const saveAllButton = this.state.variantsEdited.length > 0 ? <Button primary circular compact size='small' icon='save' content='Save All' disabled={this.props.isReloading} onClick={this.handleSaveAllVariantsClick} /> : null;
 // 		const productEditor = this.state.showEditor ? <ProductEditor/> : null;
     return (
       <Table.Row className={rowClass}>

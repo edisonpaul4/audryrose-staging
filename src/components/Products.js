@@ -26,7 +26,7 @@ class Products extends Component {
 			products: null,
 			filterData: null,
 			updatedProduct: null,
-			updatedVariant: null,
+			updatedVariants: [],
 			expandedProducts: [],
 			isReloading: [],
 			isSavingVariants: []
@@ -35,6 +35,7 @@ class Products extends Component {
     this.handlePaginationClick = this.handlePaginationClick.bind(this);
     this.handleReloadClick = this.handleReloadClick.bind(this);
     this.handleSaveVariantClick = this.handleSaveVariantClick.bind(this);
+    this.handleSaveAllVariantsClick = this.handleSaveAllVariantsClick.bind(this);
     this.handleStatusChange = this.handleStatusChange.bind(this);
     this.handleFilterDesignerChange = this.handleFilterDesignerChange.bind(this);
     this.handleFilterPriceChange = this.handleFilterPriceChange.bind(this);
@@ -87,17 +88,46 @@ class Products extends Component {
 		this.props.reloadProduct(this.props.token, productId);
 	}
 	
-	handleSaveVariantClick(objectId, inventory, colorCode) {
-  	console.log('save inventory: ' + inventory + ' color: ' + colorCode);
+	handleSaveVariantClick(variantEdited) {
+  	const objectId = variantEdited.objectId;
+  	const inventory = variantEdited.inventory;
+  	console.log('save variant');
 		let currentlySaving = this.state.isSavingVariants;
-		const index = currentlySaving.indexOf(objectId);
+    let index = -1;
+    currentlySaving.map(function(variant, i) {
+      if (variant.objectId === variantEdited.objectId) index = i;
+      return currentlySaving;
+    });
 		if (index < 0) {
-			currentlySaving.push(objectId);
+			currentlySaving.push(variantEdited);
 		}
   	this.setState({
     	isSavingVariants: currentlySaving
   	});
-		this.props.saveVariant(this.props.token, objectId, inventory, colorCode);
+		this.props.saveVariant(this.props.token, objectId, inventory);
+	}
+	
+	handleSaveAllVariantsClick(variantsEdited) {
+  	console.log('save all variants');
+/*
+		let currentlySaving = this.state.isSavingVariants;
+    variantsEdited.map(function(editedVariant, i) {
+      let index = -1;
+      currentlySaving.map(function(variant, i) {
+        if (editedVariant.objectId === variant.objectId) index = i;
+        return currentlySaving;
+      });
+  		if (index < 0) {
+  			currentlySaving.push(editedVariant);
+  		}
+      return variantsEdited;
+    });
+*/
+//     console.log(variantsEdited);
+  	this.setState({
+    	isSavingVariants: variantsEdited
+  	});
+		this.props.saveVariants(this.props.token, variantsEdited);
 	}
 	
 	handleSortClick(sort) {
@@ -226,12 +256,41 @@ class Products extends Component {
     }
     
     let isSavingVariants = this.state.isSavingVariants;
-  	if (nextProps.updatedVariant) {
-    	const updatedVariantJSON = nextProps.updatedVariant.toJSON();
-    	if (isSavingVariants.length) {
-      	const index = isSavingVariants.indexOf(updatedVariantJSON.objectId);
-        if (index >= 0) isSavingVariants.splice(index, 1);
-      }
+//   	let updatedVariantsCleaned = [];
+  	if (nextProps.updatedVariants && nextProps.updatedVariants.length > 0) {
+//     	let updatedVariantsToRemove = [];
+    	nextProps.updatedVariants.map(function(updatedVariant, i) {
+      	const updatedVariantJSON = updatedVariant.toJSON();
+      	if (isSavingVariants.length) {
+        	let index = -1;
+          isSavingVariants.map(function(variant, i) {
+            if (variant.objectId === updatedVariantJSON.objectId) index = i;
+            return isSavingVariants;
+          });
+          if (index >= 0) {
+            isSavingVariants.splice(index, 1);
+//             updatedVariantsToRemove.push(updatedVariant);
+          }
+        }
+        return updatedVariant;
+      });
+      
+/*
+      let currentUpdatedVariants = this.state.updatedVariants;
+      currentUpdatedVariants.map(function(updatedVariant, i) {
+        let index = -1;
+        updatedVariantsToRemove.map(function(toRemove, i) {
+          if (updatedVariant.objectId === toRemove.objectId) index = i;
+          return updatedVariantsToRemove;
+        });
+        if (index < 0) updatedVariantsCleaned.push(updatedVariant);
+        return currentUpdatedVariants;
+      });
+*/
+/*
+    } else {
+      updatedVariantsCleaned = this.state.updatedVariants;
+*/
     }
   	
   	// Process filters data
@@ -249,7 +308,7 @@ class Products extends Component {
   	// Reset on subpage navigation
   	var search = nextProps.router.params.subpage !== 'search' ? null : this.state.search;
   	expandedProducts = nextProps.router.params.subpage !== this.state.subpage ? [] : expandedProducts;
-  	
+//   	console.log(updatedVariantsCleaned)
 		this.setState({
   		subpage: nextProps.router.params.subpage,
 			page: nextPage,
@@ -257,7 +316,7 @@ class Products extends Component {
 			products: products,
 			filterData: filterData ? filterData : this.state.filterData,
 			updatedProduct: nextProps.updatedProduct,
-			updatedVariant: nextProps.updatedVariant,
+			updatedVariants: nextProps.updatedVariants,
 			expandedProducts: expandedProducts,
 			isReloading: currentlyReloading,
 			isSavingVariants: isSavingVariants
@@ -298,8 +357,9 @@ class Products extends Component {
   				    isReloading={isReloading} 
   				    handleReloadClick={scope.handleReloadClick} 
   				    handleSaveVariantClick={scope.handleSaveVariantClick} 
+  				    handleSaveAllVariantsClick={scope.handleSaveAllVariantsClick} 
   				    savingVariants={scope.state.isSavingVariants} 
-  				    updatedVariant={scope.state.updatedVariant} 
+  				    updatedVariants={scope.state.updatedVariants} 
 				    />
 			    );
 				}

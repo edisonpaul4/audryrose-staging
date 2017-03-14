@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { getProducts, getProductFilters, reloadProduct, saveProductStatus, saveVariant } from '../actions/products';
+import { getProducts, getProductFilters, reloadProduct, saveProductStatus, saveVariant, saveVariants } from '../actions/products';
 import Products from '../components/Products';
 
 const select = state => ({
@@ -8,7 +8,7 @@ const select = state => ({
 	products: state.products.products,
 	filterData: state.products.filterData,
 	updatedProduct: state.products.updatedProduct,
-	updatedVariant: state.products.updatedVariant,
+	updatedVariants: state.products.updatedVariants,
 	totalPages: state.products.totalPages,
 	totalProducts: state.products.totalProducts,
 	tabCounts: state.products.tabCounts,
@@ -20,7 +20,8 @@ const actions = {
   getProductFilters,
   reloadProduct,
   saveProductStatus,
-  saveVariant
+  saveVariant,
+  saveVariants
 };
 
 export default connect(select, actions)(Products);
