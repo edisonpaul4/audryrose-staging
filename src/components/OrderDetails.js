@@ -1,14 +1,32 @@
 import React, { Component } from 'react';
-import { Table, Button, Dropdown, Dimmer, Segment, Loader, Modal, List } from 'semantic-ui-react';
+import { Table, Button, Dropdown, Dimmer, Segment, Loader } from 'semantic-ui-react';
 import classNames from 'classnames';
 // import numeral from 'numeral';
-import moment from 'moment';
+// import moment from 'moment';
 import OrderShipModal from './OrderShipModal.js';
 
 class ProductRow extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      shipModalOpen: false
+    };
+    this.handleShipModalOpen = this.handleShipModalOpen.bind(this);
+    this.handleShipModalClose = this.handleShipModalClose.bind(this);
+  }
+  handleShipModalOpen() {
+    this.setState({
+      shipModalOpen: true
+    });
+  }
+  handleShipModalClose() {
+    this.setState({
+      shipModalOpen: false
+    });
+  }
 	render() {  	
 		const product = this.props.product;
-		const shipment = this.props.shipment;
+		const shipments = this.props.shipments;
 		// Create an array of other options values
 		let options = [];
 		if (product.product_options) {
@@ -27,8 +45,10 @@ class ProductRow extends Component {
 		
 		const designerName = product.variant ? product.variant.designer ? product.variant.designer.name : '' : '';
 		
-		let shipmentButton;
+		let primaryButton;
 		let dropdownItems;
+		let orderShipModal;
+/*
 		if (shipment) {
   		let totalItems = 0;
   		shipment.items.map(function(item) {
@@ -74,17 +94,19 @@ class ProductRow extends Component {
           </Modal.Content>
         </Modal>;
 	  } else {
-  	  if (product.shippable) {
-    	  shipmentButton = <OrderShipModal order={this.props.order} product={product} />;
+*/
+  	  if (product.shippable || shipments) {
+    	  orderShipModal = <OrderShipModal open={this.state.shipModalOpen} handleShipModalClose={this.handleShipModalClose} order={this.props.order} shipments={shipments} product={product} />;
+    	  primaryButton = <Button icon='shipping' content='Shipping' onClick={this.handleShipModalOpen} />;
     	  dropdownItems = [<Dropdown.Item key='1' icon='edit' text='Edit' />];
   	  } else if (product.resizable) {
-    	  shipmentButton = <Button icon='exchange' content='Resize' />;
+    	  primaryButton = <Button icon='exchange' content='Resize' />;
     	  dropdownItems = [<Dropdown.Item key='1' icon='add to cart' text='Order' />,<Dropdown.Item key='2' icon='edit' text='Edit' />]    	  
   	  } else {
-    	  shipmentButton = <Button icon='add to cart' content='Order' />;
+    	  primaryButton = <Button icon='add to cart' content='Order' />;
     	  dropdownItems = [<Dropdown.Item key='1' icon='exchange' text='Resize' />,<Dropdown.Item key='2' icon='edit' text='Edit' />]
   	  }
-	  }
+// 	  }
 
     return (
       <Table.Row>
@@ -101,7 +123,7 @@ class ProductRow extends Component {
 				<Table.Cell>{designerName}</Table.Cell>
 				<Table.Cell className='right aligned'>
           <Button.Group color='grey' size='mini' compact>
-            {shipmentButton}
+            {primaryButton}
             {dropdownItems.length > 0 ? <Dropdown floating button compact pointing className='icon'>
               <Dropdown.Menu>
                 {dropdownItems}
@@ -109,6 +131,7 @@ class ProductRow extends Component {
             </Dropdown>
             : null}
           </Button.Group>
+          {orderShipModal}
 				</Table.Cell>
       </Table.Row>
     );
@@ -157,6 +180,7 @@ class OrderDetails extends Component {
 		if (products) {
 			products.map(function(productRow, i) {
   			// Match an OrderShipment to this OrderProduct
+/*
   			var shipment = null;
   			if (shipments) {
     			shipments.map(function(shipmentObj) {
@@ -167,7 +191,8 @@ class OrderDetails extends Component {
       			return shipmentObj;
     			});
   			}
-				productRows.push(<ProductRow order={scope.props.data} product={productRow} shipment={shipment} key={i} />);
+*/
+				productRows.push(<ProductRow order={scope.props.data} product={productRow} shipments={shipments} key={i} />);
 				return productRows;
 	    });
 		}
