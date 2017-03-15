@@ -36,10 +36,26 @@ const orders = (state = initialState, action) => {
     case 'ORDER_RELOAD_SUCCESS':
       return {
         ...state,
-        updatedOrder: action.res
+        updatedOrders: action.res
       };
 
     case 'ORDER_RELOAD_FAILURE':
+      return {
+        ...state
+      };
+      
+    case 'CREATE_SHIPMENTS_REQUEST':
+      return {
+        ...state
+      };
+
+    case 'CREATE_SHIPMENTS_SUCCESS':
+      return {
+        ...state,
+        updatedOrders: action.res
+      };
+
+    case 'CREATE_SHIPMENTS_FAILURE':
       return {
         ...state
       };

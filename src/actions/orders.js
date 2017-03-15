@@ -13,3 +13,10 @@ export function reloadOrder(token, orderId) {
     promise: api.reloadOrder(token, orderId)
   }
 }
+
+export function createShipments(token, shipmentGroups) {
+  return {
+    types: ['CREATE_SHIPMENTS_REQUEST', 'CREATE_SHIPMENTS_SUCCESS', 'CREATE_SHIPMENTS_FAILURE'],
+    promise: api.createShipments(token, shipmentGroups)
+  }
+}

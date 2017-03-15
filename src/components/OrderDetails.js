@@ -8,25 +8,14 @@ import OrderShipModal from './OrderShipModal.js';
 class ProductRow extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      shipModalOpen: false
-    };
     this.handleShipModalOpen = this.handleShipModalOpen.bind(this);
-    this.handleShipModalClose = this.handleShipModalClose.bind(this);
   }
   handleShipModalOpen() {
-    this.setState({
-      shipModalOpen: true
-    });
-  }
-  handleShipModalClose() {
-    this.setState({
-      shipModalOpen: false
-    });
+    this.props.handleShipModalOpen();
   }
 	render() {  	
 		const product = this.props.product;
-		const shipments = this.props.shipments;
+		const shipment = this.props.shipment;
 		// Create an array of other options values
 		let options = [];
 		if (product.product_options) {
@@ -38,75 +27,28 @@ class ProductRow extends Component {
 		const productName = product.name ? product.name : '';
 		const productUrl = '/products/search?q=' + product.product_id;
 		const productLink = product.variant ? <a href={productUrl}>{productName}</a> : productName;
-		
 		const alwaysResize = product.variant ? product.variant.alwaysResize : '';
-		
 		const inventory = product.variant ? product.variant.inventoryLevel : '';
-		
 		const designerName = product.variant ? product.variant.designer ? product.variant.designer.name : '' : '';
 		
 		let primaryButton;
-		let dropdownItems;
-		let orderShipModal;
-/*
-		if (shipment) {
-  		let totalItems = 0;
-  		shipment.items.map(function(item) {
-    		totalItems += item.quantity;
-    		return totalItems;
-  		});
-  		shipmentButton = 
-		    <Modal trigger={<Button icon='shipping' content='View Shipment' />} size='small' closeIcon='close'>
-          <Modal.Header>{totalItems} Item{totalItems > 1 ? 's' : ''} in Shipment</Modal.Header>
-          <Modal.Content image>
-            <Modal.Description>
-              <List relaxed>
-                  <List.Item>
-                    <List.Header>Date Shipped</List.Header>
-                    {moment(shipment.date_created.iso).calendar()}<br/>
-                  </List.Item>
-                  <List.Item>
-                    <List.Header>ID</List.Header>
-                    {shipment.shipmentId}<br/>
-                  </List.Item>
-                  <List.Item>
-                    <List.Header>Address</List.Header>
-                    {shipment.shipping_address.first_name} {shipment.shipping_address.last_name} {shipment.company}<br/>
-                    {shipment.shipping_address.street_1} {shipment.shipping_address.street_2}<br/>
-                    {shipment.shipping_address.city}, {shipment.shipping_address.state} {shipment.shipping_address.zip} {shipment.shipping_address.country}<br/>
-                    {shipment.shipping_address.email}<br/>
-                    {shipment.shipping_address.phone !== 'undefined' ? shipment.shipping_address.phone : null}<br/>
-                  </List.Item>
-                  <List.Item>
-                    <List.Header>Shipping Provider</List.Header>
-                    {shipment.shipping_provider}<br/>
-                  </List.Item>
-                  <List.Item>
-                    <List.Header>Tracking Carrier</List.Header>
-                    {shipment.tracking_carrier}<br/>
-                  </List.Item>
-                  <List.Item>
-                    <List.Header>Tracking Number</List.Header>
-                    {shipment.tracking_number}<br/>
-                  </List.Item>
-              </List>
-            </Modal.Description>
-          </Modal.Content>
-        </Modal>;
+		let dropdownItems = [];
+// 		let orderShipModal;
+    if (shipment) {
+  	  primaryButton = <Button icon='shipping' content='View Shipment' onClick={this.handleShipModalOpen} />;
+    } else if (product.shippable) {
+//   	  let buttonText = product.shippable ? 
+  	  primaryButton = <Button icon='shipping' content='Ship' onClick={this.handleShipModalOpen} />;
+  	  dropdownItems.push(<Dropdown.Item key='1' icon='edit' text='Edit' />);
+	  } else if (product.resizable) {
+  	  primaryButton = <Button icon='exchange' content='Resize' />;
+  	  dropdownItems.push(<Dropdown.Item key='1' icon='add to cart' text='Order' />);
+  	  dropdownItems.push(<Dropdown.Item key='2' icon='edit' text='Edit' />);
 	  } else {
-*/
-  	  if (product.shippable || shipments) {
-    	  orderShipModal = <OrderShipModal open={this.state.shipModalOpen} handleShipModalClose={this.handleShipModalClose} order={this.props.order} shipments={shipments} product={product} />;
-    	  primaryButton = <Button icon='shipping' content='Shipping' onClick={this.handleShipModalOpen} />;
-    	  dropdownItems = [<Dropdown.Item key='1' icon='edit' text='Edit' />];
-  	  } else if (product.resizable) {
-    	  primaryButton = <Button icon='exchange' content='Resize' />;
-    	  dropdownItems = [<Dropdown.Item key='1' icon='add to cart' text='Order' />,<Dropdown.Item key='2' icon='edit' text='Edit' />]    	  
-  	  } else {
-    	  primaryButton = <Button icon='add to cart' content='Order' />;
-    	  dropdownItems = [<Dropdown.Item key='1' icon='exchange' text='Resize' />,<Dropdown.Item key='2' icon='edit' text='Edit' />]
-  	  }
-// 	  }
+  	  primaryButton = <Button icon='add to cart' content='Order' />;
+  	  dropdownItems.push(<Dropdown.Item key='1' icon='exchange' text='Resize' />);
+  	  dropdownItems.push(<Dropdown.Item key='2' icon='edit' text='Edit' />);
+	  }
 
     return (
       <Table.Row>
@@ -131,7 +73,6 @@ class ProductRow extends Component {
             </Dropdown>
             : null}
           </Button.Group>
-          {orderShipModal}
 				</Table.Cell>
       </Table.Row>
     );
@@ -142,14 +83,33 @@ class OrderDetails extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      showProducts: false,
-      showEditor: false
+      order: this.props.data,
+      products: this.props.data.orderProducts,
+      shipments: this.props.data.orderShipments,
+      showEditor: false,
+      shipModalOpen: false
     };
     this.handleReloadClick = this.handleReloadClick.bind(this);
+    this.handleShipModalOpen = this.handleShipModalOpen.bind(this);
+    this.handleShipModalClose = this.handleShipModalClose.bind(this);
+    this.handleCreateShipments = this.handleCreateShipments.bind(this);
   }
-	handleReloadClick(productId) {
-		this.props.handleReloadClick(productId);
+	handleReloadClick(orderId) {
+		this.props.handleReloadClick(orderId);
 	}
+	handleCreateShipments(shipmentGroups) {
+		this.props.handleCreateShipments(shipmentGroups);
+	}
+  handleShipModalOpen() {
+    this.setState({
+      shipModalOpen: true
+    });
+  }
+  handleShipModalClose() {
+    this.setState({
+      shipModalOpen: false
+    });
+  }
 	handleToggleEditorClick() {
   	const showEditor = !this.state.showEditor;
   	
@@ -157,11 +117,19 @@ class OrderDetails extends Component {
     	showEditor: showEditor
   	});
 	}
+	componentWillReceiveProps(nextProps) {
+    this.setState({
+      order: nextProps.data,
+      products: nextProps.data.orderProducts,
+      shipments: nextProps.data.orderShipments
+    });
+	}
 	render() {
   	const scope = this;
   	const showProducts = this.props.expanded ? true : false;
-  	const products = this.props.data.orderProducts;
-  	const shipments = this.props.data.orderShipments;
+  	const order = this.state.order;
+  	const products = this.state.products;
+  	const shipments = this.state.shipments;
 		var rowClass = classNames(
 			{
 				'': showProducts,
@@ -180,8 +148,7 @@ class OrderDetails extends Component {
 		if (products) {
 			products.map(function(productRow, i) {
   			// Match an OrderShipment to this OrderProduct
-/*
-  			var shipment = null;
+  			let shipment = null;
   			if (shipments) {
     			shipments.map(function(shipmentObj) {
       			shipmentObj.items.map(function(item) {
@@ -191,11 +158,11 @@ class OrderDetails extends Component {
       			return shipmentObj;
     			});
   			}
-*/
-				productRows.push(<ProductRow order={scope.props.data} product={productRow} shipments={shipments} key={i} />);
+				productRows.push(<ProductRow product={productRow} shipment={shipment} handleShipModalOpen={scope.handleShipModalOpen} key={i} />);
 				return productRows;
 	    });
 		}
+		
     return (
       <Table.Row className={rowClass}>
         <Table.Cell colSpan='10' className='order-product-row'>
@@ -228,6 +195,14 @@ class OrderDetails extends Component {
                 </Table.Body>
               </Table>
             </Segment>
+            <OrderShipModal 
+              open={this.state.shipModalOpen} 
+              handleShipModalClose={this.handleShipModalClose} 
+              handleCreateShipments={this.handleCreateShipments} 
+              order={order} 
+              shipments={shipments} 
+              isLoading={this.props.isReloading}
+            />
           </Dimmer.Dimmable>
         </Table.Cell>
       </Table.Row>

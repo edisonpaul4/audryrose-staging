@@ -24,12 +24,13 @@ class Orders extends Component {
       search: search,
       orders: null,
 //       filterData: null,
-      updatedOrder: null,
+      updatedOrders: null,
 			expandedOrders: [],
 			isReloading: []
     };
     this.handleToggleClick = this.handleToggleClick.bind(this);
     this.handleReloadClick = this.handleReloadClick.bind(this);
+    this.handleCreateShipments = this.handleCreateShipments.bind(this);
     this.handlePaginationClick = this.handlePaginationClick.bind(this);
   }
 	
@@ -92,6 +93,19 @@ class Orders extends Component {
     this.props.getOrders(this.props.token, this.state.subpage, 1,  sort, this.state.search);
 	}
 	
+	handleCreateShipments(shipmentGroups) {
+  	// Add shipment group order ids to currently reloading array
+  	var orderIds = shipmentGroups.map(function(obj) { return obj.orderProducts[0].order_id; });
+    orderIds = orderIds.filter(function(v,i) { return orderIds.indexOf(v) === i; });
+		let currentlyReloading = orderIds.concat(this.state.isReloading);
+		currentlyReloading = currentlyReloading.filter(function(v,i) { return currentlyReloading.indexOf(v) === i; });
+		
+  	this.setState({
+    	isReloading: currentlyReloading
+  	});
+  	this.props.createShipments(this.props.token, shipmentGroups);
+	}
+	
 	componentWillReceiveProps(nextProps) {
   	let nextPage = parseFloat(nextProps.location.query.page);
   	if (!nextPage) nextPage = 1;
@@ -99,26 +113,34 @@ class Orders extends Component {
   	
   	let orders = [];
   	let currentlyReloading = this.state.isReloading;
-  	if (nextProps.updatedOrder) {
-    	// If updated product exists, push it into the state products array
-    	const updatedOrderJSON = nextProps.updatedOrder.toJSON();
+  	if (nextProps.updatedOrders) {
+    	console.log('has updated orders');
       nextProps.orders.map(function(order, i) {
         const orderJSON = order.toJSON();
-        if (updatedOrderJSON.orderId === orderJSON.orderId) {
-          orders.push(nextProps.updatedOrder);
+        let addUpdatedOrder;
+        nextProps.updatedOrders.map(function(updatedOrder, i) {
+        	// If updated product exists, push it into the state products array
+        	const updatedOrderJSON = updatedOrder.toJSON();
+        	if (updatedOrderJSON.orderId === orderJSON.orderId) addUpdatedOrder = updatedOrder;
+        	return updatedOrder;
+      	});
+        if (addUpdatedOrder) {
+          console.log('update order ' + addUpdatedOrder.get('orderId'));
+          orders.push(addUpdatedOrder);
         } else {
           orders.push(order);
+        }
+        // If currently reloading and has successfully updated order, remove updated order
+      	if (currentlyReloading.length && addUpdatedOrder) {
+        	console.log('check for updated order')
+        	const index = currentlyReloading.indexOf(addUpdatedOrder.get('orderId'));
+          if (index >= 0) currentlyReloading.splice(index, 1);
         }
         return order;
       });
       
-      // If currently reloading and has successfully updated order, remove updated order
-    	if (currentlyReloading.length) {
-      	const index = currentlyReloading.indexOf(updatedOrderJSON.orderId);
-        if (index >= 0) currentlyReloading.splice(index, 1);
-      }
-      
     } else {
+      console.log('no updated orders');
       orders = nextProps.orders;
     }
     
@@ -131,7 +153,7 @@ class Orders extends Component {
 			page: nextPage,
 			search: search,
 			orders: orders,
-			updatedOrder: nextProps.updatedOrder,
+			updatedOrders: nextProps.updatedOrders,
 			expandedOrders: expandedOrders,
 			isReloading: currentlyReloading
 		});	
@@ -166,6 +188,7 @@ class Orders extends Component {
 				    key={`${orderJSON.orderId}-2`} 
 				    isReloading={isReloading} 
 				    handleReloadClick={scope.handleReloadClick} 
+				    handleCreateShipments={scope.handleCreateShipments}
 				    />
 			    );
 				return orderRows;
