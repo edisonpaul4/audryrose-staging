@@ -145,7 +145,8 @@ class Orders extends Component {
       orders = nextProps.orders;
     }
     
-    const tabCounts = nextProps.tabCounts ? nextProps.tabCounts : this.state.tabCounts;
+  	// Update tab counts if available
+  	const tabCounts = nextProps.tabCounts ? nextProps.tabCounts : this.state.tabCounts;
     
     // Reset on subpage navigation
   	const search = nextProps.router.params.subpage !== 'search' ? null : this.state.search;

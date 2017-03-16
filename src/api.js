@@ -69,14 +69,6 @@ export const saveProductStatus = (token, productId, status) => Parse.Cloud.run('
   }
 );
 
-export const saveVariant = (token, objectId, inventory) => Parse.Cloud.run('saveVariant', 
-  {
-    sessionToken: token,
-    objectId,
-    inventory
-  }
-);
-
 export const saveVariants = (token, variants) => Parse.Cloud.run('saveVariants', 
   {
     sessionToken: token,
@@ -125,7 +117,6 @@ export default {
 	getProductFilters,
 	reloadProduct,
 	saveProductStatus,
-	saveVariant,
 	saveVariants,
 	getDesigners,
 	getOptions,

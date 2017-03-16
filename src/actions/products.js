@@ -28,13 +28,6 @@ export function saveProductStatus(token, productId, status) {
   }
 }
 
-export function saveVariant(token, objectId, inventory) {
-  return {
-    types: ['VARIANT_SAVE_REQUEST', 'VARIANT_SAVE_SUCCESS', 'VARIANT_SAVE_FAILURE'],
-    promise: api.saveVariant(token, objectId, inventory)
-  }
-}
-
 export function saveVariants(token, variants) {
   return {
     types: ['VARIANTS_SAVE_REQUEST', 'VARIANTS_SAVE_SUCCESS', 'VARIANTS_SAVE_FAILURE'],

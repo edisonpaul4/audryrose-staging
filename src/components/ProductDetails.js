@@ -115,31 +115,6 @@ class VariantsTable extends Component {
     this.handleVariantEdited = this.handleVariantEdited.bind(this);
   }
   handleVariantEdited(data, edited) {
-/*
-    let variantsEdited = this.state.variantsEdited;
-    let index = -1;
-    variantsEdited.map(function(variant, i) {
-      if (variant.objectId === data.objectId) index = i;
-      return variantsEdited;
-    });
-    let add = [];
-    let remove = [];
-    let replace = [];
-    if (edited && index < 0) {
-      variantsEdited.push(data);
-      add.push(data);
-    } else if (!edited && index >= 0) {
-      variantsEdited.splice(index, 1);
-      remove.push(data);
-    } else if (edited && index >= 0) {
-      replace.push(data);
-    }
-//     console.log(variantsEdited)
-  	this.setState({
-    	variantsEdited: variantsEdited
-  	});
-    this.props.handleVariantsEdited(add, remove, replace);
-*/
     this.props.handleVariantsEdited(data, edited)
   }
 	handleSaveVariantClick(variantEdited) {
@@ -294,48 +269,14 @@ class ProductDetails extends Component {
       if (variant.objectId === data.objectId) index = i;
       return variantsEdited;
     });
-//     let add = [];
-//     let remove = [];
-//     let replace = [];
     if (edited && index < 0) {
       variantsEdited.push(data);
-//       add.push(data);
     } else if (!edited && index >= 0) {
       variantsEdited.splice(index, 1);
-//       remove.push(data);
     } else if (edited && index >= 0) {
       variantsEdited[index] = data;
-//       replace.push(data);
     }
-
-/*
-    let variantsEdited = this.state.variantsEdited;
-    if (add.length > 0) variantsEdited = variantsEdited.concat(add);
-    console.log('add ' + add)
     
-    // Remove
-    remove.map(function(removeVariant, i) {
-      let index = -1;
-      variantsEdited.map(function(variant, i) {
-        if (variant.objectId === removeVariant.objectId) index = i;
-        return variantsEdited;
-      });
-      if (index >= 0) variantsEdited.splice(index, 1);
-      return remove;
-    });
-    
-    // Replace
-    replace.map(function(replaceVariant, i) {
-      let index = -1;
-      variantsEdited.map(function(variant, i) {
-        if (variant.objectId === replaceVariant.objectId) index = i;
-        return variantsEdited;
-      });
-      if (index >= 0) variantsEdited[index] = replaceVariant;
-      return remove;
-    });
-*/
-//     console.log(variantsEdited)
   	this.setState({
     	variantsEdited: variantsEdited
   	});
@@ -348,6 +289,25 @@ class ProductDetails extends Component {
     	showEditor: showEditor
   	});
 	}	
+	componentWillReceiveProps(nextProps) {
+    let variantsEdited = this.state.variantsEdited;
+    if (nextProps.updatedVariants) {
+      nextProps.updatedVariants.map(function(updatedVariant, i) {
+        let index = -1;
+        variantsEdited.map(function(editedVariant, j) {
+          if (editedVariant.objectId === updatedVariant.id) index = j;
+          return variantsEdited;
+        }); 
+        if (index >= 0) {
+          variantsEdited.splice(index, 1);
+        }
+        return updatedVariant;
+      }); 
+    }
+  	this.setState({
+    	variantsEdited: variantsEdited
+  	});
+	}
 	render() {
   	const scope = this;
   	const showVariants = this.props.expanded ? true : false;
@@ -416,7 +376,7 @@ class ProductDetails extends Component {
         <Table.Cell colSpan='13' className='variant-row'>
           <Segment.Group horizontal compact className='toolbar'>
             <Segment basic>
-              <Button circular compact basic size='tiny' 
+              <Button circular compact basic size='small' 
                 icon='refresh' 
                 content='Reload' 
                 disabled={this.props.isReloading} 

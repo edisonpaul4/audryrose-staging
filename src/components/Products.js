@@ -91,22 +91,11 @@ class Products extends Component {
 	}
 	
 	handleSaveVariantClick(variantEdited) {
-  	const objectId = variantEdited.objectId;
-  	const inventory = variantEdited.inventory;
-  	console.log('save variant');
-		let currentlySaving = this.state.savingVariants;
-    let index = -1;
-    currentlySaving.map(function(variant, i) {
-      if (variant.objectId === variantEdited.objectId) index = i;
-      return currentlySaving;
-    });
-		if (index < 0) {
-			currentlySaving.push(variantEdited);
-		}
+  	console.log('save variant ' + variantEdited.objectId);
   	this.setState({
-    	savingVariants: currentlySaving
+    	savingVariants: [variantEdited]
   	});
-		this.props.saveVariant(this.props.token, objectId, inventory);
+		this.props.saveVariants(this.props.token, [variantEdited]);
 	}
 	
 	handleSaveAllVariantsClick(variantsEdited) {
@@ -226,17 +215,14 @@ class Products extends Component {
   	let products = [];
   	let currentlyReloading = this.state.isReloading;
   	
+  	// Process updated products from reloadProduct, saveProductStatus, saveVariants
   	if (nextProps.updatedProducts) {
-    
-    	// If updated product exists, push it into the state products array
-    	
-      nextProps.products.map(function(product, i) {
-        const productJSON = product.toJSON();
-        
+      console.log('total updated products: ' + nextProps.updatedProducts.length)  
+      this.state.products.map(function(product, i) {
         nextProps.updatedProducts.map(function(updatedProduct, i) {
-          
-          const updatedProductJSON = nextProps.updatedProduct.toJSON();
-          if (updatedProductJSON.productId === productJSON.productId) {
+          console.log(updatedProduct.get('productId'));
+          // If updated product exists, push it into the state products array
+          if (updatedProduct.get('productId') === product.get('productId')) {
             products.push(updatedProduct);
           } else {
             products.push(product);
@@ -244,27 +230,26 @@ class Products extends Component {
           
           // If currently reloading and has successfully updated product, remove updated product
         	if (currentlyReloading.length) {
-          	const index = currentlyReloading.indexOf(updatedProductJSON.productId);
+          	const index = currentlyReloading.indexOf(updatedProduct.get('productId'));
             if (index >= 0) {
-              console.log('completed loading ' + updatedProductJSON.productId);
+              console.log('completed loading ' + updatedProduct.get('productId'));
               currentlyReloading.splice(index, 1);
             }
           }
           
           return updatedProduct; 
-          
         });
-        
         return product;
-        
       });
-
-    } else {
+    } else if (nextProps.products) {
+      console.log('total products sent with props: ' + nextProps.products.length)
       products = nextProps.products;
+    } else {
+      products = this.state.products;
     }
     
+    // Remove any updated variants from savingVariants state
     let savingVariants = this.state.savingVariants;
-    console.log(savingVariants)
   	if (nextProps.updatedVariants && nextProps.updatedVariants.length > 0) {
     	nextProps.updatedVariants.map(function(updatedVariant, i) {
       	const updatedVariantJSON = updatedVariant.toJSON();
@@ -281,7 +266,6 @@ class Products extends Component {
         return updatedVariant;
       });
     }
-    
   	
   	// Process filters data
   	var filterData = null;
@@ -295,12 +279,13 @@ class Products extends Component {
     	filterData = {designers: designers, classes: classes};
   	}
   	
+  	// Update tab counts if available
   	const tabCounts = nextProps.tabCounts ? nextProps.tabCounts : this.state.tabCounts;
   	
   	// Reset on subpage navigation
   	var search = nextProps.router.params.subpage !== 'search' ? null : this.state.search;
   	expandedProducts = nextProps.router.params.subpage !== this.state.subpage ? [] : expandedProducts;
-//   	console.log(updatedVariantsCleaned)
+    
 		this.setState({
   		subpage: nextProps.router.params.subpage,
 			page: nextPage,
