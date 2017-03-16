@@ -24,11 +24,14 @@ class Order extends Component {
   	if (data.partiallyShippable) {
     	labels.push(<Label key={2} basic horizontal circular size='mini' color='yellow'>Partially Shippable</Label>);
   	}
-  	if (data.fullyShippable === false && data.partiallyShippable === false) {
+  	if (data.fullyShippable === false && data.partiallyShippable === false && data.status !== 'Shipped') {
     	labels.push(<Label key={3} basic horizontal circular size='mini' color='red'>Cannot Ship</Label>);
   	}
   	if (data.resizable) {
     	labels.push(<Label key={4} basic horizontal circular size='mini' color='yellow'>Resizable</Label>);
+  	}
+  	if (data.status === 'Shipped') {
+    	labels.push(<Label key={5} basic horizontal circular size='mini' color='olive'>Shipped</Label>);
   	}
 		    
 		let expandIcon = this.props.expanded ? 'minus' : 'plus';
