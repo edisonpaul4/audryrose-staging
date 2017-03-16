@@ -54,3 +54,7 @@ a:hover i.link.icon {
 .ui.secondary.pointing.menu .item.subnav-search {
   padding: 0 0 5px;
 }
+
+.ui.horizontal.label {
+  white-space: nowrap;
+}

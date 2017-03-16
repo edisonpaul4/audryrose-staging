@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Checkbox, Button, Icon } from 'semantic-ui-react';
+import { Table, Checkbox, Button, Icon, Label } from 'semantic-ui-react';
 import numeral from 'numeral';
 import moment from 'moment';
 
@@ -19,36 +19,26 @@ class Product extends Component {
 		this.props.handleStatusChange(this.props.data.productId, !this.props.data.is_active);
 	}
 	render() {
-/*
-		let labels = this.props.data.labels.map(function(label, i) {
-			var labelName = label.replace('-', ' ');
-			let labelStyle;
-			switch (label) {
-			case 'resizable':
-				labelStyle = 'warning';
-				break;
-			case 'fully-shippable':
-				labelStyle = 'success';
-				break;
-			case 'partially-shippable':
-				labelStyle = 'success';
-				break;
-			case 'cannot-ship':
-				labelStyle = 'danger';
-				break;
-			case 'emails':
-				labelStyle = 'info';
-				break;
-			case 'fulfilled':
-				labelStyle = 'success';
-				break;
-			}
-			return <Label key={i} bsStyle={labelStyle}> {labelName} </Label>;
-		    });
-*/
+  	const data = this.props.data;
+  	
+  	let labels = [];
+  	if (data.total_stock > 0) {
+    	labels.push(<Label key={1} basic horizontal circular size='mini' color='olive'>In Stock</Label>);
+  	}
+  	if (data.total_stock <= 0) {
+    	labels.push(<Label key={1} basic horizontal circular size='mini' color='red'>Out Of Stock</Label>);
+  	}
+  	if (!data.is_visible) {
+    	labels.push(<Label key={2} basic horizontal circular size='mini' color='grey'>Hidden</Label>);
+  	}
+  	if (data.hasResizeRequest) {
+    	labels.push(<Label key={3} basic horizontal circular size='mini' color='teal'>Being Resized</Label>);
+  	}
+  	if (data.hasVendorBuy) {
+    	labels.push(<Label key={4} basic horizontal circular size='mini' color='teal'>Ordered</Label>);
+  	}
+  	
 		let expandIcon = this.props.expanded ? 'minus' : 'plus';
-		
-		const data = this.props.data;
 		
 		// Get the product size scale
 		let sizes = [];
@@ -94,7 +84,7 @@ class Product extends Component {
   				  onChange={this.handleStatusChange}
 				  />
 		    </Table.Cell>
-				<Table.Cell>[not loaded yet]</Table.Cell>
+				<Table.Cell>{labels}</Table.Cell>
 				<Table.Cell className='right aligned'>{data.total_stock}</Table.Cell>
 				<Table.Cell className='right aligned'>
 				  <Button circular icon={expandIcon} basic size='mini' onClick={()=>this.handleToggleClick(data.productId)} />
