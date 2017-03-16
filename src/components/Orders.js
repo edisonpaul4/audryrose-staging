@@ -26,7 +26,8 @@ class Orders extends Component {
 //       filterData: null,
       updatedOrders: null,
 			expandedOrders: [],
-			isReloading: []
+			isReloading: [],
+			tabCounts: null
     };
     this.handleToggleClick = this.handleToggleClick.bind(this);
     this.handleReloadClick = this.handleReloadClick.bind(this);
@@ -144,6 +145,8 @@ class Orders extends Component {
       orders = nextProps.orders;
     }
     
+    const tabCounts = nextProps.tabCounts ? nextProps.tabCounts : this.state.tabCounts;
+    
     // Reset on subpage navigation
   	const search = nextProps.router.params.subpage !== 'search' ? null : this.state.search;
   	expandedOrders = nextProps.router.params.subpage !== this.state.subpage ? [] : expandedOrders;
@@ -155,7 +158,8 @@ class Orders extends Component {
 			orders: orders,
 			updatedOrders: nextProps.updatedOrders,
 			expandedOrders: expandedOrders,
-			isReloading: currentlyReloading
+			isReloading: currentlyReloading,
+			tabCounts: tabCounts
 		});	
 		
   	if (nextPage !== this.state.page || nextProps.router.params.subpage !== this.state.subpage) {
@@ -164,9 +168,10 @@ class Orders extends Component {
 	}
 	
   render() {
-		const { error, isLoadingOrders, totalPages, totalOrders, tabCounts } = this.props;
+		const { error, isLoadingOrders, totalPages, totalOrders } = this.props;
 		let scope = this;
 		let orderRows = [];
+		const tabCounts = this.state.tabCounts;
 		if (this.state.orders) {
 			this.state.orders.map(function(orderRow, i) {
   			let orderJSON = orderRow.toJSON();

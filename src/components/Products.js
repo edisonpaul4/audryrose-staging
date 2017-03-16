@@ -25,17 +25,19 @@ class Products extends Component {
 			search: search,
 			products: null,
 			filterData: null,
-			updatedProduct: null,
+			updatedProducts: null,
 			updatedVariants: [],
 			expandedProducts: [],
 			isReloading: [],
-			isSavingVariants: []
+			savingVariants: [],
+			tabCounts: null
     };
     this.handleToggleClick = this.handleToggleClick.bind(this);
     this.handlePaginationClick = this.handlePaginationClick.bind(this);
     this.handleReloadClick = this.handleReloadClick.bind(this);
     this.handleSaveVariantClick = this.handleSaveVariantClick.bind(this);
     this.handleSaveAllVariantsClick = this.handleSaveAllVariantsClick.bind(this);
+    this.handleVariantsEdited = this.handleVariantsEdited.bind(this);
     this.handleStatusChange = this.handleStatusChange.bind(this);
     this.handleFilterDesignerChange = this.handleFilterDesignerChange.bind(this);
     this.handleFilterPriceChange = this.handleFilterPriceChange.bind(this);
@@ -92,7 +94,7 @@ class Products extends Component {
   	const objectId = variantEdited.objectId;
   	const inventory = variantEdited.inventory;
   	console.log('save variant');
-		let currentlySaving = this.state.isSavingVariants;
+		let currentlySaving = this.state.savingVariants;
     let index = -1;
     currentlySaving.map(function(variant, i) {
       if (variant.objectId === variantEdited.objectId) index = i;
@@ -102,30 +104,15 @@ class Products extends Component {
 			currentlySaving.push(variantEdited);
 		}
   	this.setState({
-    	isSavingVariants: currentlySaving
+    	savingVariants: currentlySaving
   	});
 		this.props.saveVariant(this.props.token, objectId, inventory);
 	}
 	
 	handleSaveAllVariantsClick(variantsEdited) {
   	console.log('save all variants');
-/*
-		let currentlySaving = this.state.isSavingVariants;
-    variantsEdited.map(function(editedVariant, i) {
-      let index = -1;
-      currentlySaving.map(function(variant, i) {
-        if (editedVariant.objectId === variant.objectId) index = i;
-        return currentlySaving;
-      });
-  		if (index < 0) {
-  			currentlySaving.push(editedVariant);
-  		}
-      return variantsEdited;
-    });
-*/
-//     console.log(variantsEdited);
   	this.setState({
-    	isSavingVariants: variantsEdited
+    	savingVariants: variantsEdited
   	});
 		this.props.saveVariants(this.props.token, variantsEdited);
 	}
@@ -225,6 +212,12 @@ class Products extends Component {
 		this.props.saveProductStatus(this.props.token, productId, status);
 	}
 	
+	handleVariantsEdited(data, edited) {
+  	this.setState({
+    	savingVariants: []
+  	});
+	}
+	
 	componentWillReceiveProps(nextProps) {
   	let nextPage = parseFloat(nextProps.location.query.page);
   	if (!nextPage) nextPage = 1;
@@ -232,66 +225,63 @@ class Products extends Component {
   	
   	let products = [];
   	let currentlyReloading = this.state.isReloading;
-  	if (nextProps.updatedProduct) {
+  	
+  	if (nextProps.updatedProducts) {
+    
     	// If updated product exists, push it into the state products array
-    	const updatedProductJSON = nextProps.updatedProduct.toJSON();
+    	
       nextProps.products.map(function(product, i) {
         const productJSON = product.toJSON();
-        if (updatedProductJSON.productId === productJSON.productId) {
-          products.push(nextProps.updatedProduct);
-        } else {
-          products.push(product);
-        }
+        
+        nextProps.updatedProducts.map(function(updatedProduct, i) {
+          
+          const updatedProductJSON = nextProps.updatedProduct.toJSON();
+          if (updatedProductJSON.productId === productJSON.productId) {
+            products.push(updatedProduct);
+          } else {
+            products.push(product);
+          }
+          
+          // If currently reloading and has successfully updated product, remove updated product
+        	if (currentlyReloading.length) {
+          	const index = currentlyReloading.indexOf(updatedProductJSON.productId);
+            if (index >= 0) {
+              console.log('completed loading ' + updatedProductJSON.productId);
+              currentlyReloading.splice(index, 1);
+            }
+          }
+          
+          return updatedProduct; 
+          
+        });
+        
         return product;
+        
       });
-      
-      // If currently reloading and has successfully updated product, remove updated product
-    	if (currentlyReloading.length) {
-      	const index = currentlyReloading.indexOf(updatedProductJSON.productId);
-        if (index >= 0) currentlyReloading.splice(index, 1);
-      }
-      
+
     } else {
       products = nextProps.products;
     }
     
-    let isSavingVariants = this.state.isSavingVariants;
-//   	let updatedVariantsCleaned = [];
+    let savingVariants = this.state.savingVariants;
+    console.log(savingVariants)
   	if (nextProps.updatedVariants && nextProps.updatedVariants.length > 0) {
-//     	let updatedVariantsToRemove = [];
     	nextProps.updatedVariants.map(function(updatedVariant, i) {
       	const updatedVariantJSON = updatedVariant.toJSON();
-      	if (isSavingVariants.length) {
+      	if (savingVariants.length) {
         	let index = -1;
-          isSavingVariants.map(function(variant, i) {
-            if (variant.objectId === updatedVariantJSON.objectId) index = i;
-            return isSavingVariants;
+          savingVariants.map(function(variant, j) {
+            if (variant.objectId === updatedVariantJSON.objectId) index = j;
+            return savingVariants;
           });
           if (index >= 0) {
-            isSavingVariants.splice(index, 1);
-//             updatedVariantsToRemove.push(updatedVariant);
+            savingVariants.splice(index, 1);
           }
         }
         return updatedVariant;
       });
-      
-/*
-      let currentUpdatedVariants = this.state.updatedVariants;
-      currentUpdatedVariants.map(function(updatedVariant, i) {
-        let index = -1;
-        updatedVariantsToRemove.map(function(toRemove, i) {
-          if (updatedVariant.objectId === toRemove.objectId) index = i;
-          return updatedVariantsToRemove;
-        });
-        if (index < 0) updatedVariantsCleaned.push(updatedVariant);
-        return currentUpdatedVariants;
-      });
-*/
-/*
-    } else {
-      updatedVariantsCleaned = this.state.updatedVariants;
-*/
     }
+    
   	
   	// Process filters data
   	var filterData = null;
@@ -305,6 +295,8 @@ class Products extends Component {
     	filterData = {designers: designers, classes: classes};
   	}
   	
+  	const tabCounts = nextProps.tabCounts ? nextProps.tabCounts : this.state.tabCounts;
+  	
   	// Reset on subpage navigation
   	var search = nextProps.router.params.subpage !== 'search' ? null : this.state.search;
   	expandedProducts = nextProps.router.params.subpage !== this.state.subpage ? [] : expandedProducts;
@@ -315,11 +307,12 @@ class Products extends Component {
 			search: search,
 			products: products,
 			filterData: filterData ? filterData : this.state.filterData,
-			updatedProduct: nextProps.updatedProduct,
+			updatedProducts: nextProps.updatedProducts,
 			updatedVariants: nextProps.updatedVariants,
 			expandedProducts: expandedProducts,
 			isReloading: currentlyReloading,
-			isSavingVariants: isSavingVariants
+			savingVariants: savingVariants,
+			tabCounts: tabCounts
 		});	
     
   	if (nextPage !== this.state.page || nextProps.router.params.subpage !== this.state.subpage) {
@@ -330,9 +323,11 @@ class Products extends Component {
 	}
 	
   render() {
-		const { error, isLoadingProducts, totalPages, totalProducts, tabCounts } = this.props;
+		const { error, isLoadingProducts, totalPages, totalProducts } = this.props;
 		let scope = this;
 		let productRows = [];
+		const tabCounts = this.state.tabCounts;
+		
 		if (this.state.products) {
 			this.state.products.map(function(productRow, i) {
   			let productJSON = productRow.toJSON();
@@ -358,7 +353,8 @@ class Products extends Component {
   				    handleReloadClick={scope.handleReloadClick} 
   				    handleSaveVariantClick={scope.handleSaveVariantClick} 
   				    handleSaveAllVariantsClick={scope.handleSaveAllVariantsClick} 
-  				    savingVariants={scope.state.isSavingVariants} 
+  				    handleVariantsEdited={scope.handleVariantsEdited}
+  				    savingVariants={scope.state.savingVariants} 
   				    updatedVariants={scope.state.updatedVariants} 
 				    />
 			    );

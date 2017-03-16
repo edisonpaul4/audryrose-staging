@@ -36,7 +36,8 @@ const orders = (state = initialState, action) => {
     case 'ORDER_RELOAD_SUCCESS':
       return {
         ...state,
-        updatedOrders: action.res
+        updatedOrders: action.res.updatedOrders,
+        tabCounts: action.res.tabCounts
       };
 
     case 'ORDER_RELOAD_FAILURE':

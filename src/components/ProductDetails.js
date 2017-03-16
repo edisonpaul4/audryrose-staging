@@ -111,13 +111,11 @@ class VariantRow extends Component {
 class VariantsTable extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      variantsEdited: []
-    };
     this.handleSaveVariantClick = this.handleSaveVariantClick.bind(this);
     this.handleVariantEdited = this.handleVariantEdited.bind(this);
   }
   handleVariantEdited(data, edited) {
+/*
     let variantsEdited = this.state.variantsEdited;
     let index = -1;
     variantsEdited.map(function(variant, i) {
@@ -136,10 +134,13 @@ class VariantsTable extends Component {
     } else if (edited && index >= 0) {
       replace.push(data);
     }
+//     console.log(variantsEdited)
   	this.setState({
     	variantsEdited: variantsEdited
   	});
     this.props.handleVariantsEdited(add, remove, replace);
+*/
+    this.props.handleVariantsEdited(data, edited)
   }
 	handleSaveVariantClick(variantEdited) {
 		this.props.handleSaveVariantClick(variantEdited);
@@ -178,11 +179,12 @@ class VariantsTable extends Component {
     			});
   			}
         let index = -1;
+//         console.log(scope.props.savingVariants)
         scope.props.savingVariants.map(function(savingVariant, i) {
           if (savingVariant.objectId === variantData.objectId) index = i;
           return savingVariant;
         });
-        let isSaving = index >= 0 ? true : false;
+        const isSaving = index < 0 ? false : true;
 				variantRows.push(
 				  <VariantRow 
 				    data={variantData} 
@@ -285,9 +287,31 @@ class ProductDetails extends Component {
 	handleSaveAllVariantsClick() {
 		this.props.handleSaveAllVariantsClick(this.state.variantsEdited);
 	}
-  handleVariantsEdited(add, remove, replace) {
+  handleVariantsEdited(data, edited) {
+    let variantsEdited = this.state.variantsEdited;
+    let index = -1;
+    variantsEdited.map(function(variant, i) {
+      if (variant.objectId === data.objectId) index = i;
+      return variantsEdited;
+    });
+//     let add = [];
+//     let remove = [];
+//     let replace = [];
+    if (edited && index < 0) {
+      variantsEdited.push(data);
+//       add.push(data);
+    } else if (!edited && index >= 0) {
+      variantsEdited.splice(index, 1);
+//       remove.push(data);
+    } else if (edited && index >= 0) {
+      variantsEdited[index] = data;
+//       replace.push(data);
+    }
+
+/*
     let variantsEdited = this.state.variantsEdited;
     if (add.length > 0) variantsEdited = variantsEdited.concat(add);
+    console.log('add ' + add)
     
     // Remove
     remove.map(function(removeVariant, i) {
@@ -310,10 +334,12 @@ class ProductDetails extends Component {
       if (index >= 0) variantsEdited[index] = replaceVariant;
       return remove;
     });
-    
+*/
+//     console.log(variantsEdited)
   	this.setState({
     	variantsEdited: variantsEdited
   	});
+  	this.props.handleVariantsEdited(data, edited);
   }
 	handleToggleEditorClick() {
   	const showEditor = !this.state.showEditor;
@@ -382,7 +408,7 @@ class ProductDetails extends Component {
         );
 	    }
 		}
-		
+// 		console.log(this.state.variantsEdited)
 		const saveAllButton = this.state.variantsEdited.length > 0 ? <Button primary circular compact size='small' icon='save' content='Save All' disabled={this.props.isReloading} onClick={this.handleSaveAllVariantsClick} /> : null;
 // 		const productEditor = this.state.showEditor ? <ProductEditor/> : null;
     return (

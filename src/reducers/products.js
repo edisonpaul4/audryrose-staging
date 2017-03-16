@@ -53,7 +53,8 @@ const products = (state = initialState, action) => {
     case 'PRODUCT_RELOAD_SUCCESS':
       return {
         ...state,
-        updatedProduct: action.res
+        updatedProducts: [action.res.updatedProduct],
+        tabCounts: action.res.tabCounts
       };
 
     case 'PRODUCT_RELOAD_FAILURE':
@@ -85,7 +86,9 @@ const products = (state = initialState, action) => {
     case 'VARIANT_SAVE_SUCCESS':
       return {
         ...state,
-        updatedVariants: [action.res]
+        updatedVariants: [action.res.updatedVariant],
+        updatedProducts: [action.res.updatedProduct],
+        tabCounts: action.res.tabCounts
       };
 
     case 'VARIANT_SAVE_FAILURE':
@@ -101,7 +104,9 @@ const products = (state = initialState, action) => {
     case 'VARIANTS_SAVE_SUCCESS':
       return {
         ...state,
-        updatedVariants: action.res
+        updatedVariants: action.res.updatedVariants,
+        updatedProducts: action.res.updatedProducts,
+        tabCounts: action.res.tabCounts
       };
 
     case 'VARIANTS_SAVE_FAILURE':
