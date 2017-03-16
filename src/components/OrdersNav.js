@@ -20,42 +20,45 @@ class OrdersNav extends Component {
 					to='/orders/awaiting-fulfillment' 
 					active={pathName === '/orders' || pathName === '/orders/awaiting-fulfillment'} 
 					link>
-					Awaiting Fulfillment <Label horizontal>{tabCounts ? tabCounts.awaitingFulfillment : null}</Label>
+  					Awaiting Fulfillment
+  					<Label horizontal circular size='tiny'>{tabCounts ? tabCounts.awaitingFulfillment : null}</Label>
 				</Menu.Item>
 				<Menu.Item 
 					as={Link} 
 					to='/orders/resizable' 
 					active={pathName === '/orders/resizable'} 
 					link>
-					Resizable <Label horizontal>{tabCounts ? tabCounts.resizable : null}</Label>
+					  Resizable
+            <Label horizontal circular size='tiny' color={tabCounts && tabCounts.resizable > 0 ? 'yellow' : null}>{tabCounts ? tabCounts.resizable : null}</Label>
 				</Menu.Item>
 				<Menu.Item 
 					as={Link} 
 					to='/orders/fully-shippable' 
 					active={pathName === '/orders/fully-shippable'} 
 					link>
-					Fully Shippable <Label horizontal>{tabCounts ? tabCounts.fullyShippable : null}</Label>
+					  Fully Shippable
+					  <Label horizontal circular size='tiny' color={tabCounts && tabCounts.fullyShippable > 0 ? 'olive' : null}>{tabCounts ? tabCounts.fullyShippable : null}</Label>
 				</Menu.Item>
 				<Menu.Item 
 					as={Link} 
 					to='/orders/partially-shippable' 
 					active={pathName === '/orders/partially-shippable'} 
 					link>
-					Partially Shippable <Label horizontal>{tabCounts ? tabCounts.partiallyShippable : null}</Label>
+					Partially Shippable <Label horizontal circular size='tiny' color={tabCounts && tabCounts.partiallyShippable > 0 ? 'olive' : null}>{tabCounts ? tabCounts.partiallyShippable : null}</Label>
 				</Menu.Item>
 				<Menu.Item
 					as={Link} 
 					to='/orders/cannot-ship' 
 					active={pathName === '/orders/cannot-ship'} 
 					link>
-					Cannot Ship <Label horizontal>{tabCounts ? tabCounts.cannotShip : null}</Label>
+					Cannot Ship <Label horizontal circular size='tiny' color={tabCounts && tabCounts.cannotShip > 0 ? 'yellow' : null}>{tabCounts ? tabCounts.cannotShip : null}</Label>
 				</Menu.Item>
 				<Menu.Item 
 					as={Link} 
 					to='/orders/fulfilled' 
 					active={pathName === '/orders/fulfilled'} 
 					link>
-					Fulfilled <Label horizontal>{tabCounts ? tabCounts.fulfilled : null}</Label>
+					Fulfilled <Label horizontal circular size='tiny'>{tabCounts ? tabCounts.fulfilled : null}</Label>
 				</Menu.Item>
         <Menu.Menu position='right'>
           <Menu.Item fitted className='subnav-search'>

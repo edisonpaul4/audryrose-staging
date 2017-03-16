@@ -17,35 +17,35 @@ class ProductsNav extends Component {
       					to='/products/in-stock' 
       					active={pathName === '/products' || pathName === '/products/in-stock'} 
       					link>
-      					In Stock<Label horizontal>{tabCounts ? tabCounts.inStock : null}</Label>
+      					In Stock<Label horizontal circular size='tiny' color={tabCounts && tabCounts.inStock > 0 ? 'olive' : null}>{tabCounts ? tabCounts.inStock : null}</Label>
       				</Menu.Item>
       				<Menu.Item 
       					as={Link} 
       					to='/products/need-to-order' 
       					active={pathName === '/products/need-to-order'} 
       					link>
-      					Need To Order<Label horizontal>{tabCounts ? tabCounts.needToOrder : null}</Label>
+      					Need To Order<Label horizontal circular size='tiny' color={tabCounts && tabCounts.needToOrder > 0 ? 'yellow' : null}>{tabCounts ? tabCounts.needToOrder : null}</Label>
       				</Menu.Item>
       				<Menu.Item 
       					as={Link} 
       					to='/products/waiting-to-receive' 
       					active={pathName === '/products/waiting-to-receive'} 
       					link>
-      					Waiting To Receive<Label horizontal>{tabCounts ? tabCounts.waitingToReceive : null}</Label>
+      					Waiting To Receive<Label horizontal circular size='tiny' color={tabCounts && tabCounts.waitingToReceive > 0 ? 'yellow' : null}>{tabCounts ? tabCounts.waitingToReceive : null}</Label>
       				</Menu.Item>
       				<Menu.Item 
       					as={Link} 
       					to='/products/being-resized' 
       					active={pathName === '/products/being-resized'} 
       					link>
-      					Being Resized<Label horizontal>{tabCounts ? tabCounts.beingResized : null}</Label>
+      					Being Resized<Label horizontal circular size='tiny' color={tabCounts && tabCounts.beingResized > 0 ? 'yellow' : null}>{tabCounts ? tabCounts.beingResized : null}</Label>
       				</Menu.Item>
       				<Menu.Item
       					as={Link} 
       					to='/products/all' 
       					active={pathName === '/products/all'} 
       					link>
-      					All<Label horizontal>{tabCounts ? tabCounts.all : null}</Label>
+      					All<Label horizontal circular size='tiny'>{tabCounts ? tabCounts.all : null}</Label>
       				</Menu.Item>
               <Menu.Menu position='right'>
                 <Menu.Item fitted className='subnav-search'>
