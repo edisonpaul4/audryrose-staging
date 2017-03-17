@@ -23,7 +23,7 @@ class Products extends Component {
 			sort: sort,
 			filters: filters,
 			search: search,
-			products: null,
+			products: [],
 			filterData: null,
 			updatedProducts: null,
 			updatedVariants: [],
@@ -212,15 +212,14 @@ class Products extends Component {
   	if (!nextPage) nextPage = 1;
   	let expandedProducts = this.state.expandedProducts;
   	
+  	const currentProducts = nextProps.products ? nextProps.products : this.state.products;
   	let products = [];
   	let currentlyReloading = this.state.isReloading;
   	
   	// Process updated products from reloadProduct, saveProductStatus, saveVariants
   	if (nextProps.updatedProducts) {
-      console.log('total updated products: ' + nextProps.updatedProducts.length)  
-      this.state.products.map(function(product, i) {
+      currentProducts.map(function(product, i) {
         nextProps.updatedProducts.map(function(updatedProduct, i) {
-          console.log(updatedProduct.get('productId'));
           // If updated product exists, push it into the state products array
           if (updatedProduct.get('productId') === product.get('productId')) {
             products.push(updatedProduct);
@@ -241,11 +240,8 @@ class Products extends Component {
         });
         return product;
       });
-    } else if (nextProps.products) {
-      console.log('total products sent with props: ' + nextProps.products.length)
-      products = nextProps.products;
     } else {
-      products = this.state.products;
+      products = currentProducts;
     }
     
     // Remove any updated variants from savingVariants state

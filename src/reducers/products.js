@@ -1,6 +1,6 @@
 const initialState = {
   isLoadingProducts: false,
-	products: null,
+	products: [],
 	filterData: null
 };
 
@@ -70,7 +70,8 @@ const products = (state = initialState, action) => {
     case 'PRODUCT_STATUS_SUCCESS':
       return {
         ...state,
-        updatedProduct: action.res
+        updatedProducts: [action.res.updatedProduct],
+        tabCounts: action.res.tabCounts
       };
 
     case 'PRODUCT_STATUS_FAILURE':
