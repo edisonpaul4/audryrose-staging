@@ -7,6 +7,7 @@ import products from './products';
 import designers from './designers';
 import options from './options';
 import shipments from './shipments';
+import webhooks from './webhooks';
 import error from './error';
 
 const rootReducer = combineReducers({
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
 	designers,
 	options,
 	shipments,
+	webhooks,
   error,
   routing: routerReducer
 });

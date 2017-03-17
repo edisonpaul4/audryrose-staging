@@ -105,6 +105,20 @@ export const getShipments = (token, page) => Parse.Cloud.run('getShipments',
   }
 );
 
+export const getWebhooks = (token) => Parse.Cloud.run('getWebhooks', 
+  {
+    sessionToken: token
+  }
+);
+
+export const saveWebhook = (token, endpoint, destination) => Parse.Cloud.run('saveWebhook', 
+  {
+    sessionToken: token, 
+    endpoint: endpoint, 
+    destination: destination
+  }
+);
+
 export default {
   signup,
   login,
@@ -121,5 +135,7 @@ export default {
 	getDesigners,
 	getOptions,
 	saveOption,
-	getShipments
+	getShipments,
+	getWebhooks,
+	saveWebhook
 }

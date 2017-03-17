@@ -8,6 +8,7 @@ import ProductsContainer from './containers/ProductsContainer';
 import DesignersContainer from './containers/DesignersContainer';
 import OptionsContainer from './containers/OptionsContainer';
 import ShipmentsContainer from './containers/ShipmentsContainer';
+import WebhooksContainer from './containers/WebhooksContainer';
 import NotFound from './components/NotFound';
 
 export function requireAuth(store) {
@@ -72,6 +73,18 @@ const createRoutes = (store) => {
 						{
 							path: ':subpage',
 							component: OptionsContainer,
+							onEnter: requireAuth(store)
+						}
+					]
+        },
+        {
+          path: 'webhooks',
+          component: WebhooksContainer,
+					onEnter: requireAuth(store),
+					childRoutes: [
+						{
+							path: ':subpage',
+							component: WebhooksContainer,
 							onEnter: requireAuth(store)
 						}
 					]
