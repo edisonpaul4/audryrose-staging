@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Modal, Button, List, Segment, Icon, Header } from 'semantic-ui-react';
+import { Modal, Button, List, Segment, Icon, Header, Form, Select } from 'semantic-ui-react';
 import moment from 'moment';
 
 class ShipmentGroup extends Component {
@@ -20,6 +20,14 @@ class ShipmentGroup extends Component {
     const dateShipped = shipment ? <List.Item><List.Header>Date Shipped</List.Header>{moment(shipment.date_created.iso).calendar()}<br/></List.Item> : null;
     const trackingNumber = shipment ? <List.Item><List.Header>Tracking Number</List.Header>{shipment.tracking_number}<br/></List.Item> : null;
     const shippingLabel = shipment && shipment.shippo_label_url ? <List.Item><a href={shipment.shippo_label_url} target='_blank'>Print Shipping Label</a></List.Item> : null;
+    
+/*
+    const shippingProviderOptions = [
+      { key: 'usps', value: 'usps', flag: 'usps', text: 'USPS' }, 
+      { key: 'fedex', value: 'fedex', flag: 'fedex', text: 'FedEx' }
+    ];
+    const shippingProviderSelect = shipment ? null : <Select placeholder='Shipping provider' options={shippingProviderOptions} />;
+*/
     
     return (
       <Segment color={this.props.color} secondary={this.props.secondary} disabled={this.props.disabled} loading={this.props.isLoading}>
@@ -243,9 +251,9 @@ class OrderShipModal extends Component {
 	    <Modal open={this.props.open} onClose={this.handleClose} size='small' closeIcon='close'>
         <Modal.Content>
           <Modal.Description>
+            {shippedComponents}
             {shippableComponents}
             {unshippableComponents}
-            {shippedComponents}
           </Modal.Description>
         </Modal.Content>
         <Modal.Actions>
