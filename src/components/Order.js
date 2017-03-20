@@ -22,7 +22,7 @@ class Order extends Component {
     	labels.push(<Label key={1} basic horizontal circular size='mini' color='olive'>Fully Shippable</Label>);
   	}
   	if (data.partiallyShippable) {
-    	labels.push(<Label key={2} basic horizontal circular size='mini' color='yellow'>Partially Shippable</Label>);
+    	labels.push(<Label key={2} basic horizontal circular size='mini' color='olive'>Partially Shippable</Label>);
   	}
   	if (data.fullyShippable === false && data.partiallyShippable === false && data.status !== 'Shipped') {
     	labels.push(<Label key={3} basic horizontal circular size='mini' color='red'>Cannot Ship</Label>);

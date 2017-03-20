@@ -51,7 +51,7 @@ class OrdersNav extends Component {
 					to='/orders/cannot-ship' 
 					active={pathName === '/orders/cannot-ship'} 
 					link>
-					Cannot Ship <Label horizontal circular size='tiny' color={tabCounts && tabCounts.cannotShip > 0 ? 'yellow' : null}>{tabCounts ? tabCounts.cannotShip : null}</Label>
+					Cannot Ship <Label horizontal circular size='tiny' color={tabCounts && tabCounts.cannotShip > 0 ? 'red' : null}>{tabCounts ? tabCounts.cannotShip : null}</Label>
 				</Menu.Item>
 				<Menu.Item 
 					as={Link} 
