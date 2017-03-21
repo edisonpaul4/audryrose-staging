@@ -141,7 +141,6 @@ class Orders extends Component {
       });
       
     } else {
-      console.log('no updated orders');
       orders = nextProps.orders;
     }
     

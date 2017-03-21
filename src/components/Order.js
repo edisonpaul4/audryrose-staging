@@ -18,7 +18,7 @@ class Order extends Component {
   	const data = this.props.data;
   	
   	let labels = [];
-  	if (data.fullyShippable) {
+  	if (data.fullyShippable && data.status !== 'Shipped') {
     	labels.push(<Label key={1} basic horizontal circular size='mini' color='olive'>Fully Shippable</Label>);
   	}
   	if (data.partiallyShippable) {

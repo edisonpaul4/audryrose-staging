@@ -38,16 +38,16 @@ class ProductRow extends Component {
   	  primaryButton = <Button icon='shipping' content='View Shipment' onClick={this.handleShipModalOpen} />;
     } else if (product.shippable) {
 //   	  let buttonText = product.shippable ? 
-  	  primaryButton = <Button icon='shipping' content='Ship' onClick={this.handleShipModalOpen} />;
-  	  dropdownItems.push(<Dropdown.Item key='1' icon='edit' text='Edit' />);
+  	  primaryButton = <Button icon='shipping' content='Customize Shipment' onClick={this.handleShipModalOpen} />;
+//   	  dropdownItems.push(<Dropdown.Item key='1' icon='edit' text='Edit Item' />);
 	  } else if (product.resizable) {
   	  primaryButton = <Button icon='exchange' content='Resize' />;
   	  dropdownItems.push(<Dropdown.Item key='1' icon='add to cart' text='Order' />);
-  	  dropdownItems.push(<Dropdown.Item key='2' icon='edit' text='Edit' />);
+//   	  dropdownItems.push(<Dropdown.Item key='2' icon='edit' text='Edit Item' />);
 	  } else {
   	  primaryButton = <Button icon='add to cart' content='Order' />;
   	  dropdownItems.push(<Dropdown.Item key='1' icon='exchange' text='Resize' />);
-  	  dropdownItems.push(<Dropdown.Item key='2' icon='edit' text='Edit' />);
+//   	  dropdownItems.push(<Dropdown.Item key='2' icon='edit' text='Edit Item' />);
 	  }
 
     return (
@@ -83,11 +83,14 @@ class OrderDetails extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      order: this.props.data,
-      products: this.props.data.orderProducts,
-      shipments: this.props.data.orderShipments,
+      order: null,
+      products: null,
+      shipments: null,
       showEditor: false,
-      shipModalOpen: false
+      shipModalOpen: false,
+      shippedGroups: null,
+      shippableGroups: null,
+      unshippableGroups: null
     };
     this.handleReloadClick = this.handleReloadClick.bind(this);
     this.handleShipModalOpen = this.handleShipModalOpen.bind(this);
@@ -97,8 +100,8 @@ class OrderDetails extends Component {
 	handleReloadClick(orderId) {
 		this.props.handleReloadClick(orderId);
 	}
-	handleCreateShipments(shipmentGroups) {
-		this.props.handleCreateShipments(shipmentGroups);
+	handleCreateShipments() {
+		this.props.handleCreateShipments(this.state.shippableGroups);
 	}
   handleShipModalOpen() {
     this.setState({
@@ -117,17 +120,122 @@ class OrderDetails extends Component {
     	showEditor: showEditor
   	});
 	}
+	componentWillMount() {
+  	const {shippedGroups, shippableGroups, unshippableGroups} = this.createShipmentGroups(this.props.data.orderProducts, this.props.data.orderShipments)
+		this.setState({
+      order: this.props.data,
+      products: this.props.data.orderProducts,
+      shipments: this.props.data.orderShipments,
+  		shippedGroups: shippedGroups,
+  		shippableGroups: shippableGroups,
+  		unshippableGroups: unshippableGroups
+		});
+	}
 	componentWillReceiveProps(nextProps) {
+  	const {shippedGroups, shippableGroups, unshippableGroups} = this.createShipmentGroups(nextProps.data.orderProducts, nextProps.data.orderShipments)
     this.setState({
       order: nextProps.data,
       products: nextProps.data.orderProducts,
-      shipments: nextProps.data.orderShipments
+      shipments: nextProps.data.orderShipments,
+  		shippedGroups: shippedGroups,
+  		shippableGroups: shippableGroups,
+  		unshippableGroups: unshippableGroups
     });
+	}
+	createShipmentGroups(orderProducts, shippedShipments) {
+		// Create an array of shipments
+		let shippedGroups = [];
+		let shippableGroups = [];
+		let unshippableGroups = [];
+		
+		if (orderProducts) {
+  		orderProducts.map(function(orderProduct, i) {
+    		console.log('\nop:' + orderProduct.orderProductId + ' oa:' + orderProduct.order_address_id);
+    		
+    		// Check if product is in a shipment
+    		let isShipped = false;
+    		let shippedShipmentId;
+    		let shipment;
+    		if (shippedShipments) {
+      		shippedShipments.map(function(shippedShipment, j) {
+        		shippedShipment.items.map(function(item, k) {
+          		if (orderProduct.order_address_id === shippedShipment.order_address_id && orderProduct.orderProductId === item.order_product_id) {
+            		isShipped = true;
+            		shippedShipmentId = shippedShipment.shipmentId;
+            		shipment = shippedShipment;
+          		}
+          		return item;
+        		});
+        		return shippedShipments;
+      		});
+    		}
+        const group = {
+          orderId: orderProduct.order_id, 
+          orderAddressId: orderProduct.order_address_id, 
+          shippedShipmentId: shippedShipmentId, 
+          orderProducts: [orderProduct],
+          shipment: shipment
+        };
+        let shipmentIndex = -1;
+    		
+    		// Set whether product is added to shippable, shipped or unshippable groups
+    		if (isShipped) {
+      		console.log('product is shipped');
+      		// Check whether product is being added to an existing shipment group
+      		
+      		shippedGroups.map(function(shippedGroup, j) {
+        		if (shippedShipmentId === shippedGroup.shippedShipmentId) shipmentIndex = j;
+        		return shippedGroups;
+      		});
+          if (shipmentIndex < 0) {
+            console.log('not in shippedGroups')
+            shippedGroups.push(group);
+          } else {
+            console.log('found in shippedGroups')
+            shippedGroups[shipmentIndex].orderProducts.push(orderProduct);
+          }
+      		
+    		} else if (orderProduct.shippable && orderProduct.quantity_shipped !== orderProduct.quantity) {
+      		console.log('product is shippable');
+      		// Check whether product is being shipped to a unique address
+      		shippableGroups.map(function(shippableGroup, j) {
+        		if (orderProduct.order_address_id === shippableGroup.orderAddressId) shipmentIndex = j;
+        		return shippableGroups;
+      		});
+          if (shipmentIndex < 0) {
+            console.log('not in shippableGroups')
+            shippableGroups.push(group);
+          } else {
+            console.log('found in shippableGroups')
+            shippableGroups[shipmentIndex].orderProducts.push(orderProduct);
+          }
+      		
+    		} else {
+      		console.log('product is unshippable');
+      		// Check whether product is being shipped to a unique address
+      		unshippableGroups.map(function(unshippableGroup, j) {
+        		if (orderProduct.order_address_id === unshippableGroup.orderAddressId) shipmentIndex = j;
+        		return unshippableGroup;
+      		});
+          if (shipmentIndex < 0) {
+            console.log('not in shippableGroups')
+            unshippableGroups.push(group);
+          } else {
+            console.log('found in shippableGroups')
+            unshippableGroups[shipmentIndex].orderProducts.push(orderProduct);
+          }
+      		
+    		}
+    		return orderProduct;
+    		
+  		});
+		}
+    
+    return {shippedGroups, shippableGroups, unshippableGroups};
 	}
 	render() {
   	const scope = this;
   	const showProducts = this.props.expanded ? true : false;
-  	const order = this.state.order;
   	const products = this.state.products;
   	const shipments = this.state.shipments;
 		var rowClass = classNames(
@@ -163,6 +271,15 @@ class OrderDetails extends Component {
 	    });
 		}
 		
+		var shipAllButton = this.state.shippableGroups.length > 0 ? 
+      <Button circular compact size='small' primary
+        icon='shipping' 
+        content='Ship Order' 
+        floated='right'
+        disabled={this.props.isReloading} 
+        onClick={this.handleCreateShipments} 
+      /> : null;
+		
     return (
       <Table.Row className={rowClass}>
         <Table.Cell colSpan='10' className='order-product-row'>
@@ -172,6 +289,7 @@ class OrderDetails extends Component {
             disabled={this.props.isReloading} 
             onClick={()=>this.handleReloadClick(this.props.data.orderId)} 
           />
+          {shipAllButton}
           <Dimmer.Dimmable as={Segment} vertical blurring dimmed={this.props.isReloading}>
             <Dimmer active={this.props.isReloading} inverted>
               <Loader>Loading</Loader>
@@ -199,8 +317,9 @@ class OrderDetails extends Component {
               open={this.state.shipModalOpen} 
               handleShipModalClose={this.handleShipModalClose} 
               handleCreateShipments={this.handleCreateShipments} 
-              order={order} 
-              shipments={shipments} 
+              shippedGroups={this.state.shippedGroups} 
+              shippableGroups={this.state.shippableGroups} 
+              unshippableGroups={this.state.unshippableGroups} 
               isLoading={this.props.isReloading}
             />
           </Dimmer.Dimmable>

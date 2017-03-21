@@ -71,29 +71,23 @@ class OrderShipModal extends Component {
     super(props);
     this.state = {
       showProducts: false,
-      showEditor: false,
-      order: null,
-      orderProducts: null,
-      shipments: null,
-      shippedGroups: null,
-      shippableGroups: null,
-      unshippableGroups: null
+      showEditor: false
     };
     this.handleCreateShipments = this.handleCreateShipments.bind(this);
     this.handleClose = this.handleClose.bind(this);
   }
 	handleCreateShipments() {
-		this.props.handleCreateShipments(this.state.shippableGroups);
+  	// Add shipment detail form data to handleCreateShipments here
+		this.props.handleCreateShipments(this.props.shippableGroups);
 	}
   handleClose() {
     this.props.handleShipModalClose();
   }
+/*
 	componentWillMount() {
   	const {shippedGroups, shippableGroups, unshippableGroups} = this.createShipmentGroups(this.props.order.orderProducts, this.props.shipments)
 		this.setState({
   		order: this.props.order,
-  		orderProducts: this.props.order.orderProducts,
-  		shipments: this.props.shipments,
   		shippedGroups: shippedGroups,
   		shippableGroups: shippableGroups,
   		unshippableGroups: unshippableGroups
@@ -103,13 +97,13 @@ class OrderShipModal extends Component {
   	const {shippedGroups, shippableGroups, unshippableGroups} = this.createShipmentGroups(nextProps.order.orderProducts, nextProps.shipments)
 		this.setState({
   		order: nextProps.order,
-  		orderProducts: nextProps.order.orderProducts,
-  		shipments: nextProps.shipments,
   		shippedGroups: shippedGroups,
   		shippableGroups: shippableGroups,
   		unshippableGroups: unshippableGroups
 		});
 	}
+*/
+/*
 	createShipmentGroups() {
 		const orderProducts = this.state.orderProducts;
 		const shippedShipments = this.state.shipments;
@@ -204,11 +198,12 @@ class OrderShipModal extends Component {
     
     return {shippedGroups, shippableGroups, unshippableGroups};
 	}
+*/
 	render() {
 		const scope = this;
-		const shippedGroups = this.state.shippedGroups;
-		const shippableGroups = this.state.shippableGroups;
-		const unshippableGroups = this.state.unshippableGroups;
+		const shippedGroups = this.props.shippedGroups;
+		const shippableGroups = this.props.shippableGroups;
+		const unshippableGroups = this.props.unshippableGroups;
 		
 		let missingShippingAddress = false;
 		const shippableComponents = [];
