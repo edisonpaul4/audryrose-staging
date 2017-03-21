@@ -19,6 +19,10 @@ table .variant-row,
 table .order-product-row {
   border-top: none !important;
 }
+table .order-product-row > .segment,
+table .variant-row > .segment {
+  padding-top: 0;
+}
 
 .ui.sortable.table .table thead th {
   cursor: auto;
