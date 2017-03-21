@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Table, Button, Dropdown, Dimmer, Segment, Loader } from 'semantic-ui-react';
+import { Link } from 'react-router';
+import { Table, Button, Dropdown, Dimmer, Segment, Loader, Icon } from 'semantic-ui-react';
 import classNames from 'classnames';
 // import numeral from 'numeral';
 // import moment from 'moment';
@@ -30,14 +31,16 @@ class ProductRow extends Component {
 		const alwaysResize = product.variant ? product.variant.alwaysResize : '';
 		const inventory = product.variant ? product.variant.inventoryLevel : '';
 		const designerName = product.variant ? product.variant.designer ? product.variant.designer.name : '' : '';
+		const shippingLabel = shipment && shipment.shippo_label_url ? 
+		  <Button as={Link} href={shipment.shippo_label_url} target='_blank'>
+		    <Icon name='print' />Print
+	    </Button> : null;
 		
 		let primaryButton;
 		let dropdownItems = [];
-// 		let orderShipModal;
     if (shipment) {
-  	  primaryButton = <Button icon='shipping' content='View Shipment' onClick={this.handleShipModalOpen} />;
+  	  primaryButton = <Button icon='shipping' content='View' onClick={this.handleShipModalOpen} />;
     } else if (product.shippable) {
-//   	  let buttonText = product.shippable ? 
   	  primaryButton = <Button icon='shipping' content='Customize Shipment' onClick={this.handleShipModalOpen} />;
 //   	  dropdownItems.push(<Dropdown.Item key='1' icon='edit' text='Edit Item' />);
 	  } else if (product.resizable) {
@@ -66,6 +69,7 @@ class ProductRow extends Component {
 				<Table.Cell className='right aligned'>
           <Button.Group color='grey' size='mini' compact>
             {primaryButton}
+            {shippingLabel}
             {dropdownItems.length > 0 ? <Dropdown floating button compact pointing className='icon'>
               <Dropdown.Menu>
                 {dropdownItems}
@@ -272,7 +276,7 @@ class OrderDetails extends Component {
 		}
 		
 		var shipAllButton = this.state.shippableGroups.length > 0 ? 
-      <Button circular compact size='small' primary
+      <Button circular compact size='tiny' primary
         icon='shipping' 
         content='Ship Order' 
         floated='right'

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Modal, Button, List, Segment, Icon, Header, Form, Select } from 'semantic-ui-react';
+import { Modal, Button, List, Segment, Icon, Header/* , Form, Select */ } from 'semantic-ui-react';
 import moment from 'moment';
 
 class ShipmentGroup extends Component {
