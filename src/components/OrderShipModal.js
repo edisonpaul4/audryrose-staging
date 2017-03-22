@@ -19,6 +19,7 @@ class ShipmentGroup extends Component {
     
     const dateShipped = shipment ? <List.Item><List.Header>Date Shipped</List.Header>{moment(shipment.date_created.iso).calendar()}<br/></List.Item> : null;
     const trackingNumber = shipment ? <List.Item><List.Header>Tracking Number</List.Header>{shipment.tracking_number}<br/></List.Item> : null;
+    const invoice = shipment && shipment.invoiceUrl ? <List.Item><a href={shipment.invoiceUrl} target='_blank'>Print Invoice</a></List.Item> : null;
     const shippingLabel = shipment && shipment.shippo_label_url ? <List.Item><a href={shipment.shippo_label_url} target='_blank'>Print Shipping Label</a></List.Item> : null;
     
 /*
@@ -59,6 +60,7 @@ class ShipmentGroup extends Component {
             </List.Item>
             {dateShipped}
             {trackingNumber}
+            {invoice}
             {shippingLabel}
         </List>
       </Segment>

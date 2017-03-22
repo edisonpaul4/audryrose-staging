@@ -35,6 +35,12 @@ class ProductRow extends Component {
 		  <Button as={Link} href={shipment.shippo_label_url} target='_blank'>
 		    <Icon name='print' />Print
 	    </Button> : null;
+/*
+		const invoice = shipment && shipment.invoiceUrl ? 
+		  <Button as={Link} href={shipment.invoiceUrl} target='_blank'>
+		    <Icon name='print' />Invoice
+	    </Button> : null; 
+*/
 		
 		let primaryButton;
 		let dropdownItems = [];
@@ -201,6 +207,7 @@ class OrderDetails extends Component {
       		
     		} else if (orderProduct.shippable && orderProduct.quantity_shipped !== orderProduct.quantity) {
       		console.log('product is shippable');
+      		
       		// Check whether product is being shipped to a unique address
       		shippableGroups.map(function(shippableGroup, j) {
         		if (orderProduct.order_address_id === shippableGroup.orderAddressId) shipmentIndex = j;
