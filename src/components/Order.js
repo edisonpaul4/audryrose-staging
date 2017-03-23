@@ -6,14 +6,18 @@ import moment from 'moment';
 class Order extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      expanded: false
-    };
     this.handleToggleClick = this.handleToggleClick.bind(this);
+    this.handleCheckboxClick = this.handleCheckboxClick.bind(this);
   }
+  
 	handleToggleClick(orderId) {
 		this.props.handleToggleClick(orderId);
 	}
+	
+	handleCheckboxClick(orderId) {
+  	this.props.handleCheckboxClick(orderId);
+	}
+	
 	render() {
   	const data = this.props.data;
   	
@@ -43,8 +47,8 @@ class Order extends Component {
 		const orderNote = data.customer_message ? <Popup trigger={<Icon name='sticky note outline' link />} on='click' content={data.customer_message} position='top center' /> : null;
 		
     return (
-      <Table.Row warning={data.customer_message ? true : undefined}>
-        <Table.Cell verticalAlign='top'><Checkbox /></Table.Cell>
+      <Table.Row warning={data.customer_message ? true : undefined} disabled={this.props.isReloading}>
+        <Table.Cell verticalAlign='top'><Checkbox checked={this.props.selected} onClick={() => this.handleCheckboxClick(data.orderId)} /></Table.Cell>
         <Table.Cell verticalAlign='top' singleLine>{moment(data.date_created.iso).calendar()}</Table.Cell>
         <Table.Cell verticalAlign='top'>{orderId}</Table.Cell>
 				<Table.Cell verticalAlign='top'>{customerName}</Table.Cell>

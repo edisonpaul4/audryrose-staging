@@ -20,3 +20,10 @@ export function createShipments(token, shipmentGroups) {
     promise: api.createShipments(token, shipmentGroups)
   }
 }
+
+export function batchCreateShipments(token, ordersToShip) {
+  return {
+    types: ['BATCH_CREATE_SHIPMENTS_REQUEST', 'BATCH_CREATE_SHIPMENTS_SUCCESS', 'BATCH_CREATE_SHIPMENTS_FAILURE'],
+    promise: api.batchCreateShipments(token, ordersToShip)
+  }
+}

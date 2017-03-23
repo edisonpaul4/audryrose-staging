@@ -53,11 +53,29 @@ const orders = (state = initialState, action) => {
     case 'CREATE_SHIPMENTS_SUCCESS':
       return {
         ...state,
-        updatedOrders: action.res.data,
+        updatedOrders: action.res.updatedOrders,
         errors: action.res.errors
       };
 
     case 'CREATE_SHIPMENTS_FAILURE':
+      return {
+        ...state
+      };
+      
+    case 'BATCH_CREATE_SHIPMENTS_REQUEST':
+      return {
+        ...state
+      };
+
+    case 'BATCH_CREATE_SHIPMENTS_SUCCESS':
+      return {
+        ...state,
+        updatedOrders: action.res.updatedOrders,
+        tabCounts: action.res.tabCounts,
+        errors: action.res.errors
+      };
+
+    case 'BATCH_CREATE_SHIPMENTS_FAILURE':
       return {
         ...state
       };

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router';
-import { Grid, Table, Dimmer, Loader, Checkbox, Icon, Header } from 'semantic-ui-react';
+import { Grid, Table, Dimmer, Loader, Checkbox, Icon, Header, Sidebar, Menu, Button } from 'semantic-ui-react';
 import NotificationSystem from 'react-notification-system';
 import OrdersNav from './OrdersNav.js';
 import Order from './Order.js';
@@ -28,11 +28,16 @@ class Orders extends Component {
       updatedOrders: null,
 			expandedOrders: [],
 			isReloading: [],
-			tabCounts: null
+			tabCounts: null,
+			selectedRows: [],
+			selectAllRows: false
     };
     this.handleToggleClick = this.handleToggleClick.bind(this);
+    this.handleCheckboxClick = this.handleCheckboxClick.bind(this);
+    this.handleSelectAllClick = this.handleSelectAllClick.bind(this);
     this.handleReloadClick = this.handleReloadClick.bind(this);
     this.handleCreateShipments = this.handleCreateShipments.bind(this);
+    this.handleShipSelectedClick = this.handleShipSelectedClick.bind(this);
     this.handlePaginationClick = this.handlePaginationClick.bind(this);
     this._notificationSystem = null;
   }
@@ -53,6 +58,51 @@ class Orders extends Component {
 		this.setState({
 			expandedOrders: currentlyExpanded
 		});
+	}
+	
+	handleCheckboxClick(orderId) {
+		let selectedRows = this.state.selectedRows;
+		var index = selectedRows.indexOf(orderId);
+		if (index >= 0) {
+			selectedRows.splice(index, 1);
+		} else {
+			selectedRows.push(orderId);
+		}
+		this.setState({
+			selectedRows: selectedRows
+		});
+	}
+	
+	handleSelectAllClick() {
+  	let selectedRows;
+  	let selectAllRows = this.state.selectAllRows;
+  	if (this.state.selectAllRows) {
+      selectedRows = [];
+      selectAllRows = false;
+  	} else {
+    	selectedRows = this.state.orders.map(function(order, i) {
+      	let orderJSON = order.toJSON();
+      	return orderJSON.orderId;
+    	});	
+    	selectAllRows = true;
+  	}
+  	this.setState({
+    	selectedRows: selectedRows,
+    	selectAllRows: selectAllRows
+  	});
+	}
+	
+	handleShipSelectedClick() {
+		console.log(this.state.selectedRows)
+  	// Add shipment group order ids to currently reloading array
+  	let reloadingOrderIds = this.state.isReloading;
+		let currentlyReloading = reloadingOrderIds.concat(this.state.selectedRows);
+		currentlyReloading = currentlyReloading.filter(function(v,i) { return currentlyReloading.indexOf(v) === i; });
+		
+  	this.setState({
+    	isReloading: currentlyReloading
+  	});
+		this.props.batchCreateShipments(this.props.token, this.state.selectedRows);
 	}
 	
 	handlePaginationClick(page) {
@@ -176,7 +226,9 @@ class Orders extends Component {
 			updatedOrders: nextProps.updatedOrders,
 			expandedOrders: expandedOrders,
 			isReloading: currentlyReloading,
-			tabCounts: tabCounts
+			tabCounts: tabCounts,
+			selectedRows: [],
+			selectAllRows: false
 		});	
 		
   	if (nextPage !== this.state.page || nextProps.router.params.subpage !== this.state.subpage) {
@@ -189,11 +241,13 @@ class Orders extends Component {
 		let scope = this;
 		let orderRows = [];
 		const tabCounts = this.state.tabCounts;
+    
 		if (this.state.orders) {
 			this.state.orders.map(function(orderRow, i) {
   			let orderJSON = orderRow.toJSON();
   			let isReloading = (scope.state.isReloading.indexOf(orderJSON.orderId) >= 0) ? true : false;
 				let expanded = (scope.state.expandedOrders.indexOf(orderJSON.orderId) >= 0) ? true : false;
+				let selected = (scope.state.selectedRows.indexOf(orderJSON.orderId) >= 0) ? true : false;
 				orderRows.push(
 				  <Order 
 				    data={orderJSON} 
@@ -201,6 +255,8 @@ class Orders extends Component {
 				    key={`${orderJSON.orderId}-1`} 
 				    isReloading={isReloading} 
 				    handleToggleClick={scope.handleToggleClick} 
+				    handleCheckboxClick={scope.handleCheckboxClick} 
+				    selected={selected}
 			    />
 		    );
 				if (expanded) orderRows.push(
@@ -211,7 +267,7 @@ class Orders extends Component {
 				    isReloading={isReloading} 
 				    handleReloadClick={scope.handleReloadClick} 
 				    handleCreateShipments={scope.handleCreateShipments}
-				    />
+			    />
 			    );
 				return orderRows;
 	    });
@@ -225,6 +281,8 @@ class Orders extends Component {
     const searchHeader = this.state.search ? <Header as='h2'>{totalOrders} results for "{this.props.location.query.q}"</Header> : null;
     const dateIcon = this.state.sort === 'date-added-desc' || this.state.sort === 'date-added-asc' ? null : <Icon disabled name='caret down' />;
     const totalIcon = this.state.sort === 'total-desc' || this.state.sort === 'total-asc' ? null : <Icon disabled name='caret down' />;
+    
+    const shipSelectedName = 'Create ' + this.state.selectedRows.length + ' Shipments';
 		
     return (
 			<Grid.Column width='16'>
@@ -235,41 +293,52 @@ class Orders extends Component {
 	      <Dimmer active={isLoadingOrders} inverted>
 	        <Loader inverted>Loading</Loader>
 	      </Dimmer>
-		    <Table className='orders-table' sortable>
-		      <Table.Header>
-		        <Table.Row>
-              <Table.HeaderCell><Checkbox></Checkbox></Table.HeaderCell>
-              <Table.HeaderCell 
-                sorted={sortColumn === 'date-added' ? (this.state.sort === 'date-added-asc' ? 'ascending' : 'descending') : null} 
-                onClick={this.state.sort === 'date-added-desc' ? ()=>this.handleSortClick('date-added-asc') : ()=>this.handleSortClick('date-added-desc')}>
-                Date {dateIcon}
-              </Table.HeaderCell>
-              <Table.HeaderCell>Order #</Table.HeaderCell>
-              <Table.HeaderCell>Customer</Table.HeaderCell>
-							<Table.HeaderCell>Order Notes</Table.HeaderCell>
-              <Table.HeaderCell 
-                className='right aligned'
-                sorted={sortColumn === 'total' ? (this.state.sort === 'total-asc' ? 'ascending' : 'descending') : null} 
-                onClick={this.state.sort === 'total-desc' ? ()=>this.handleSortClick('total-asc') : ()=>this.handleSortClick('total-desc')}>
-                Total {totalIcon}
-              </Table.HeaderCell>
-							<Table.HeaderCell>Bigcommerce Status</Table.HeaderCell>
-							<Table.HeaderCell>Label</Table.HeaderCell>
-							<Table.HeaderCell className='right aligned'>Items</Table.HeaderCell>
-							<Table.HeaderCell className='right aligned'>&nbsp;</Table.HeaderCell>
-		        </Table.Row>
-		      </Table.Header>
-		      <Table.Body>
-						{orderRows}
-		      </Table.Body>
-					<Table.Footer fullWidth>
-						<Table.Row>
-							<Table.HeaderCell colSpan='11'>
-					      <Pagination page={this.state.page} onPaginationClick={this.handlePaginationClick} totalPages={totalPages} />
-							</Table.HeaderCell>
-						</Table.Row>
-					</Table.Footer>
-		    </Table>
+  			<Sidebar.Pushable>
+          <Sidebar as={Menu} size='small' animation='push' direction='top' visible={this.state.selectedRows.length > 0 && this.state.subpage === 'fully-shippable'}>
+            <Menu.Item>
+              <Button color='olive' onClick={this.handleShipSelectedClick}><Icon name='shipping' /> {shipSelectedName}</Button>
+            </Menu.Item>
+          </Sidebar>
+          <Sidebar.Pusher>
+    		    <Table className='orders-table' sortable>
+    		      <Table.Header>
+    		        <Table.Row>
+                  <Table.HeaderCell>
+                    <Checkbox checked={this.state.selectAllRows} onClick={() => this.handleSelectAllClick()} />
+                  </Table.HeaderCell>
+                  <Table.HeaderCell 
+                    sorted={sortColumn === 'date-added' ? (this.state.sort === 'date-added-asc' ? 'ascending' : 'descending') : null} 
+                    onClick={this.state.sort === 'date-added-desc' ? ()=>this.handleSortClick('date-added-asc') : ()=>this.handleSortClick('date-added-desc')}>
+                    Date {dateIcon}
+                  </Table.HeaderCell>
+                  <Table.HeaderCell>Order #</Table.HeaderCell>
+                  <Table.HeaderCell>Customer</Table.HeaderCell>
+    							<Table.HeaderCell>Order Notes</Table.HeaderCell>
+                  <Table.HeaderCell 
+                    className='right aligned'
+                    sorted={sortColumn === 'total' ? (this.state.sort === 'total-asc' ? 'ascending' : 'descending') : null} 
+                    onClick={this.state.sort === 'total-desc' ? ()=>this.handleSortClick('total-asc') : ()=>this.handleSortClick('total-desc')}>
+                    Total {totalIcon}
+                  </Table.HeaderCell>
+    							<Table.HeaderCell>Bigcommerce Status</Table.HeaderCell>
+    							<Table.HeaderCell>Label</Table.HeaderCell>
+    							<Table.HeaderCell className='right aligned'>Items</Table.HeaderCell>
+    							<Table.HeaderCell className='right aligned'>&nbsp;</Table.HeaderCell>
+    		        </Table.Row>
+    		      </Table.Header>
+    		      <Table.Body>
+    						{orderRows}
+    		      </Table.Body>
+    					<Table.Footer fullWidth>
+    						<Table.Row>
+    							<Table.HeaderCell colSpan='11'>
+    					      <Pagination page={this.state.page} onPaginationClick={this.handlePaginationClick} totalPages={totalPages} />
+    							</Table.HeaderCell>
+    						</Table.Row>
+    					</Table.Footer>
+    		    </Table>
+  		    </Sidebar.Pusher>
+		    </Sidebar.Pushable>
 			</Grid.Column>
     );
   }
