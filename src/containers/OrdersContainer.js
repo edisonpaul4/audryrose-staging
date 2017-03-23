@@ -7,6 +7,7 @@ const select = state => ({
 	isLoadingOrders: state.orders.isLoadingOrders,
 	orders: state.orders.orders,
 	updatedOrders: state.orders.updatedOrders,
+	errors: state.orders.errors,
 	totalPages: state.orders.totalPages,
 	totalOrders: state.orders.totalOrders,
 	tabCounts: state.orders.tabCounts,

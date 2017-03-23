@@ -131,7 +131,7 @@ class OrderDetails extends Component {
   	});
 	}
 	componentWillMount() {
-  	const {shippedGroups, shippableGroups, unshippableGroups} = this.createShipmentGroups(this.props.data.orderProducts, this.props.data.orderShipments)
+  	const {shippedGroups, shippableGroups, unshippableGroups} = this.createShipmentGroups(this.props.data, this.props.data.orderProducts, this.props.data.orderShipments)
 		this.setState({
       order: this.props.data,
       products: this.props.data.orderProducts,
@@ -142,7 +142,7 @@ class OrderDetails extends Component {
 		});
 	}
 	componentWillReceiveProps(nextProps) {
-  	const {shippedGroups, shippableGroups, unshippableGroups} = this.createShipmentGroups(nextProps.data.orderProducts, nextProps.data.orderShipments)
+  	const {shippedGroups, shippableGroups, unshippableGroups} = this.createShipmentGroups(nextProps.data, nextProps.data.orderProducts, nextProps.data.orderShipments)
     this.setState({
       order: nextProps.data,
       products: nextProps.data.orderProducts,
@@ -152,7 +152,7 @@ class OrderDetails extends Component {
   		unshippableGroups: unshippableGroups
     });
 	}
-	createShipmentGroups(orderProducts, shippedShipments) {
+	createShipmentGroups(order, orderProducts, shippedShipments) {
 		// Create an array of shipments
 		let shippedGroups = [];
 		let shippableGroups = [];
@@ -182,6 +182,7 @@ class OrderDetails extends Component {
         const group = {
           orderId: orderProduct.order_id, 
           orderAddressId: orderProduct.order_address_id, 
+          orderBillingAddress: order.billing_address,
           shippedShipmentId: shippedShipmentId, 
           orderProducts: [orderProduct],
           shipment: shipment
@@ -222,7 +223,7 @@ class OrderDetails extends Component {
           }
       		
     		} else {
-      		console.log('product is unshippable');
+      		console.log('product is not shippable');
       		// Check whether product is being shipped to a unique address
       		unshippableGroups.map(function(unshippableGroup, j) {
         		if (orderProduct.order_address_id === unshippableGroup.orderAddressId) shipmentIndex = j;

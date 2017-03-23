@@ -53,7 +53,8 @@ const orders = (state = initialState, action) => {
     case 'CREATE_SHIPMENTS_SUCCESS':
       return {
         ...state,
-        updatedOrders: action.res
+        updatedOrders: action.res.data,
+        errors: action.res.errors
       };
 
     case 'CREATE_SHIPMENTS_FAILURE':

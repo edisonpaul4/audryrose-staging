@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router';
 import { Grid, Table, Dimmer, Loader, Checkbox, Icon, Header } from 'semantic-ui-react';
+import NotificationSystem from 'react-notification-system';
 import OrdersNav from './OrdersNav.js';
 import Order from './Order.js';
 import OrderDetails from './OrderDetails.js';
@@ -33,9 +34,11 @@ class Orders extends Component {
     this.handleReloadClick = this.handleReloadClick.bind(this);
     this.handleCreateShipments = this.handleCreateShipments.bind(this);
     this.handlePaginationClick = this.handlePaginationClick.bind(this);
+    this._notificationSystem = null;
   }
 	
 	componentDidMount() {
+  	this._notificationSystem = this.refs.notificationSystem;
 		this.props.getOrders(this.props.token, this.state.subpage, this.state.page, this.state.sort, this.state.search);
 	}
 	
@@ -108,6 +111,7 @@ class Orders extends Component {
 	}
 	
 	componentWillReceiveProps(nextProps) {
+  	let scope = this;
   	let nextPage = parseFloat(nextProps.location.query.page);
   	if (!nextPage) nextPage = 1;
   	let expandedOrders = this.state.expandedOrders;
@@ -150,6 +154,19 @@ class Orders extends Component {
     // Reset on subpage navigation
   	const search = nextProps.router.params.subpage !== 'search' ? null : this.state.search;
   	expandedOrders = nextProps.router.params.subpage !== this.state.subpage ? [] : expandedOrders;
+  	
+		// Display any errors with notification system
+		if (nextProps.errors) {
+  		nextProps.errors.map(function(errorMessage, i) {
+        scope._notificationSystem.addNotification({
+          message: errorMessage,
+          level: 'error',
+          autoDismiss: 0,
+          dismissible: true
+        });
+    		return errorMessage;
+  		});
+		}
   	
 		this.setState({
   		subpage: nextProps.router.params.subpage,
@@ -211,6 +228,7 @@ class Orders extends Component {
 		
     return (
 			<Grid.Column width='16'>
+  			<NotificationSystem ref="notificationSystem" />
 				<OrdersNav key={this.props.location.pathname} pathname={this.props.location.pathname} query={this.props.location.query} tabCounts={tabCounts} />
 				{searchHeader}
 				{error}
