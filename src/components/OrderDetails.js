@@ -31,16 +31,10 @@ class ProductRow extends Component {
 		const alwaysResize = product.variant ? product.variant.alwaysResize : '';
 		const inventory = product.variant ? product.variant.inventoryLevel : '';
 		const designerName = product.variant ? product.variant.designer ? product.variant.designer.name : '' : '';
-		const shippingLabel = shipment && shipment.shippo_label_url ? 
-		  <Button as={Link} href={shipment.shippo_label_url} target='_blank'>
+		const shippingLabel = shipment && shipment.labelWithPackingSlipUrl ? 
+		  <Button as={Link} href={shipment.labelWithPackingSlipUrl} target='_blank'>
 		    <Icon name='print' />Print
 	    </Button> : null;
-/*
-		const invoice = shipment && shipment.invoiceUrl ? 
-		  <Button as={Link} href={shipment.invoiceUrl} target='_blank'>
-		    <Icon name='print' />Invoice
-	    </Button> : null; 
-*/
 		
 		let primaryButton;
 		let dropdownItems = [];
