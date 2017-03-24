@@ -281,8 +281,9 @@ class Orders extends Component {
     const searchHeader = this.state.search ? <Header as='h2'>{totalOrders} results for "{this.props.location.query.q}"</Header> : null;
     const dateIcon = this.state.sort === 'date-added-desc' || this.state.sort === 'date-added-asc' ? null : <Icon disabled name='caret down' />;
     const totalIcon = this.state.sort === 'total-desc' || this.state.sort === 'total-asc' ? null : <Icon disabled name='caret down' />;
-    
     const shipSelectedName = 'Create ' + this.state.selectedRows.length + ' Shipments';
+    
+    let batchShipEnabled = this.state.subpage === 'fully-shippable' || this.state.subpage === 'partially-shippable';
 		
     return (
 			<Grid.Column width='16'>
@@ -294,9 +295,9 @@ class Orders extends Component {
 	        <Loader inverted>Loading</Loader>
 	      </Dimmer>
   			<Sidebar.Pushable>
-          <Sidebar as={Menu} size='small' animation='push' direction='top' visible={this.state.selectedRows.length > 0 && this.state.subpage === 'fully-shippable'}>
+          <Sidebar as={Menu} size='small' animation='push' direction='top' visible={this.state.selectedRows.length > 0}>
             <Menu.Item>
-              <Button color='olive' onClick={this.handleShipSelectedClick}><Icon name='shipping' /> {shipSelectedName}</Button>
+              <Button disabled={!batchShipEnabled} color='olive' onClick={this.handleShipSelectedClick}><Icon name='shipping' /> {shipSelectedName}</Button>
             </Menu.Item>
           </Sidebar>
           <Sidebar.Pusher>
