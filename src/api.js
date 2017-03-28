@@ -118,11 +118,18 @@ export const getWebhooks = (token) => Parse.Cloud.run('getWebhooks',
   }
 );
 
-export const saveWebhook = (token, endpoint, destination) => Parse.Cloud.run('saveWebhook', 
+export const createWebhook = (token, endpoint, destination) => Parse.Cloud.run('createWebhook', 
   {
     sessionToken: token, 
     endpoint: endpoint, 
     destination: destination
+  }
+);
+
+export const deleteWebhook = (token, id) => Parse.Cloud.run('deleteWebhook', 
+  {
+    sessionToken: token, 
+    id: id
   }
 );
 
@@ -145,5 +152,6 @@ export default {
 	saveOption,
 	getShipments,
 	getWebhooks,
-	saveWebhook
+	createWebhook,
+	deleteWebhook
 }

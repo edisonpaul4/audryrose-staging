@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { getWebhooks } from '../actions/webhooks';
+import { getWebhooks, createWebhook, deleteWebhook } from '../actions/webhooks';
 import Webhooks from '../components/Webhooks';
 
 const select = state => ({
@@ -11,7 +11,9 @@ const select = state => ({
 });
 
 const actions = {
-  getWebhooks
+  getWebhooks, 
+  createWebhook,
+  deleteWebhook
 };
 
 export default connect(select, actions)(Webhooks);

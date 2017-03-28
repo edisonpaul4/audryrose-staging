@@ -27,13 +27,13 @@ const webhooks = (state = initialState, action) => {
         isLoadingWebhooks: false
       }
       
-    case 'WEBHOOK_SAVE_REQUEST':
+    case 'CREATE_WEBHOOK_REQUEST':
       return {
         ...state,
         isLoadingWebhooks: true
       }
 
-    case 'WEBHOOK_SAVE_SUCCESS':
+    case 'CREATE_WEBHOOK_SUCCESS':
       return {
         ...state,
         isLoadingWebhooks: false,
@@ -41,7 +41,27 @@ const webhooks = (state = initialState, action) => {
         webhookEndpoints: action.res.webhookEndpoints
       };
 
-    case 'WEBHOOK_SAVE_FAILURE':
+    case 'CREATE_WEBHOOK_FAILURE':
+      return {
+        ...state,
+        isLoadingWebhooks: false
+      }
+      
+    case 'DELETE_WEBHOOK_REQUEST':
+      return {
+        ...state,
+        isLoadingWebhooks: true
+      }
+
+    case 'DELETE_WEBHOOK_SUCCESS':
+      return {
+        ...state,
+        isLoadingWebhooks: false,
+        webhooks: action.res.webhooks,
+        webhookEndpoints: action.res.webhookEndpoints
+      };
+
+    case 'DELETE_WEBHOOK_FAILURE':
       return {
         ...state,
         isLoadingWebhooks: false

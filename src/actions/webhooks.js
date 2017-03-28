@@ -7,9 +7,16 @@ export function getWebhooks(token) {
   }
 }
 
-export function saveWebhook(token, endpoint, destination) {
+export function createWebhook(token, endpoint, destination) {
   return {
-    types: ['WEBHOOK_SAVE_REQUEST', 'WEBHOOK_SAVE_SUCCESS', 'WEBHOOK_SAVE_FAILURE'],
-    promise: api.saveWebhook(token, endpoint, destination)
+    types: ['CREATE_WEBHOOK_REQUEST', 'CREATE_WEBHOOK_SUCCESS', 'CREATE_WEBHOOK_FAILURE'],
+    promise: api.createWebhook(token, endpoint, destination)
+  }
+}
+
+export function deleteWebhook(token, id) {
+  return {
+    types: ['DELETE_WEBHOOK_REQUEST', 'DELETE_WEBHOOK_SUCCESS', 'DELETE_WEBHOOK_FAILURE'],
+    promise: api.deleteWebhook(token, id)
   }
 }
