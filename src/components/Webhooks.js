@@ -36,7 +36,7 @@ class Webhooks extends Component {
 			webhooks: null,
 			webhookEndpoints: null,
 			endpointValue: '',
-			destinationValue: 'https://audryrose-server.herokuapp.com/parse/ordersWebhook'
+			destinationValue: 'https://audryrose-server.herokuapp.com/parse/functions/'
     };
     this.handleCreateWebhookClick = this.handleCreateWebhookClick.bind(this);
     this.handleEndpointChange = this.handleEndpointChange.bind(this);
