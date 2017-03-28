@@ -182,6 +182,12 @@ class OrderDetails extends Component {
           shipment: shipment
         };
         let shipmentIndex = -1;
+        
+        console.log('orderProduct.name:' + orderProduct.name);
+        console.log('isShipped:' + isShipped);
+        console.log('orderProduct.shippable:' + orderProduct.shippable);
+        console.log('orderProduct.quantity_shipped:' + orderProduct.quantity_shipped);
+        console.log('orderProduct.quantity:' + orderProduct.quantity);
     		
     		// Set whether product is added to shippable, shipped or unshippable groups
     		if (isShipped) {
