@@ -27,3 +27,10 @@ export function batchCreateShipments(token, ordersToShip) {
     promise: api.batchCreateShipments(token, ordersToShip)
   }
 }
+
+export function batchPrintShipments(token, ordersToPrint) {
+  return {
+    types: ['BATCH_PRINT_SHIPMENTS_REQUEST', 'BATCH_PRINT_SHIPMENTS_SUCCESS', 'BATCH_PRINT_SHIPMENTS_FAILURE'],
+    promise: api.batchPrintShipments(token, ordersToPrint)
+  }
+}

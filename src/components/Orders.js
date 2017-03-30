@@ -38,6 +38,7 @@ class Orders extends Component {
     this.handleReloadClick = this.handleReloadClick.bind(this);
     this.handleCreateShipments = this.handleCreateShipments.bind(this);
     this.handleShipSelectedClick = this.handleShipSelectedClick.bind(this);
+    this.handlePrintSelectedClick = this.handlePrintSelectedClick.bind(this);
     this.handlePaginationClick = this.handlePaginationClick.bind(this);
     this._notificationSystem = null;
   }
@@ -94,7 +95,7 @@ class Orders extends Component {
 	
 	handleShipSelectedClick() {
 		console.log(this.state.selectedRows)
-  	// Add shipment group order ids to currently reloading array
+  	// Add order ids to currently reloading array
   	let reloadingOrderIds = this.state.isReloading;
 		let currentlyReloading = reloadingOrderIds.concat(this.state.selectedRows);
 		currentlyReloading = currentlyReloading.filter(function(v,i) { return currentlyReloading.indexOf(v) === i; });
@@ -103,6 +104,11 @@ class Orders extends Component {
     	isReloading: currentlyReloading
   	});
 		this.props.batchCreateShipments(this.props.token, this.state.selectedRows);
+	}
+	
+	handlePrintSelectedClick() {
+		console.log(this.state.selectedRows)
+		this.props.batchPrintShipments(this.props.token, this.state.selectedRows);
 	}
 	
 	handlePaginationClick(page) {
@@ -217,6 +223,22 @@ class Orders extends Component {
     		return errorMessage;
   		});
 		}
+		
+		// Display generated files with notification system
+		if (nextProps.generatedFile) {
+      this._notificationSystem.addNotification({
+        message: 'You have a new file ready to print.',
+        level: 'success',
+        autoDismiss: 0,
+        dismissible: true,
+        action: {
+          label: 'Print File',
+          callback: function() {
+            window.open(nextProps.generatedFile);
+          }
+        }
+      });
+		}
   	
 		this.setState({
   		subpage: nextProps.router.params.subpage,
@@ -268,7 +290,7 @@ class Orders extends Component {
 				    handleReloadClick={scope.handleReloadClick} 
 				    handleCreateShipments={scope.handleCreateShipments}
 			    />
-			    );
+		    );
 				return orderRows;
 	    });
 		}
@@ -282,8 +304,12 @@ class Orders extends Component {
     const dateIcon = this.state.sort === 'date-added-desc' || this.state.sort === 'date-added-asc' ? null : <Icon disabled name='caret down' />;
     const totalIcon = this.state.sort === 'total-desc' || this.state.sort === 'total-asc' ? null : <Icon disabled name='caret down' />;
     const shipSelectedName = 'Create ' + this.state.selectedRows.length + ' Shipments';
+    const printSelectedName = 'Print ' + this.state.selectedRows.length + ' Orders';
     
-    let batchShipEnabled = this.state.subpage === 'fully-shippable' || this.state.subpage === 'partially-shippable';
+    let batchShipEnabled = (this.state.subpage === 'fully-shippable' || this.state.subpage === 'partially-shippable') && this.state.isReloading.length <= 0;
+    const batchShipButton = this.state.subpage === 'fully-shippable' || this.state.subpage === 'partially-shippable' ? <Button circular basic disabled={!batchShipEnabled} color='olive' onClick={this.handleShipSelectedClick}><Icon name='shipping' /> {shipSelectedName}</Button> : null;
+    let batchPrintEnabled = this.state.isReloading.length <= 0;
+    const batchPrintButton = this.state.subpage === 'fulfilled' ? <Button circular basic disabled={!batchPrintEnabled} primary onClick={this.handlePrintSelectedClick}><Icon name='print' /> {printSelectedName}</Button> : null;
 		
     return (
 			<Grid.Column width='16'>
@@ -295,9 +321,10 @@ class Orders extends Component {
 	        <Loader inverted>Loading</Loader>
 	      </Dimmer>
   			<Sidebar.Pushable>
-          <Sidebar as={Menu} size='small' animation='push' direction='top' visible={this.state.selectedRows.length > 0}>
+          <Sidebar as={Menu} borderless size='small' animation='push' direction='top' visible={this.state.selectedRows.length > 0}>
             <Menu.Item>
-              <Button disabled={!batchShipEnabled} color='olive' onClick={this.handleShipSelectedClick}><Icon name='shipping' /> {shipSelectedName}</Button>
+              {batchShipButton}
+              {batchPrintButton}
             </Menu.Item>
           </Sidebar>
           <Sidebar.Pusher>

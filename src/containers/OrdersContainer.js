@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { getOrders, reloadOrder, createShipments, batchCreateShipments } from '../actions/orders';
+import { getOrders, reloadOrder, createShipments, batchCreateShipments, batchPrintShipments } from '../actions/orders';
 import Orders from '../components/Orders';
 
 const select = state => ({
@@ -8,6 +8,7 @@ const select = state => ({
 	orders: state.orders.orders,
 	updatedOrders: state.orders.updatedOrders,
 	errors: state.orders.errors,
+	generatedFile: state.orders.generatedFile,
 	totalPages: state.orders.totalPages,
 	totalOrders: state.orders.totalOrders,
 	tabCounts: state.orders.tabCounts,
@@ -18,7 +19,8 @@ const actions = {
   getOrders,
   reloadOrder,
   createShipments,
-  batchCreateShipments
+  batchCreateShipments,
+  batchPrintShipments
 };
 
 export default connect(select, actions)(Orders);

@@ -84,7 +84,7 @@ class Webhooks extends Component {
 		const endpoints = this.state.webhookEndpoints;
 		let webhookRows = [];
 		if (webhooks) {
-  		console.log(webhooks.length)
+  		console.log(webhooks)
 			webhooks.map(function(webhookRow, i) {
 				return webhookRows.push(<Webhook data={webhookRow} key={`${webhookRow.id}`} handleDeleteWebhookClick={scope.handleDeleteWebhookClick} />);
 	    });

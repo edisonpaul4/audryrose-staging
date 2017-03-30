@@ -44,6 +44,13 @@ export const batchCreateShipments = (token, ordersToShip) => Parse.Cloud.run('ba
   }
 );
 
+export const batchPrintShipments = (token, ordersToPrint) => Parse.Cloud.run('batchPrintShipments', 
+  {
+    sessionToken: token,
+    ordersToPrint
+  }
+);
+
 export const getProducts = (token, subpage, page, sort, search, filters) => Parse.Cloud.run('getProducts', 
   {
     sessionToken: token,
@@ -142,6 +149,7 @@ export default {
 	reloadOrder,
 	createShipments,
 	batchCreateShipments,
+	batchPrintShipments,
 	getProducts,
 	getProductFilters,
 	reloadProduct,

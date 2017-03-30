@@ -54,7 +54,8 @@ const orders = (state = initialState, action) => {
       return {
         ...state,
         updatedOrders: action.res.updatedOrders,
-        errors: action.res.errors
+        errors: action.res.errors,
+        generatedFile: action.res.generatedFile
       };
 
     case 'CREATE_SHIPMENTS_FAILURE':
@@ -72,10 +73,28 @@ const orders = (state = initialState, action) => {
         ...state,
         updatedOrders: action.res.updatedOrders,
         tabCounts: action.res.tabCounts,
-        errors: action.res.errors
+        errors: action.res.errors,
+        generatedFile: action.res.generatedFile
       };
 
     case 'BATCH_CREATE_SHIPMENTS_FAILURE':
+      return {
+        ...state
+      };
+      
+    case 'BATCH_PRINT_SHIPMENTS_REQUEST':
+      return {
+        ...state
+      };
+
+    case 'BATCH_PRINT_SHIPMENTS_SUCCESS':
+      return {
+        ...state,
+        errors: action.res.errors,
+        generatedFile: action.res.generatedFile
+      };
+
+    case 'BATCH_PRINT_SHIPMENTS_FAILURE':
       return {
         ...state
       };
