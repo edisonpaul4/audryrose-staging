@@ -28,9 +28,11 @@ class Orders extends Component {
       updatedOrders: null,
 			expandedOrders: [],
 			isReloading: [],
+			isGeneratingFile: false,
 			tabCounts: null,
 			selectedRows: [],
-			selectAllRows: false
+			selectAllRows: false,
+			generatedFile: null
     };
     this.handleToggleClick = this.handleToggleClick.bind(this);
     this.handleCheckboxClick = this.handleCheckboxClick.bind(this);
@@ -109,6 +111,9 @@ class Orders extends Component {
 	handlePrintSelectedClick() {
 		console.log(this.state.selectedRows)
 		this.props.batchPrintShipments(this.props.token, this.state.selectedRows);
+		this.setState({
+  		isGeneratingFile: true
+		});
 	}
 	
 	handlePaginationClick(page) {
@@ -225,7 +230,9 @@ class Orders extends Component {
 		}
 		
 		// Display generated files with notification system
-		if (nextProps.generatedFile) {
+		const generatedFile = nextProps.generatedFile ? nextProps.generatedFile : this.state.generatedFile;
+		let isGeneratingFile = this.state.isGeneratingFile;
+		if (nextProps.generatedFile && nextProps.generatedFile !== this.state.generatedFile) {
       this._notificationSystem.addNotification({
         message: 'You have a new file ready to print.',
         level: 'success',
@@ -238,6 +245,7 @@ class Orders extends Component {
           }
         }
       });
+      isGeneratingFile = false;
 		}
   	
 		this.setState({
@@ -250,7 +258,9 @@ class Orders extends Component {
 			isReloading: currentlyReloading,
 			tabCounts: tabCounts,
 			selectedRows: [],
-			selectAllRows: false
+			selectAllRows: false,
+			generatedFile: generatedFile,
+			isGeneratingFile: isGeneratingFile
 		});	
 		
   	if (nextPage !== this.state.page || nextProps.router.params.subpage !== this.state.subpage) {
@@ -307,9 +317,8 @@ class Orders extends Component {
     const printSelectedName = 'Print ' + this.state.selectedRows.length + ' Orders';
     
     let batchShipEnabled = (this.state.subpage === 'fully-shippable' || this.state.subpage === 'partially-shippable') && this.state.isReloading.length <= 0;
-    const batchShipButton = this.state.subpage === 'fully-shippable' || this.state.subpage === 'partially-shippable' ? <Button circular basic disabled={!batchShipEnabled} color='olive' onClick={this.handleShipSelectedClick}><Icon name='shipping' /> {shipSelectedName}</Button> : null;
-    let batchPrintEnabled = this.state.isReloading.length <= 0;
-    const batchPrintButton = this.state.subpage === 'fulfilled' ? <Button circular basic disabled={!batchPrintEnabled} primary onClick={this.handlePrintSelectedClick}><Icon name='print' /> {printSelectedName}</Button> : null;
+    const batchShipButton = this.state.subpage === 'fully-shippable' || this.state.subpage === 'partially-shippable' ? <Button circular basic disabled={!batchShipEnabled} loading={!batchShipEnabled} color='olive' onClick={this.handleShipSelectedClick}><Icon name='shipping' /> {shipSelectedName}</Button> : null;
+    const batchPrintButton = this.state.subpage === 'fulfilled' ? <Button circular basic disabled={this.state.isGeneratingFile} loading={this.state.isGeneratingFile} primary onClick={this.handlePrintSelectedClick}><Icon name='print' /> {printSelectedName}</Button> : null;
 		
     return (
 			<Grid.Column width='16'>
