@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router';
 import { Grid, Table, Dimmer, Loader } from 'semantic-ui-react';
 import Pagination from './Pagination.js';
+import DesignersNav from './DesignersNav.js';
 
 class Designer extends Component {
 	render() {
@@ -27,13 +28,14 @@ class Designers extends Component {
     super(props);
 
     this.state = {
+      subpage: this.props.router.params.subpage,
 			page: null
     };
     this.handlePaginationClick = this.handlePaginationClick.bind(this);
   }
 	
 	componentDidMount() {
-		this.props.getDesigners(this.props.token, this.state.page);
+		this.props.getDesigners(this.props.token, this.state.subpage, this.state.page);
 	}
 	
 	handlePaginationClick(page) {
@@ -50,11 +52,11 @@ class Designers extends Component {
 	componentWillReceiveProps(nextProps) {
   	let nextPage = parseFloat(nextProps.location.query.page);
   	if (!nextPage) nextPage = 1;
-  	if (nextPage !== this.state.page) {
-  		this.setState({
-  			page: nextPage
-  		});
-    	this.props.getDesigners(this.props.token, nextPage);
+		this.setState({
+			page: nextPage
+		});
+		if (nextPage !== this.state.page || nextProps.router.params.subpage !== this.state.subpage) {
+    	this.props.getDesigners(this.props.token,  nextProps.router.params.subpage, nextPage);
   	}
 	}
 	
@@ -69,6 +71,7 @@ class Designers extends Component {
 		}
     return (
 			<Grid.Column width='16'>
+  			<DesignersNav key={this.props.location.pathname} pathname={this.props.location.pathname} query={this.props.location.query} />
 				{error}
 	      <Dimmer active={isLoadingDesigners} inverted>
 	        <Loader inverted>Loading</Loader>

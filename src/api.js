@@ -90,9 +90,10 @@ export const saveVariants = (token, variants) => Parse.Cloud.run('saveVariants',
   }
 );
 
-export const getDesigners = (token, page) => Parse.Cloud.run('getDesigners', 
+export const getDesigners = (token, subpage, page) => Parse.Cloud.run('getDesigners', 
   {
     sessionToken: token,
+    subpage, 
     page
   }
 );

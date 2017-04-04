@@ -16,7 +16,7 @@
     "moment": "^2.17.1",
     "moment-timezone": "^0.5.11",
     "numeral": "^2.0.4",
-    "parse": "^1.9.2",
+    "parse": "latest",
     "path": "^0.12.7",
     "react": "^15.3.2",
     "react-addons-css-transition-group": "^15.4.2",
