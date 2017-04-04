@@ -40,6 +40,8 @@ class Order extends Component {
 		    
 		let expandIcon = this.props.expanded ? 'minus' : 'plus';
 		
+		const dateShippedColumn = data.date_shipped ? <Table.Cell verticalAlign='top' singleLine>{moment(data.date_shipped.iso).calendar()}</Table.Cell> : null;
+		
 		const customerLink = 'https://www.loveaudryrose.com/manage/customers/' + data.customer_id + '/edit';
 		const customerName = <a href={customerLink} target='_blank'>{data.billing_address.first_name} {data.billing_address.last_name} <Icon link name='configure' /></a>
 		const orderLink = 'https://www.loveaudryrose.com/manage/orders/' + data.orderId;
@@ -50,6 +52,7 @@ class Order extends Component {
       <Table.Row warning={data.customer_message ? true : undefined} disabled={this.props.isReloading}>
         <Table.Cell verticalAlign='top'><Checkbox checked={this.props.selected} onClick={() => this.handleCheckboxClick(data.orderId)} /></Table.Cell>
         <Table.Cell verticalAlign='top' singleLine>{moment(data.date_created.iso).calendar()}</Table.Cell>
+        {dateShippedColumn}
         <Table.Cell verticalAlign='top'>{orderId}</Table.Cell>
 				<Table.Cell verticalAlign='top'>{customerName}</Table.Cell>
 				<Table.Cell verticalAlign='top'>{orderNote}</Table.Cell>

@@ -14,7 +14,11 @@ class Orders extends Component {
   	let page = parseFloat(this.props.location.query.page);
   	if (!page) page = 1;
   	let sort = this.props.location.query.sort;
-  	if (!sort) sort = 'date-added-desc';
+  	if (subpage === 'fulfilled' && !sort) {
+    	sort = 'date-shipped-desc';
+  	} else if (!sort) {
+    	sort = 'date-added-desc';
+  	}
   	let search = this.props.location.query.q;
 //   	let filters = {designer: this.props.location.query.designer, price: this.props.location.query.price, class: this.props.location.query.class };
     this.state = {
@@ -308,10 +312,12 @@ class Orders extends Component {
 		// Get sort column name without sort direction
 		let sortColumn = '';
 		sortColumn = (this.state.sort.includes('date-added')) ? 'date-added' : sortColumn;
+		sortColumn = (this.state.sort.includes('date-shipped')) ? 'date-shipped' : sortColumn;
 		sortColumn = (this.state.sort.includes('total')) ? 'total' : sortColumn;
 		
     const searchHeader = this.state.search ? <Header as='h2'>{totalOrders} results for "{this.props.location.query.q}"</Header> : null;
     const dateIcon = this.state.sort === 'date-added-desc' || this.state.sort === 'date-added-asc' ? null : <Icon disabled name='caret down' />;
+    const dateShippedIcon = this.state.sort === 'date-shipped-desc' || this.state.sort === 'date-shipped-asc' ? null : <Icon disabled name='caret down' />;
     const totalIcon = this.state.sort === 'total-desc' || this.state.sort === 'total-asc' ? null : <Icon disabled name='caret down' />;
     const shipSelectedName = 'Create ' + this.state.selectedRows.length + ' Shipments';
     const printSelectedName = 'Print ' + this.state.selectedRows.length + ' Orders';
@@ -319,6 +325,13 @@ class Orders extends Component {
     let batchShipEnabled = (this.state.subpage === 'fully-shippable' || this.state.subpage === 'partially-shippable') && this.state.isReloading.length <= 0;
     const batchShipButton = this.state.subpage === 'fully-shippable' || this.state.subpage === 'partially-shippable' ? <Button circular basic disabled={!batchShipEnabled} loading={!batchShipEnabled} color='olive' onClick={this.handleShipSelectedClick}><Icon name='shipping' /> {shipSelectedName}</Button> : null;
     const batchPrintButton = this.state.subpage === 'fulfilled' ? <Button circular basic disabled={this.state.isGeneratingFile} loading={this.state.isGeneratingFile} primary onClick={this.handlePrintSelectedClick}><Icon name='print' /> {printSelectedName}</Button> : null;
+    
+    const dateShippedColumn = this.state.subpage === 'fulfilled' ? 
+      <Table.HeaderCell 
+        sorted={sortColumn === 'date-shipped' ? (this.state.sort === 'date-shipped-asc' ? 'ascending' : 'descending') : null} 
+        onClick={this.state.sort === 'date-shipped-desc' ? ()=>this.handleSortClick('date-shipped-asc') : ()=>this.handleSortClick('date-shipped-desc')}>
+        Date Shipped {dateShippedIcon}
+      </Table.HeaderCell> : null;
 		
     return (
 			<Grid.Column width='16'>
@@ -348,6 +361,7 @@ class Orders extends Component {
                     onClick={this.state.sort === 'date-added-desc' ? ()=>this.handleSortClick('date-added-asc') : ()=>this.handleSortClick('date-added-desc')}>
                     Date {dateIcon}
                   </Table.HeaderCell>
+                  {dateShippedColumn}
                   <Table.HeaderCell>Order #</Table.HeaderCell>
                   <Table.HeaderCell>Customer</Table.HeaderCell>
     							<Table.HeaderCell>Order Notes</Table.HeaderCell>
