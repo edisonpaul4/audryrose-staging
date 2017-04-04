@@ -20,13 +20,14 @@ class OrdersNav extends Component {
 		if (this.props.files) {
   		this.props.files.map(function(file, i) {
     		console.log(file)
+    		const date = moment(file.createdAt).format('M/D/YY h:mm a');
     		files.push(
     		  <Dropdown.Item 
     		    as={Link} 
     		    href={file.url} 
     		    target='_blank' 
     		    text={file.name} 
-    		    description={moment(file.createdAt.iso).format('M/D/YY h:mm a')} 
+    		    description={date} 
     		    key={i} 
     		    className='file-item'
   		    />
@@ -84,7 +85,7 @@ class OrdersNav extends Component {
 				</Menu.Item>
         <Menu.Menu position='right'>
           <Menu.Item fitted className='subnav-files'>
-            <Dropdown icon='file text outline' compact={false} basic button className='icon'>
+            <Dropdown icon='file text outline' compact={false} basic button scrolling className='icon'>
               <Dropdown.Menu>
                 <Dropdown.Header content='Recent Files' />
                 <Dropdown.Divider />
