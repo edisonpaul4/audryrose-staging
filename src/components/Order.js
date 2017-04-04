@@ -40,7 +40,8 @@ class Order extends Component {
 		    
 		let expandIcon = this.props.expanded ? 'minus' : 'plus';
 		
-		const dateShippedColumn = data.date_shipped ? <Table.Cell verticalAlign='top' singleLine>{moment(data.date_shipped.iso).calendar()}</Table.Cell> : null;
+		const dateShipped = data.date_shipped ? moment(data.date_shipped.iso).calendar() : '?';
+		const dateShippedColumn = this.props.subpage === 'fulfilled' ? <Table.Cell verticalAlign='top' singleLine>{dateShipped}</Table.Cell> : null;
 		
 		const customerLink = 'https://www.loveaudryrose.com/manage/customers/' + data.customer_id + '/edit';
 		const customerName = <a href={customerLink} target='_blank'>{data.billing_address.first_name} {data.billing_address.last_name} <Icon link name='configure' /></a>

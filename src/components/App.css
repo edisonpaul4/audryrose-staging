@@ -62,3 +62,7 @@ a:hover i.link.icon {
 .ui.horizontal.label {
   white-space: nowrap;
 }
+
+.ui.menu .ui.dropdown .menu > .item.file-item {
+  min-width: 350px;
+}

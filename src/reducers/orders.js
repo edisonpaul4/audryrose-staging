@@ -19,7 +19,8 @@ const orders = (state = initialState, action) => {
         orders: action.res.orders,
         totalPages: action.res.totalPages,
         totalOrders: action.res.totalOrders,
-        tabCounts: action.res.tabCounts
+        tabCounts: action.res.tabCounts,
+        files: action.res.files
       };
 
     case 'ORDERS_FAILURE':
@@ -55,7 +56,8 @@ const orders = (state = initialState, action) => {
         ...state,
         updatedOrders: action.res.updatedOrders,
         errors: action.res.errors,
-        generatedFile: action.res.generatedFile
+        generatedFile: action.res.generatedFile,
+        newFiles: action.res.newFiles
       };
 
     case 'CREATE_SHIPMENTS_FAILURE':
@@ -74,7 +76,8 @@ const orders = (state = initialState, action) => {
         updatedOrders: action.res.updatedOrders,
         tabCounts: action.res.tabCounts,
         errors: action.res.errors,
-        generatedFile: action.res.generatedFile
+        generatedFile: action.res.generatedFile,
+        newFiles: action.res.newFiles
       };
 
     case 'BATCH_CREATE_SHIPMENTS_FAILURE':
@@ -91,7 +94,8 @@ const orders = (state = initialState, action) => {
       return {
         ...state,
         errors: action.res.errors,
-        generatedFile: action.res.generatedFile
+        generatedFile: action.res.generatedFile,
+        newFiles: action.res.newFiles
       };
 
     case 'BATCH_PRINT_SHIPMENTS_FAILURE':

@@ -36,7 +36,9 @@ class Orders extends Component {
 			tabCounts: null,
 			selectedRows: [],
 			selectAllRows: false,
-			generatedFile: null
+			generatedFile: null,
+			errors: [],
+			files: []
     };
     this.handleToggleClick = this.handleToggleClick.bind(this);
     this.handleCheckboxClick = this.handleCheckboxClick.bind(this);
@@ -220,17 +222,28 @@ class Orders extends Component {
   	const search = nextProps.router.params.subpage !== 'search' ? null : this.state.search;
   	expandedOrders = nextProps.router.params.subpage !== this.state.subpage ? [] : expandedOrders;
   	
-		// Display any errors with notification system
+		// Display any errors
+		let errors = [];
 		if (nextProps.errors) {
   		nextProps.errors.map(function(errorMessage, i) {
-        scope._notificationSystem.addNotification({
-          message: errorMessage,
-          level: 'error',
-          autoDismiss: 0,
-          dismissible: true
+    		var errorExists = false;
+    		scope.state.errors.map(function(error, j) {
+      		if (errorMessage === error) errorExists = true;
+          return error;
         });
+        if (!errorExists) {
+          scope._notificationSystem.addNotification({
+            message: errorMessage,
+            level: 'error',
+            autoDismiss: 0,
+            dismissible: true
+          });
+        }
     		return errorMessage;
   		});
+      errors = nextProps.errors.length > 0 ? nextProps.errors : this.state.errors;
+		} else {
+  		errors = this.state.errors;
 		}
 		
 		// Display generated files with notification system
@@ -251,6 +264,30 @@ class Orders extends Component {
       });
       isGeneratingFile = false;
 		}
+		
+		// Display files
+  	let files = this.state.files ? this.state.files : [];
+  	let newFiles = [];
+  	if (nextProps.newFiles) {
+    	console.log('has updated files');
+      nextProps.newFiles.map(function(newFile, i) {
+        const newFileJSON = newFile.toJSON();
+        let addUpdatedFile = true;
+        nextProps.files.map(function(file, i) {
+        	// If new file exists, don't push it into the array
+        	const fileJSON = file.toJSON();
+        	if (newFileJSON.objectId === fileJSON.objectId) addUpdatedFile = false;
+        	return file;
+      	});
+        if (addUpdatedFile) {
+          newFiles.push(newFile);
+        }
+        return newFile;
+      });
+      files = files.concat(newFiles);
+    } else {
+      files = nextProps.files;
+    }
   	
 		this.setState({
   		subpage: nextProps.router.params.subpage,
@@ -264,7 +301,9 @@ class Orders extends Component {
 			selectedRows: [],
 			selectAllRows: false,
 			generatedFile: generatedFile,
-			isGeneratingFile: isGeneratingFile
+			isGeneratingFile: isGeneratingFile,
+			errors: errors,
+			files: files
 		});	
 		
   	if (nextPage !== this.state.page || nextProps.router.params.subpage !== this.state.subpage) {
@@ -277,6 +316,7 @@ class Orders extends Component {
 		let scope = this;
 		let orderRows = [];
 		const tabCounts = this.state.tabCounts;
+		const files = this.state.files;
     
 		if (this.state.orders) {
 			this.state.orders.map(function(orderRow, i) {
@@ -286,6 +326,7 @@ class Orders extends Component {
 				let selected = (scope.state.selectedRows.indexOf(orderJSON.orderId) >= 0) ? true : false;
 				orderRows.push(
 				  <Order 
+				    subpage={scope.state.subpage}
 				    data={orderJSON} 
 				    expanded={expanded} 
 				    key={`${orderJSON.orderId}-1`} 
@@ -336,7 +377,7 @@ class Orders extends Component {
     return (
 			<Grid.Column width='16'>
   			<NotificationSystem ref="notificationSystem" />
-				<OrdersNav key={this.props.location.pathname} pathname={this.props.location.pathname} query={this.props.location.query} tabCounts={tabCounts} />
+				<OrdersNav key={this.props.location.pathname} pathname={this.props.location.pathname} query={this.props.location.query} tabCounts={tabCounts} files={files} />
 				{searchHeader}
 				{error}
 	      <Dimmer active={isLoadingOrders} inverted>

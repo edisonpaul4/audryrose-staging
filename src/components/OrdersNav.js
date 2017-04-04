@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router';
-import { Menu, Label, Form } from 'semantic-ui-react';
+import { Menu, Label, Form, Dropdown } from 'semantic-ui-react';
+import moment from 'moment';
 
 class OrdersNav extends Component {
 	// handleItemClick(event) {
@@ -13,6 +14,27 @@ class OrdersNav extends Component {
 		const pathName = this.props.pathname;
 		const search = this.props.query.q ? this.props.query.q : '';
 		const tabCounts = this.props.tabCounts;
+		
+		// Display files list
+		let files = [];
+		if (this.props.files) {
+  		this.props.files.map(function(file, i) {
+    		console.log(file)
+    		files.push(
+    		  <Dropdown.Item 
+    		    as={Link} 
+    		    href={file.url} 
+    		    target='_blank' 
+    		    text={file.name} 
+    		    description={moment(file.createdAt.iso).format('M/D/YY h:mm a')} 
+    		    key={i} 
+    		    className='file-item'
+  		    />
+		    );
+    		return file;
+  		});
+		}
+		
     return (
 	    <Menu pointing secondary>
 	      <Menu.Item 
@@ -61,6 +83,15 @@ class OrdersNav extends Component {
 					Fulfilled <Label horizontal circular size='tiny'>{tabCounts ? tabCounts.fulfilled : null}</Label>
 				</Menu.Item>
         <Menu.Menu position='right'>
+          <Menu.Item fitted className='subnav-files'>
+            <Dropdown icon='file text outline' compact={false} basic button className='icon'>
+              <Dropdown.Menu>
+                <Dropdown.Header content='Recent Files' />
+                <Dropdown.Divider />
+                {files}
+              </Dropdown.Menu>
+            </Dropdown>
+          </Menu.Item>
           <Menu.Item fitted className='subnav-search'>
             <Form action='/orders/search' method='get' size='small'>
               <Form.Input 
