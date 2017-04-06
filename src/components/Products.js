@@ -5,6 +5,7 @@ import ProductsNav from './ProductsNav.js';
 import Product from './Product.js';
 import ProductDetails from './ProductDetails.js';
 import Pagination from './Pagination.js';
+import ProductOrderModal from './ProductOrderModal.js';
 
 class Products extends Component {
   constructor(props) {
@@ -42,6 +43,8 @@ class Products extends Component {
     this.handleFilterDesignerChange = this.handleFilterDesignerChange.bind(this);
     this.handleFilterPriceChange = this.handleFilterPriceChange.bind(this);
     this.handleFilterClassChange = this.handleFilterClassChange.bind(this);
+    this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
+    this.handleProductOrderModalClose = this.handleProductOrderModalClose.bind(this);
   }
 	
 	componentDidMount() {
@@ -207,6 +210,19 @@ class Products extends Component {
   	});
 	}
 	
+	handleShowOrderFormClick(data) {
+  	console.log('show order form for product:' + data.productId + ' variant:' + data.variant);
+    this.setState({
+      productOrderOpen: true
+    });
+	}
+	
+	handleProductOrderModalClose(data) {
+    this.setState({
+      productOrderOpen: false
+    });
+	}
+	
 	componentWillReceiveProps(nextProps) {
   	let nextPage = parseFloat(nextProps.location.query.page);
   	if (!nextPage) nextPage = 1;
@@ -334,6 +350,7 @@ class Products extends Component {
   				    handleReloadClick={scope.handleReloadClick} 
   				    handleSaveVariantClick={scope.handleSaveVariantClick} 
   				    handleSaveAllVariantsClick={scope.handleSaveAllVariantsClick} 
+  				    handleShowOrderFormClick={scope.handleShowOrderFormClick} 
   				    handleVariantsEdited={scope.handleVariantsEdited}
   				    savingVariants={scope.state.savingVariants} 
   				    updatedVariants={scope.state.updatedVariants} 
@@ -448,6 +465,13 @@ class Products extends Component {
 						</Table.Row>
 					</Table.Footer>
 		    </Table>
+        <ProductOrderModal 
+          open={this.state.productOrderOpen} 
+          handleProductOrderModalClose={this.handleProductOrderModalClose} 
+          handleProductOrder={this.handleProductOrder} 
+          productOrderData={this.state.productOrderData} 
+          isLoading={this.props.isReloading}
+        />
 			</Grid.Column>
     );
   }

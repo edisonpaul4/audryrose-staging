@@ -16,6 +16,7 @@ class VariantRow extends Component {
     this.handleInventoryChange = this.handleInventoryChange.bind(this);
     this.handleSaveVariantClick = this.handleSaveVariantClick.bind(this);
     this.handleCancelVariantClick = this.handleCancelVariantClick.bind(this);
+    this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
   }
   handleInventoryChange(e, {value}) {
     let edited = (parseFloat(value) !== parseFloat(this.props.data.inventoryLevel)) ? true : false;
@@ -37,6 +38,9 @@ class VariantRow extends Component {
       variantSaved: false
     });
     this.props.handleVariantEdited({objectId: this.props.data.objectId}, false);
+	}
+	handleShowOrderFormClick(e, {value}) {
+		this.props.handleShowOrderFormClick({productId: this.props.data.productId, variant: this.props.data.objectId});
 	}
 	componentWillReceiveProps(nextProps) {
   	if (nextProps.updatedVariant && this.props.isSaving) {
@@ -94,7 +98,7 @@ class VariantRow extends Component {
     		    />
     	    </Button.Group>  <span>&nbsp;</span>
           <Button.Group color='grey' size='mini' compact>
-            <Button content='Order' disabled={this.props.isSaving || this.state.variantEdited} />
+            <Button content='Order' disabled={this.props.isSaving || this.state.variantEdited} onClick={this.handleShowOrderFormClick} />
             <Dropdown floating button compact className='icon' disabled={this.props.isSaving || this.state.variantEdited}>
               <Dropdown.Menu>
                 <Dropdown.Item icon='exchange' text='Resize' />
@@ -113,12 +117,17 @@ class VariantsTable extends Component {
     super(props);
     this.handleSaveVariantClick = this.handleSaveVariantClick.bind(this);
     this.handleVariantEdited = this.handleVariantEdited.bind(this);
+    this.handleVariantEdited = this.handleVariantEdited.bind(this);
+    this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
   }
   handleVariantEdited(data, edited) {
     this.props.handleVariantsEdited(data, edited)
   }
 	handleSaveVariantClick(variantEdited) {
 		this.props.handleSaveVariantClick(variantEdited);
+	}
+	handleShowOrderFormClick(data) {
+  	this.props.handleShowOrderFormClick(data);
 	}
 	render() {  	
   	var scope = this;
@@ -171,6 +180,7 @@ class VariantsTable extends Component {
 				    handleVariantEdited={scope.handleVariantEdited} 
 				    isSaving={isSaving} 
 				    updatedVariant={updatedVariantMatch}
+				    handleShowOrderFormClick={scope.handleShowOrderFormClick}
 			    />
 		    );
 				return variantRows;
@@ -252,6 +262,7 @@ class ProductDetails extends Component {
     this.handleSaveVariantClick = this.handleSaveVariantClick.bind(this);
     this.handleSaveAllVariantsClick = this.handleSaveAllVariantsClick.bind(this);
     this.handleVariantsEdited = this.handleVariantsEdited.bind(this);
+    this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
   }
 	handleReloadClick(productId) {
 		this.props.handleReloadClick(productId);
@@ -289,6 +300,9 @@ class ProductDetails extends Component {
     	showEditor: showEditor
   	});
 	}	
+	handleShowOrderFormClick(data) {
+  	this.props.handleShowOrderFormClick(data);
+	}
 	componentWillReceiveProps(nextProps) {
     let variantsEdited = this.state.variantsEdited;
     if (nextProps.updatedVariants) {
@@ -349,6 +363,7 @@ class ProductDetails extends Component {
     	        handleVariantsEdited={scope.handleVariantsEdited}
     	        savingVariants={scope.props.savingVariants} 
     	        updatedVariants={scope.props.updatedVariants}
+    	        handleShowOrderFormClick={scope.handleShowOrderFormClick}
   	        />
 	        );
     	    return variantGroup;
