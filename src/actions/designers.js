@@ -6,3 +6,10 @@ export function getDesigners(token, subpage, page) {
     promise: api.getDesigners(token, subpage, page)
   }
 }
+
+export function saveDesigner(token, objectId, email) {
+  return {
+    types: ['DESIGNER_SAVE_REQUEST', 'DESIGNER_SAVE_SUCCESS', 'DESIGNER_SAVE_FAILURE'],
+    promise: api.saveDesigner(token, objectId, email)
+  }
+}

@@ -98,6 +98,14 @@ export const getDesigners = (token, subpage, page) => Parse.Cloud.run('getDesign
   }
 );
 
+export const saveDesigner = (token, objectId, email) => Parse.Cloud.run('saveDesigner', 
+  {
+    sessionToken: token,
+    objectId,
+    email
+  }
+);
+
 export const getOptions = (token, subpage) => Parse.Cloud.run('getOptions', 
   {
     sessionToken: token,
@@ -157,6 +165,7 @@ export default {
 	saveProductStatus,
 	saveVariants,
 	getDesigners,
+	saveDesigner,
 	getOptions,
 	saveOption,
 	getShipments,

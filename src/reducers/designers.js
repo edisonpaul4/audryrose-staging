@@ -25,6 +25,22 @@ const designers = (state = initialState, action) => {
         ...state,
         isLoadingDesigners: false
       }
+      
+    case 'DESIGNER_SAVE_REQUEST':
+      return {
+        ...state
+      }
+
+    case 'DESIGNER_SAVE_SUCCESS':
+      return {
+        ...state,
+        updatedDesigner: action.res
+      };
+
+    case 'DESIGNER_SAVE_FAILURE':
+      return {
+        ...state
+      }
 			
     default:
       return state;

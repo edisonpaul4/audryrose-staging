@@ -93,6 +93,13 @@ const createRoutes = (store) => {
           path: 'designers',
           component: DesignersContainer,
 					onEnter: requireAuth(store),
+					childRoutes: [
+						{
+							path: ':subpage',
+							component: DesignersContainer,
+							onEnter: requireAuth(store)
+						}
+					]
         },
         {
           path: 'shipments',
