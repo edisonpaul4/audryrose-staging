@@ -79,6 +79,23 @@ const products = (state = initialState, action) => {
         ...state
       }
       
+    case 'PRODUCT_VENDOR_REQUEST':
+      return {
+        ...state
+      }
+
+    case 'PRODUCT_VENDOR_SUCCESS':
+      return {
+        ...state,
+        updatedProducts: [action.res.updatedProduct],
+        tabCounts: action.res.tabCounts
+      };
+
+    case 'PRODUCT_VENDOR_FAILURE':
+      return {
+        ...state
+      }
+      
     case 'VARIANT_SAVE_REQUEST':
       return {
         ...state
@@ -111,6 +128,24 @@ const products = (state = initialState, action) => {
       };
 
     case 'VARIANTS_SAVE_FAILURE':
+      return {
+        ...state
+      }
+      
+    case 'ADD_TO_VENDOR_ORDER_REQUEST':
+      return {
+        ...state
+      }
+
+    case 'ADD_TO_VENDOR_ORDER_SUCCESS':
+      return {
+        ...state,
+        updatedVariants: action.res.updatedVariants,
+        updatedProducts: action.res.updatedProducts,
+        tabCounts: action.res.tabCounts
+      };
+
+    case 'ADD_TO_VENDOR_ORDER_FAILURE':
       return {
         ...state
       }

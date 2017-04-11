@@ -1,42 +1,61 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router';
-import { Grid, Table, Dimmer, Loader, Icon, Input, Button } from 'semantic-ui-react';
+import { Grid, Table, Dimmer, Loader, Icon, Button } from 'semantic-ui-react';
 import Pagination from './Pagination.js';
 import DesignersNav from './DesignersNav.js';
+import VendorEditModal from './VendorEditModal.js';
 
 class Designer extends Component {
   constructor(props) {
     super(props);
     this.state = {
       designerData: this.props.data,
+      selectedVendorData: null,
+      vendorEditModalOpen: false,
+      vendorEditModalMode: null,
       email: this.props.data.email ? this.props.data.email : '',
       edited: false,
       saved: false
     };
-    this.handleEmailChange = this.handleEmailChange.bind(this);
-    this.handleSaveDesignerClick = this.handleSaveDesignerClick.bind(this);
-    this.handleCancelClick = this.handleCancelClick.bind(this);
+    this.handleShowVendorEditFormClick = this.handleShowVendorEditFormClick.bind(this);
+    this.handleShowVendorCreateFormClick = this.handleShowVendorCreateFormClick.bind(this);
+    this.handleVendorEditModalClose = this.handleVendorEditModalClose.bind(this);
+    this.handleSaveVendor = this.handleSaveVendor.bind(this);
   }
-  handleEmailChange(e, {value}) {
-    const defaultEmail = this.props.data.email ? this.props.data.email : '';
-    const edited = (this.state.email !== defaultEmail || value !== this.props.data.email) ? true : false;
+  
+	handleSaveVendor(data) {
+		this.props.handleSaveVendor(data);
+	}
+	
+  handleShowVendorEditFormClick(objectId) {
+    const data = this.state.designerData;
+    let selectedVendorData;
+    data.vendors.map(function(vendor, i) {
+      if (vendor.objectId === objectId) selectedVendorData = vendor;
+      return vendor;
+    });
     this.setState({
-      email: value,
-      edited: edited,
-      saved: false
+      selectedVendorData: selectedVendorData,
+      vendorEditModalOpen: true,
+      vendorEditModalMode: 'edit'
     });
   }
-	handleSaveDesignerClick(e, {value}) {
-  	console.log('save ' + this.state.email);
-		this.props.handleSaveDesignerClick(this.props.data.objectId, this.state.email);
-	}
-	handleCancelClick(e, {value}) {
+  
+  handleShowVendorCreateFormClick(objectId) {
     this.setState({
-      email: this.props.data.email ? this.props.data.email : '',
-      edited: false,
-      saved: false
+      selectedVendorData: null,
+      vendorEditModalOpen: true,
+      vendorEditModalMode: 'create'
+    });
+  }
+  
+	handleVendorEditModalClose() {
+    this.setState({
+      selectedVendorData: null,
+      vendorEditModalOpen: false
     });
 	}
+  
 	componentWillReceiveProps(nextProps) {
   	if (nextProps.updatedDesigner) {
     	if (this.state.designerData.objectId === nextProps.updatedDesigner.objectId) {
@@ -49,11 +68,27 @@ class Designer extends Component {
   	}
 	}
 	render() {
-		const data = this.props.data;
-		const saveCancelClass = this.state.edited ? '' : 'invisible';
+  	const scope = this;
+		const data = this.state.designerData;
 		const bcManageUrl = 'https://www.loveaudryrose.com/manage/products/brands/' + data.designerId + '/edit';
 		const name = <a href={bcManageUrl} target="_blank">{data.name} <Icon link name='configure' /></a>;
-
+		
+    const vendorEditModal = 
+      <VendorEditModal 
+        open={this.state.vendorEditModalOpen} 
+        designerData={data} 
+        handleSaveVendor={this.handleSaveVendor} 
+        handleVendorEditModalClose={this.handleVendorEditModalClose} 
+        vendorData={this.state.selectedVendorData} 
+        isLoading={this.props.isReloading} 
+        mode={this.state.vendorEditModalMode}
+      />;
+      
+    const modalButtons = data.vendors ? data.vendors.map(function(vendor, i) {
+      var buttonContent = 'View ' + vendor.name;
+      return <Button content={buttonContent} compact onClick={()=>scope.handleShowVendorEditFormClick(vendor.objectId)} key={i} />;
+    }) : null;
+    
     return (
       <Table.Row disabled={this.props.isSaving} positive={this.state.saved && !this.state.edited ? true : false} >
         <Table.Cell verticalAlign='top' singleLine>
@@ -61,27 +96,12 @@ class Designer extends Component {
         </Table.Cell>
         <Table.Cell verticalAlign='top'>{name}</Table.Cell>
 				<Table.Cell verticalAlign='top'>{data.abbreviation}</Table.Cell>
-				<Table.Cell singleLine><Input type='text' size='mini' value={this.state.email} onChange={this.handleEmailChange} disabled={this.props.isSaving} /></Table.Cell>
         <Table.Cell singleLine className='right aligned'>
-    		  <Button.Group size='mini'>
-    		    <Button 
-    		      content='Save' 
-    		      className={saveCancelClass} 
-    		      primary 
-    		      compact 
-    		      loading={this.props.isSaving} 
-    		      disabled={this.props.isSaving} 
-    		      onClick={this.handleSaveDesignerClick} 
-    		      /> 
-    		    <Button content='Cancel' 
-      		    className={saveCancelClass} 
-      		    secondary 
-      		    compact 
-      		    loading={this.props.isSaving} 
-      		    disabled={this.props.isSaving} 
-      		    onClick={this.handleCancelClick} 
-    		    />
-    	    </Button.Group> 
+          <Button.Group size='mini'>
+      	    {modalButtons}
+      	    <Button content='+ Add' basic compact onClick={()=>scope.handleShowVendorCreateFormClick(data.objectId)} />
+    	    </Button.Group>
+    	    {vendorEditModal}
   	    </Table.Cell>
       </Table.Row>
     );
@@ -100,7 +120,7 @@ class Designers extends Component {
 			isSavingDesigners: []
     };
     this.handlePaginationClick = this.handlePaginationClick.bind(this);
-    this.handleSaveDesignerClick = this.handleSaveDesignerClick.bind(this);
+    this.handleSaveVendor = this.handleSaveVendor.bind(this);
   }
 	
 	componentDidMount() {
@@ -118,17 +138,16 @@ class Designers extends Component {
     })
 	}
 	
-	handleSaveDesignerClick(objectId, email) {
-  	console.log('save designer: ' + email);
+	handleSaveVendor(data) {
 		let currentlySaving = this.state.isSavingDesigners;
-		const index = currentlySaving.indexOf(objectId);
+		const index = currentlySaving.indexOf(data.designerId);
 		if (index < 0) {
-			currentlySaving.push(objectId);
+			currentlySaving.push(data.designerId);
 		}
   	this.setState({
     	isSavingDesigners: currentlySaving
   	});
-		this.props.saveDesigner(this.props.token, objectId, email);
+		this.props.saveVendor(this.props.token, data);
 	}
 	
 	componentWillReceiveProps(nextProps) {
@@ -180,7 +199,7 @@ class Designers extends Component {
     const scope = this;
 		const { error, isLoadingDesigners, totalPages } = this.props;
 		let designerRows = [];
-		console.log(scope.state.isSavingDesigners);
+    
 		if (this.props.designers) {
   		const updatedDesignerJSON = this.state.updatedDesigner ? this.state.updatedDesigner.toJSON() : null;
 			this.props.designers.map(function(designerRow, i) {
@@ -191,7 +210,7 @@ class Designers extends Component {
 				    data={designerJSON} 
 				    updatedDesigner={updatedDesignerJSON} 
 				    isSaving={isSaving} 
-				    handleSaveDesignerClick={scope.handleSaveDesignerClick} 
+				    handleSaveVendor={scope.handleSaveVendor} 
 				    key={`${designerJSON.designerId}-1`} 
 			    />
 		    );
@@ -210,8 +229,7 @@ class Designers extends Component {
               <Table.HeaderCell>Image</Table.HeaderCell>
               <Table.HeaderCell>Name</Table.HeaderCell>
 							<Table.HeaderCell>Abbreviation</Table.HeaderCell>
-							<Table.HeaderCell>Email</Table.HeaderCell>
-							<Table.HeaderCell className='right aligned'>&nbsp;</Table.HeaderCell>
+							<Table.HeaderCell className='right aligned'>Vendors</Table.HeaderCell>
 		        </Table.Row>
 		      </Table.Header>
 		      <Table.Body>

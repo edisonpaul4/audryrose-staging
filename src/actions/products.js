@@ -28,9 +28,23 @@ export function saveProductStatus(token, productId, status) {
   }
 }
 
+export function saveProductVendor(token, productId, vendorId) {
+  return {
+    types: ['PRODUCT_VENDOR_REQUEST', 'PRODUCT_VENDOR_SUCCESS', 'PRODUCT_VENDOR_FAILURE'],
+    promise: api.saveProductVendor(token, productId, vendorId)
+  }
+}
+
 export function saveVariants(token, variants) {
   return {
     types: ['VARIANTS_SAVE_REQUEST', 'VARIANTS_SAVE_SUCCESS', 'VARIANTS_SAVE_FAILURE'],
     promise: api.saveVariants(token, variants)
+  }
+}
+
+export function addToVendorOrder(token, orders) {
+  return {
+    types: ['ADD_TO_VENDOR_ORDER_REQUEST', 'ADD_TO_VENDOR_ORDER_SUCCESS', 'ADD_TO_VENDOR_ORDER_FAILURE'],
+    promise: api.addToVendorOrder(token, orders)
   }
 }

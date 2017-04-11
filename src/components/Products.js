@@ -31,7 +31,9 @@ class Products extends Component {
 			expandedProducts: [],
 			isReloading: [],
 			savingVariants: [],
-			tabCounts: null
+			tabCounts: null,
+			productOrderOpen: false,
+			productOrderData: null
     };
     this.handleToggleClick = this.handleToggleClick.bind(this);
     this.handlePaginationClick = this.handlePaginationClick.bind(this);
@@ -40,10 +42,12 @@ class Products extends Component {
     this.handleSaveAllVariantsClick = this.handleSaveAllVariantsClick.bind(this);
     this.handleVariantsEdited = this.handleVariantsEdited.bind(this);
     this.handleStatusChange = this.handleStatusChange.bind(this);
+    this.handleVendorChange = this.handleVendorChange.bind(this);
     this.handleFilterDesignerChange = this.handleFilterDesignerChange.bind(this);
     this.handleFilterPriceChange = this.handleFilterPriceChange.bind(this);
     this.handleFilterClassChange = this.handleFilterClassChange.bind(this);
     this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
+    this.handleAddToVendorOrder = this.handleAddToVendorOrder.bind(this);
     this.handleProductOrderModalClose = this.handleProductOrderModalClose.bind(this);
   }
 	
@@ -203,6 +207,18 @@ class Products extends Component {
   	var status = isActive ? 'active' : 'done';
 		this.props.saveProductStatus(this.props.token, productId, status);
 	}
+
+	handleVendorChange(productId, vendorId) {
+		let currentlyReloading = this.state.isReloading;
+		const index = currentlyReloading.indexOf(productId);
+		if (index < 0) {
+			currentlyReloading.push(productId);
+		}
+  	this.setState({
+    	isReloading: currentlyReloading
+  	});
+		this.props.saveProductVendor(this.props.token, productId, vendorId);
+	}
 	
 	handleVariantsEdited(data, edited) {
   	this.setState({
@@ -210,16 +226,37 @@ class Products extends Component {
   	});
 	}
 	
+	handleAddToVendorOrder(orders) {
+  	console.log(orders);
+  	const variantEdited = orders.map(function(order, i) {
+    	return order.variant;
+  	});
+  	this.setState({
+    	savingVariants: [variantEdited]
+  	});
+		this.props.addToVendorOrder(this.props.token, orders);
+	}
+	
 	handleShowOrderFormClick(data) {
   	console.log('show order form for product:' + data.productId + ' variant:' + data.variant);
+  	let productOrderData = {};
+    this.state.products.map(function(product, i) {
+      if (product.get('productId') === data.productId) {
+        productOrderData.product = product.toJSON();
+        productOrderData.variant = data.variant;
+      }
+      return product;
+    });
     this.setState({
-      productOrderOpen: true
+      productOrderOpen: true,
+      productOrderData: productOrderData
     });
 	}
 	
 	handleProductOrderModalClose(data) {
     this.setState({
-      productOrderOpen: false
+      productOrderOpen: false,
+      productOrderData: null
     });
 	}
 	
@@ -352,6 +389,7 @@ class Products extends Component {
   				    handleSaveAllVariantsClick={scope.handleSaveAllVariantsClick} 
   				    handleShowOrderFormClick={scope.handleShowOrderFormClick} 
   				    handleVariantsEdited={scope.handleVariantsEdited}
+  				    handleVendorChange={scope.handleVendorChange} 
   				    savingVariants={scope.state.savingVariants} 
   				    updatedVariants={scope.state.updatedVariants} 
 				    />
@@ -396,6 +434,16 @@ class Products extends Component {
     const dateIcon = this.state.sort === 'date-added-desc' || this.state.sort === 'date-added-asc' ? null : <Icon disabled name='caret down' />;
     const priceIcon = this.state.sort === 'price-desc' || this.state.sort === 'price-asc' ? null : <Icon disabled name='caret down' />;
     const stockIcon = this.state.sort === 'stock-desc' || this.state.sort === 'stock-asc' ? null : <Icon disabled name='caret down' />;
+    
+    const productOrderModal = this.state.productOrderData ? <ProductOrderModal 
+        open={this.state.productOrderOpen}
+        handleAddToVendorOrder={this.handleAddToVendorOrder} 
+        handleProductOrderModalClose={this.handleProductOrderModalClose} 
+        handleProductOrder={this.handleProductOrder} 
+        productOrderData={this.state.productOrderData} 
+        isLoading={this.props.isReloading}
+      /> : null;
+    
     return (
 			<Grid.Column width='16'>
 				<ProductsNav key={this.props.location.pathname} pathname={this.props.location.pathname} query={this.props.location.query} tabCounts={tabCounts} />
@@ -465,13 +513,7 @@ class Products extends Component {
 						</Table.Row>
 					</Table.Footer>
 		    </Table>
-        <ProductOrderModal 
-          open={this.state.productOrderOpen} 
-          handleProductOrderModalClose={this.handleProductOrderModalClose} 
-          handleProductOrder={this.handleProductOrder} 
-          productOrderData={this.state.productOrderData} 
-          isLoading={this.props.isReloading}
-        />
+		    {productOrderModal}
 			</Grid.Column>
     );
   }

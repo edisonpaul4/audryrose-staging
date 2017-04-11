@@ -83,10 +83,25 @@ export const saveProductStatus = (token, productId, status) => Parse.Cloud.run('
   }
 );
 
+export const saveProductVendor = (token, productId, vendorId) => Parse.Cloud.run('saveProductVendor', 
+  {
+    sessionToken: token,
+    productId,
+    vendorId
+  }
+);
+
 export const saveVariants = (token, variants) => Parse.Cloud.run('saveVariants', 
   {
     sessionToken: token,
     variants
+  }
+);
+
+export const addToVendorOrder = (token, orders) => Parse.Cloud.run('addToVendorOrder', 
+  {
+    sessionToken: token,
+    orders
   }
 );
 
@@ -98,11 +113,10 @@ export const getDesigners = (token, subpage, page) => Parse.Cloud.run('getDesign
   }
 );
 
-export const saveDesigner = (token, objectId, email) => Parse.Cloud.run('saveDesigner', 
+export const saveVendor = (token, data) => Parse.Cloud.run('saveVendor', 
   {
     sessionToken: token,
-    objectId,
-    email
+    data
   }
 );
 
@@ -163,9 +177,11 @@ export default {
 	getProductFilters,
 	reloadProduct,
 	saveProductStatus,
+	saveProductVendor,
 	saveVariants,
+	addToVendorOrder,
 	getDesigners,
-	saveDesigner,
+	saveVendor,
 	getOptions,
 	saveOption,
 	getShipments,

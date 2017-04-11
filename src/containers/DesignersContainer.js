@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { getDesigners, saveDesigner } from '../actions/designers';
+import { getDesigners, saveVendor } from '../actions/designers';
 import Designers from '../components/Designers';
 
 const select = state => ({
@@ -13,7 +13,7 @@ const select = state => ({
 
 const actions = {
   getDesigners,
-  saveDesigner
+  saveVendor
 };
 
 export default connect(select, actions)(Designers);

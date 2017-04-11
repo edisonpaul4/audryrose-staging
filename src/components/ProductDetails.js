@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Input, Button, Dropdown, Dimmer, Segment, Loader } from 'semantic-ui-react';
+import { Table, Input, Button, Dropdown, Dimmer, Segment, Loader, Select } from 'semantic-ui-react';
 import classNames from 'classnames';
 import numeral from 'numeral';
 // import moment from 'moment';
@@ -256,13 +256,15 @@ class ProductDetails extends Component {
     this.state = {
       showVariants: false,
       showEditor: false,
-			variantsEdited: []
+			variantsEdited: [],
+			vendor: this.props.data.vendor ? this.props.data.vendor.objectId : ''
     };
     this.handleReloadClick = this.handleReloadClick.bind(this);
     this.handleSaveVariantClick = this.handleSaveVariantClick.bind(this);
     this.handleSaveAllVariantsClick = this.handleSaveAllVariantsClick.bind(this);
     this.handleVariantsEdited = this.handleVariantsEdited.bind(this);
     this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
+    this.handleVendorChange = this.handleVendorChange.bind(this);
   }
 	handleReloadClick(productId) {
 		this.props.handleReloadClick(productId);
@@ -303,6 +305,16 @@ class ProductDetails extends Component {
 	handleShowOrderFormClick(data) {
   	this.props.handleShowOrderFormClick(data);
 	}
+	
+	handleVendorChange(e, {value}) {
+  	if (value !== this.state.vendor) {
+    	this.props.handleVendorChange(this.props.data.productId, value);
+    	this.setState({
+      	vendor: value
+    	});
+  	}
+	}
+	
 	componentWillReceiveProps(nextProps) {
     let variantsEdited = this.state.variantsEdited;
     if (nextProps.updatedVariants) {
@@ -379,11 +391,17 @@ class ProductDetails extends Component {
   	        handleVariantsEdited={scope.handleVariantsEdited}
   	        savingVariants={scope.props.savingVariants} 
   	        updatedVariants={scope.props.updatedVariants}
+  	        handleShowOrderFormClick={scope.handleShowOrderFormClick}
 	        />
         );
 	    }
 		}
-// 		console.log(this.state.variantsEdited)
+		
+		const vendorOptions = this.props.data.designer && this.props.data.designer.vendors ? this.props.data.designer.vendors.map(function(vendor, i) {
+  		return { key: i, value: vendor.objectId, text: 'Vendor: ' + vendor.name };
+		}) : null;
+		const vendorSelect = <Select placeholder='Select a vendor' value={this.state.vendor} options={vendorOptions} onChange={this.handleVendorChange} />
+		
 		const saveAllButton = this.state.variantsEdited.length > 0 ? <Button primary circular compact size='small' icon='save' content='Save All' disabled={this.props.isReloading} onClick={this.handleSaveAllVariantsClick} /> : null;
 // 		const productEditor = this.state.showEditor ? <ProductEditor/> : null;
     return (
@@ -397,6 +415,7 @@ class ProductDetails extends Component {
                 disabled={this.props.isReloading} 
                 onClick={()=>this.handleReloadClick(this.props.data.productId)} 
               />
+              {vendorSelect}
               {/*<Button circular compact basic size='tiny' 
                 icon={this.state.showEditor ? 'close' : 'edit'} 
                 color={this.state.showEditor ? 'black' : null} 

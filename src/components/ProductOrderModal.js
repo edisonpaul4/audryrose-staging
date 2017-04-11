@@ -1,141 +1,154 @@
 import React, { Component } from 'react';
-import { Modal, Button, List, Segment, Icon, Header, Form } from 'semantic-ui-react';
-import moment from 'moment';
-
-/*
-class VariantGroup extends Component {
-  render() {
-    const variantGroup = this.props.data;
-    const shipment = variantGroup.shipment;
-//     console.log(variantGroup.shipment)
-    const shippingAddress = variantGroup.orderProducts[0].shippingAddress;
-    
-    let shipmentProducts = variantGroup.orderProducts.map(function(product, i) {
-      const title = product.quantity + ' x ' + product.name;
-      let options = product.product_options.map(function(option, j) {
-        return <span key={`${i}-${j}`}>{option.display_name}: {option.display_value}<br/></span>
-      });
-      return <span key={`${i}`}>{title}<br/>{options}</span>
-    });
-    
-    const dateShipped = shipment ? <List.Item><List.Header>Date Shipped</List.Header>{moment(shipment.date_created.iso).calendar()}<br/></List.Item> : null;
-    const trackingNumber = shipment ? <List.Item><List.Header>Tracking Number</List.Header>{shipment.tracking_number}<br/></List.Item> : null;
-    const packingSlip = shipment && shipment.packingSlipUrl ? <List.Item><a href={shipment.packingSlipUrl} target='_blank'>Print Packing Slip</a></List.Item> : null;
-    const shippingLabel = shipment && shipment.shippo_label_url ? <List.Item><a href={shipment.shippo_label_url} target='_blank'>Print Shipping Label</a></List.Item> : null;
-    
-    return (
-      <Segment color={this.props.color} secondary={this.props.secondary} disabled={this.props.disabled} loading={this.props.isLoading}>
-        <Header>
-          <Icon name={variantGroup.shipment ? 'check' : 'shipping'} color={variantGroup.shipment ? 'olive' : 'black'} />
-          <Header.Content>
-            {this.props.title}
-          </Header.Content>
-        </Header>
-        <List relaxed>
-            <List.Item>
-              <List.Header>Address</List.Header>
-              {shippingAddress.first_name} {shippingAddress.last_name}<br/>
-              {shippingAddress.company ? shippingAddress.company : null}{shippingAddress.company ? <br/> : null}
-              {shippingAddress.street_1 ? shippingAddress.street_1 : null}{shippingAddress.street_1 ? <br/> : null}
-              {shippingAddress.street_2 ? shippingAddress.street_2 : null}{shippingAddress.street_2 ? <br/> : null}
-              {shippingAddress.city}, {shippingAddress.state} {shippingAddress.zip} <br/>
-              {shippingAddress.country ? shippingAddress.country : null}{shippingAddress.country ? <br/> : null}
-              {shippingAddress.email ? shippingAddress.email : null}{shippingAddress.email ? <br/> : null}
-              {shippingAddress.phone !== 'undefined' ? shippingAddress.phone : null}<br/>
-            </List.Item>
-            <List.Item>
-              <List.Header>Products</List.Header>
-              {shipmentProducts}
-            </List.Item>
-            <List.Item>
-              <List.Header>Shipping Method</List.Header>
-              {shippingAddress.shipping_method}<br/>
-            </List.Item>
-            {dateShipped}
-            {trackingNumber}
-            {packingSlip}
-            {shippingLabel}
-        </List>
-      </Segment>
-    )
-  }
-}
-*/
+import { Modal, Button, Header, Form } from 'semantic-ui-react';
 
 class ProductOrderModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      formComplete: true
+      formComplete: false,
+      vendor: this.props.productOrderData.product.vendor ? this.props.productOrderData.product.vendor.objectId : null,
+      variant: this.props.productOrderData.variant ? this.props.productOrderData.variant : null,
+      units: 1,
+      notes: ''
     };
-    this.handleCreateProductOrder = this.handleCreateProductOrder.bind(this);
+    this.handleAddToVendorOrder = this.handleAddToVendorOrder.bind(this);
+    this.handleVariantChange = this.handleVariantChange.bind(this);
+    this.handleUnitsChange = this.handleUnitsChange.bind(this);
+    this.handleNotesChange = this.handleNotesChange.bind(this);
     this.handleClose = this.handleClose.bind(this);
   }
   
-	handleCreateProductOrder() {
-  	const scope = this;
-/*
-  	// Add shipment detail form data to all shippableGroups
-  	let shippableGroups = this.props.shippableGroups.map(function(group, i) {
-    	group.customShipment = {
-        shippingProvider: scope.state.shippingProvider,
-        shippingParcel: scope.state.shippingParcel,
-        shippingServiceLevel: scope.state.shippingServiceLevel,
-        length: scope.state.length,
-        width: scope.state.width,
-        height: scope.state.height,
-        weight: scope.state.weight
-    	}
-    	return group;
-  	});
-*/
-		this.props.handleCreateProductOrder(/* shippableGroups */);
+	handleAddToVendorOrder() {
+    var orders = [{
+      vendor: this.state.vendor,
+      variant: this.state.variant,
+      units: this.state.units,
+      notes: this.state.notes
+    }]
+		this.props.handleAddToVendorOrder(orders);
 		this.props.handleProductOrderModalClose();
 	}
 	
   handleClose() {
-/*
-  	this.setState({
-      shippingProvider: 'usps',
-      shippingParcel: 'USPS_SmallFlatRateBox',
-      shippingServiceLevel: 'usps_priority',
-      length: '5.44',
-      width: '8.69',
-      height: '1.75',
-      weight: '3',
-  	});
-*/
+    this.setState({
+      formComplete: false,
+      vendor: this.props.productOrderData.product.vendor ? this.props.productOrderData.product.vendor.objectId : null,
+      variant: this.props.productOrderData.variant ? this.props.productOrderData.variant : null,
+      units: 1,
+      notes: ''
+    });
     this.props.handleProductOrderModalClose();
   }
   
   isFormComplete() {
     let formComplete = true;
-/*
-    if (this.state.shippingProvider === undefined || this.state.shippingProvider === '') formComplete = false;
-    if (this.state.shippingParcel === undefined || this.state.shippingParcel === '') formComplete = false;
-    if (this.state.shippingServiceLevel === undefined || this.state.shippingServiceLevel === '') formComplete = false;
-    if (this.state.length === undefined || this.state.length === '') formComplete = false;
-    if (this.state.width === undefined || this.state.width === '') formComplete = false;
-    if (this.state.height === undefined || this.state.height === '') formComplete = false;
-    if (this.state.weight === undefined || this.state.weight === '') formComplete = false;
-*/
-    
+    if (this.state.variant === undefined || this.state.variant === '') formComplete = false;
+    if (this.state.units === undefined || this.state.units === '') formComplete = false;
     return formComplete;
   }
   
+	handleVariantChange(e, {value}) {
+  	this.setState({
+    	variant: value
+  	});
+	}
+	
+	handleUnitsChange(e, {value}) {
+  	this.setState({
+    	units: value
+  	});
+	}
+	
+	handleNotesChange(e, {value}) {
+  	this.setState({
+    	notes: value
+  	});
+	}
+  
 	render() {
-		const scope = this;
-// 		const shippedGroups = this.props.shippedGroups;
+		const { productOrderData } = this.props;
 		
+		let variants = productOrderData.product.variants;
+		const hasColorValue = variants[0].color_value !== undefined;
+		const hasStoneValue = variants[0].gemstone_value !== undefined;
+		const hasSizeValue = variants[0].size_value !== undefined;
+		if (hasColorValue && hasSizeValue) {
+      variants.sort(function(a, b) { return a["color_value"] - b["color_value"] || parseFloat(a["size_value"]) - parseFloat(b["size_value"]); });
+		} else if (hasStoneValue && hasSizeValue) {
+  		variants.sort(function(a, b) { return a["gemstone_value"] - b["gemstone_value"] || parseFloat(a["size_value"]) - parseFloat(b["size_value"]); });
+		} else if (hasSizeValue) {
+  		variants.sort(function(a, b) { return (parseFloat(a.size_value) > parseFloat(b.size_value)) ? 1 : ((parseFloat(b.size_value) > parseFloat(a.size_value)) ? -1 : 0);} );
+		}
+  		
+		
+		const variantOptions = variants.map(function(variant, i) {
+  		let styleCode = variant.styleNumber;
+  		let optionText = '';
+  		if (variant.code) {
+    		styleCode += '-' + variant.code;
+  		}
+  		if (variant.color_value) {
+    		optionText += 'Color: ' + variant.color_value;
+  		}
+  		if (variant.gemstone_value) {
+    		if (optionText !== '') optionText += ',  ';
+    		optionText += 'Stone: ' + variant.gemstone_value;
+  		}
+  		if (variant.size_value) {
+    		if (optionText !== '') optionText += ',  ';
+    		optionText += 'Size: ' + variant.size_value;
+  		}
+  		let optionContent = (optionText !== '') ? <Header content={optionText} subheader={styleCode} /> : <Header content={styleCode} />;
+  		return { 
+    		key: i, 
+    		text: optionText !== '' ? optionText : styleCode, 
+    		value: variant.objectId,
+    		content: optionContent
+  		};
+		});
+		
+		const createOrderButton = <Button disabled={this.props.isLoading || !this.isFormComplete() || !productOrderData.product.vendor} color='olive' onClick={this.handleAddToVendorOrder}>Add To Order</Button>;
+    
     return (
-	    <Modal open={this.props.open} onClose={this.handleClose} size='large' closeIcon='close'>
+	    <Modal open={this.props.open} onClose={this.handleClose} size='small' closeIcon='close'>
+        <Modal.Header>
+          Create an order for {productOrderData.product.name}
+        </Modal.Header>
         <Modal.Content>
-          <Modal.Description>
-            Content goes here...
-          </Modal.Description>
+          <Form>
+            <Form.Group>
+              <Form.Input label='Designer' error={productOrderData.product.vendor ? false : true} value={productOrderData.product.vendor ? productOrderData.product.vendor.name : 'Product vendor missing'} readOnly />
+            </Form.Group>
+            <Form.Group widths='equal'>
+              <Form.Select 
+                label='Product Variant' 
+                options={variantOptions} 
+                placeholder='Select a product variant' 
+                value={this.state.variant}
+                onChange={this.handleVariantChange} 
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Input 
+                label='Units' 
+                type='number' 
+                min='1' 
+                value={this.state.units}
+                onChange={this.handleUnitsChange} 
+              />
+            </Form.Group>
+            <Form.Group widths='equal'>
+              <Form.TextArea 
+                label='Notes' 
+                value={this.state.notes}
+                onChange={this.handleNotesChange} 
+              />
+            </Form.Group>
+          </Form>
         </Modal.Content>
         <Modal.Actions>
           <Button basic disabled={this.props.isLoading} color='grey' content='Close' onClick={this.handleClose} />
+          {createOrderButton}
         </Modal.Actions>
       </Modal>
     );

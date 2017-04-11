@@ -26,18 +26,18 @@ const designers = (state = initialState, action) => {
         isLoadingDesigners: false
       }
       
-    case 'DESIGNER_SAVE_REQUEST':
+    case 'VENDOR_SAVE_REQUEST':
       return {
         ...state
       }
 
-    case 'DESIGNER_SAVE_SUCCESS':
+    case 'VENDOR_SAVE_SUCCESS':
       return {
         ...state,
         updatedDesigner: action.res
       };
 
-    case 'DESIGNER_SAVE_FAILURE':
+    case 'VENDOR_SAVE_FAILURE':
       return {
         ...state
       }

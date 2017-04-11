@@ -7,9 +7,9 @@ export function getDesigners(token, subpage, page) {
   }
 }
 
-export function saveDesigner(token, objectId, email) {
+export function saveVendor(token, data) {
   return {
-    types: ['DESIGNER_SAVE_REQUEST', 'DESIGNER_SAVE_SUCCESS', 'DESIGNER_SAVE_FAILURE'],
-    promise: api.saveDesigner(token, objectId, email)
+    types: ['VENDOR_SAVE_REQUEST', 'VENDOR_SAVE_SUCCESS', 'VENDOR_SAVE_FAILURE'],
+    promise: api.saveVendor(token, data)
   }
 }
