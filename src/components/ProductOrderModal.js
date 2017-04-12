@@ -22,6 +22,7 @@ class ProductOrderModal extends Component {
     var orders = [{
       vendor: this.state.vendor,
       variant: this.state.variant,
+      productId: this.props.productOrderData.product.productId,
       units: this.state.units,
       notes: this.state.notes
     }]
@@ -117,7 +118,7 @@ class ProductOrderModal extends Component {
         <Modal.Content>
           <Form>
             <Form.Group>
-              <Form.Input label='Designer' error={productOrderData.product.vendor ? false : true} value={productOrderData.product.vendor ? productOrderData.product.vendor.name : 'Product vendor missing'} readOnly />
+              <Form.Input label='Vendor' error={productOrderData.product.vendor ? false : true} value={productOrderData.product.vendor ? productOrderData.product.vendor.name : 'Product vendor missing'} readOnly />
             </Form.Group>
             <Form.Group widths='equal'>
               <Form.Select 

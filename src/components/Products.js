@@ -227,11 +227,16 @@ class Products extends Component {
 	}
 	
 	handleAddToVendorOrder(orders) {
-  	console.log(orders);
+  	let currentlyReloading = this.state.isReloading;
   	const variantEdited = orders.map(function(order, i) {
+  		const index = currentlyReloading.indexOf(order.productId);
+  		if (index < 0) {
+  			currentlyReloading.push(order.productId);
+  		}
     	return order.variant;
   	});
   	this.setState({
+    	isReloading: currentlyReloading,
     	savingVariants: [variantEdited]
   	});
 		this.props.addToVendorOrder(this.props.token, orders);
