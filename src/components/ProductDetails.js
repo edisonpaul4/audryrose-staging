@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Input, Button, Dropdown, Dimmer, Segment, Loader, Select } from 'semantic-ui-react';
+import { Table, Input, Button, Dropdown, Dimmer, Segment, Loader, Select, Label } from 'semantic-ui-react';
 import classNames from 'classnames';
 import numeral from 'numeral';
 // import moment from 'moment';
@@ -54,6 +54,7 @@ class VariantRow extends Component {
 	}
 	render() {  	
 		const data = this.props.data;
+		
 		// Create an array of other options values
 		let otherOptions = [];
 		if (data.gemstone_value) otherOptions.push(data.gemstone_value);
@@ -68,6 +69,8 @@ class VariantRow extends Component {
 
     const stoneColorCode = data.code ? '-' + data.code : null;
 		const saveCancelClass = this.state.variantEdited ? '' : 'invisible';
+		
+		const vendorOrder = data.vendorOrderVariant && data.vendorOrderVariant.received === false ? <Label>Pending<Label.Detail>{data.vendorOrderVariant.units}</Label.Detail></Label> : null;
 	    
     return (
       <Table.Row warning={this.state.variantEdited ? true: false} positive={this.state.variantSaved && !this.state.variantEdited ? true: false} disabled={this.props.isSaving}>
@@ -76,6 +79,7 @@ class VariantRow extends Component {
         <Table.Cell>{data.size_value ? data.size_value : 'OS'}</Table.Cell>
         <Table.Cell>{otherOptions ? otherOptions.join(', ') : null}</Table.Cell>
 				<Table.Cell><Input type='number' value={this.state.inventory ? this.state.inventory : 0} onChange={this.handleInventoryChange} min={0} disabled={this.props.isSaving} /></Table.Cell>
+				<Table.Cell>{vendorOrder}</Table.Cell>
 				<Table.Cell className='right aligned'>{numeral(price).format('$0,0.00')}</Table.Cell>
 				<Table.Cell className='right aligned' singleLine>
     		  <Button.Group size='mini'>
@@ -132,6 +136,8 @@ class VariantsTable extends Component {
 	render() {  	
   	var scope = this;
 		const variants = this.props.variants;
+		const vendor = this.props.vendor;
+		
 		// Sort the data
 		if (variants.length && variants[0].size_value) {
       variants.sort(function(a, b) {
@@ -169,6 +175,14 @@ class VariantsTable extends Component {
           return savingVariant;
         });
         const isSaving = index < 0 ? false : true;
+        
+        if (vendor.pendingOrder) {
+          vendor.pendingOrder.vendorOrderVariants.map(function(vendorOrderVariant, i) {
+            if (vendorOrderVariant.variant.objectId === variantData.objectId) variantData.vendorOrderVariant = vendorOrderVariant;
+            return vendorOrderVariant;
+          });
+        }
+        
 				variantRows.push(
 				  <VariantRow 
 				    data={variantData} 
@@ -199,6 +213,7 @@ class VariantsTable extends Component {
               <Table.HeaderCell>Size</Table.HeaderCell>
               <Table.HeaderCell>Other Options</Table.HeaderCell>
               <Table.HeaderCell>ACT OH</Table.HeaderCell>
+              <Table.HeaderCell>Ordered</Table.HeaderCell>
               <Table.HeaderCell className='right aligned'>RETAIL $</Table.HeaderCell>
               <Table.HeaderCell className='right aligned'>Actions</Table.HeaderCell>
             </Table.Row>
@@ -338,6 +353,7 @@ class ProductDetails extends Component {
   	const scope = this;
   	const showVariants = this.props.expanded ? true : false;
   	const variants = this.props.data.variants;
+  	const vendor = this.props.data.vendor;
 		var rowClass = classNames(
 			{
 				'': showVariants,
@@ -368,6 +384,7 @@ class ProductDetails extends Component {
     	    variantsTables.push(
     	      <VariantsTable 
     	        variants={variantsInGroup} 
+    	        vendor={vendor}
     	        title={variantGroup} 
     	        basePrice={scope.props.data.price} 
     	        key={i} 
@@ -385,6 +402,7 @@ class ProductDetails extends Component {
   	    variantsTables.push(
   	      <VariantsTable 
   	        variants={variants} 
+  	        vendor={vendor}
   	        basePrice={scope.props.data.price} 
   	        key={1} 
   	        handleSaveVariantClick={scope.handleSaveVariantClick} 
