@@ -16,6 +16,13 @@ class DesignersNav extends Component {
 				</Menu.Item>
 				<Menu.Item 
 					as={Link} 
+					to='/designers/pending' 
+					active={pathName === '/designers/pending'} 
+					link>
+					Pending
+				</Menu.Item>
+				<Menu.Item 
+					as={Link} 
 					to='/designers/ordered' 
 					active={pathName === '/designers/ordered'} 
 					link>
