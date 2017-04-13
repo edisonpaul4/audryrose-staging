@@ -23,6 +23,10 @@ class Designer extends Component {
     this.handleSaveVendor = this.handleSaveVendor.bind(this);
   }
   
+	handleToggleClick(productId) {
+		this.props.handleToggleClick(productId);
+	}
+  
 	handleSaveVendor(data) {
 		this.props.handleSaveVendor(data);
 	}
@@ -85,9 +89,11 @@ class Designer extends Component {
       />;
       
     const modalButtons = data.vendors ? data.vendors.map(function(vendor, i) {
-      var buttonContent = 'View ' + vendor.name;
+      var buttonContent = 'Edit ' + vendor.name;
       return <Button content={buttonContent} compact onClick={()=>scope.handleShowVendorEditFormClick(vendor.objectId)} key={i} />;
     }) : null;
+    
+    let expandIcon = this.props.expanded ? 'minus' : 'plus';
     
     return (
       <Table.Row disabled={this.props.isSaving} positive={this.state.saved && !this.state.edited ? true : false} >
@@ -99,10 +105,13 @@ class Designer extends Component {
         <Table.Cell singleLine className='right aligned'>
           <Button.Group size='mini'>
       	    {modalButtons}
-      	    <Button content='+ Add' basic compact onClick={()=>scope.handleShowVendorCreateFormClick(data.objectId)} />
+      	    <Button icon='plus' content='Add Vendor' basic compact onClick={()=>scope.handleShowVendorCreateFormClick(data.objectId)} />
     	    </Button.Group>
     	    {vendorEditModal}
   	    </Table.Cell>
+				<Table.Cell className='right aligned'>
+				  <Button circular icon={expandIcon} basic size='mini' onClick={()=>this.handleToggleClick(data.productId)} />
+			  </Table.Cell>
       </Table.Row>
     );
   }
@@ -117,14 +126,30 @@ class Designers extends Component {
 			page: null,
 			designers: null,
 			updatedDesigner: null,
+      expanded: [],
+      isReloading: [],
 			isSavingDesigners: []
     };
     this.handlePaginationClick = this.handlePaginationClick.bind(this);
     this.handleSaveVendor = this.handleSaveVendor.bind(this);
+    this.handleToggleClick = this.handleToggleClick.bind(this);
   }
 	
 	componentDidMount() {
 		this.props.getDesigners(this.props.token, this.state.subpage, this.state.page);
+	}
+	
+	handleToggleClick(designerId) {
+		let currentlyExpanded = this.state.expanded;
+		var index = currentlyExpanded.indexOf(designerId);
+		if (index >= 0) {
+			currentlyExpanded.splice(index, 1);
+		} else {
+			currentlyExpanded.push(designerId);
+		}
+		this.setState({
+			expanded: currentlyExpanded
+		});
 	}
 	
 	handlePaginationClick(page) {
@@ -205,12 +230,15 @@ class Designers extends Component {
 			this.props.designers.map(function(designerRow, i) {
   			let designerJSON = designerRow.toJSON();
   			let isSaving = scope.state.isSavingDesigners.indexOf(designerJSON.objectId) >= 0 ? true : false;
+  			let expanded = (scope.state.expanded.indexOf(designerJSON.designerId) >= 0) ? true : false;
 				return designerRows.push(
 				  <Designer 
 				    data={designerJSON} 
 				    updatedDesigner={updatedDesignerJSON} 
 				    isSaving={isSaving} 
+				    expanded={expanded} 
 				    handleSaveVendor={scope.handleSaveVendor} 
+				    handleToggleClick={scope.handleToggleClick} 
 				    key={`${designerJSON.designerId}-1`} 
 			    />
 		    );
@@ -230,6 +258,7 @@ class Designers extends Component {
               <Table.HeaderCell>Name</Table.HeaderCell>
 							<Table.HeaderCell>Abbreviation</Table.HeaderCell>
 							<Table.HeaderCell className='right aligned'>Vendors</Table.HeaderCell>
+							<Table.HeaderCell className='right aligned'>&nbsp;</Table.HeaderCell>
 		        </Table.Row>
 		      </Table.Header>
 		      <Table.Body>
