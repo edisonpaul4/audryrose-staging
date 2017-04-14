@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { getProducts, getProductFilters, reloadProduct, saveProductStatus, saveProductVendor, saveVariants, addToVendorOrder } from '../actions/products';
+import { getProducts, getProductFilters, reloadProduct, saveProductStatus, saveProductVendor, saveProductType, saveVariants, addToVendorOrder } from '../actions/products';
 import Products from '../components/Products';
 
 const select = state => ({
@@ -21,6 +21,7 @@ const actions = {
   reloadProduct,
   saveProductStatus,
   saveProductVendor,
+  saveProductType,
   saveVariants,
   addToVendorOrder
 };

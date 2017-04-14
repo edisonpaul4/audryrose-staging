@@ -43,6 +43,7 @@ class Products extends Component {
     this.handleVariantsEdited = this.handleVariantsEdited.bind(this);
     this.handleStatusChange = this.handleStatusChange.bind(this);
     this.handleVendorChange = this.handleVendorChange.bind(this);
+    this.handleProductTypeChange = this.handleProductTypeChange.bind(this);
     this.handleFilterDesignerChange = this.handleFilterDesignerChange.bind(this);
     this.handleFilterPriceChange = this.handleFilterPriceChange.bind(this);
     this.handleFilterClassChange = this.handleFilterClassChange.bind(this);
@@ -220,6 +221,18 @@ class Products extends Component {
 		this.props.saveProductVendor(this.props.token, productId, vendorId);
 	}
 	
+	handleProductTypeChange(productId, isBundle) {
+		let currentlyReloading = this.state.isReloading;
+		const index = currentlyReloading.indexOf(productId);
+		if (index < 0) {
+			currentlyReloading.push(productId);
+		}
+  	this.setState({
+    	isReloading: currentlyReloading
+  	});
+		this.props.saveProductType(this.props.token, productId, isBundle);
+	}
+	
 	handleVariantsEdited(data, edited) {
   	this.setState({
     	savingVariants: []
@@ -395,6 +408,7 @@ class Products extends Component {
   				    handleShowOrderFormClick={scope.handleShowOrderFormClick} 
   				    handleVariantsEdited={scope.handleVariantsEdited}
   				    handleVendorChange={scope.handleVendorChange} 
+  				    handleProductTypeChange={scope.handleProductTypeChange} 
   				    savingVariants={scope.state.savingVariants} 
   				    updatedVariants={scope.state.updatedVariants} 
 				    />

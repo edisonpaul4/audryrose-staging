@@ -96,6 +96,23 @@ const products = (state = initialState, action) => {
         ...state
       }
       
+    case 'PRODUCT_TYPE_REQUEST':
+      return {
+        ...state
+      }
+
+    case 'PRODUCT_TYPE_SUCCESS':
+      return {
+        ...state,
+        updatedProducts: [action.res.updatedProduct],
+        tabCounts: action.res.tabCounts
+      };
+
+    case 'PRODUCT_TYPE_FAILURE':
+      return {
+        ...state
+      }
+      
     case 'VARIANT_SAVE_REQUEST':
       return {
         ...state

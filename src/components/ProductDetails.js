@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Input, Button, Dropdown, Dimmer, Segment, Loader, Select, Label } from 'semantic-ui-react';
+import { Table, Input, Button, Dropdown, Dimmer, Segment, Loader, Label, Form } from 'semantic-ui-react';
 import classNames from 'classnames';
 import numeral from 'numeral';
 // import moment from 'moment';
@@ -272,7 +272,8 @@ class ProductDetails extends Component {
       showVariants: false,
       showEditor: false,
 			variantsEdited: [],
-			vendor: this.props.data.vendor ? this.props.data.vendor.objectId : ''
+			vendor: this.props.data.vendor ? this.props.data.vendor.objectId : '',
+			isBundle: this.props.data.isBundle !== undefined ? this.props.data.isBundle === true ? 'true' : 'false' : ''
     };
     this.handleReloadClick = this.handleReloadClick.bind(this);
     this.handleSaveVariantClick = this.handleSaveVariantClick.bind(this);
@@ -280,6 +281,7 @@ class ProductDetails extends Component {
     this.handleVariantsEdited = this.handleVariantsEdited.bind(this);
     this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
     this.handleVendorChange = this.handleVendorChange.bind(this);
+    this.handleProductTypeChange = this.handleProductTypeChange.bind(this);
   }
 	handleReloadClick(productId) {
 		this.props.handleReloadClick(productId);
@@ -326,6 +328,15 @@ class ProductDetails extends Component {
     	this.props.handleVendorChange(this.props.data.productId, value);
     	this.setState({
       	vendor: value
+    	});
+  	}
+	}
+	
+	handleProductTypeChange(e, {value}) {
+  	if (value !== this.state.isBundle) {
+    	this.props.handleProductTypeChange(this.props.data.productId, value);
+    	this.setState({
+      	isBundle: value
     	});
   	}
 	}
@@ -418,7 +429,14 @@ class ProductDetails extends Component {
 		const vendorOptions = this.props.data.designer && this.props.data.designer.vendors ? this.props.data.designer.vendors.map(function(vendor, i) {
   		return { key: i, value: vendor.objectId, text: 'Vendor: ' + vendor.name };
 		}) : null;
-		const vendorSelect = <Select placeholder='Select a vendor' value={this.state.vendor} options={vendorOptions} onChange={this.handleVendorChange} />
+		const vendorSelect = <Form.Select placeholder='Select a vendor' value={this.state.vendor} options={vendorOptions} onChange={this.handleVendorChange} />
+		
+		const productTypeOptions = [
+  		{ key: 0, value: 'false', text: 'Standard Product' },
+  		{ key: 1, value: 'true', text: 'Bundle Product' }
+		];
+		
+		const productTypeSelect = <Form.Select placeholder='Select product type' value={this.state.isBundle} options={productTypeOptions} onChange={this.handleProductTypeChange} />
 		
 		const saveAllButton = this.state.variantsEdited.length > 0 ? <Button primary circular compact size='small' icon='save' content='Save All' disabled={this.props.isReloading} onClick={this.handleSaveAllVariantsClick} /> : null;
 // 		const productEditor = this.state.showEditor ? <ProductEditor/> : null;
@@ -427,26 +445,39 @@ class ProductDetails extends Component {
         <Table.Cell colSpan='13' className='variant-row'>
           <Segment.Group horizontal compact className='toolbar'>
             <Segment basic>
-              <Button circular compact basic size='small' 
-                icon='refresh' 
-                content='Reload' 
-                disabled={this.props.isReloading} 
-                onClick={()=>this.handleReloadClick(this.props.data.productId)} 
-              />
-              {vendorSelect}
-              {/*<Button circular compact basic size='tiny' 
-                icon={this.state.showEditor ? 'close' : 'edit'} 
-                color={this.state.showEditor ? 'black' : null} 
-                content={this.state.showEditor ? 'Cancel' : 'Edit'} 
-                onClick={this.handleToggleEditorClick.bind(this)} 
-              />
-              {productEditor}*/}
+              <Form size='tiny' loading={this.props.isReloading}>
+                <Form.Group inline>
+                  <Form.Field>
+                    <Form.Button circular compact basic size='small' 
+                      icon='refresh' 
+                      content='Reload' 
+                      disabled={this.props.isReloading} 
+                      onClick={()=>this.handleReloadClick(this.props.data.productId)} 
+                    />
+                  </Form.Field>
+                  <Form.Field>
+                    {vendorSelect}
+                  </Form.Field>
+                  <Form.Field>
+                  {productTypeSelect}
+                  </Form.Field>
+                  {/*<Form.Field>
+                    <Button circular compact basic size='tiny' 
+                      icon={this.state.showEditor ? 'close' : 'edit'} 
+                      color={this.state.showEditor ? 'black' : null} 
+                      content={this.state.showEditor ? 'Cancel' : 'Edit'} 
+                      onClick={this.handleToggleEditorClick.bind(this)} 
+                    />
+                    {productEditor}
+                  </Form.Field>*/}
+                </Form.Group>
+              </Form>
             </Segment>
             <Segment basic textAlign='right'>
               {saveAllButton}
             </Segment>
           </Segment.Group>
-          <Dimmer.Dimmable as={Segment} vertical blurring dimmed={this.props.isReloading}>
+          <Dimmer.Dimmable as={Segment} vertical dimmed={this.props.isReloading}>
             <Dimmer active={this.props.isReloading} inverted>
               <Loader>Loading</Loader>
             </Dimmer>

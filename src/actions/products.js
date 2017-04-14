@@ -35,6 +35,13 @@ export function saveProductVendor(token, productId, vendorId) {
   }
 }
 
+export function saveProductType(token, productId, isBundle) {
+  return {
+    types: ['PRODUCT_TYPE_REQUEST', 'PRODUCT_TYPE_SUCCESS', 'PRODUCT_TYPE_FAILURE'],
+    promise: api.saveProductType(token, productId, isBundle)
+  }
+}
+
 export function saveVariants(token, variants) {
   return {
     types: ['VARIANTS_SAVE_REQUEST', 'VARIANTS_SAVE_SUCCESS', 'VARIANTS_SAVE_FAILURE'],
