@@ -6,6 +6,7 @@ import Product from './Product.js';
 import ProductDetails from './ProductDetails.js';
 import Pagination from './Pagination.js';
 import ProductOrderModal from './ProductOrderModal.js';
+import ProductEditBundleModal from './ProductEditBundleModal.js';
 
 class Products extends Component {
   constructor(props) {
@@ -33,7 +34,9 @@ class Products extends Component {
 			savingVariants: [],
 			tabCounts: null,
 			productOrderOpen: false,
-			productOrderData: null
+			productOrderData: null,
+			productBundleEditOpen: false,
+			productBundleEditData: null
     };
     this.handleToggleClick = this.handleToggleClick.bind(this);
     this.handlePaginationClick = this.handlePaginationClick.bind(this);
@@ -44,6 +47,9 @@ class Products extends Component {
     this.handleStatusChange = this.handleStatusChange.bind(this);
     this.handleVendorChange = this.handleVendorChange.bind(this);
     this.handleProductTypeChange = this.handleProductTypeChange.bind(this);
+    this.handleEditBundleClick = this.handleEditBundleClick.bind(this);
+    this.handleEditBundleModalClose = this.handleEditBundleModalClose.bind(this);
+    this.handleProductBundleSave = this.handleProductBundleSave.bind(this);
     this.handleFilterDesignerChange = this.handleFilterDesignerChange.bind(this);
     this.handleFilterPriceChange = this.handleFilterPriceChange.bind(this);
     this.handleFilterClassChange = this.handleFilterClassChange.bind(this);
@@ -233,6 +239,49 @@ class Products extends Component {
 		this.props.saveProductType(this.props.token, productId, isBundle);
 	}
 	
+	handleEditBundleClick(productId) {
+  	console.log('show bundle edit form for product:' + productId);
+  	let productBundleEditData = {};
+    this.state.products.map(function(product, i) {
+      if (product.get('productId') === productId) {
+        productBundleEditData.product = product.toJSON();
+      }
+      return product;
+    });
+    this.setState({
+      productBundleEditOpen: true,
+      productBundleEditData: productBundleEditData
+    });
+// 		this.props.getBundleFormData(this.props.token, productId);
+	}
+	
+	handleEditBundleModalClose(data) {
+    this.setState({
+      productBundleEditOpen: false,
+      productBundleEditData: null
+    });
+	}
+	
+	
+	handleProductBundleSave(data) {
+    console.log(data);
+/*
+  	let currentlyReloading = this.state.isReloading;
+  	const variantEdited = orders.map(function(order, i) {
+  		const index = currentlyReloading.indexOf(order.productId);
+  		if (index < 0) {
+  			currentlyReloading.push(order.productId);
+  		}
+    	return order.variant;
+  	});
+  	this.setState({
+    	isReloading: currentlyReloading,
+    	savingVariants: [variantEdited]
+  	});
+		this.props.addToVendorOrder(this.props.token, orders);
+*/
+	}
+	
 	handleVariantsEdited(data, edited) {
   	this.setState({
     	savingVariants: []
@@ -409,6 +458,7 @@ class Products extends Component {
   				    handleVariantsEdited={scope.handleVariantsEdited}
   				    handleVendorChange={scope.handleVendorChange} 
   				    handleProductTypeChange={scope.handleProductTypeChange} 
+  				    handleEditBundleClick={scope.handleEditBundleClick}
   				    savingVariants={scope.state.savingVariants} 
   				    updatedVariants={scope.state.updatedVariants} 
 				    />
@@ -462,6 +512,14 @@ class Products extends Component {
         productOrderData={this.state.productOrderData} 
         isLoading={this.props.isReloading}
       /> : null;
+      
+    const productEditBundleModal = this.state.productBundleEditData ? <ProductEditBundleModal 
+        open={this.state.productBundleEditOpen}
+        handleEditBundleModalClose={this.handleEditBundleModalClose} 
+        handleProductBundleSave={this.handleProductBundleSave} 
+        productBundleEditData={this.state.productBundleEditData} 
+        isLoading={this.props.isReloading}
+      /> : null; 
     
     return (
 			<Grid.Column width='16'>
@@ -533,6 +591,7 @@ class Products extends Component {
 					</Table.Footer>
 		    </Table>
 		    {productOrderModal}
+		    {productEditBundleModal}
 			</Grid.Column>
     );
   }

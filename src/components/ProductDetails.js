@@ -176,7 +176,7 @@ class VariantsTable extends Component {
         });
         const isSaving = index < 0 ? false : true;
         
-        if (vendor.pendingOrder) {
+        if (vendor && vendor.pendingOrder) {
           vendor.pendingOrder.vendorOrderVariants.map(function(vendorOrderVariant, i) {
             if (vendorOrderVariant.variant.objectId === variantData.objectId) variantData.vendorOrderVariant = vendorOrderVariant;
             return vendorOrderVariant;
@@ -282,6 +282,7 @@ class ProductDetails extends Component {
     this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
     this.handleVendorChange = this.handleVendorChange.bind(this);
     this.handleProductTypeChange = this.handleProductTypeChange.bind(this);
+    this.handleEditBundleClick = this.handleEditBundleClick.bind(this);
   }
 	handleReloadClick(productId) {
 		this.props.handleReloadClick(productId);
@@ -341,6 +342,10 @@ class ProductDetails extends Component {
   	}
 	}
 	
+	handleEditBundleClick(productId) {
+		this.props.handleEditBundleClick(productId);
+	}
+	
 	componentWillReceiveProps(nextProps) {
     let variantsEdited = this.state.variantsEdited;
     if (nextProps.updatedVariants) {
@@ -364,6 +369,7 @@ class ProductDetails extends Component {
   	const scope = this;
   	const showVariants = this.props.expanded ? true : false;
   	const variants = this.props.data.variants;
+  	const isBundle = this.props.data.isBundle;
   	const vendor = this.props.data.vendor;
 		var rowClass = classNames(
 			{
@@ -373,7 +379,7 @@ class ProductDetails extends Component {
 		);
 			
 		var variantsTables = [];
-		if (variants) {
+		if (variants && !isBundle) {
   		let variantGroupings = [];
   		// Determine variant groupings
 			variants.map(function(variantItem, i) {
@@ -423,8 +429,11 @@ class ProductDetails extends Component {
   	        handleShowOrderFormClick={scope.handleShowOrderFormClick}
 	        />
         );
-	    }
-		}
+      }
+    } else if (isBundle) {
+	    // Display table of bundle products
+	    console.log('Display table of bundle products')
+    }
 		
 		const vendorOptions = this.props.data.designer && this.props.data.designer.vendors ? this.props.data.designer.vendors.map(function(vendor, i) {
   		return { key: i, value: vendor.objectId, text: 'Vendor: ' + vendor.name };
@@ -438,6 +447,15 @@ class ProductDetails extends Component {
 		
 		const productTypeSelect = <Form.Select placeholder='Select product type' value={this.state.isBundle} options={productTypeOptions} onChange={this.handleProductTypeChange} />
 		
+		const editBundleButton = isBundle ? 
+		  <Form.Field><Form.Button compact basic 
+		    type='button'
+        icon='edit' 
+        content='Edit Bundle' 
+        disabled={this.props.isReloading} 
+        onClick={()=>this.handleEditBundleClick(this.props.data.productId)} 
+      /></Form.Field> : null;
+		
 		const saveAllButton = this.state.variantsEdited.length > 0 ? <Button primary circular compact size='small' icon='save' content='Save All' disabled={this.props.isReloading} onClick={this.handleSaveAllVariantsClick} /> : null;
 // 		const productEditor = this.state.showEditor ? <ProductEditor/> : null;
     return (
@@ -449,6 +467,7 @@ class ProductDetails extends Component {
                 <Form.Group inline>
                   <Form.Field>
                     <Form.Button circular compact basic size='small' 
+                      type='button'
                       icon='refresh' 
                       content='Reload' 
                       disabled={this.props.isReloading} 
@@ -459,8 +478,9 @@ class ProductDetails extends Component {
                     {vendorSelect}
                   </Form.Field>
                   <Form.Field>
-                  {productTypeSelect}
+                    {productTypeSelect}
                   </Form.Field>
+                  {editBundleButton}
                   {/*<Form.Field>
                     <Button circular compact basic size='tiny' 
                       icon={this.state.showEditor ? 'close' : 'edit'} 
