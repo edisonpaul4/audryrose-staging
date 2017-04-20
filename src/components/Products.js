@@ -105,7 +105,6 @@ class Products extends Component {
 	}
 	
 	handleSaveVariantClick(variantEdited) {
-  	console.log('save variant ' + variantEdited.objectId);
   	this.setState({
     	savingVariants: [variantEdited]
   	});
@@ -113,7 +112,6 @@ class Products extends Component {
 	}
 	
 	handleSaveAllVariantsClick(variantsEdited) {
-  	console.log('save all variants');
   	this.setState({
     	savingVariants: variantsEdited
   	});
@@ -240,7 +238,6 @@ class Products extends Component {
 	}
 	
 	handleEditBundleClick(productId) {
-  	console.log('show bundle edit form for product:' + productId);
   	let bundleFormData = {};
     this.state.products.map(function(product, i) {
       if (product.get('productId') === productId) {
@@ -266,13 +263,11 @@ class Products extends Component {
 	
 	
 	handleProductBundleSave(data) {
-    console.log(data);
   	let currentlyReloading = this.state.isReloading;
 		const index = currentlyReloading.indexOf(data.bundleProductId);
 		if (index < 0) {
 			currentlyReloading.push(data.bundleProductId);
 		}
-		console.log(currentlyReloading)
   	this.setState({
     	isReloading: currentlyReloading
   	});
@@ -302,7 +297,6 @@ class Products extends Component {
 	}
 	
 	handleShowOrderFormClick(data) {
-  	console.log('show order form for product:' + data.productId + ' variant:' + data.variant);
   	let productOrderData = {};
     this.state.products.map(function(product, i) {
       if (product.get('productId') === data.productId) {
@@ -348,7 +342,6 @@ class Products extends Component {
         	if (currentlyReloading.length) {
           	const index = currentlyReloading.indexOf(updatedProduct.get('productId'));
             if (index >= 0) {
-              console.log('completed loading ' + updatedProduct.get('productId'));
               currentlyReloading.splice(index, 1);
             }
           }

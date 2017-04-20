@@ -102,7 +102,6 @@ class Orders extends Component {
 	}
 	
 	handleShipSelectedClick() {
-		console.log(this.state.selectedRows)
   	// Add order ids to currently reloading array
   	let reloadingOrderIds = this.state.isReloading;
 		let currentlyReloading = reloadingOrderIds.concat(this.state.selectedRows);
@@ -115,7 +114,6 @@ class Orders extends Component {
 	}
 	
 	handlePrintSelectedClick() {
-		console.log(this.state.selectedRows)
 		this.props.batchPrintShipments(this.props.token, this.state.selectedRows);
 		this.setState({
   		isGeneratingFile: true
@@ -186,7 +184,6 @@ class Orders extends Component {
   	let orders = [];
   	let currentlyReloading = this.state.isReloading;
   	if (nextProps.updatedOrders) {
-    	console.log('has updated orders');
       nextProps.orders.map(function(order, i) {
         const orderJSON = order.toJSON();
         let addUpdatedOrder;
@@ -197,14 +194,12 @@ class Orders extends Component {
         	return updatedOrder;
       	});
         if (addUpdatedOrder) {
-          console.log('update order ' + addUpdatedOrder.get('orderId'));
           orders.push(addUpdatedOrder);
         } else {
           orders.push(order);
         }
         // If currently reloading and has successfully updated order, remove updated order
       	if (currentlyReloading.length && addUpdatedOrder) {
-        	console.log('check for updated order')
         	const index = currentlyReloading.indexOf(addUpdatedOrder.get('orderId'));
           if (index >= 0) currentlyReloading.splice(index, 1);
         }
@@ -269,7 +264,6 @@ class Orders extends Component {
   	let files = this.state.files ? this.state.files : [];
   	let newFiles = [];
   	if (nextProps.newFiles) {
-    	console.log('has updated files');
       nextProps.newFiles.map(function(newFile, i) {
         const newFileJSON = newFile.toJSON();
         let addUpdatedFile = true;

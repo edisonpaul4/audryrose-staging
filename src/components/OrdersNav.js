@@ -4,12 +4,6 @@ import { Menu, Label, Form, Dropdown } from 'semantic-ui-react';
 import moment from 'moment';
 
 class OrdersNav extends Component {
-	// handleItemClick(event) {
-	//     event.preventDefault();
-	//   event.stopPropagation();
-	// 	console.log('click');
-		// this.props.onToggle(this.props.data.orderId)
-	// }
 	render() {
 		const pathName = this.props.pathname;
 		const search = this.props.query.q ? this.props.query.q : '';
@@ -19,7 +13,6 @@ class OrdersNav extends Component {
 		let files = [];
 		if (this.props.files) {
   		this.props.files.map(function(file, i) {
-    		console.log(file)
     		const date = moment(file.createdAt).format('M/D/YY h:mm a');
     		files.push(
     		  <Dropdown.Item 

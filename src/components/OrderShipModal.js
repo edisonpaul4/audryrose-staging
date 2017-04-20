@@ -23,7 +23,6 @@ class ShipmentGroup extends Component {
   render() {
     const shipmentGroup = this.props.data;
     const shipment = shipmentGroup.shipment;
-//     console.log(shipmentGroup.shipment)
     const shippingAddress = shipmentGroup.orderProducts[0].shippingAddress;
     
     let shipmentProducts = shipmentGroup.orderProducts.map(function(product, i) {
