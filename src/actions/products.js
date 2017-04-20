@@ -55,3 +55,17 @@ export function addToVendorOrder(token, orders) {
     promise: api.addToVendorOrder(token, orders)
   }
 }
+
+export function getBundleFormData(token, productId) {
+  return {
+    types: ['GET_BUNDLE_FORM_REQUEST', 'GET_BUNDLE_FORM_SUCCESS', 'GET_BUNDLE_FORM_FAILURE'],
+    promise: api.getBundleFormData(token, productId)
+  }
+}
+
+export function productBundleSave(token, data) {
+  return {
+    types: ['BUNDLE_SAVE_REQUEST', 'BUNDLE_SAVE_SUCCESS', 'BUNDLE_SAVE_FAILURE'],
+    promise: api.productBundleSave(token, data)
+  }
+}

@@ -1,123 +1,207 @@
 import React, { Component } from 'react';
-import { Modal, Button, Form } from 'semantic-ui-react';
+import { Modal, Button, Table, Form, Header, Segment } from 'semantic-ui-react';
 
 class ProductEditBundleModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
       formComplete: false,
-      productData: this.props.productBundleEditData && this.props.productBundleEditData.product ? this.props.productBundleEditData.product : null,
-//       name: this.props.vendorData && this.props.vendorData.name ? this.props.vendorData.name : '',
-//       firstName: this.props.vendorData && this.props.vendorData.firstName ? this.props.vendorData.firstName : '',
-//       lastName: this.props.vendorData && this.props.vendorData.lastName ? this.props.vendorData.lastName : '',
-//       email: this.props.vendorData && this.props.vendorData.email ? this.props.vendorData.email : '',
+      productData: this.props.bundleFormData && this.props.bundleFormData.product ? this.props.bundleFormData.product : null,
+      products: this.props.bundleFormData && this.props.bundleFormData.products ? this.props.bundleFormData.products : [],
+      selectedProduct: '',
+      selectedVariant: '',
+      bundleVariants: []
     };
     this.handleSave = this.handleSave.bind(this);
-//     this.handleNameChange = this.handleNameChange.bind(this);
-//     this.handleFirstNameChange = this.handleFirstNameChange.bind(this);
-//     this.handleLastNameChange = this.handleLastNameChange.bind(this);
-//     this.handleEmailChange = this.handleEmailChange.bind(this);
+    this.handleProductChange = this.handleProductChange.bind(this);
+    this.handleVariantChange = this.handleVariantChange.bind(this);
+    this.handleAdd = this.handleAdd.bind(this);
+    this.handleRemove = this.handleRemove.bind(this);
     this.handleClose = this.handleClose.bind(this);
   }
   
 	handleSave() {
-/*
     var data = {
-      designerId: this.props.designerData.objectId,
-      vendorId: this.state.vendorData ? this.state.vendorData.objectId : null,
-      name: this.state.name,
-      firstName: this.state.firstName,
-      lastName: this.state.lastName,
-      email: this.state.email
+      bundleProductId: this.state.productData.productId,
+      bundleVariants: this.state.bundleVariants
     };
-    console.log(data);
-		this.props.handleSave(data);
-		this.props.handleVendorEditModalClose();
-*/
+		this.props.handleProductBundleSave(data);
+		this.props.handleEditBundleModalClose();
 	}
 	
   handleClose() {
     this.setState({
       formComplete: false,
-      productData: null,
-//       name: '',
-//       firstName: '',
-//       lastName: '',
-//       email: ''
+      productData: this.props.bundleFormData && this.props.bundleFormData.product ? this.props.bundleFormData.product : null,
+      products: this.props.bundleFormData && this.props.bundleFormData.products ? this.props.bundleFormData.products : [],
+      selectedProduct: '',
+      selectedVariant: '',
+      bundleVariants: []
     });
     this.props.handleEditBundleModalClose();
   }
   
   isFormComplete() {
     let formComplete = true;
-//     if (this.state.email === undefined || this.state.email === '') formComplete = false;
+    if (this.state.selectedProduct === undefined || this.state.selectedProduct === '') formComplete = false;
+    if (this.state.selectedVariant === undefined || this.state.selectedVariant === '') formComplete = false;
     return formComplete;
   }
   
-/*
-	handleNameChange(e, {value}) {
-  	this.setState({
-    	name: value
-  	});
+	handleProductChange(e, {value}) {
+  	if (value !== this.state.selectedProduct) {
+    	this.setState({
+      	selectedProduct: value
+    	});
+  	}
 	}
-*/
-  
-/*
-	handleFirstNameChange(e, {value}) {
-  	this.setState({
-    	firstName: value
-  	});
-	}
-*/
-
-/*
-	handleLastNameChange(e, {value}) {
-  	this.setState({
-    	lastName: value
-  	});
-	}
-*/
 	
-/*
-	handleEmailChange(e, {value}) {
+	handleVariantChange(e, {value}) {
+  	if (value !== this.state.selectedVariant) {
+    	this.setState({
+      	selectedVariant: value
+    	});
+  	}
+	}
+	
+	handleAdd() {
+  	let bundleVariants = this.state.bundleVariants;
+  	if (bundleVariants.indexOf(this.state.selectedVariant) < 0) bundleVariants.push(this.state.selectedVariant);
   	this.setState({
-    	email: value
+      selectedProduct: '',
+      selectedVariant: '',    	
+    	bundleVariants: bundleVariants
   	});
 	}
-*/
+	
+	handleRemove(id) {
+  	let bundleVariants = this.state.bundleVariants;
+  	const index = bundleVariants.indexOf(id);
+    if (index >= 0) bundleVariants.splice(index, 1);
+  	this.setState({	
+    	bundleVariants: bundleVariants
+  	});
+	}
 	
 	componentWillReceiveProps(nextProps) {
-  	if (nextProps.productBundleEditData) {
+  	if (nextProps.bundleFormData) {
+    	let bundleVariants = this.state.bundleVariants;
+    	if (nextProps.bundleFormData.product.bundleVariants) {
+      	nextProps.bundleFormData.product.bundleVariants.map(function(bundleVariant, i) {
+        	if (bundleVariants.indexOf(bundleVariant.objectId) < 0) bundleVariants.push(bundleVariant.objectId);
+        	return bundleVariant;
+      	});
+    	}
     	this.setState({
-      	productData: nextProps.productBundleEditData.product,
-//         name: nextProps.vendorData.name,
-//         firstName: nextProps.vendorData.firstName,
-//         lastName: nextProps.vendorData.lastName,
-//         email: nextProps.vendorData.email
+      	productData: nextProps.bundleFormData.product ? nextProps.bundleFormData.product : null,
+      	products: nextProps.bundleFormData.products ? nextProps.bundleFormData.products : null,
+      	bundleVariants: bundleVariants
     	});
   	}
 	}
   
 	render() {
-		const saveButton = <Button disabled={this.props.isLoading || !this.isFormComplete()} color='olive' onClick={this.handleSave}>Save Vendor</Button>;
+  	const scope = this;
+  	let productsOptions = [];
+  	let variantsOptions = [];
+  	let optionValues = [];
+  	let bundleProductRows = [];
+  	let rowNum = 0;
+		this.state.products.map(function(product, i) {
+  		if (product.variants.length > 0) {
+    		product.variants.map(function(variant, j) {
+      		let variantText = '';
+      		if (variant.color_value) variantText += ' ' + variant.color_value;
+      		if (variant.gemstone_value) variantText += ' ' + variant.gemstone_value;
+      		if (variant.length_value) variantText += ' ' + variant.length_value;
+      		if (variant.letter_value) variantText += ' ' + variant.letter_value;
+      		if (variant.singlepair_value) variantText += ' ' + variant.singlepair_value;
+      		variantText = variantText.trim();
+      		if (variantText === '') variantText = 'No options';
+      		
+      		// Create add product dropdown options
+      		if (product.productId === scope.state.selectedProduct) {	
+        		if (optionValues.indexOf(variantText) < 0) {
+          		optionValues.push(variantText);
+          		variantsOptions.push({ key: j, value: variant.objectId, text: variantText });
+        		}
+      		}
+      		
+      		// Create bundle product rows
+      		scope.state.bundleVariants.map(function(bundleVariant, k) {
+        		if (variant.objectId === bundleVariant) {
+              bundleProductRows.push(
+                <Table.Row key={rowNum}>
+                  <Table.Cell>{product.productId}</Table.Cell>
+                  <Table.Cell>{product.name}</Table.Cell>
+                  <Table.Cell>{variantText}</Table.Cell>
+                  <Table.Cell>
+                    <Button 
+                      type='button' 
+                      basic 
+                      content='Remove' 
+                      disabled={scope.props.isLoading} 
+                      color='red' 
+                      size='tiny'
+                      onClick={()=>scope.handleRemove(variant.objectId)} 
+                    />
+                  </Table.Cell>
+                </Table.Row>
+              );
+        		}
+        		rowNum++;
+        		return bundleVariant;
+      		});
+      		rowNum++;
+      		return variant;
+    		});
+  		}
+  		productsOptions.push({ key: i, value: product.productId, text: product.productId + ' - ' + product.name });
+  		return product;
+		});
+		
+		const productsSelect = this.state.products ? <Form.Select search selection placeholder='Select a product' value={this.state.selectedProduct} options={productsOptions} onChange={this.handleProductChange} /> : null;
+		
+		const variantsSelect = variantsOptions.length > 0 ? <Form.Select placeholder='Select default options' value={this.state.selectedVariant} options={variantsOptions} onChange={this.handleVariantChange} /> : null;
+  	
+		const saveButton = <Button disabled={this.props.isLoading} color='olive' onClick={this.handleSave}>Save Bundle</Button>;
+		
+		const addButton = <Button type='button' basic icon='plus' content='Add' disabled={this.props.isLoading || !this.isFormComplete()} color='olive' onClick={this.handleAdd} />;
     
     return (
 	    <Modal open={this.props.open} onClose={this.handleClose} size='small' closeIcon='close'>
         <Modal.Content>
-{/*
-          <Form>
-            <Form.Group widths='equal'>
-              <Form.Input label='Company Name' value={this.state.name ? this.state.name : ''} onChange={this.handleNameChange} />
-            </Form.Group>
-            <Form.Group widths='equal'>
-              <Form.Input label='First Name' value={this.state.firstName ? this.state.firstName : ''} onChange={this.handleFirstNameChange} />
-              <Form.Input label='Last Name' value={this.state.lastName ? this.state.lastName : ''}onChange={this.handleLastNameChange}  />
-            </Form.Group>
-            <Form.Group widths='equal'>
-              <Form.Input label='Email' type='email' value={this.state.email ? this.state.email : ''} onChange={this.handleEmailChange} />
-            </Form.Group>
-          </Form>
-*/}
+          <Header>Bundle Products</Header>
+          <Table basic='very' celled>
+            <Table.Header>
+              <Table.Row>
+                <Table.HeaderCell>Product Id</Table.HeaderCell>
+                <Table.HeaderCell>Product Name</Table.HeaderCell>
+                <Table.HeaderCell>Default Options</Table.HeaderCell>
+                <Table.HeaderCell className='right aligned'> </Table.HeaderCell>
+              </Table.Row>
+            </Table.Header>
+            <Table.Body>
+              {bundleProductRows}
+            </Table.Body>
+          </Table>
+            
+          <Segment>
+            <Form loading={this.props.isLoading}>
+              <Header>Add a product to the bundle</Header>
+              <Form.Group inline>
+                <Form.Field>
+                  {productsSelect}
+                </Form.Field>
+                <Form.Field>
+                  {variantsSelect}
+                </Form.Field>
+                <Form.Field>
+                  {addButton}
+                </Form.Field>
+              </Form.Group>
+            </Form>
+          </Segment>
         </Modal.Content>
         <Modal.Actions>
           <Button basic disabled={this.props.isLoading} color='grey' content='Close' onClick={this.handleClose} />

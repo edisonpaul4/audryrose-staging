@@ -35,8 +35,8 @@ class Products extends Component {
 			tabCounts: null,
 			productOrderOpen: false,
 			productOrderData: null,
-			productBundleEditOpen: false,
-			productBundleEditData: null
+			bundleFormOpen: false,
+			bundleFormData: null
     };
     this.handleToggleClick = this.handleToggleClick.bind(this);
     this.handlePaginationClick = this.handlePaginationClick.bind(this);
@@ -241,45 +241,42 @@ class Products extends Component {
 	
 	handleEditBundleClick(productId) {
   	console.log('show bundle edit form for product:' + productId);
-  	let productBundleEditData = {};
+  	let bundleFormData = {};
     this.state.products.map(function(product, i) {
       if (product.get('productId') === productId) {
-        productBundleEditData.product = product.toJSON();
+        bundleFormData.product = product.toJSON();
       }
       return product;
     });
     this.setState({
-      productBundleEditOpen: true,
-      productBundleEditData: productBundleEditData
+      bundleFormOpen: true,
+      bundleFormData: bundleFormData,
+      bundleFormIsLoading: true
     });
-// 		this.props.getBundleFormData(this.props.token, productId);
+		this.props.getBundleFormData(this.props.token, productId);
 	}
 	
 	handleEditBundleModalClose(data) {
     this.setState({
-      productBundleEditOpen: false,
-      productBundleEditData: null
+      bundleFormOpen: false,
+      bundleFormData: null,
+      bundleFormIsLoading: false
     });
 	}
 	
 	
 	handleProductBundleSave(data) {
     console.log(data);
-/*
   	let currentlyReloading = this.state.isReloading;
-  	const variantEdited = orders.map(function(order, i) {
-  		const index = currentlyReloading.indexOf(order.productId);
-  		if (index < 0) {
-  			currentlyReloading.push(order.productId);
-  		}
-    	return order.variant;
-  	});
+		const index = currentlyReloading.indexOf(data.bundleProductId);
+		if (index < 0) {
+			currentlyReloading.push(data.bundleProductId);
+		}
+		console.log(currentlyReloading)
   	this.setState({
-    	isReloading: currentlyReloading,
-    	savingVariants: [variantEdited]
+    	isReloading: currentlyReloading
   	});
-		this.props.addToVendorOrder(this.props.token, orders);
-*/
+		this.props.productBundleSave(this.props.token, data);
 	}
 	
 	handleVariantsEdited(data, edited) {
@@ -395,6 +392,13 @@ class Products extends Component {
     	filterData = {designers: designers, classes: classes};
   	}
   	
+  	let bundleFormData = this.state.bundleFormData ? this.state.bundleFormData : {};
+  	let bundleFormIsLoading = this.state.bundleFormIsLoading;
+  	if (nextProps.bundleFormData) {
+    	bundleFormData.products = nextProps.bundleFormData;
+    	bundleFormIsLoading = false;
+  	}
+  	
   	// Update tab counts if available
   	const tabCounts = nextProps.tabCounts ? nextProps.tabCounts : this.state.tabCounts;
   	
@@ -413,7 +417,9 @@ class Products extends Component {
 			expandedProducts: expandedProducts,
 			isReloading: currentlyReloading,
 			savingVariants: savingVariants,
-			tabCounts: tabCounts
+			tabCounts: tabCounts,
+			bundleFormData: bundleFormData,
+			bundleFormIsLoading: bundleFormIsLoading
 		});	
     
   	if (nextPage !== this.state.page || nextProps.router.params.subpage !== this.state.subpage) {
@@ -513,12 +519,12 @@ class Products extends Component {
         isLoading={this.props.isReloading}
       /> : null;
       
-    const productEditBundleModal = this.state.productBundleEditData ? <ProductEditBundleModal 
-        open={this.state.productBundleEditOpen}
+    const productEditBundleModal = this.state.bundleFormData && this.state.bundleFormData.product ? <ProductEditBundleModal 
+        open={this.state.bundleFormOpen}
         handleEditBundleModalClose={this.handleEditBundleModalClose} 
         handleProductBundleSave={this.handleProductBundleSave} 
-        productBundleEditData={this.state.productBundleEditData} 
-        isLoading={this.props.isReloading}
+        bundleFormData={this.state.bundleFormData} 
+        isLoading={this.state.bundleFormIsLoading}
       /> : null; 
     
     return (

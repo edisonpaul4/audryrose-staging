@@ -169,7 +169,6 @@ class VariantsTable extends Component {
     			});
   			}
         let index = -1;
-//         console.log(scope.props.savingVariants)
         scope.props.savingVariants.map(function(savingVariant, i) {
           if (savingVariant.objectId === variantData.objectId) index = i;
           return savingVariant;
@@ -216,6 +215,67 @@ class VariantsTable extends Component {
               <Table.HeaderCell>Ordered</Table.HeaderCell>
               <Table.HeaderCell className='right aligned'>RETAIL $</Table.HeaderCell>
               <Table.HeaderCell className='right aligned'>Actions</Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            {variantRows}
+          </Table.Body>
+        </Table>
+      </Segment>
+    );
+  }
+}
+
+class BundleVariantRow extends Component {
+	render() {  	
+		const variant = this.props.variant;
+		
+		let variantOptionsText = '';
+		if (variant.color_value) variantOptionsText += ' ' + variant.color_value;
+		if (variant.gemstone_value) variantOptionsText += ' ' + variant.gemstone_value;
+		if (variant.length_value) variantOptionsText += ' ' + variant.length_value;
+		if (variant.letter_value) variantOptionsText += ' ' + variant.letter_value;
+		if (variant.singlepair_value) variantOptionsText += ' ' + variant.singlepair_value;
+		variantOptionsText = variantOptionsText.trim();
+		if (variantOptionsText === '') variantOptionsText = 'No options';
+	    
+    return (
+      <Table.Row>
+        <Table.Cell>{variant.productName ? variant.productName : ''}</Table.Cell>
+        <Table.Cell>{variant.productId}</Table.Cell>
+        <Table.Cell>{variantOptionsText}</Table.Cell>
+				<Table.Cell className='right aligned' singleLine></Table.Cell>
+      </Table.Row>
+    );
+  }
+}
+
+class BundleVariantsTable extends Component {
+	render() {  	
+		const bundleVariants = this.props.bundleVariants;
+    
+		let variantRows = [];
+		if (bundleVariants) {
+			bundleVariants.map(function(variantData, i) {
+				variantRows.push(
+				  <BundleVariantRow 
+				    variant={variantData} 
+				    key={i} 
+			    />
+		    );
+				return variantRows;
+	    });
+		}
+		
+    return (
+      <Segment secondary>
+        <Table className='variants-table' basic='very' compact size='small' columns={7}>
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell>Product Name</Table.HeaderCell>
+              <Table.HeaderCell>Product ID</Table.HeaderCell>
+              <Table.HeaderCell>Default Options</Table.HeaderCell>
+              <Table.HeaderCell className='right aligned'></Table.HeaderCell>
             </Table.Row>
           </Table.Header>
           <Table.Body>
@@ -432,7 +492,13 @@ class ProductDetails extends Component {
       }
     } else if (isBundle) {
 	    // Display table of bundle products
-	    console.log('Display table of bundle products')
+  	    variantsTables.push(
+  	      <BundleVariantsTable 
+  	        bundleVariants={this.props.data.bundleVariants} 
+  	        bundleVariantsProducts={this.props.bundleVariantsProducts} 
+  	        key={1} 
+	        />
+        );
     }
 		
 		const vendorOptions = this.props.data.designer && this.props.data.designer.vendors ? this.props.data.designer.vendors.map(function(vendor, i) {

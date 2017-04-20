@@ -166,6 +166,38 @@ const products = (state = initialState, action) => {
       return {
         ...state
       }
+      
+    case 'GET_BUNDLE_FORM_REQUEST':
+      return {
+        ...state
+      }
+
+    case 'GET_BUNDLE_FORM_SUCCESS':
+      return {
+        ...state,
+        bundleFormData: action.res
+      };
+
+    case 'GET_BUNDLE_FORM_FAILURE':
+      return {
+        ...state
+      }
+      
+    case 'BUNDLE_SAVE_REQUEST':
+      return {
+        ...state
+      }
+
+    case 'BUNDLE_SAVE_SUCCESS':
+      return {
+        ...state,
+        updatedProducts: action.res.updatedProducts
+      };
+
+    case 'BUNDLE_SAVE_FAILURE':
+      return {
+        ...state
+      }
 			
     default:
       return state;

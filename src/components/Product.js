@@ -22,10 +22,10 @@ class Product extends Component {
   	const data = this.props.data;
   	
   	let labels = [];
-  	if (data.total_stock > 0) {
+  	if (data.total_stock > 0 && !data.isBundle) {
     	labels.push(<Label key={1} basic horizontal circular size='mini' color='olive'>In Stock</Label>);
   	}
-  	if (data.total_stock <= 0) {
+  	if (data.total_stock <= 0 && !data.isBundle) {
     	labels.push(<Label key={1} basic horizontal circular size='mini' color='red'>Out Of Stock</Label>);
   	}
   	if (!data.is_visible) {
@@ -36,6 +36,9 @@ class Product extends Component {
   	}
   	if (data.hasVendorBuy) {
     	labels.push(<Label key={4} basic horizontal circular size='mini' color='teal'>Ordered</Label>);
+  	}
+  	if (data.isBundle) {
+    	labels.push(<Label key={5} basic horizontal circular size='mini' color='teal'>Bundle</Label>);
   	}
   	
 		let expandIcon = this.props.expanded ? 'minus' : 'plus';
@@ -85,7 +88,7 @@ class Product extends Component {
 				  />
 		    </Table.Cell>
 				<Table.Cell>{labels}</Table.Cell>
-				<Table.Cell className='right aligned'>{data.total_stock}</Table.Cell>
+				<Table.Cell className='right aligned'>{data.isBundle ? 'N/A' : data.total_stock}</Table.Cell>
 				<Table.Cell className='right aligned'>
 				  <Button circular icon={expandIcon} basic size='mini' onClick={()=>this.handleToggleClick(data.productId)} />
 			  </Table.Cell>
