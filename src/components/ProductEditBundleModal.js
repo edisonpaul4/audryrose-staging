@@ -88,7 +88,7 @@ class ProductEditBundleModal extends Component {
     	let bundleVariants = this.state.bundleVariants;
     	if (nextProps.bundleFormData.product.bundleVariants) {
       	nextProps.bundleFormData.product.bundleVariants.map(function(bundleVariant, i) {
-        	if (bundleVariants.indexOf(bundleVariant.objectId) < 0) bundleVariants.push(bundleVariant.objectId);
+        	bundleVariants.push(bundleVariant.objectId);
         	return bundleVariant;
       	});
     	}
@@ -99,65 +99,76 @@ class ProductEditBundleModal extends Component {
     	});
   	}
 	}
+	
+	getVariantText(variant) {
+		let variantText = '';
+		if (variant.color_value) variantText += ' ' + variant.color_value;
+		if (variant.gemstone_value) variantText += ' ' + variant.gemstone_value;
+		if (variant.length_value) variantText += ' ' + variant.length_value;
+		if (variant.letter_value) variantText += ' ' + variant.letter_value;
+		if (variant.singlepair_value) variantText += ' ' + variant.singlepair_value;
+		variantText = variantText.trim();
+		if (variantText === '') variantText = 'No options';
+		
+  	return variantText;
+	}
   
 	render() {
   	const scope = this;
+  	
+  	// Create add product dropdown options
   	let productsOptions = [];
   	let variantsOptions = [];
   	let optionValues = [];
-  	let bundleProductRows = [];
-  	let rowNum = 0;
 		this.state.products.map(function(product, i) {
   		if (product.variants.length > 0) {
     		product.variants.map(function(variant, j) {
-      		let variantText = '';
-      		if (variant.color_value) variantText += ' ' + variant.color_value;
-      		if (variant.gemstone_value) variantText += ' ' + variant.gemstone_value;
-      		if (variant.length_value) variantText += ' ' + variant.length_value;
-      		if (variant.letter_value) variantText += ' ' + variant.letter_value;
-      		if (variant.singlepair_value) variantText += ' ' + variant.singlepair_value;
-      		variantText = variantText.trim();
-      		if (variantText === '') variantText = 'No options';
-      		
-      		// Create add product dropdown options
+          const variantText = scope.getVariantText(variant);
       		if (product.productId === scope.state.selectedProduct) {	
         		if (optionValues.indexOf(variantText) < 0) {
           		optionValues.push(variantText);
           		variantsOptions.push({ key: j, value: variant.objectId, text: variantText });
         		}
       		}
-      		
-      		// Create bundle product rows
-      		scope.state.bundleVariants.map(function(bundleVariant, k) {
-        		if (variant.objectId === bundleVariant) {
-              bundleProductRows.push(
-                <Table.Row key={rowNum}>
-                  <Table.Cell>{product.productId}</Table.Cell>
-                  <Table.Cell>{product.name}</Table.Cell>
-                  <Table.Cell>{variantText}</Table.Cell>
-                  <Table.Cell>
-                    <Button 
-                      type='button' 
-                      basic 
-                      content='Remove' 
-                      disabled={scope.props.isLoading} 
-                      color='red' 
-                      size='tiny'
-                      onClick={()=>scope.handleRemove(variant.objectId)} 
-                    />
-                  </Table.Cell>
-                </Table.Row>
-              );
-        		}
-        		rowNum++;
-        		return bundleVariant;
-      		});
-      		rowNum++;
       		return variant;
     		});
   		}
   		productsOptions.push({ key: i, value: product.productId, text: product.productId + ' - ' + product.name });
   		return product;
+		});
+		
+		// Create bundle product rows
+		let bundleProductRows = [];
+		this.state.bundleVariants.map(function(bundleVariant, i) {
+  		scope.state.products.map(function(product, j) {
+    		product.variants.map(function(variant, k) {
+      		if (variant.objectId === bundleVariant) {
+        		const rowId = i + '-' + j + '-' + k;
+        		const variantText = scope.getVariantText(variant);
+            bundleProductRows.push(
+              <Table.Row key={rowId}>
+                <Table.Cell>{product.productId}</Table.Cell>
+                <Table.Cell>{product.name}</Table.Cell>
+                <Table.Cell>{variantText}</Table.Cell>
+                <Table.Cell>
+                  <Button 
+                    type='button' 
+                    basic 
+                    content='Remove' 
+                    disabled={scope.props.isLoading} 
+                    color='red' 
+                    size='tiny'
+                    onClick={()=>scope.handleRemove(variant.objectId)} 
+                  />
+                </Table.Cell>
+              </Table.Row>
+            );
+      		}
+      		return variant;
+    		});
+    		return product;
+  		});
+  		return bundleVariant;
 		});
 		
 		const productsSelect = this.state.products ? <Form.Select search selection placeholder='Select a product' value={this.state.selectedProduct} options={productsOptions} onChange={this.handleProductChange} /> : null;
