@@ -66,7 +66,7 @@ class ProductEditBundleModal extends Component {
 	
 	handleAdd() {
   	let bundleVariants = this.state.bundleVariants;
-  	if (bundleVariants.indexOf(this.state.selectedVariant) < 0) bundleVariants.push(this.state.selectedVariant);
+    bundleVariants.push(this.state.selectedVariant);
   	this.setState({
       selectedProduct: '',
       selectedVariant: '',    	
