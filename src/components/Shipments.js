@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router';
-import { Grid, Table, Dimmer, Loader } from 'semantic-ui-react';
+import { Grid, Table, Dimmer, Loader, Button } from 'semantic-ui-react';
 import Pagination from './Pagination.js';
 import moment from 'moment';
 
 class Shipment extends Component {
 	render() {
 		const data = this.props.data;
+		const printButton = data.labelWithPackingSlipUrl ? <Button as='a' size='mini' href={data.labelWithPackingSlipUrl} target='_blank' content='Print' /> : null;
     return (
       <Table.Row>
         <Table.Cell verticalAlign='top' singleLine>{data.shipmentId}</Table.Cell>
@@ -15,6 +16,7 @@ class Shipment extends Component {
 				<Table.Cell verticalAlign='top'>{moment(data.date_created.iso).calendar()}</Table.Cell>
 				<Table.Cell verticalAlign='top'>{data.shipping_provider}</Table.Cell>
 				<Table.Cell verticalAlign='top'>{data.tracking_number}</Table.Cell>
+				<Table.Cell verticalAlign='top'>{printButton}</Table.Cell>
       </Table.Row>
     );
   }
@@ -80,6 +82,7 @@ class Shipments extends Component {
               <Table.HeaderCell>Date Shipped</Table.HeaderCell>
 							<Table.HeaderCell>Shipping Provider</Table.HeaderCell>
 							<Table.HeaderCell>Tracking No.</Table.HeaderCell>
+							<Table.HeaderCell className='right aligned'>&nbsp;</Table.HeaderCell>
 		        </Table.Row>
 		      </Table.Header>
 		      <Table.Body>
