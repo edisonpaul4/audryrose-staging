@@ -14,6 +14,20 @@ class ProductRow extends Component {
   handleShipModalOpen() {
     this.props.handleShipModalOpen();
   }
+  getProductInventory(variants) {
+    let inventoryLevel = 0;
+    console.log(variants)
+    variants.map(function(variant, i) {
+      console.log(i + ': ' + variant.inventoryLevel)
+      if (i === 0 && variant.inventoryLevel) {
+        inventoryLevel = variant.inventoryLevel;
+      } else if (variant.inventoryLevel < inventoryLevel) {
+        inventoryLevel = variant.inventoryLevel; 
+      }
+      return variant;
+    }); 
+    return inventoryLevel;
+  }
 	render() {  	
 		const product = this.props.product;
 		const shipment = this.props.shipment;
@@ -27,10 +41,11 @@ class ProductRow extends Component {
 		}
 		const productName = product.name ? product.name : '';
 		const productUrl = '/products/search?q=' + product.product_id;
-		const productLink = product.variant ? <a href={productUrl}>{productName}</a> : productName;
-		const alwaysResize = product.variant ? product.variant.alwaysResize : '';
-		const inventory = product.variant ? product.variant.inventoryLevel : '';
-		const designerName = product.variant ? product.variant.designer ? product.variant.designer.name : '' : '';
+		const productLink = <a href={productUrl}>{productName}</a>;
+		
+		const alwaysResize = product.variants && product.variants.length === 1 ? product.variants[0].alwaysResize : '';
+		const inventory = product.variants && product.variants.length > 0 ? this.getProductInventory(product.variants) : '';
+		const designerName = product.variants && product.variants.length === 1 && product.variants[0].designer ? product.variants[0].designer.name : '';
 		const shippingLabel = shipment && shipment.labelWithPackingSlipUrl ? 
 		  <Button as={Link} href={shipment.labelWithPackingSlipUrl} target='_blank'>
 		    <Icon name='print' />Print
