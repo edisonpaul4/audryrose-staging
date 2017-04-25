@@ -238,10 +238,13 @@ class BundleVariantRow extends Component {
 		if (variant.singlepair_value) variantOptionsText += ' ' + variant.singlepair_value;
 		variantOptionsText = variantOptionsText.trim();
 		if (variantOptionsText === '') variantOptionsText = 'No options';
+		
+		const productUrl = variant.productId ? '/products/search?q=' + variant.productId : '';
+		const productLink = variant.productName ? <a href={productUrl}>{variant.productName}</a> : '';
 	    
     return (
       <Table.Row>
-        <Table.Cell>{variant.productName ? variant.productName : ''}</Table.Cell>
+        <Table.Cell>{productLink}</Table.Cell>
         <Table.Cell>{variant.productId}</Table.Cell>
         <Table.Cell>{variantOptionsText}</Table.Cell>
 				<Table.Cell className='right aligned' singleLine></Table.Cell>
