@@ -332,6 +332,7 @@ class Orders extends Component {
 		    );
 				if (expanded) orderRows.push(
 				  <OrderDetails 
+  				  subpage={scope.state.subpage}
 				    data={orderJSON} 
 				    expanded={expanded} 
 				    key={`${orderJSON.orderId}-2`} 

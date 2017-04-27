@@ -306,10 +306,12 @@ class OrderDetails extends Component {
         disabled={this.props.isReloading} 
         onClick={this.handleCreateShipments} 
       /> : null;
+      
+    const detailsColSpan = this.props.subpage === 'fulfilled' ? '11' : '10';
 		
     return (
       <Table.Row className={rowClass}>
-        <Table.Cell colSpan='10' className='order-product-row'>
+        <Table.Cell colSpan={detailsColSpan} className='order-product-row'>
           <Button circular compact basic size='tiny' 
             icon='refresh' 
             content='Reload' 
