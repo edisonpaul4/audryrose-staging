@@ -4,6 +4,7 @@ import { Grid, Table, Dimmer, Loader, Icon, Button } from 'semantic-ui-react';
 import Pagination from './Pagination.js';
 import DesignersNav from './DesignersNav.js';
 import VendorEditModal from './VendorEditModal.js';
+import DesignerDetails from './DesignerDetails.js';
 
 class Designer extends Component {
   constructor(props) {
@@ -23,8 +24,8 @@ class Designer extends Component {
     this.handleSaveVendor = this.handleSaveVendor.bind(this);
   }
   
-	handleToggleClick(productId) {
-		this.props.handleToggleClick(productId);
+	handleToggleClick(designerId) {
+		this.props.handleToggleClick(designerId);
 	}
   
 	handleSaveVendor(data) {
@@ -105,12 +106,24 @@ class Designer extends Component {
         <Table.Cell singleLine className='right aligned'>
           <Button.Group size='mini'>
       	    {modalButtons}
-      	    <Button icon='plus' content='Add Vendor' basic compact onClick={()=>scope.handleShowVendorCreateFormClick(data.objectId)} />
+      	    <Button 
+      	      icon='plus' 
+      	      content='Add Vendor' 
+      	      basic 
+      	      compact 
+      	      onClick={()=>scope.handleShowVendorCreateFormClick(data.objectId)} 
+    	      />
     	    </Button.Group>
     	    {vendorEditModal}
   	    </Table.Cell>
 				<Table.Cell className='right aligned'>
-				  <Button circular icon={expandIcon} basic size='mini' onClick={()=>this.handleToggleClick(data.productId)} />
+				  <Button 
+				    circular 
+				    icon={expandIcon} 
+				    basic 
+				    size='mini' 
+				    onClick={()=>this.handleToggleClick(data.designerId)} 
+			    />
 			  </Table.Cell>
       </Table.Row>
     );
@@ -125,6 +138,7 @@ class Designers extends Component {
       subpage: this.props.router.params.subpage,
 			page: null,
 			designers: null,
+			products: null,
 			updatedDesigner: null,
       expanded: [],
       isReloading: [],
@@ -205,10 +219,13 @@ class Designers extends Component {
         if (index >= 0) isSavingDesigners.splice(index, 1);
       }
     }
+    
+    const products = nextProps.products ? nextProps.products : this.state.products;
   	
 		this.setState({
 			subpage: nextProps.router.params.subpage,
 			designers: designers,
+			products: products, 
 			page: nextPage,
 			updatedDesigner: nextProps.updatedDesigner,
 			isSavingDesigners: isSavingDesigners
@@ -223,15 +240,16 @@ class Designers extends Component {
   render() {
     const scope = this;
 		const { error, isLoadingDesigners, totalPages } = this.props;
+		const { designers, products } = this.state;
 		let designerRows = [];
     
-		if (this.props.designers) {
+		if (designers) {
   		const updatedDesignerJSON = this.state.updatedDesigner ? this.state.updatedDesigner.toJSON() : null;
-			this.props.designers.map(function(designerRow, i) {
+			designers.map(function(designerRow, i) {
   			let designerJSON = designerRow.toJSON();
   			let isSaving = scope.state.isSavingDesigners.indexOf(designerJSON.objectId) >= 0 ? true : false;
   			let expanded = (scope.state.expanded.indexOf(designerJSON.designerId) >= 0) ? true : false;
-				return designerRows.push(
+				designerRows.push(
 				  <Designer 
 				    data={designerJSON} 
 				    updatedDesigner={updatedDesignerJSON} 
@@ -242,6 +260,26 @@ class Designers extends Component {
 				    key={`${designerJSON.designerId}-1`} 
 			    />
 		    );
+				if (expanded) {
+  				const productsData = [];
+  				products.map(function(product, i) {
+    				const productJSON = product.toJSON();
+    				if (productJSON.designer && productJSON.designer.objectId === designerJSON.objectId) {
+      				productsData.push(productJSON);
+    				}
+    				return product;
+  				});
+  				designerRows.push(
+  				  <DesignerDetails 
+  				    data={designerJSON} 
+  				    products={productsData}
+  				    expanded={expanded} 
+  				    key={`${designerJSON.designerId}-2`} 
+  				    isSaving={isSaving} 
+				    />
+			    );
+				}
+				return designerRow;
 	    });
 		}
     return (

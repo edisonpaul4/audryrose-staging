@@ -17,6 +17,7 @@ const designers = (state = initialState, action) => {
         ...state,
         isLoadingDesigners: false,
         designers: action.res.designers,
+        products: action.res.products,
         totalPages: action.res.totalPages
       };
 

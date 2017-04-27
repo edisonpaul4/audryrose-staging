@@ -23,10 +23,10 @@ class DesignersNav extends Component {
 				</Menu.Item>
 				<Menu.Item 
 					as={Link} 
-					to='/designers/ordered' 
-					active={pathName === '/designers/ordered'} 
+					to='/designers/sent' 
+					active={pathName === '/designers/sent'} 
 					link>
-					Ordered
+					Sent
 				</Menu.Item>
 				<Menu.Item 
 					as={Link} 

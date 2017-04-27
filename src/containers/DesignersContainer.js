@@ -6,6 +6,7 @@ const select = state => ({
   token: state.auth.token,
 	isLoadingDesigners: state.designers.isLoadingDesigners,
 	designers: state.designers.designers,
+	products: state.designers.products,
 	updatedDesigner: state.designers.updatedDesigner,
 	totalPages: state.designers.totalPages,
 	error: state.error
