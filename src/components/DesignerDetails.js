@@ -1,13 +1,80 @@
 import React, { Component } from 'react';
-import { Table, Button, Dimmer, Segment, Loader, Header } from 'semantic-ui-react';
+import { Table, Button, Dimmer, Segment, Loader, Header, Form,Input, TextArea, Divider } from 'semantic-ui-react';
 import classNames from 'classnames';
 
 class ProductRow extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      units: this.props.vendorOrderVariant.units ? parseFloat(this.props.vendorOrderVariant.units) : 0,
+      notes: this.props.vendorOrderVariant.notes ? this.props.vendorOrderVariant.notes : '',
+      received: this.props.vendorOrderVariant.received ? parseFloat(this.props.vendorOrderVariant.received) : 0,
+      variantSaved: false,
+      isSaving: false
+    };
+    this.handleUnitsChange = this.handleUnitsChange.bind(this);
+    this.handleNotesChange = this.handleNotesChange.bind(this);
+    this.handleReceivedChange = this.handleReceivedChange.bind(this);
+    this.handleCancelVariantClick = this.handleCancelVariantClick.bind(this);
+  }  
+  handleUnitsChange(e, {value}) {
+    this.setState({
+      units: parseFloat(value),
+      variantSaved: false
+    });
+    this.props.handleVariantEdited({objectId: this.props.vendorOrderVariant.objectId, units: parseFloat(value), notes: this.state.notes, received: this.state.received});
+  }
+  handleNotesChange(e, {value}) {
+    this.setState({
+      notes: value,
+      variantSaved: false
+    });
+    this.props.handleVariantEdited({objectId: this.props.vendorOrderVariant.objectId, units: this.state.units, notes: value, received: this.state.received});
+  }
+  handleReceivedChange(e, {value}) {
+    this.setState({
+      received: parseFloat(value),
+      variantSaved: false
+    });
+    this.props.handleVariantEdited({objectId: this.props.vendorOrderVariant.objectId, units: this.state.units, notes: this.state.notes, received:parseFloat(value)});
+  }
+	handleCancelVariantClick(e, {value}) {
+  	const units = this.props.vendorOrderVariant.units ? parseFloat(this.props.vendorOrderVariant.units) : 0;
+  	const notes = this.props.vendorOrderVariant.notes ? this.props.vendorOrderVariant.notes : '';
+  	const received = this.props.vendorOrderVariant.received ? parseFloat(this.props.vendorOrderVariant.received) : 0;
+    this.setState({
+      units: units,
+      notes: notes,
+      received: received,
+      variantSaved: false
+    });
+    this.props.handleVariantEdited({objectId: this.props.vendorOrderVariant.objectId, units: units, notes: notes, received: received});
+	}
+  isEdited() {
+    let edited = false;
+    if (parseFloat(this.props.vendorOrderVariant.units) !== parseFloat(this.state.units)) edited = true;
+    if (this.props.vendorOrderVariant.notes !== this.state.notes) edited = true;
+    if (parseFloat(this.props.vendorOrderVariant.received) !== parseFloat(this.state.received)) edited = true;
+    return edited;
+  }
+	componentWillReceiveProps(nextProps) {
+  	if (this.state.isSaving && nextProps.vendorOrderVariant) {
+    	this.setState({
+        units: nextProps.vendorOrderVariant.units ? parseFloat(nextProps.vendorOrderVariant.units) : 0,
+        notes: nextProps.vendorOrderVariant.notes ? nextProps.vendorOrderVariant.notes : '',
+        received: nextProps.vendorOrderVariant.received ? parseFloat(nextProps.vendorOrderVariant.received) : 0,
+        isSaving: false
+    	});
+  	} else if (!this.state.isSaving && nextProps.isSaving) {
+    	this.setState({
+        isSaving: true
+    	});
+  	}
+	}
 	render() {  	
-		const product = this.props.product;
 		const vendorOrderVariant = this.props.vendorOrderVariant;
-		const productName = product.name ? product.name : '';
-		const productUrl = '/products/search?q=' + product.product_id;
+		const productName = vendorOrderVariant.variant.productName ? vendorOrderVariant.variant.productName : '';
+		const productUrl = '/products/search?q=' + vendorOrderVariant.variant.productId;
 		const productLink = <a href={productUrl}>{productName}</a>;
 		// Create an array of other options values
 		let options = [];
@@ -18,23 +85,10 @@ class ProductRow extends Component {
 	    });
 		}
 		const inventory = vendorOrderVariant.variant.inventoryLevel ? vendorOrderVariant.variant.inventoryLevel : 0;
-		console.log(vendorOrderVariant)
-/*
-		let primaryButton;
-		let dropdownItems = [];
-    if (product.shippable) {
-  	  primaryButton = <Button icon='shipping' content='Customize Shipment' onClick={this.handleShipModalOpen} />;
-//   	  dropdownItems.push(<Dropdown.Item key='1' icon='edit' text='Edit Item' />);
-	  } else if (product.resizable) {
-  	  primaryButton = <Button icon='exchange' content='Resize' />;
-  	  dropdownItems.push(<Dropdown.Item key='1' icon='add to cart' text='Order' />);
-//   	  dropdownItems.push(<Dropdown.Item key='2' icon='edit' text='Edit Item' />);
-	  } else {
-  	  primaryButton = <Button icon='add to cart' content='Order' />;
-  	  dropdownItems.push(<Dropdown.Item key='1' icon='exchange' text='Resize' />);
-//   	  dropdownItems.push(<Dropdown.Item key='2' icon='edit' text='Edit Item' />);
-	  }
-*/
+		const units = (this.props.status === 'Pending') ? <Input type='number' value={this.state.units ? this.state.units : 0} onChange={this.handleUnitsChange} min={0} disabled={this.props.isSaving} /> : this.state.units;
+		const notes = (this.props.status === 'Pending') ? <Input type='text' value={this.state.notes ? this.state.notes : ''} onChange={this.handleNotesChange} min={0} disabled={this.props.isSaving} /> : this.state.notes;
+		const received = (this.props.status === 'Sent') ? <Table.Cell><Input type='number' value={this.state.received ? this.state.received : 0} onChange={this.handleReceivedChange} min={0} disabled={this.props.isSaving} /></Table.Cell> : null;
+		const cancelClass = this.isEdited() ? '' : 'invisible';
 
     return (
       <Table.Row>
@@ -45,31 +99,153 @@ class ProductRow extends Component {
           })}
         </Table.Cell>
 				<Table.Cell>{inventory}</Table.Cell>
-				<Table.Cell>{vendorOrderVariant.units}</Table.Cell>
+				<Table.Cell>{units}</Table.Cell>
+				<Table.Cell>{notes}</Table.Cell>
+				{received}
 				<Table.Cell className='right aligned'>
+          <Button.Group size='mini'>
+    		    <Button content='Cancel' 
+      		    className={cancelClass} 
+      		    secondary 
+      		    compact 
+      		    loading={this.props.isSaving} 
+      		    disabled={this.props.isSaving} 
+      		    onClick={this.handleCancelVariantClick} 
+    		    />
+    	    </Button.Group> 
 				</Table.Cell>
       </Table.Row>
     );
   }
 }
 
-class VendorRow extends Component {
+class VendorOrder extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      formEdited: false,
+      variantsEdited: false,
+      message: this.props.order && this.props.order.message ? this.props.order.message : this.generateMessage(),
+      variantsData: null
+    };
+    this.handleSaveVendorOrderClick = this.handleSaveVendorOrderClick.bind(this);
+    this.handleSendVendorOrderClick = this.handleSendVendorOrderClick.bind(this);
+    this.handleVariantEdited = this.handleVariantEdited.bind(this);
+    this.handleMessageChange = this.handleMessageChange.bind(this);
+  }
+	handleSaveVendorOrderClick() {
+		this.props.handleSaveVendorOrder({orderId: this.props.order.objectId, variantsData: this.state.variantsData, message: this.state.message});
+	}
+	handleSendVendorOrderClick() {
+		this.props.handleSendVendorOrder({orderId: this.props.order.objectId, variantsData: this.state.variantsData, message: this.state.message});
+	}
+  handleVariantEdited(data) {
+    const scope = this;
+    let variantsEdited = false;
+  	let variantsData = this.state.variantsData.map(function(variant, i) {
+    	if (variant.objectId === data.objectId) variant = data;
+    	scope.props.order.vendorOrderVariants.map(function(vendorOrderVariant, j) {
+        if (vendorOrderVariant.objectId === variant.objectId) {
+          if (vendorOrderVariant.units !== variant.units) variantsEdited = true;
+          if (vendorOrderVariant.notes !== variant.notes) variantsEdited = true;
+          if (vendorOrderVariant.received !== variant.received) variantsEdited = true;
+        }
+        return vendorOrderVariant;
+    	});
+    	return variant;
+  	});
+    this.setState({
+      variantsEdited: variantsEdited,
+      variantsData: variantsData
+    });
+  }
+  handleMessageChange(e, {value}) {
+    let edited = false;
+    if (!this.props.order.message && this.generateMessage() !== value) {
+      edited = true;
+    } else if (this.props.order.message && this.props.order.message !== value) {
+      edited = true;
+    }
+    this.setState({
+      formEdited: edited,
+      message: value
+    });
+  }
+  generateMessage() {
+    let message = 'Hi';
+    if (this.props.vendor.firstName) {
+      message += ' ' +  this.props.vendor.firstName + ','
+    } else {
+      message += ',';
+    }
+    message += '\n\nCan I please order the below:';
+    message += '\n\n{{PRODUCTS}}';
+    message += '\n\nThank you!';
+    message += '\n\nJaclyn';
+    message += '\nwww.loveaudryrose.com';
+    message += '\n424.387.8000';
+    message += '\n@loveaudryrose';
+    return message;
+  }
+  getVariantsData(vendorOrderVariants) {
+  	return vendorOrderVariants.map(function(vendorOrderVariant, i) {
+    	return {objectId: vendorOrderVariant.objectId, units: vendorOrderVariant.units, notes: vendorOrderVariant.notes};
+  	});
+  }
+	componentWillMount() {
+		this.setState({
+      variantsData: this.getVariantsData(this.props.order.vendorOrderVariants),
+      message: this.props.order && this.props.order.message ? this.props.order.message : this.generateMessage(),
+		});
+	}
+	componentWillReceiveProps(nextProps) {
+  	if (nextProps.order) {
+    	this.setState({
+      	variantsData: this.getVariantsData(nextProps.order.vendorOrderVariants),
+        formEdited: false,
+        variantsEdited: false
+    	});
+  	}
+	}
 	render() {
-  	const { status, order, vendor, products } = this.props;
+  	const scope = this;
+  	const { status, order, vendor } = this.props;
   	
   	// Create Pending Order Table
 		let orderProductRows = [];
 		if (order && order.vendorOrderVariants.length > 0) {
 			order.vendorOrderVariants.map(function(vendorOrderVariant, i) {
-  			let productData;		
-  			products.map(function(product, j) {
-    			if (vendorOrderVariant.variant.productId === product.productId) productData = product;
-    			return product;
-  			});
-				orderProductRows.push(<ProductRow product={productData} vendorOrderVariant={vendorOrderVariant} key={i} />);
+				orderProductRows.push(<ProductRow status={scope.props.status} vendorOrderVariant={vendorOrderVariant} key={vendorOrderVariant.objectId} handleVariantEdited={scope.handleVariantEdited} isSaving={scope.props.isSaving} />);
 				return vendorOrderVariant;
 	    });
 		}
+		
+		const saveChangesButton = this.state.variantsEdited || this.state.formEdited ? <Button 
+      primary 
+      circular 
+      compact 
+      size='small' 
+      icon='save' 
+      content='Save Changes' 
+      disabled={this.props.isSaving} 
+      onClick={this.handleSaveVendorOrderClick} 
+    /> : null;
+    
+		const sendOrderButton = (status === 'Pending') ? <Button 
+      color='olive' 
+      compact 
+      size='small' 
+      icon='mail' 
+      content='Send Order' 
+      floated='right'
+      disabled={this.props.isSaving || this.state.variantsEdited || this.state.formEdited} 
+      onClick={this.handleSendVendorOrderClick} 
+    /> : null;
+    
+    const receivedHeader = (status === 'Sent') ? <Table.HeaderCell>Units Received</Table.HeaderCell> : null;
+    
+    const emailMessage = (status === 'Pending') ? <Form><TextArea disabled={status !== 'Pending' ? true : false} placeholder='Enter a personal message' autoHeight value={this.state.message ? this.state.message : ''} onChange={this.handleMessageChange} /></Form> : <Segment basic><pre>{this.state.message}</pre></Segment>;
+		
     return (
       <Segment secondary>
         <Header>{status} Order for {vendor.name}</Header>
@@ -79,14 +255,28 @@ class VendorRow extends Component {
               <Table.HeaderCell>Product</Table.HeaderCell>
               <Table.HeaderCell>Options</Table.HeaderCell>
               <Table.HeaderCell>ACH OH</Table.HeaderCell>
-              <Table.HeaderCell>Units</Table.HeaderCell>
-              <Table.HeaderCell className='right aligned'></Table.HeaderCell>
+              <Table.HeaderCell>Units {status === 'Pending' ? 'To Order' : 'Ordered'}</Table.HeaderCell>
+              <Table.HeaderCell>Notes</Table.HeaderCell>
+              {receivedHeader}
+              <Table.HeaderCell className='right aligned'> 
+              </Table.HeaderCell>
             </Table.Row>
           </Table.Header>
           <Table.Body>
             {orderProductRows}
           </Table.Body>
         </Table>
+        <Divider />
+          {emailMessage}
+        <Divider />
+        <Segment.Group horizontal compact className='toolbar'>
+          <Segment basic secondary>
+            {saveChangesButton}
+          </Segment>
+          <Segment basic secondary>
+            {sendOrderButton}
+          </Segment>
+        </Segment.Group>
       </Segment>
     );
 	}
@@ -96,63 +286,29 @@ class DesignerDetails extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: null,
-      products: null
+      data: this.props.data ? this.props.data : null
     };
-//     this.handleReloadClick = this.handleReloadClick.bind(this);
-//     this.handleShipModalOpen = this.handleShipModalOpen.bind(this);
-//     this.handleShipModalClose = this.handleShipModalClose.bind(this);
-//     this.handleCreateShipments = this.handleCreateShipments.bind(this);
+    this.handleSaveVendorOrder = this.handleSaveVendorOrder.bind(this);
+    this.handleSendVendorOrder = this.handleSendVendorOrder.bind(this);
   }
-/*
-	handleReloadClick(orderId) {
-		this.props.handleReloadClick(orderId);
-	}
-*/
-/*
-	handleCreateShipments() {
-		this.props.handleCreateShipments(this.state.shippableGroups);
-	}
-*/
-/*
-  handleShipModalOpen() {
-    this.setState({
-      shipModalOpen: true
-    });
+  handleSaveVendorOrder(vendorOrderData) {
+    vendorOrderData.designerId = this.state.data.objectId;
+    this.props.handleSaveVendorOrder(vendorOrderData);
   }
-*/
-/*
-  handleShipModalClose() {
-    this.setState({
-      shipModalOpen: false
-    });
+  handleSendVendorOrder(vendorOrderData) {
+    vendorOrderData.designerId = this.state.data.objectId;
+    this.props.handleSendVendorOrder(vendorOrderData);
   }
-*/
-/*
-	handleToggleEditorClick() {
-  	const showEditor = !this.state.showEditor;
-  	
-  	this.setState({
-    	showEditor: showEditor
-  	});
-	}
-*/
-	componentWillMount() {
-		this.setState({
-      data: this.props.data,
-      products: this.props.products
-		});
-	}
 	componentWillReceiveProps(nextProps) {
+  	let data = nextProps.data ? nextProps.data : this.state.data;
 		this.setState({
-      data: nextProps.data,
-      products: nextProps.products
+      data: data
 		});
 	}
 	render() {
+  	const scope = this;
   	const show = this.props.expanded ? true : false;
   	const data = this.state.data;
-  	const products = this.state.products;
 		const rowClass = classNames(
 			{
 				'': show,
@@ -163,23 +319,15 @@ class DesignerDetails extends Component {
 		let vendorRows = [];
 		if (data.vendors && data.vendors.length > 0) {
 			data.vendors.map(function(vendor, i) {
-  			let vendorProducts = [];
-  			products.map(function(product, j) {
-    			if (!product.vendor) {
-      			vendorProducts.push(product);
-    			} else if (vendor.objectId === product.vendor.objectId) {
-      			vendorProducts.push(product);
-    			}
-    			return product;
-  			});
   			
-  			if (vendor.pendingOrder) {
-    			vendorRows.push(<VendorRow status='Pending' order={vendor.pendingOrder} vendor={vendor} products={vendorProducts} key={i} />);
+  			console.log(vendor.pendingOrder)
+  			if (vendor.pendingOrder && vendor.pendingOrder.receivedAll === false) {
+    			vendorRows.push(<VendorOrder status='Pending' order={vendor.pendingOrder} vendor={vendor} key={i} handleSaveVendorOrder={scope.handleSaveVendorOrder} handleSendVendorOrder={scope.handleSendVendorOrder} />);
   			}
   			
   			if (vendor.sentOrders && vendor.sentOrders.length > 0) {
     			vendor.sentOrders.map(function(sentOrder, j) {
-      			vendorRows.push(<VendorRow status='Sent' order={sentOrder} vendor={vendor} products={vendorProducts} key={i+'-'+j} />);
+      			vendorRows.push(<VendorOrder status='Sent' order={sentOrder} vendor={vendor} isSaving={scope.props.isSaving} key={i+'-'+j} handleSaveVendorOrder={scope.handleSaveVendorOrder} />);
       			return sentOrder;
       		});
     			
@@ -192,13 +340,8 @@ class DesignerDetails extends Component {
     return (
       <Table.Row className={rowClass}>
         <Table.Cell colSpan='10' className='order-product-row'>
-          <Button circular compact basic size='tiny' 
-            icon='refresh' 
-            content='Reload' 
-            disabled={this.props.isReloading} 
-          />
-          <Dimmer.Dimmable as={Segment} vertical blurring dimmed={this.props.isReloading}>
-            <Dimmer active={this.props.isReloading} inverted>
+          <Dimmer.Dimmable as={Segment} vertical blurring dimmed={this.props.isSaving}>
+            <Dimmer active={this.props.isSaving} inverted>
               <Loader>Loading</Loader>
             </Dimmer>
             {vendorRows}

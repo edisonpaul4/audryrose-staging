@@ -142,6 +142,20 @@ export const saveVendor = (token, data) => Parse.Cloud.run('saveVendor',
   }
 );
 
+export const saveVendorOrder = (token, data) => Parse.Cloud.run('saveVendorOrder', 
+  {
+    sessionToken: token,
+    data
+  }
+);
+
+export const sendVendorOrder = (token, data) => Parse.Cloud.run('sendVendorOrder', 
+  {
+    sessionToken: token,
+    data
+  }
+);
+
 export const getOptions = (token, subpage) => Parse.Cloud.run('getOptions', 
   {
     sessionToken: token,
@@ -207,6 +221,8 @@ export default {
 	productBundleSave,
 	getDesigners,
 	saveVendor,
+	saveVendorOrder,
+	sendVendorOrder,
 	getOptions,
 	saveOption,
 	getShipments,

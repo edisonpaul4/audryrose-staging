@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { getDesigners, saveVendor } from '../actions/designers';
+import { getDesigners, saveVendor, saveVendorOrder, sendVendorOrder } from '../actions/designers';
 import Designers from '../components/Designers';
 
 const select = state => ({
@@ -8,13 +8,16 @@ const select = state => ({
 	designers: state.designers.designers,
 	products: state.designers.products,
 	updatedDesigner: state.designers.updatedDesigner,
+	successMessage: state.designers.successMessage,
 	totalPages: state.designers.totalPages,
 	error: state.error
 });
 
 const actions = {
   getDesigners,
-  saveVendor
+  saveVendor,
+  saveVendorOrder,
+  sendVendorOrder
 };
 
 export default connect(select, actions)(Designers);

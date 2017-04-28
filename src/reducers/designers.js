@@ -42,6 +42,39 @@ const designers = (state = initialState, action) => {
       return {
         ...state
       }
+      
+    case 'VENDOR_ORDER_SAVE_REQUEST':
+      return {
+        ...state
+      }
+
+    case 'VENDOR_ORDER_SAVE_SUCCESS':
+      return {
+        ...state,
+        updatedDesigner: action.res
+      };
+
+    case 'VENDOR_ORDER_SAVE_FAILURE':
+      return {
+        ...state
+      }
+      
+    case 'VENDOR_ORDER_SEND_REQUEST':
+      return {
+        ...state
+      }
+
+    case 'VENDOR_ORDER_SEND_SUCCESS':
+      return {
+        ...state,
+        updatedDesigner: action.res.updatedDesigner,
+        successMessage: action.res.successMessage
+      };
+
+    case 'VENDOR_ORDER_SEND_FAILURE':
+      return {
+        ...state
+      }
 			
     default:
       return state;

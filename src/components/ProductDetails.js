@@ -70,7 +70,7 @@ class VariantRow extends Component {
     const stoneColorCode = data.code ? '-' + data.code : null;
 		const saveCancelClass = this.state.variantEdited ? '' : 'invisible';
 		
-		const vendorOrder = data.vendorOrderVariant && data.vendorOrderVariant.received === false ? <Label>Pending<Label.Detail>{data.vendorOrderVariant.units}</Label.Detail></Label> : null;
+		const vendorOrder = data.vendorOrderVariant && data.vendorOrderVariant.done === false ? <Label>{data.vendorOrderVariant.ordered ? 'Sent' : 'Pending'}<Label.Detail>{data.vendorOrderVariant.units}</Label.Detail></Label> : null;
 	    
     return (
       <Table.Row warning={this.state.variantEdited ? true: false} positive={this.state.variantSaved && !this.state.variantEdited ? true: false} disabled={this.props.isSaving}>
@@ -120,7 +120,6 @@ class VariantsTable extends Component {
   constructor(props) {
     super(props);
     this.handleSaveVariantClick = this.handleSaveVariantClick.bind(this);
-    this.handleVariantEdited = this.handleVariantEdited.bind(this);
     this.handleVariantEdited = this.handleVariantEdited.bind(this);
     this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
   }

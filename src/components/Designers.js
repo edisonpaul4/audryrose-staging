@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router';
 import { Grid, Table, Dimmer, Loader, Icon, Button } from 'semantic-ui-react';
+import NotificationSystem from 'react-notification-system';
 import Pagination from './Pagination.js';
 import DesignersNav from './DesignersNav.js';
 import VendorEditModal from './VendorEditModal.js';
@@ -91,7 +92,7 @@ class Designer extends Component {
       
     const modalButtons = data.vendors ? data.vendors.map(function(vendor, i) {
       var buttonContent = 'Edit ' + vendor.name;
-      return <Button content={buttonContent} compact onClick={()=>scope.handleShowVendorEditFormClick(vendor.objectId)} key={i} />;
+      return <Button size='mini' circular content={buttonContent} compact onClick={()=>scope.handleShowVendorEditFormClick(vendor.objectId)} key={i} />;
     }) : null;
     
     let expandIcon = this.props.expanded ? 'minus' : 'plus';
@@ -104,16 +105,16 @@ class Designer extends Component {
         <Table.Cell verticalAlign='top'>{name}</Table.Cell>
 				<Table.Cell verticalAlign='top'>{data.abbreviation}</Table.Cell>
         <Table.Cell singleLine className='right aligned'>
-          <Button.Group size='mini'>
       	    {modalButtons}
       	    <Button 
+      	      size='mini'
       	      icon='plus' 
       	      content='Add Vendor' 
       	      basic 
       	      compact 
+      	      circular 
       	      onClick={()=>scope.handleShowVendorCreateFormClick(data.objectId)} 
     	      />
-    	    </Button.Group>
     	    {vendorEditModal}
   	    </Table.Cell>
 				<Table.Cell className='right aligned'>
@@ -122,7 +123,7 @@ class Designer extends Component {
 				    icon={expandIcon} 
 				    basic 
 				    size='mini' 
-				    onClick={()=>this.handleToggleClick(data.designerId)} 
+				    onClick={()=>this.handleToggleClick(data.objectId)} 
 			    />
 			  </Table.Cell>
       </Table.Row>
@@ -142,14 +143,19 @@ class Designers extends Component {
 			updatedDesigner: null,
       expanded: [],
       isReloading: [],
-			isSavingDesigners: []
+			isSavingDesigners: [],
+			successMessage: null
     };
     this.handlePaginationClick = this.handlePaginationClick.bind(this);
     this.handleSaveVendor = this.handleSaveVendor.bind(this);
+    this.handleSaveVendorOrder = this.handleSaveVendorOrder.bind(this);
+    this.handleSendVendorOrder = this.handleSendVendorOrder.bind(this);
     this.handleToggleClick = this.handleToggleClick.bind(this);
+    this._notificationSystem = null;
   }
 	
 	componentDidMount() {
+  	this._notificationSystem = this.refs.notificationSystem;
 		this.props.getDesigners(this.props.token, this.state.subpage, this.state.page);
 	}
 	
@@ -189,26 +195,42 @@ class Designers extends Component {
 		this.props.saveVendor(this.props.token, data);
 	}
 	
+	handleSaveVendorOrder(data) {
+		let currentlySaving = this.state.isSavingDesigners;
+		const index = currentlySaving.indexOf(data.designerId);
+		if (index < 0) {
+			currentlySaving.push(data.designerId);
+		}
+  	this.setState({
+    	isSavingDesigners: currentlySaving
+  	});
+		this.props.saveVendorOrder(this.props.token, data);
+	}
+	
+	handleSendVendorOrder(data) {
+		let currentlySaving = this.state.isSavingDesigners;
+		const index = currentlySaving.indexOf(data.designerId);
+		if (index < 0) {
+			currentlySaving.push(data.designerId);
+		}
+  	this.setState({
+    	isSavingDesigners: currentlySaving
+  	});
+		this.props.sendVendorOrder(this.props.token, data);
+	}
+	
 	componentWillReceiveProps(nextProps) {
   	let nextPage = parseFloat(nextProps.location.query.page);
   	if (!nextPage) nextPage = 1;
   	
-  	let designers = [];
+  	let designers = nextProps.designers ? nextProps.designers : [];
   	if (nextProps.updatedDesigner) {
     	// If updated designer exists, push it into the state designers array
     	const updatedDesignerJSON = nextProps.updatedDesigner.toJSON();
-      nextProps.designers.map(function(designer, i) {
+      designers = designers.map(function(designer, i) {
         const designerJSON = designer.toJSON();
-        if (updatedDesignerJSON.objectId === designerJSON.objectId) {
-          designers.push(nextProps.updatedDesigner);
-        } else {
-          designers.push(designer);
-        }
-        return designer;
+        return (updatedDesignerJSON.objectId === designerJSON.objectId) ? nextProps.updatedDesigner : designer;
       });
-      
-    } else {
-      designers = nextProps.designers;
     }
   	
     let isSavingDesigners = this.state.isSavingDesigners;
@@ -220,15 +242,24 @@ class Designers extends Component {
       }
     }
     
-    const products = nextProps.products ? nextProps.products : this.state.products;
+    let successMessage = this.state.successMessage;
+    if (nextProps.successMessage && nextProps.successMessage !== this.state.successMessage) {
+      successMessage = nextProps.successMessage;
+      this._notificationSystem.addNotification({
+        message: successMessage,
+        level: 'success',
+        autoDismiss: 0,
+        dismissible: true
+      });
+    }
   	
 		this.setState({
 			subpage: nextProps.router.params.subpage,
 			designers: designers,
-			products: products, 
 			page: nextPage,
 			updatedDesigner: nextProps.updatedDesigner,
-			isSavingDesigners: isSavingDesigners
+			isSavingDesigners: isSavingDesigners,
+			successMessage: successMessage
 		});
 		
 		if (nextPage !== this.state.page || nextProps.router.params.subpage !== this.state.subpage) {
@@ -240,19 +271,17 @@ class Designers extends Component {
   render() {
     const scope = this;
 		const { error, isLoadingDesigners, totalPages } = this.props;
-		const { designers, products } = this.state;
+		const { designers } = this.state;
 		let designerRows = [];
     
 		if (designers) {
-  		const updatedDesignerJSON = this.state.updatedDesigner ? this.state.updatedDesigner.toJSON() : null;
 			designers.map(function(designerRow, i) {
   			let designerJSON = designerRow.toJSON();
   			let isSaving = scope.state.isSavingDesigners.indexOf(designerJSON.objectId) >= 0 ? true : false;
-  			let expanded = (scope.state.expanded.indexOf(designerJSON.designerId) >= 0) ? true : false;
+  			let expanded = (scope.state.expanded.indexOf(designerJSON.objectId) >= 0) ? true : false;
 				designerRows.push(
 				  <Designer 
 				    data={designerJSON} 
-				    updatedDesigner={updatedDesignerJSON} 
 				    isSaving={isSaving} 
 				    expanded={expanded} 
 				    handleSaveVendor={scope.handleSaveVendor} 
@@ -261,21 +290,14 @@ class Designers extends Component {
 			    />
 		    );
 				if (expanded) {
-  				const productsData = [];
-  				products.map(function(product, i) {
-    				const productJSON = product.toJSON();
-    				if (productJSON.designer && productJSON.designer.objectId === designerJSON.objectId) {
-      				productsData.push(productJSON);
-    				}
-    				return product;
-  				});
   				designerRows.push(
   				  <DesignerDetails 
   				    data={designerJSON} 
-  				    products={productsData}
   				    expanded={expanded} 
   				    key={`${designerJSON.designerId}-2`} 
   				    isSaving={isSaving} 
+  				    handleSaveVendorOrder={scope.handleSaveVendorOrder}
+  				    handleSendVendorOrder={scope.handleSendVendorOrder}
 				    />
 			    );
 				}
@@ -284,6 +306,7 @@ class Designers extends Component {
 		}
     return (
 			<Grid.Column width='16'>
+  			<NotificationSystem ref="notificationSystem" />
   			<DesignersNav key={this.props.location.pathname} pathname={this.props.location.pathname} query={this.props.location.query} />
 				{error}
 	      <Dimmer active={isLoadingDesigners} inverted>

@@ -13,3 +13,17 @@ export function saveVendor(token, data) {
     promise: api.saveVendor(token, data)
   }
 }
+
+export function saveVendorOrder(token, data) {
+  return {
+    types: ['VENDOR_ORDER_SAVE_REQUEST', 'VENDOR_ORDER_SAVE_SUCCESS', 'VENDOR_ORDER_SAVE_FAILURE'],
+    promise: api.saveVendorOrder(token, data)
+  }
+}
+
+export function sendVendorOrder(token, data) {
+  return {
+    types: ['VENDOR_ORDER_SEND_REQUEST', 'VENDOR_ORDER_SEND_SUCCESS', 'VENDOR_ORDER_SEND_FAILURE'],
+    promise: api.sendVendorOrder(token, data)
+  }
+}

@@ -27,13 +27,6 @@ class DesignersNav extends Component {
 					active={pathName === '/designers/sent'} 
 					link>
 					Sent
-				</Menu.Item>
-				<Menu.Item 
-					as={Link} 
-					to='/designers/resizing' 
-					active={pathName === '/designers/resizing'} 
-					link>
-					Resizing
 				</Menu.Item>				
 	    </Menu>
     );

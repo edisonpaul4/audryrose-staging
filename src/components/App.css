@@ -53,6 +53,7 @@ a:hover i.link.icon {
 }
 .ui.segments.toolbar {
   margin: 0 !important;
+  background-color: transparent !important;
 }
 
 .ui.secondary.pointing.menu .item.subnav-search {
