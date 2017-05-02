@@ -62,22 +62,23 @@ const products = (state = initialState, action) => {
         ...state
       }
       
-    case 'PRODUCT_STATUS_REQUEST':
+    case 'PRODUCT_SAVE_REQUEST':
       return {
         ...state
       }
 
-    case 'PRODUCT_STATUS_SUCCESS':
+    case 'PRODUCT_SAVE_SUCCESS':
       return {
         ...state,
         updatedProducts: [action.res.updatedProduct],
         tabCounts: action.res.tabCounts
       };
 
-    case 'PRODUCT_STATUS_FAILURE':
+    case 'PRODUCT_SAVE_FAILURE':
       return {
         ...state
       }
+/*
       
     case 'PRODUCT_VENDOR_REQUEST':
       return {
@@ -112,6 +113,7 @@ const products = (state = initialState, action) => {
       return {
         ...state
       }
+*/
       
     case 'VARIANT_SAVE_REQUEST':
       return {

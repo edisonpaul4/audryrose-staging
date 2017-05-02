@@ -300,43 +300,88 @@ class BundleVariantsTable extends Component {
   }
 }
 
-/*
 class ProductEditor extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      edited: false
+      vendor: this.props.data.vendor ? this.props.data.vendor.objectId : '',
+      isBundle: this.props.data.isBundle !== undefined ? this.props.data.isBundle === true ? 'true' : 'false' : '',
+      designerProductName: this.props.data.designerProductName ? this.props.data.designerProductName : ''
     };
+    this.handleVendorChange = this.handleVendorChange.bind(this);
+    this.handleProductTypeChange = this.handleProductTypeChange.bind(this);
+    this.handleProductSaveClick = this.handleProductSaveClick.bind(this);
+    this.handleDesignerProductName = this.handleDesignerProductName.bind(this);
   }
-  handleSelectChange(event) {
-    console.log(event.target);
-  }
-  handleSelectChange = (e, { value }) => {
-    console.log(e);
-    console.log(value);
-    this.setState({ 
-      edited: true,
-      value
-    });
-  }
+	handleProductTypeChange(e, {value}) {
+  	if (value !== this.state.isBundle) {
+    	this.setState({
+      	isBundle: value
+    	});
+  	}
+	}
+	handleVendorChange(e, {value}) {
+  	if (value !== this.state.vendor) {
+    	this.setState({
+      	vendor: value
+    	});
+  	}
+	}
+	handleDesignerProductName(e, {value}) {
+  	if (value !== this.state.designerProductName) {
+    	this.setState({
+      	designerProductName: value
+    	});
+  	}
+	}
+	handleProductSaveClick() {
+  	this.props.handleProductSave({productId: this.props.data.productId, vendorId: this.state.vendor, isBundle: this.state.isBundle, designerProductName: this.state.designerProductName});
+	}
+	isFormEdited() {
+  	let edited = false;
+  	if (
+    	  (this.props.data.vendor && this.state.vendor !== this.props.data.vendor.objectId) 
+    	  || (!this.props.data.vendor && this.state.vendor !== '')
+      ) edited = true;
+  	if (
+    	  (this.props.data.isBundle === undefined && this.state.isBundle !== '') 
+    	  || (this.props.data.isBundle !== undefined && this.state.isBundle === 'true' && this.props.data.isBundle === false) 
+    	  || (this.props.data.isBundle !== undefined && this.state.isBundle === 'false' && this.props.data.isBundle === true)
+  	  ) edited = true;
+  	if (
+    	  (this.props.data.designerProductName && this.state.designerProductName !== this.props.data.designerProductName) 
+    	  || (!this.props.data.designerProductName && this.state.designerProductName !== '')
+      ) edited = true;
+  	return edited;
+	}
 	render() {
-    const classifications = [
-      { key: 'one', text: 'One', value: 'one' },
-      { key: 'two', text: 'Two', value: 'two' },
-    ]; 
+		const productTypeOptions = [
+  		{ key: 0, value: 'false', text: 'Standard Product' },
+  		{ key: 1, value: 'true', text: 'Bundle Product' }
+		];
+  	const productTypeSelect = <Form.Select label='Product Type' placeholder='Select product type' value={this.state.isBundle} options={productTypeOptions} onChange={this.handleProductTypeChange} />
+  	
+		const vendorOptions = this.props.data.designer && this.props.data.designer.vendors ? this.props.data.designer.vendors.map(function(vendor, i) {
+  		return { key: i, value: vendor.objectId, text: vendor.name };
+		}) : null;
+		const vendorSelect = this.state.isBundle === 'false' || this.state.isBundle === '' ? <Form.Select label='Vendor' size='small' placeholder='Select a vendor' value={this.state.vendor} options={vendorOptions} onChange={this.handleVendorChange} /> : null;
+		
+		const designerProductName = this.state.isBundle === 'false' || this.state.isBundle === '' ? <Form.Input label='Designer Product Name' size='medium' placeholder='Enter name' value={this.state.designerProductName} onChange={this.handleDesignerProductName} /> : null;
+    
     return (
-      <Segment hidden={this.props.hidden} color={this.state.edited ? 'blue' : null} >
+      <Segment hidden={this.props.hidden} color={this.isFormEdited() ? 'blue' : null} >
         <Form>
           <Form.Group>
-            <Form.Select required label='Classification' options={classifications} placeholder='Select Classification' onChange={this.handleSelectChange} />
+            {productTypeSelect}
+            {vendorSelect}
+            {designerProductName}
           </Form.Group>
-          <Form.Button disabled={this.state.edited ? null : true} primary>Save</Form.Button>
+          <Form.Button type='button' disabled={this.isFormEdited() ? null : true} primary onClick={this.handleProductSaveClick}>Save</Form.Button>
         </Form>
       </Segment>
     );
   }
 }
-*/
 
 class ProductDetails extends Component {
   constructor(props) {
@@ -353,9 +398,11 @@ class ProductDetails extends Component {
     this.handleSaveAllVariantsClick = this.handleSaveAllVariantsClick.bind(this);
     this.handleVariantsEdited = this.handleVariantsEdited.bind(this);
     this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
-    this.handleVendorChange = this.handleVendorChange.bind(this);
-    this.handleProductTypeChange = this.handleProductTypeChange.bind(this);
+//     this.handleVendorChange = this.handleVendorChange.bind(this);
+//     this.handleProductTypeChange = this.handleProductTypeChange.bind(this);
     this.handleEditBundleClick = this.handleEditBundleClick.bind(this);
+    this.handleToggleEditorClick = this.handleToggleEditorClick.bind(this);
+    this.handleProductSave = this.handleProductSave.bind(this);
   }
 	handleReloadClick(productId) {
 		this.props.handleReloadClick(productId);
@@ -365,6 +412,9 @@ class ProductDetails extends Component {
 	}
 	handleSaveAllVariantsClick() {
 		this.props.handleSaveAllVariantsClick(this.state.variantsEdited);
+	}
+	handleProductSave(data) {
+		this.props.handleProductSave(data);
 	}
   handleVariantsEdited(data, edited) {
     let variantsEdited = this.state.variantsEdited;
@@ -397,7 +447,8 @@ class ProductDetails extends Component {
   	this.props.handleShowOrderFormClick(data);
 	}
 	
-	handleVendorChange(e, {value}) {
+/*
+	handleVendorChange(productId, value) {
   	if (value !== this.state.vendor) {
     	this.props.handleVendorChange(this.props.data.productId, value);
     	this.setState({
@@ -405,7 +456,9 @@ class ProductDetails extends Component {
     	});
   	}
 	}
+*/
 	
+/*
 	handleProductTypeChange(e, {value}) {
   	if (value !== this.state.isBundle) {
     	this.props.handleProductTypeChange(this.props.data.productId, value);
@@ -414,6 +467,7 @@ class ProductDetails extends Component {
     	});
   	}
 	}
+*/
 	
 	handleEditBundleClick(productId) {
 		this.props.handleEditBundleClick(productId);
@@ -514,61 +568,43 @@ class ProductDetails extends Component {
         );
     }
 		
-		const vendorOptions = this.props.data.designer && this.props.data.designer.vendors ? this.props.data.designer.vendors.map(function(vendor, i) {
-  		return { key: i, value: vendor.objectId, text: 'Vendor: ' + vendor.name };
-		}) : null;
-		const vendorSelect = <Form.Select placeholder='Select a vendor' value={this.state.vendor} options={vendorOptions} onChange={this.handleVendorChange} />
-		
-		const productTypeOptions = [
-  		{ key: 0, value: 'false', text: 'Standard Product' },
-  		{ key: 1, value: 'true', text: 'Bundle Product' }
-		];
-		
-		const productTypeSelect = <Form.Select placeholder='Select product type' value={this.state.isBundle} options={productTypeOptions} onChange={this.handleProductTypeChange} />
-		
 		const editBundleButton = isBundle ? 
-		  <Form.Field><Form.Button compact basic 
+		  <Form.Field><Form.Button compact basic circular 
+        size='small' 
 		    type='button'
-        icon='edit' 
-        content='Edit Bundle' 
+        icon='list layout' 
+        content='Edit Bundle Products' 
         disabled={this.props.isReloading} 
         onClick={()=>this.handleEditBundleClick(this.props.data.productId)} 
       /></Form.Field> : null;
 		
 		const saveAllButton = this.state.variantsEdited.length > 0 ? <Button primary circular compact size='small' icon='save' content='Save All' disabled={this.props.isReloading} onClick={this.handleSaveAllVariantsClick} /> : null;
-// 		const productEditor = this.state.showEditor ? <ProductEditor/> : null;
+		const productEditor = this.state.showEditor ? <ProductEditor data={this.props.data} handleProductSave={this.handleProductSave}/> : null;
+		
     return (
       <Table.Row className={rowClass}>
         <Table.Cell colSpan='13' className='variant-row'>
           <Segment.Group horizontal compact className='toolbar'>
             <Segment basic>
-              <Form size='tiny' loading={this.props.isReloading}>
+              {productEditor}
+              <Form size='mini' loading={this.props.isReloading}>
                 <Form.Group inline>
                   <Form.Field>
-                    <Form.Button circular compact basic size='small' 
-                      type='button'
-                      icon='refresh' 
+                    <Form.Button circular compact basic size='small' type='button' icon='refresh' 
                       content='Reload' 
-                      disabled={this.props.isReloading} 
+                      disabled={this.props.isReloading || this.state.showEditor} 
                       onClick={()=>this.handleReloadClick(this.props.data.productId)} 
                     />
                   </Form.Field>
                   <Form.Field>
-                    {vendorSelect}
-                  </Form.Field>
-                  <Form.Field>
-                    {productTypeSelect}
-                  </Form.Field>
-                  {editBundleButton}
-                  {/*<Form.Field>
-                    <Button circular compact basic size='tiny' 
+                    <Form.Button circular compact basic size='small' type='button' 
                       icon={this.state.showEditor ? 'close' : 'edit'} 
                       color={this.state.showEditor ? 'black' : null} 
-                      content={this.state.showEditor ? 'Cancel' : 'Edit'} 
-                      onClick={this.handleToggleEditorClick.bind(this)} 
+                      content={this.state.showEditor ? 'Close' : 'Edit Details'} 
+                      onClick={this.handleToggleEditorClick} 
                     />
-                    {productEditor}
-                  </Form.Field>*/}
+                  </Form.Field>
+                  {editBundleButton}
                 </Form.Group>
               </Form>
             </Segment>

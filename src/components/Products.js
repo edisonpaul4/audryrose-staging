@@ -44,9 +44,9 @@ class Products extends Component {
     this.handleSaveVariantClick = this.handleSaveVariantClick.bind(this);
     this.handleSaveAllVariantsClick = this.handleSaveAllVariantsClick.bind(this);
     this.handleVariantsEdited = this.handleVariantsEdited.bind(this);
-    this.handleStatusChange = this.handleStatusChange.bind(this);
-    this.handleVendorChange = this.handleVendorChange.bind(this);
-    this.handleProductTypeChange = this.handleProductTypeChange.bind(this);
+    this.handleProductSave = this.handleProductSave.bind(this);
+//     this.handleVendorChange = this.handleVendorChange.bind(this);
+//     this.handleProductTypeChange = this.handleProductTypeChange.bind(this);
     this.handleEditBundleClick = this.handleEditBundleClick.bind(this);
     this.handleEditBundleModalClose = this.handleEditBundleModalClose.bind(this);
     this.handleProductBundleSave = this.handleProductBundleSave.bind(this);
@@ -200,19 +200,20 @@ class Products extends Component {
     this.props.getProducts(this.props.token, this.state.subpage, 1, this.state.sort, this.state.search, filters);
 	}	
 	
-	handleStatusChange(productId, isActive) {
+	handleProductSave(data) {
 		let currentlyReloading = this.state.isReloading;
-		const index = currentlyReloading.indexOf(productId);
+		const index = currentlyReloading.indexOf(data.productId);
 		if (index < 0) {
-			currentlyReloading.push(productId);
+			currentlyReloading.push(data.productId);
 		}
   	this.setState({
     	isReloading: currentlyReloading
   	});
-  	var status = isActive ? 'active' : 'done';
-		this.props.saveProductStatus(this.props.token, productId, status);
+  	console.log(data)
+		this.props.saveProduct(this.props.token, data);
 	}
 
+/*
 	handleVendorChange(productId, vendorId) {
 		let currentlyReloading = this.state.isReloading;
 		const index = currentlyReloading.indexOf(productId);
@@ -224,7 +225,9 @@ class Products extends Component {
   	});
 		this.props.saveProductVendor(this.props.token, productId, vendorId);
 	}
+*/
 	
+/*
 	handleProductTypeChange(productId, isBundle) {
 		let currentlyReloading = this.state.isReloading;
 		const index = currentlyReloading.indexOf(productId);
@@ -236,6 +239,7 @@ class Products extends Component {
   	});
 		this.props.saveProductType(this.props.token, productId, isBundle);
 	}
+*/
 	
 	handleEditBundleClick(productId) {
   	let bundleFormData = {};
@@ -440,7 +444,7 @@ class Products extends Component {
 				    key={`${productJSON.productId}-1`} 
 				    isReloading={isReloading} 
 				    handleToggleClick={scope.handleToggleClick} 
-				    handleStatusChange={scope.handleStatusChange} 
+				    handleProductSave={scope.handleProductSave} 
 			    />
 		    );
 				if (expanded) {
@@ -455,8 +459,8 @@ class Products extends Component {
   				    handleSaveAllVariantsClick={scope.handleSaveAllVariantsClick} 
   				    handleShowOrderFormClick={scope.handleShowOrderFormClick} 
   				    handleVariantsEdited={scope.handleVariantsEdited}
-  				    handleVendorChange={scope.handleVendorChange} 
-  				    handleProductTypeChange={scope.handleProductTypeChange} 
+  				    handleProductSave={scope.handleProductSave} 
+//   				    handleProductTypeChange={scope.handleProductTypeChange} 
   				    handleEditBundleClick={scope.handleEditBundleClick}
   				    savingVariants={scope.state.savingVariants} 
   				    updatedVariants={scope.state.updatedVariants} 

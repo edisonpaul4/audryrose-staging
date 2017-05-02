@@ -73,7 +73,7 @@ class ProductRow extends Component {
 	}
 	render() {  	
 		const vendorOrderVariant = this.props.vendorOrderVariant;
-		const productName = vendorOrderVariant.variant.productName ? vendorOrderVariant.variant.productName : '';
+		const productName = vendorOrderVariant.variant.designerProductName ? vendorOrderVariant.variant.designerProductName : vendorOrderVariant.variant.productName ? vendorOrderVariant.variant.productName : '';
 		const productUrl = '/products/search?q=' + vendorOrderVariant.variant.productId;
 		const productLink = <a href={productUrl}>{productName}</a>;
 		// Create an array of other options values

@@ -16,7 +16,7 @@ class Product extends Component {
 		this.props.handleToggleClick(productId);
 	}
 	handleStatusChange(e, {value}) {
-		this.props.handleStatusChange(this.props.data.productId, !this.props.data.is_active);
+		this.props.handleProductSave({productId: this.props.data.productId, isActive: !this.props.data.is_active});
 	}
 	render() {
   	const data = this.props.data;

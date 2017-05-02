@@ -21,26 +21,30 @@ export function reloadProduct(token, productId) {
   }
 }
 
-export function saveProductStatus(token, productId, status) {
+export function saveProduct(token, data) {
   return {
-    types: ['PRODUCT_STATUS_REQUEST', 'PRODUCT_STATUS_SUCCESS', 'PRODUCT_STATUS_FAILURE'],
-    promise: api.saveProductStatus(token, productId, status)
+    types: ['PRODUCT_SAVE_REQUEST', 'PRODUCT_SAVE_SUCCESS', 'PRODUCT_SAVE_FAILURE'],
+    promise: api.saveProduct(token, data)
   }
 }
 
+/*
 export function saveProductVendor(token, productId, vendorId) {
   return {
     types: ['PRODUCT_VENDOR_REQUEST', 'PRODUCT_VENDOR_SUCCESS', 'PRODUCT_VENDOR_FAILURE'],
     promise: api.saveProductVendor(token, productId, vendorId)
   }
 }
+*/
 
+/*
 export function saveProductType(token, productId, isBundle) {
   return {
     types: ['PRODUCT_TYPE_REQUEST', 'PRODUCT_TYPE_SUCCESS', 'PRODUCT_TYPE_FAILURE'],
     promise: api.saveProductType(token, productId, isBundle)
   }
 }
+*/
 
 export function saveVariants(token, variants) {
   return {

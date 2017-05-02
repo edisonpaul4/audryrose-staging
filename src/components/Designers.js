@@ -245,9 +245,8 @@ class Designers extends Component {
       }
     }
     
-    let successMessage = this.state.successMessage;
-    if (nextProps.successMessage && nextProps.successMessage !== successMessage) {
-      successMessage = nextProps.successMessage;
+    let successMessage = nextProps.successMessage ? nextProps.successMessage : this.state.successMessage;
+    if (nextProps.successMessage && successMessage) {
       this._notificationSystem.addNotification({
         message: successMessage,
         level: 'success',
@@ -283,7 +282,7 @@ class Designers extends Component {
   	// Reset on subpage navigation
   	const search = nextProps.router.params.subpage !== 'search' ? null : this.state.search;
   	expanded = nextProps.router.params.subpage !== this.state.subpage ? [] : expanded;
-  	successMessage = nextProps.router.params.subpage !== this.state.subpage ? [] : successMessage;
+  	successMessage = nextProps.router.params.subpage !== this.state.subpage ? null : successMessage;
   	
 		this.setState({
 			subpage: nextProps.router.params.subpage,
