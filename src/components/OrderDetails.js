@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router';
-import { Table, Button, Dropdown, Dimmer, Segment, Loader, Icon } from 'semantic-ui-react';
+import { Table, Button, Dropdown, Dimmer, Segment, Loader, Icon, Label } from 'semantic-ui-react';
 import classNames from 'classnames';
 // import numeral from 'numeral';
 // import moment from 'moment';
@@ -10,15 +10,14 @@ class ProductRow extends Component {
   constructor(props) {
     super(props);
     this.handleShipModalOpen = this.handleShipModalOpen.bind(this);
+    this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
   }
   handleShipModalOpen() {
     this.props.handleShipModalOpen();
   }
   getProductInventory(variants) {
     let inventoryLevel = 0;
-    console.log(variants)
     variants.map(function(variant, i) {
-      console.log(i + ': ' + variant.inventoryLevel)
       if (i === 0 && variant.inventoryLevel) {
         inventoryLevel = variant.inventoryLevel;
       } else if (variant.inventoryLevel < inventoryLevel) {
@@ -28,9 +27,14 @@ class ProductRow extends Component {
     }); 
     return inventoryLevel;
   }
+	handleShowOrderFormClick(e, {value}) {
+  	let variant = this.props.product.variants ? this.props.product.variants[0] : null;
+		this.props.handleShowOrderFormClick({productId: this.props.product.product_id, variant: variant});
+	}
 	render() {  	
 		const product = this.props.product;
 		const shipment = this.props.shipment;
+		const variant = this.props.product.variants ? this.props.product.variants[0] : null;
 		// Create an array of other options values
 		let options = [];
 		if (product.product_options) {
@@ -50,22 +54,42 @@ class ProductRow extends Component {
 		  <Button as={Link} href={shipment.labelWithPackingSlipUrl} target='_blank'>
 		    <Icon name='print' />Print
 	    </Button> : null;
+	    
+	  // Check if variant has been ordered
+	  let vendorOrders = [];
+	  if (variant.designer.vendors) {
+  	  variant.designer.vendors.map(function(vendor, i) {
+    	  if (vendor.vendorOrders) {
+      	  vendor.vendorOrders.map(function(vendorOrder, j) {
+        	  vendorOrder.vendorOrderVariants.map(function(vendorOrderVariant, k) {
+          	  if (variant.objectId === vendorOrderVariant.variant.objectId && vendorOrderVariant.done === false) {
+            	  vendorOrders.push(<Label key={i+'-'+j+'-'+k}>{vendorOrderVariant.ordered ? 'Sent' : 'Pending'}<Label.Detail>{vendorOrderVariant.units}</Label.Detail></Label>)
+          	  }
+          	  return vendorOrderVariant;
+        	  });
+        	  return vendorOrder;
+      	  });
+    	  }
+    	  return vendor;
+  	  });
+	  }
 		
 		let primaryButton;
 		let dropdownItems = [];
+// 		let pendingAction = false;
     if (shipment) {
   	  primaryButton = <Button icon='shipping' content='View' onClick={this.handleShipModalOpen} />;
     } else if (product.shippable) {
   	  primaryButton = <Button icon='shipping' content='Customize Shipment' onClick={this.handleShipModalOpen} />;
-//   	  dropdownItems.push(<Dropdown.Item key='1' icon='edit' text='Edit Item' />);
 	  } else if (product.resizable) {
-  	  primaryButton = <Button icon='exchange' content='Resize' />;
-  	  dropdownItems.push(<Dropdown.Item key='1' icon='add to cart' text='Order' />);
-//   	  dropdownItems.push(<Dropdown.Item key='2' icon='edit' text='Edit Item' />);
+//   	  primaryButton = <Button icon='exchange' content='Resize' onClick={this.handleShowOrderFormClick} />;
+//   	  dropdownItems.push(<Dropdown.Item key='1' icon='add to cart' text='Order' onClick={this.handleShowOrderFormClick} />);
+      primaryButton = <Button icon='add to cart' content='Order' onClick={this.handleShowOrderFormClick} />; // TEMPORARY UNTIL RESIZE IS WORKING
+//   	  if (vendorOrders.length <= 0) pendingAction = true;
 	  } else {
-  	  primaryButton = <Button icon='add to cart' content='Order' />;
-  	  dropdownItems.push(<Dropdown.Item key='1' icon='exchange' text='Resize' />);
-//   	  dropdownItems.push(<Dropdown.Item key='2' icon='edit' text='Edit Item' />);
+  	  primaryButton = <Button icon='add to cart' content='Order' onClick={this.handleShowOrderFormClick} />;
+//   	  dropdownItems.push(<Dropdown.Item key='1' icon='exchange' text='Resize' onClick={this.handleShowOrderFormClick} />);
+//   	  if (vendorOrders.length <= 0) pendingAction = true;
 	  }
 
     return (
@@ -80,6 +104,7 @@ class ProductRow extends Component {
         <Table.Cell></Table.Cell>
 				<Table.Cell>{alwaysResize}</Table.Cell>
 				<Table.Cell>{inventory}</Table.Cell>
+				<Table.Cell>{vendorOrders}</Table.Cell>
 				<Table.Cell>{designerName}</Table.Cell>
 				<Table.Cell className='right aligned'>
           <Button.Group color='grey' size='mini' compact>
@@ -115,6 +140,7 @@ class OrderDetails extends Component {
     this.handleShipModalOpen = this.handleShipModalOpen.bind(this);
     this.handleShipModalClose = this.handleShipModalClose.bind(this);
     this.handleCreateShipments = this.handleCreateShipments.bind(this);
+    this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
   }
 	handleReloadClick(orderId) {
 		this.props.handleReloadClick(orderId);
@@ -138,6 +164,10 @@ class OrderDetails extends Component {
   	this.setState({
     	showEditor: showEditor
   	});
+	}
+	handleShowOrderFormClick(data) {
+  	data.orderId = this.state.order.orderId;
+  	this.props.handleShowOrderFormClick(data);
 	}
 	componentWillMount() {
   	const {shippedGroups, shippableGroups, unshippableGroups} = this.createShipmentGroups(this.props.data, this.props.data.orderProducts, this.props.data.orderShipments)
@@ -169,7 +199,7 @@ class OrderDetails extends Component {
 		
 		if (orderProducts) {
   		orderProducts.map(function(orderProduct, i) {
-    		console.log('\nop:' + orderProduct.orderProductId + ' oa:' + orderProduct.order_address_id);
+//     		console.log('\nop:' + orderProduct.orderProductId + ' oa:' + orderProduct.order_address_id);
     		
     		// Check if product is in a shipment
     		let isShipped = false;
@@ -198,15 +228,15 @@ class OrderDetails extends Component {
         };
         let shipmentIndex = -1;
         
-        console.log('orderProduct.name:' + orderProduct.name);
-        console.log('isShipped:' + isShipped);
-        console.log('orderProduct.shippable:' + orderProduct.shippable);
-        console.log('orderProduct.quantity_shipped:' + orderProduct.quantity_shipped);
-        console.log('orderProduct.quantity:' + orderProduct.quantity);
+//         console.log('orderProduct.name:' + orderProduct.name);
+//         console.log('isShipped:' + isShipped);
+//         console.log('orderProduct.shippable:' + orderProduct.shippable);
+//         console.log('orderProduct.quantity_shipped:' + orderProduct.quantity_shipped);
+//         console.log('orderProduct.quantity:' + orderProduct.quantity);
     		
     		// Set whether product is added to shippable, shipped or unshippable groups
     		if (isShipped) {
-      		console.log('product is shipped');
+//       		console.log('product is shipped');
       		// Check whether product is being added to an existing shipment group
       		
       		shippedGroups.map(function(shippedGroup, j) {
@@ -214,15 +244,15 @@ class OrderDetails extends Component {
         		return shippedGroups;
       		});
           if (shipmentIndex < 0) {
-            console.log('not in shippedGroups')
+//             console.log('not in shippedGroups')
             shippedGroups.push(group);
           } else {
-            console.log('found in shippedGroups')
+//             console.log('found in shippedGroups')
             shippedGroups[shipmentIndex].orderProducts.push(orderProduct);
           }
       		
     		} else if (orderProduct.shippable && orderProduct.quantity_shipped !== orderProduct.quantity) {
-      		console.log('product is shippable');
+//       		console.log('product is shippable');
       		
       		// Check whether product is being shipped to a unique address
       		shippableGroups.map(function(shippableGroup, j) {
@@ -230,25 +260,25 @@ class OrderDetails extends Component {
         		return shippableGroups;
       		});
           if (shipmentIndex < 0) {
-            console.log('not in shippableGroups')
+//             console.log('not in shippableGroups')
             shippableGroups.push(group);
           } else {
-            console.log('found in shippableGroups')
+//             console.log('found in shippableGroups')
             shippableGroups[shipmentIndex].orderProducts.push(orderProduct);
           }
       		
     		} else {
-      		console.log('product is not shippable');
+//       		console.log('product is not shippable');
       		// Check whether product is being shipped to a unique address
       		unshippableGroups.map(function(unshippableGroup, j) {
         		if (orderProduct.order_address_id === unshippableGroup.orderAddressId) shipmentIndex = j;
         		return unshippableGroup;
       		});
           if (shipmentIndex < 0) {
-            console.log('not in shippableGroups')
+//             console.log('not in shippableGroups')
             unshippableGroups.push(group);
           } else {
-            console.log('found in shippableGroups')
+//             console.log('found in shippableGroups')
             unshippableGroups[shipmentIndex].orderProducts.push(orderProduct);
           }
       		
@@ -293,7 +323,7 @@ class OrderDetails extends Component {
       			return shipmentObj;
     			});
   			}
-				productRows.push(<ProductRow product={productRow} shipment={shipment} handleShipModalOpen={scope.handleShipModalOpen} key={i} />);
+				productRows.push(<ProductRow product={productRow} shipment={shipment} handleShipModalOpen={scope.handleShipModalOpen} key={i} handleShowOrderFormClick={scope.handleShowOrderFormClick} />);
 				return productRows;
 	    });
 		}
@@ -324,7 +354,7 @@ class OrderDetails extends Component {
               <Loader>Loading</Loader>
             </Dimmer>
             <Segment secondary>
-              <Table className='order-products-table' basic='very' compact size='small' columns={8}>
+              <Table className='order-products-table' basic='very' size='small' columns={9}>
                 <Table.Header>
                   <Table.Row>
                     <Table.HeaderCell>Product</Table.HeaderCell>
@@ -333,6 +363,7 @@ class OrderDetails extends Component {
                     <Table.HeaderCell>Resizable</Table.HeaderCell>
                     <Table.HeaderCell>Always Resize</Table.HeaderCell>
                     <Table.HeaderCell>Inventory</Table.HeaderCell>
+                    <Table.HeaderCell>Vendor Orders</Table.HeaderCell>
                     <Table.HeaderCell>Designer</Table.HeaderCell>
                     <Table.HeaderCell className='right aligned'>Actions</Table.HeaderCell>
                   </Table.Row>

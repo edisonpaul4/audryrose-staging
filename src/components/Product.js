@@ -59,7 +59,7 @@ class Product extends Component {
 		const name = data.is_visible ? <a href={storeUrl} target="_blank">{data.name} <Icon link name='eye' /></a> : data.name;
 		const bcManageUrl = 'https://www.loveaudryrose.com/manage/products/' + data.productId + '/edit';
 		const sku = <a href={bcManageUrl} target="_blank">{data.sku} <Icon link name='configure' /></a>;
-		const designer = data.designer ? <a href={'/designers/' + data.designer.designerId}>{data.designer.name}</a> : '';
+		const designer = data.designer ? <a href={'/designers/search?q=' + data.designer.designerId}>{data.designer.name}</a> : '';
     return (
       <Table.Row>
         <Table.Cell>

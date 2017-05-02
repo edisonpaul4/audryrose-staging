@@ -6,6 +6,7 @@ import OrdersNav from './OrdersNav.js';
 import Order from './Order.js';
 import OrderDetails from './OrderDetails.js';
 import Pagination from './Pagination.js';
+import ProductOrderModal from './ProductOrderModal.js';
 
 class Orders extends Component {
   constructor(props) {
@@ -37,8 +38,11 @@ class Orders extends Component {
 			selectedRows: [],
 			selectAllRows: false,
 			generatedFile: null,
+			productOrderOpen: false,
+			productOrderData: {},
 			errors: [],
-			files: []
+			files: [],
+			product: null
     };
     this.handleToggleClick = this.handleToggleClick.bind(this);
     this.handleCheckboxClick = this.handleCheckboxClick.bind(this);
@@ -49,6 +53,9 @@ class Orders extends Component {
     this.handlePrintSelectedClick = this.handlePrintSelectedClick.bind(this);
     this.handlePaginationClick = this.handlePaginationClick.bind(this);
     this._notificationSystem = null;
+    this.handleAddToVendorOrder = this.handleAddToVendorOrder.bind(this);
+    this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
+    this.handleProductOrderModalClose = this.handleProductOrderModalClose.bind(this);
   }
 	
 	componentDidMount() {
@@ -175,6 +182,40 @@ class Orders extends Component {
   	this.props.createShipments(this.props.token, shipmentGroups);
 	}
 	
+	handleAddToVendorOrder(orders, orderId) {
+  	let currentlyReloading = this.state.isReloading;
+    if (orderId) {
+  		const index = currentlyReloading.indexOf(orderId);
+  		if (index < 0) {
+  			currentlyReloading.push(orderId);
+  		}
+		}
+  	this.setState({
+    	isReloading: currentlyReloading,
+      productOrderOpen: false,
+      productOrderData: {}
+  	});
+		this.props.addOrderProductToVendorOrder(this.props.token, orders, orderId);
+	}
+	
+	handleShowOrderFormClick(data) {
+  	let productOrderData = this.state.productOrderData;
+  	if (data.variant) productOrderData.variant = data.variant.objectId;
+  	if (data.orderId) productOrderData.orderId = data.orderId;
+  	this.props.getProduct(this.props.token, data.productId);
+    this.setState({
+      productOrderOpen: true,
+      productOrderData: productOrderData
+    });
+	}
+	
+	handleProductOrderModalClose(data) {
+    this.setState({
+      productOrderOpen: false,
+      productOrderData: {}
+    });
+	}
+	
 	componentWillReceiveProps(nextProps) {
   	let scope = this;
   	let nextPage = parseFloat(nextProps.location.query.page);
@@ -282,6 +323,13 @@ class Orders extends Component {
     } else {
       files = nextProps.files;
     }
+    
+    let product = this.state.product;
+    let productOrderData = this.state.productOrderData;
+    if (nextProps.product) {
+      product = nextProps.product.toJSON();
+      productOrderData.product = product;
+    }
   	
 		this.setState({
   		subpage: nextProps.router.params.subpage,
@@ -297,7 +345,9 @@ class Orders extends Component {
 			generatedFile: generatedFile,
 			isGeneratingFile: isGeneratingFile,
 			errors: errors,
-			files: files
+			files: files,
+			product: product,
+			productOrderData: productOrderData
 		});	
 		
   	if (nextPage !== this.state.page || nextProps.router.params.subpage !== this.state.subpage) {
@@ -339,6 +389,9 @@ class Orders extends Component {
 				    isReloading={isReloading} 
 				    handleReloadClick={scope.handleReloadClick} 
 				    handleCreateShipments={scope.handleCreateShipments}
+				    handleAddToVendorOrder={scope.handleAddToVendorOrder} 
+				    handleShowOrderFormClick={scope.handleShowOrderFormClick} 
+				    handleProductOrderModalClose={scope.handleProductOrderModalClose} 
 			    />
 		    );
 				return orderRows;
@@ -368,6 +421,15 @@ class Orders extends Component {
         onClick={this.state.sort === 'date-shipped-desc' ? ()=>this.handleSortClick('date-shipped-asc') : ()=>this.handleSortClick('date-shipped-desc')}>
         Date Shipped {dateShippedIcon}
       </Table.HeaderCell> : null;
+      
+    const productOrderModal = this.state.productOrderData ? <ProductOrderModal 
+        open={this.state.productOrderOpen}
+        handleAddToVendorOrder={this.handleAddToVendorOrder} 
+        handleProductOrderModalClose={this.handleProductOrderModalClose} 
+        handleProductOrder={this.handleProductOrder} 
+        productOrderData={this.state.productOrderData} 
+        isLoading={this.props.isReloading}
+      /> : null;
 		
     return (
 			<Grid.Column width='16'>
@@ -426,6 +488,7 @@ class Orders extends Component {
     		    </Table>
   		    </Sidebar.Pusher>
 		    </Sidebar.Pushable>
+		    {productOrderModal}
 			</Grid.Column>
     );
   }

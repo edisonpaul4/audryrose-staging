@@ -34,3 +34,17 @@ export function batchPrintShipments(token, ordersToPrint) {
     promise: api.batchPrintShipments(token, ordersToPrint)
   }
 }
+
+export function getProduct(token, productId) {
+  return {
+    types: ['GET_PRODUCT_REQUEST', 'GET_PRODUCT_SUCCESS', 'GET_PRODUCT_FAILURE'],
+    promise: api.getProduct(token, productId)
+  }
+}
+
+export function addOrderProductToVendorOrder(token, orders, orderId) {
+  return {
+    types: ['ADD_ORDER_PRODUCT_TO_VENDOR_ORDER_REQUEST', 'ADD_ORDER_PRODUCT_TO_VENDOR_ORDER_SUCCESS', 'ADD_ORDER_PRODUCT_TO_VENDOR_ORDER_FAILURE'],
+    promise: api.addOrderProductToVendorOrder(token, orders, orderId)
+  }
+}

@@ -174,11 +174,22 @@ class VariantsTable extends Component {
         });
         const isSaving = index < 0 ? false : true;
         
-        if (vendor && vendor.pendingOrder) {
-          vendor.pendingOrder.vendorOrderVariants.map(function(vendorOrderVariant, i) {
+        if (vendor && vendor.vendorOrders) {
+      	  vendor.vendorOrders.map(function(vendorOrder, j) {
+        	  vendorOrder.vendorOrderVariants.map(function(vendorOrderVariant, k) {
+          	  if (variantData.objectId === vendorOrderVariant.variant.objectId && vendorOrderVariant.done === false) {
+            	  variantData.vendorOrderVariant = vendorOrderVariant;
+          	  }
+          	  return vendorOrderVariant;
+        	  });
+        	  return vendorOrder;
+      	  });          
+/*
+          vendor.vendorOrders.vendorOrderVariants.map(function(vendorOrderVariant, i) {
             if (vendorOrderVariant.variant.objectId === variantData.objectId) variantData.vendorOrderVariant = vendorOrderVariant;
             return vendorOrderVariant;
           });
+*/
         }
         
 				variantRows.push(

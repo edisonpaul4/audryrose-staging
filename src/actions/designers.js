@@ -1,9 +1,9 @@
 import api from '../api';
 
-export function getDesigners(token, subpage, page) {
+export function getDesigners(token, subpage, page, search) {
   return {
     types: ['DESIGNERS_REQUEST', 'DESIGNERS_SUCCESS', 'DESIGNERS_FAILURE'],
-    promise: api.getDesigners(token, subpage, page)
+    promise: api.getDesigners(token, subpage, page, search)
   }
 }
 

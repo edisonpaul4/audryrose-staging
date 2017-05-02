@@ -6,7 +6,7 @@ class ProductOrderModal extends Component {
     super(props);
     this.state = {
       formComplete: false,
-      vendor: this.props.productOrderData.product.vendor ? this.props.productOrderData.product.vendor.objectId : null,
+      vendor: this.props.productOrderData.product && this.props.productOrderData.product.vendor ? this.props.productOrderData.product.vendor.objectId : null,
       variant: this.props.productOrderData.variant ? this.props.productOrderData.variant : null,
       units: 1,
       notes: ''
@@ -25,16 +25,17 @@ class ProductOrderModal extends Component {
       productId: this.props.productOrderData.product.productId,
       units: this.state.units,
       notes: this.state.notes
-    }]
-		this.props.handleAddToVendorOrder(orders);
+    }];
+    var orderId = this.props.productOrderData.orderId ? this.props.productOrderData.orderId : null;
+		this.props.handleAddToVendorOrder(orders, orderId);
 		this.props.handleProductOrderModalClose();
 	}
 	
   handleClose() {
     this.setState({
       formComplete: false,
-      vendor: this.props.productOrderData.product.vendor ? this.props.productOrderData.product.vendor.objectId : null,
-      variant: this.props.productOrderData.variant ? this.props.productOrderData.variant : null,
+      vendor: null,
+      variant: '',
       units: 1,
       notes: ''
     });
@@ -65,60 +66,72 @@ class ProductOrderModal extends Component {
     	notes: value
   	});
 	}
+	
+	componentWillReceiveProps(nextProps) {
+  	const variant = nextProps.productOrderData && nextProps.productOrderData.variant ? nextProps.productOrderData.variant : this.state.variant;
+  	const vendor = nextProps.productOrderData && nextProps.productOrderData.product && nextProps.productOrderData.product.vendor ? nextProps.productOrderData.product.vendor.objectId : this.state.vendor;
+  	this.setState({
+    	variant: variant,
+    	vendor: vendor
+  	});
+	}
   
 	render() {
 		const { productOrderData } = this.props;
 		
-		let variants = productOrderData.product.variants;
-		const hasColorValue = variants[0].color_value !== undefined;
-		const hasStoneValue = variants[0].gemstone_value !== undefined;
-		const hasSizeValue = variants[0].size_value !== undefined;
-		if (hasColorValue && hasSizeValue) {
-      variants.sort(function(a, b) { return a["color_value"] - b["color_value"] || parseFloat(a["size_value"]) - parseFloat(b["size_value"]); });
-		} else if (hasStoneValue && hasSizeValue) {
-  		variants.sort(function(a, b) { return a["gemstone_value"] - b["gemstone_value"] || parseFloat(a["size_value"]) - parseFloat(b["size_value"]); });
-		} else if (hasSizeValue) {
-  		variants.sort(function(a, b) { return (parseFloat(a.size_value) > parseFloat(b.size_value)) ? 1 : ((parseFloat(b.size_value) > parseFloat(a.size_value)) ? -1 : 0);} );
+		let variants = productOrderData.product && productOrderData.product.variants ? productOrderData.product.variants : [];
+		let variantOptions = [];
+		if (variants.length > 0) {
+  		const hasColorValue = variants[0].color_value !== undefined;
+  		const hasStoneValue = variants[0].gemstone_value !== undefined;
+  		const hasSizeValue = variants[0].size_value !== undefined;
+  		if (hasColorValue && hasSizeValue) {
+        variants.sort(function(a, b) { return a["color_value"] - b["color_value"] || parseFloat(a["size_value"]) - parseFloat(b["size_value"]); });
+  		} else if (hasStoneValue && hasSizeValue) {
+    		variants.sort(function(a, b) { return a["gemstone_value"] - b["gemstone_value"] || parseFloat(a["size_value"]) - parseFloat(b["size_value"]); });
+  		} else if (hasSizeValue) {
+    		variants.sort(function(a, b) { return (parseFloat(a.size_value) > parseFloat(b.size_value)) ? 1 : ((parseFloat(b.size_value) > parseFloat(a.size_value)) ? -1 : 0);} );
+  		}
+    
+		
+  		variantOptions = variants.map(function(variant, i) {
+    		let styleCode = variant.styleNumber;
+    		let optionText = '';
+    		if (variant.code) {
+      		styleCode += '-' + variant.code;
+    		}
+    		if (variant.color_value) {
+      		optionText += 'Color: ' + variant.color_value;
+    		}
+    		if (variant.gemstone_value) {
+      		if (optionText !== '') optionText += ',  ';
+      		optionText += 'Stone: ' + variant.gemstone_value;
+    		}
+    		if (variant.size_value) {
+      		if (optionText !== '') optionText += ',  ';
+      		optionText += 'Size: ' + variant.size_value;
+    		}
+    		let optionContent = (optionText !== '') ? <Header content={optionText} subheader={styleCode} /> : <Header content={styleCode} />;
+    		return { 
+      		key: i, 
+      		text: optionText !== '' ? optionText : styleCode, 
+      		value: variant.objectId,
+      		content: optionContent
+    		};
+  		});
 		}
-  		
 		
-		const variantOptions = variants.map(function(variant, i) {
-  		let styleCode = variant.styleNumber;
-  		let optionText = '';
-  		if (variant.code) {
-    		styleCode += '-' + variant.code;
-  		}
-  		if (variant.color_value) {
-    		optionText += 'Color: ' + variant.color_value;
-  		}
-  		if (variant.gemstone_value) {
-    		if (optionText !== '') optionText += ',  ';
-    		optionText += 'Stone: ' + variant.gemstone_value;
-  		}
-  		if (variant.size_value) {
-    		if (optionText !== '') optionText += ',  ';
-    		optionText += 'Size: ' + variant.size_value;
-  		}
-  		let optionContent = (optionText !== '') ? <Header content={optionText} subheader={styleCode} /> : <Header content={styleCode} />;
-  		return { 
-    		key: i, 
-    		text: optionText !== '' ? optionText : styleCode, 
-    		value: variant.objectId,
-    		content: optionContent
-  		};
-		});
-		
-		const createOrderButton = <Button disabled={this.props.isLoading || !this.isFormComplete() || !productOrderData.product.vendor} color='olive' onClick={this.handleAddToVendorOrder}>Add To Order</Button>;
+		const createOrderButton = <Button disabled={this.props.isLoading || !this.isFormComplete() || (productOrderData.product && !productOrderData.product.vendor)} color='olive' onClick={this.handleAddToVendorOrder}>Add To Order</Button>;
     
     return (
 	    <Modal open={this.props.open} onClose={this.handleClose} size='small' closeIcon='close'>
         <Modal.Header>
-          Create an order for {productOrderData.product.name}
+          Create an order for {productOrderData.product ? productOrderData.product.name : ''}
         </Modal.Header>
         <Modal.Content>
-          <Form>
+          <Form loading={!productOrderData.product}>
             <Form.Group>
-              <Form.Input label='Vendor' error={productOrderData.product.vendor ? false : true} value={productOrderData.product.vendor ? productOrderData.product.vendor.name : 'Product vendor missing'} readOnly />
+              <Form.Input label='Vendor' error={productOrderData.product && productOrderData.product.vendor ? false : true} value={productOrderData.product && productOrderData.product.vendor ? productOrderData.product.vendor.name : 'Product vendor missing'} readOnly />
             </Form.Group>
             <Form.Group widths='equal'>
               <Form.Select 

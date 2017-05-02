@@ -102,6 +102,39 @@ const orders = (state = initialState, action) => {
       return {
         ...state
       };
+      
+    case 'GET_PRODUCT_REQUEST':
+      return {
+        ...state
+      };
+
+    case 'GET_PRODUCT_SUCCESS':
+      return {
+        ...state,
+        product: action.res.product
+      };
+
+    case 'GET_PRODUCT_FAILURE':
+      return {
+        ...state
+      };
+      
+    case 'ADD_ORDER_PRODUCT_TO_VENDOR_ORDER_REQUEST':
+      return {
+        ...state
+      }
+
+    case 'ADD_ORDER_PRODUCT_TO_VENDOR_ORDER_SUCCESS':
+      return {
+        ...state,
+        updatedOrders: action.res.updatedOrders,
+        tabCounts: action.res.tabCounts
+      };
+
+    case 'ADD_ORDER_PRODUCT_TO_VENDOR_ORDER_FAILURE':
+      return {
+        ...state
+      }
 			
     default:
       return state;

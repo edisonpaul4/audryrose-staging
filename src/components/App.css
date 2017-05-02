@@ -67,3 +67,7 @@ a:hover i.link.icon {
 .ui.menu .ui.dropdown .menu > .item.file-item {
   min-width: 350px;
 }
+
+.pre-text {
+  white-space: pre-wrap;
+}

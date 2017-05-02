@@ -10,7 +10,8 @@ const select = state => ({
 	updatedDesigner: state.designers.updatedDesigner,
 	successMessage: state.designers.successMessage,
 	totalPages: state.designers.totalPages,
-	error: state.error
+	error: state.error,
+	errors: state.designers.errors
 });
 
 const actions = {

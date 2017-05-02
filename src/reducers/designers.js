@@ -68,7 +68,8 @@ const designers = (state = initialState, action) => {
       return {
         ...state,
         updatedDesigner: action.res.updatedDesigner,
-        successMessage: action.res.successMessage
+        successMessage: action.res.successMessage,
+        errors: action.res.errors
       };
 
     case 'VENDOR_ORDER_SEND_FAILURE':

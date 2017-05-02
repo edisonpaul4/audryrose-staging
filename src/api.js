@@ -51,6 +51,21 @@ export const batchPrintShipments = (token, ordersToPrint) => Parse.Cloud.run('ba
   }
 );
 
+export const getProduct = (token, productId) => Parse.Cloud.run('getProduct', 
+  {
+    sessionToken: token,
+    productId
+  }
+);
+
+export const addOrderProductToVendorOrder = (token, orders, orderId) => Parse.Cloud.run('addOrderProductToVendorOrder', 
+  {
+    sessionToken: token,
+    orders, 
+    orderId
+  }
+);
+
 export const getProducts = (token, subpage, page, sort, search, filters) => Parse.Cloud.run('getProducts', 
   {
     sessionToken: token,
@@ -127,11 +142,12 @@ export const productBundleSave = (token, data) => Parse.Cloud.run('productBundle
   }
 );
 
-export const getDesigners = (token, subpage, page) => Parse.Cloud.run('getDesigners', 
+export const getDesigners = (token, subpage, page, search) => Parse.Cloud.run('getDesigners', 
   {
     sessionToken: token,
     subpage, 
-    page
+    page,
+    search
   }
 );
 
@@ -209,6 +225,8 @@ export default {
 	createShipments,
 	batchCreateShipments,
 	batchPrintShipments,
+	getProduct,
+	addOrderProductToVendorOrder,
 	getProducts,
 	getProductFilters,
 	reloadProduct,

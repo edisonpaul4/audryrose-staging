@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router';
-import { Grid, Table, Dimmer, Loader, Icon, Button } from 'semantic-ui-react';
+import { Grid, Table, Dimmer, Loader, Icon, Button, Header } from 'semantic-ui-react';
 import NotificationSystem from 'react-notification-system';
 import Pagination from './Pagination.js';
 import DesignersNav from './DesignersNav.js';
@@ -134,17 +134,18 @@ class Designer extends Component {
 class Designers extends Component {
   constructor(props) {
     super(props);
-
+    let search = this.props.location.query.q;
     this.state = {
       subpage: this.props.router.params.subpage,
 			page: null,
+			search: search,
 			designers: null,
 			products: null,
-			updatedDesigner: null,
       expanded: [],
       isReloading: [],
 			isSavingDesigners: [],
-			successMessage: null
+			successMessage: null,
+			errors: []
     };
     this.handlePaginationClick = this.handlePaginationClick.bind(this);
     this.handleSaveVendor = this.handleSaveVendor.bind(this);
@@ -156,7 +157,7 @@ class Designers extends Component {
 	
 	componentDidMount() {
   	this._notificationSystem = this.refs.notificationSystem;
-		this.props.getDesigners(this.props.token, this.state.subpage, this.state.page);
+		this.props.getDesigners(this.props.token, this.state.subpage, this.state.page, this.state.search);
 	}
 	
 	handleToggleClick(designerId) {
@@ -220,8 +221,10 @@ class Designers extends Component {
 	}
 	
 	componentWillReceiveProps(nextProps) {
+  	const scope = this;
   	let nextPage = parseFloat(nextProps.location.query.page);
   	if (!nextPage) nextPage = 1;
+  	let expanded = this.state.expanded;
   	
   	let designers = nextProps.designers ? nextProps.designers : [];
   	if (nextProps.updatedDesigner) {
@@ -243,7 +246,7 @@ class Designers extends Component {
     }
     
     let successMessage = this.state.successMessage;
-    if (nextProps.successMessage && nextProps.successMessage !== this.state.successMessage) {
+    if (nextProps.successMessage && nextProps.successMessage !== successMessage) {
       successMessage = nextProps.successMessage;
       this._notificationSystem.addNotification({
         message: successMessage,
@@ -252,18 +255,49 @@ class Designers extends Component {
         dismissible: true
       });
     }
+    
+		// Display any errors
+		let errors = [];
+		if (nextProps.errors) {
+  		nextProps.errors.map(function(errorMessage, i) {
+    		var errorExists = false;
+    		scope.state.errors.map(function(error, j) {
+      		if (errorMessage === error) errorExists = true;
+          return error;
+        });
+        if (!errorExists) {
+          scope._notificationSystem.addNotification({
+            message: errorMessage,
+            level: 'error',
+            autoDismiss: 0,
+            dismissible: true
+          });
+        }
+    		return errorMessage;
+  		});
+      errors = nextProps.errors.length > 0 ? nextProps.errors : this.state.errors;
+		} else {
+  		errors = this.state.errors;
+		}
+		
+  	// Reset on subpage navigation
+  	const search = nextProps.router.params.subpage !== 'search' ? null : this.state.search;
+  	expanded = nextProps.router.params.subpage !== this.state.subpage ? [] : expanded;
+  	successMessage = nextProps.router.params.subpage !== this.state.subpage ? [] : successMessage;
   	
 		this.setState({
 			subpage: nextProps.router.params.subpage,
 			designers: designers,
 			page: nextPage,
-			updatedDesigner: nextProps.updatedDesigner,
+			search: search,
+			expanded: expanded,
 			isSavingDesigners: isSavingDesigners,
-			successMessage: successMessage
+			successMessage: successMessage,
+			errors: errors
 		});
 		
 		if (nextPage !== this.state.page || nextProps.router.params.subpage !== this.state.subpage) {
-    	this.props.getDesigners(this.props.token,  nextProps.router.params.subpage, nextPage);
+    	this.props.getDesigners(this.props.token,  nextProps.router.params.subpage, nextPage, this.state.search);
   	}
   	
 	}
@@ -278,7 +312,7 @@ class Designers extends Component {
 			designers.map(function(designerRow, i) {
   			let designerJSON = designerRow.toJSON();
   			let isSaving = scope.state.isSavingDesigners.indexOf(designerJSON.objectId) >= 0 ? true : false;
-  			let expanded = (scope.state.expanded.indexOf(designerJSON.objectId) >= 0) ? true : false;
+  			let expanded = (scope.state.expanded.indexOf(designerJSON.objectId) >= 0 || scope.state.search || scope.state.subpage === 'pending' || scope.state.subpage === 'sent') ? true : false;
 				designerRows.push(
 				  <Designer 
 				    data={designerJSON} 
@@ -304,6 +338,9 @@ class Designers extends Component {
 				return designerRow;
 	    });
 		}
+		
+		const searchHeader = this.state.search ? <Header as='h2'>{designers ? designers.length : 0} results for "{this.state.search}"</Header> : null;
+		
     return (
 			<Grid.Column width='16'>
   			<NotificationSystem ref="notificationSystem" />
@@ -312,6 +349,7 @@ class Designers extends Component {
 	      <Dimmer active={isLoadingDesigners} inverted>
 	        <Loader inverted>Loading</Loader>
 	      </Dimmer>
+	      {searchHeader}
 		    <Table className='orders-table'>
 		      <Table.Header>
 		        <Table.Row>
