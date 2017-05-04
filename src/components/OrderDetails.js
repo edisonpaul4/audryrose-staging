@@ -57,7 +57,7 @@ class ProductRow extends Component {
 	    
 	  // Check if variant has been ordered
 	  let vendorOrders = [];
-	  if (variant.designer.vendors) {
+	  if (variant.designer && variant.designer.vendors) {
   	  variant.designer.vendors.map(function(vendor, i) {
     	  if (vendor.vendorOrders) {
       	  vendor.vendorOrders.map(function(vendorOrder, j) {
