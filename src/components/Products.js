@@ -209,7 +209,6 @@ class Products extends Component {
   	this.setState({
     	isReloading: currentlyReloading
   	});
-  	console.log(data)
 		this.props.saveProduct(this.props.token, data);
 	}
 
@@ -401,7 +400,9 @@ class Products extends Component {
   	
   	// Reset on subpage navigation
   	var search = nextProps.router.params.subpage !== 'search' ? null : this.state.search;
-  	expandedProducts = nextProps.router.params.subpage !== this.state.subpage ? [] : expandedProducts;
+  	if (nextProps.router.params.subpage === 'waiting-to-receive') {
+    	expandedProducts = products.map(function(product, i) { return product.get('productId'); })
+  	}
     
 		this.setState({
   		subpage: nextProps.router.params.subpage,
@@ -420,7 +421,6 @@ class Products extends Component {
 		});	
     
   	if (nextPage !== this.state.page || nextProps.router.params.subpage !== this.state.subpage) {
-    	expandedProducts = [];
     	this.props.getProducts(this.props.token, nextProps.router.params.subpage, nextPage, this.state.sort, search, this.state.filters);
   	}
 		

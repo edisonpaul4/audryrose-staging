@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Table, Input, Button, Dropdown, Dimmer, Segment, Loader, Label, Form } from 'semantic-ui-react';
 import classNames from 'classnames';
 import numeral from 'numeral';
-// import moment from 'moment';
+import moment from 'moment';
 
 class VariantRow extends Component {
   constructor(props) {
@@ -70,7 +70,19 @@ class VariantRow extends Component {
     const stoneColorCode = data.code ? '-' + data.code : null;
 		const saveCancelClass = this.state.variantEdited ? '' : 'invisible';
 		
-		const vendorOrder = data.vendorOrderVariant && data.vendorOrderVariant.done === false ? <Label>{data.vendorOrderVariant.ordered ? 'Sent' : 'Pending'}<Label.Detail>{data.vendorOrderVariant.units}</Label.Detail></Label> : null;
+		let vendorOrders = [];
+		if (data.vendorOrders) {
+  		data.vendorOrders.map(function(vendorOrder, i) {
+    		const vendorOrderVariant = vendorOrder.vendorOrderVariant;
+    		const averageWaitTime = vendorOrder.vendor.waitTime ? vendorOrder.vendor.waitTime : 21;
+    		const daysSinceOrdered = vendorOrder.order.dateOrdered ? moment.utc().diff(moment(vendorOrder.order.dateOrdered.iso), 'days') : 0;
+    		const labelColor = vendorOrderVariant.ordered ? daysSinceOrdered >= averageWaitTime ? 'red' : 'olive' : 'yellow';
+    		const labelText = vendorOrderVariant.ordered ? vendorOrderVariant.units + ' Sent' : vendorOrderVariant.units + ' Pending';
+    		const labelDetail = daysSinceOrdered > 0 ? daysSinceOrdered + ' days ago' : 'Today';
+    		vendorOrders.push((vendorOrderVariant.done === false) ? <Label as='a' href={data.designer ? '/designers/search?q=' + data.designer.designerId : '/designers'} size='tiny' color={labelColor} key={'vendorOrderVariant-'+i}>{labelText}<Label.Detail>{labelDetail}</Label.Detail></Label> : null);
+    		return vendorOrderVariant;
+  		});
+    }
 	    
     return (
       <Table.Row warning={this.state.variantEdited ? true: false} positive={this.state.variantSaved && !this.state.variantEdited ? true: false} disabled={this.props.isSaving}>
@@ -79,7 +91,7 @@ class VariantRow extends Component {
         <Table.Cell>{data.size_value ? data.size_value : 'OS'}</Table.Cell>
         <Table.Cell>{otherOptions ? otherOptions.join(', ') : null}</Table.Cell>
 				<Table.Cell><Input type='number' value={this.state.inventory ? this.state.inventory : 0} onChange={this.handleInventoryChange} min={0} disabled={this.props.isSaving} /></Table.Cell>
-				<Table.Cell>{vendorOrder}</Table.Cell>
+				<Table.Cell>{vendorOrders}</Table.Cell>
 				<Table.Cell className='right aligned'>{numeral(price).format('$0,0.00')}</Table.Cell>
 				<Table.Cell className='right aligned' singleLine>
     		  <Button.Group size='mini'>
@@ -136,6 +148,7 @@ class VariantsTable extends Component {
   	var scope = this;
 		const variants = this.props.variants;
 		const vendor = this.props.vendor;
+		const designer = this.props.designer;
 		
 		// Sort the data
 		if (variants.length && variants[0].size_value) {
@@ -174,23 +187,20 @@ class VariantsTable extends Component {
         });
         const isSaving = index < 0 ? false : true;
         
+        var vendorOrders = [];
         if (vendor && vendor.vendorOrders) {
       	  vendor.vendorOrders.map(function(vendorOrder, j) {
         	  vendorOrder.vendorOrderVariants.map(function(vendorOrderVariant, k) {
           	  if (variantData.objectId === vendorOrderVariant.variant.objectId && vendorOrderVariant.done === false) {
-            	  variantData.vendorOrderVariant = vendorOrderVariant;
+            	  vendorOrders.push({vendor: vendor, order: vendorOrder, vendorOrderVariant: vendorOrderVariant});
           	  }
           	  return vendorOrderVariant;
         	  });
         	  return vendorOrder;
-      	  });          
-/*
-          vendor.vendorOrders.vendorOrderVariants.map(function(vendorOrderVariant, i) {
-            if (vendorOrderVariant.variant.objectId === variantData.objectId) variantData.vendorOrderVariant = vendorOrderVariant;
-            return vendorOrderVariant;
-          });
-*/
+      	  });
         }
+        if (vendorOrders.length > 0) variantData.vendorOrders = vendorOrders;
+        if (designer) variantData.designer = designer;
         
 				variantRows.push(
 				  <VariantRow 
@@ -496,6 +506,7 @@ class ProductDetails extends Component {
   	const scope = this;
   	const showVariants = this.props.expanded ? true : false;
   	const variants = this.props.data.variants;
+  	const designer = this.props.data.designer;
   	const isBundle = this.props.data.isBundle;
   	const vendor = this.props.data.vendor;
 		var rowClass = classNames(
@@ -529,6 +540,7 @@ class ProductDetails extends Component {
     	      <VariantsTable 
     	        variants={variantsInGroup} 
     	        vendor={vendor}
+    	        designer={designer}
     	        title={variantGroup} 
     	        basePrice={scope.props.data.price} 
     	        key={i} 
@@ -547,6 +559,7 @@ class ProductDetails extends Component {
   	      <VariantsTable 
   	        variants={variants} 
   	        vendor={vendor}
+  	        designer={designer}
   	        basePrice={scope.props.data.price} 
   	        key={1} 
   	        handleSaveVariantClick={scope.handleSaveVariantClick} 

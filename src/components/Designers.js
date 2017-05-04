@@ -76,6 +76,7 @@ class Designer extends Component {
 	render() {
   	const scope = this;
 		const data = this.state.designerData;
+		const vendorOrders = this.props.vendorOrders;
 		const bcManageUrl = 'https://www.loveaudryrose.com/manage/products/brands/' + data.designerId + '/edit';
 		const name = <a href={bcManageUrl} target="_blank">{data.name} <Icon link name='configure' /></a>;
 		
@@ -96,6 +97,7 @@ class Designer extends Component {
     }) : null;
     
     let expandIcon = this.props.expanded ? 'minus' : 'plus';
+    const expandButton = vendorOrders.length > 0 ? <Button circular icon={expandIcon} basic size='mini' onClick={()=>this.handleToggleClick(data.objectId)} /> : null;
     
     return (
       <Table.Row disabled={this.props.isSaving} positive={this.state.saved && !this.state.edited ? true : false} >
@@ -117,15 +119,7 @@ class Designer extends Component {
     	      />
     	    {vendorEditModal}
   	    </Table.Cell>
-				<Table.Cell className='right aligned'>
-				  <Button 
-				    circular 
-				    icon={expandIcon} 
-				    basic 
-				    size='mini' 
-				    onClick={()=>this.handleToggleClick(data.objectId)} 
-			    />
-			  </Table.Cell>
+				<Table.Cell className='right aligned'>{expandButton}</Table.Cell>
       </Table.Row>
     );
   }
@@ -312,9 +306,26 @@ class Designers extends Component {
   			let designerJSON = designerRow.toJSON();
   			let isSaving = scope.state.isSavingDesigners.indexOf(designerJSON.objectId) >= 0 ? true : false;
   			let expanded = (scope.state.expanded.indexOf(designerJSON.objectId) >= 0 || scope.state.search || scope.state.subpage === 'pending' || scope.state.subpage === 'sent') ? true : false;
+  			
+        let vendorOrders = [];
+        if (designerJSON.vendors) {
+        	designerJSON.vendors.map(function(vendor, i) {
+      			if (vendor.vendorOrders && vendor.vendorOrders.length > 0) {
+        			vendor.vendorOrders.map(function(vendorOrder, j) {
+                const status = vendorOrder.orderedAll && vendorOrder.receivedAll === false ? 'Sent' : 'Pending';
+          			vendorOrders.push({status:status, order:vendorOrder, vendor:vendor});
+          			return vendorOrders;
+          		});
+        			
+      			}
+      			return vendor;
+        	});
+      	}
+  			
 				designerRows.push(
 				  <Designer 
 				    data={designerJSON} 
+				    vendorOrders={vendorOrders} 
 				    isSaving={isSaving} 
 				    expanded={expanded} 
 				    handleSaveVendor={scope.handleSaveVendor} 
@@ -326,6 +337,7 @@ class Designers extends Component {
   				designerRows.push(
   				  <DesignerDetails 
   				    data={designerJSON} 
+  				    vendorOrders={vendorOrders} 
   				    expanded={expanded} 
   				    key={`${designerJSON.designerId}-2`} 
   				    isSaving={isSaving} 

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { Table, Button, Dimmer, Segment, Loader, Header, Form,Input, TextArea, Divider } from 'semantic-ui-react';
+import { Table, Button, Dimmer, Segment, Loader, Header, Form,Input, TextArea, Divider, Label } from 'semantic-ui-react';
 import classNames from 'classnames';
+import moment from 'moment';
 
 class ProductRow extends Component {
   constructor(props) {
@@ -245,10 +246,16 @@ class VendorOrder extends Component {
     const receivedHeader = (status === 'Sent') ? <Table.HeaderCell>Units Received</Table.HeaderCell> : null;
     
     const emailMessage = (status === 'Pending') ? <Form><TextArea disabled={status !== 'Pending' ? true : false} placeholder='Enter a personal message' autoHeight value={this.state.message ? this.state.message : ''} onChange={this.handleMessageChange} /></Form> : <Segment basic><div className='pre-text'>{this.state.message}</div></Segment>;
+    
+		const averageWaitTime = vendor.waitTime ? vendor.waitTime : 21;
+		const daysSinceOrdered = order.dateOrdered ? moment.utc().diff(moment(order.dateOrdered.iso), 'days') : 0;
+		const labelColor = status === 'Sent' ? daysSinceOrdered >= averageWaitTime ? 'red' : 'olive' : 'yellow';
+		const labelText = daysSinceOrdered > 0 ? 'Sent ' + daysSinceOrdered + ' days ago' : 'Sent today';
+		const label = status === 'Sent' ? <Label size='medium' color={labelColor}>{labelText}</Label> : null;    
 		
     return (
       <Segment secondary key={order.objectId}>
-        <Header>{status} Order for {vendor.name}</Header>
+        <Header>{status} Order for {vendor.name} {label}</Header>
         <Table className='order-products-table' basic='very' compact size='small' columns={6}>
           <Table.Header>
             <Table.Row>
@@ -287,7 +294,7 @@ class DesignerDetails extends Component {
     super(props);
     this.state = {
       data: this.props.data ? this.props.data : null,
-//       vendorOrders: null
+      vendorOrders: this.props.vendorOrders ? this.props.vendorOrders : []
     };
     this.handleSaveVendorOrder = this.handleSaveVendorOrder.bind(this);
     this.handleSendVendorOrder = this.handleSendVendorOrder.bind(this);
@@ -302,26 +309,21 @@ class DesignerDetails extends Component {
   }
   componentWillReceiveProps(nextProps) {
     const data = nextProps.data ? nextProps.data : this.state.data;
+    const vendorOrders = nextProps.vendorOrders ? nextProps.vendorOrders : this.state.vendorOrders;
     this.setState({
-      data: data
+      data: data,
+      vendorOrders: vendorOrders
     });
   }
 	render() {
   	const scope = this;
   	const show = this.props.expanded ? true : false;
-  	const vendors = this.state.data && this.state.data.vendors ? this.state.data.vendors : [];
-    let vendorOrders = [];
-  	vendors.map(function(vendor, i) {
-			if (vendor.vendorOrders && vendor.vendorOrders.length > 0) {
-  			vendor.vendorOrders.map(function(vendorOrder, j) {
-          const status = vendorOrder.orderedAll && vendorOrder.receivedAll === false ? 'Sent' : 'Pending';
-    			vendorOrders.push(<VendorOrder status={status} order={vendorOrder} vendor={vendor} isSaving={scope.props.isSaving} key={i+'-'+j} handleSaveVendorOrder={scope.handleSaveVendorOrder} handleSendVendorOrder={scope.handleSendVendorOrder} />);
-    			return vendorOrders;
-    		});
-  			
-			}
-			return vendor;
-  	});
+  	const vendorOrders = this.state.vendorOrders;
+  	let vendorOrderRows = [];
+		vendorOrders.map(function(vendorOrder, i) {
+			vendorOrderRows.push(<VendorOrder status={vendorOrder.status} order={vendorOrder.order} vendor={vendorOrder.vendor} isSaving={scope.props.isSaving} key={i} handleSaveVendorOrder={scope.handleSaveVendorOrder} handleSendVendorOrder={scope.handleSendVendorOrder} />);
+			return vendorOrders;
+		});	
     
 		const rowClass = classNames(
 			{
@@ -337,7 +339,7 @@ class DesignerDetails extends Component {
             <Dimmer active={this.props.isSaving} inverted>
               <Loader>Loading</Loader>
             </Dimmer>
-            {vendorOrders}
+            {vendorOrderRows}
           </Dimmer.Dimmable>
         </Table.Cell>
       </Table.Row>
