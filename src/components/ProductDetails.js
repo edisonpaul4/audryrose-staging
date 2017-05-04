@@ -75,11 +75,11 @@ class VariantRow extends Component {
   		data.vendorOrders.map(function(vendorOrder, i) {
     		const vendorOrderVariant = vendorOrder.vendorOrderVariant;
     		const averageWaitTime = vendorOrder.vendor.waitTime ? vendorOrder.vendor.waitTime : 21;
-    		const expectedDate = moment(vendorOrder.order.dateOrdered.iso).add(averageWaitTime, 'days');
-    		const daysLeft = vendorOrder.order.dateOrdered ? expectedDate.diff(moment.utc(), 'days') : 0;
+    		const expectedDate = vendorOrder.order.dateOrdered ? moment(vendorOrder.order.dateOrdered.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
+    		const daysLeft = vendorOrder.order.dateOrdered ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
     		const labelColor = vendorOrderVariant.ordered ? daysLeft < 0 ? 'red' : 'olive' : 'yellow';
     		const labelText = vendorOrderVariant.ordered ? vendorOrderVariant.units + ' Sent' : vendorOrderVariant.units + ' Pending';
-    		const labelDetail = daysLeft < 0 ? Math.abs(daysLeft) + ' days late' : daysLeft + ' days left';
+    		const labelDetail = vendorOrderVariant.ordered ? daysLeft < 0 ? Math.abs(daysLeft) + ' days late' : daysLeft + ' days left' : averageWaitTime + ' days wait';
     		vendorOrders.push((vendorOrderVariant.done === false) ? <Label as='a' href={data.designer ? '/designers/search?q=' + data.designer.designerId : '/designers'} size='tiny' color={labelColor} key={'vendorOrderVariant-'+i}>{labelText}<Label.Detail>{labelDetail}</Label.Detail></Label> : null);
     		return vendorOrderVariant;
   		});

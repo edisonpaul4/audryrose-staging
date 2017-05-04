@@ -64,6 +64,10 @@ a:hover i.link.icon {
   white-space: nowrap;
 }
 
+.ui.label > .detail {
+  font-weight: normal !important;
+}
+
 .ui.menu .ui.dropdown .menu > .item.file-item {
   min-width: 350px;
 }

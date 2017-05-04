@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { Table, Button, Dropdown, Dimmer, Segment, Loader, Icon, Label } from 'semantic-ui-react';
 import classNames from 'classnames';
 // import numeral from 'numeral';
-// import moment from 'moment';
+import moment from 'moment';
 import OrderShipModal from './OrderShipModal.js';
 
 class ProductRow extends Component {
@@ -57,13 +57,20 @@ class ProductRow extends Component {
 	    
 	  // Check if variant has been ordered
 	  let vendorOrders = [];
-	  if (variant.designer && variant.designer.vendors) {
+	  if (variant && variant.designer && variant.designer.vendors) {
   	  variant.designer.vendors.map(function(vendor, i) {
     	  if (vendor.vendorOrders) {
       	  vendor.vendorOrders.map(function(vendorOrder, j) {
         	  vendorOrder.vendorOrderVariants.map(function(vendorOrderVariant, k) {
           	  if (variant.objectId === vendorOrderVariant.variant.objectId && vendorOrderVariant.done === false) {
-            	  vendorOrders.push(<Label key={i+'-'+j+'-'+k}>{vendorOrderVariant.ordered ? 'Sent' : 'Pending'}<Label.Detail>{vendorOrderVariant.units}</Label.Detail></Label>)
+//             	  vendorOrders.push(<Label key={i+'-'+j+'-'+k}>{vendorOrderVariant.ordered ? 'Sent' : 'Pending'}<Label.Detail>{vendorOrderVariant.units}</Label.Detail></Label>);
+            		const averageWaitTime = vendor.waitTime ? vendor.waitTime : 21;
+            		const expectedDate = vendorOrder.dateOrdered ? moment(vendorOrder.dateOrdered.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
+            		const daysLeft = vendorOrder.dateOrdered ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
+            		const labelColor = vendorOrderVariant.ordered ? daysLeft < 0 ? 'red' : 'olive' : 'yellow';
+            		const labelText = vendorOrderVariant.ordered ? vendorOrderVariant.units + ' Sent' : vendorOrderVariant.units + ' Pending';
+            		const labelDetail = vendorOrder.dateOrdered ? daysLeft < 0 ? Math.abs(daysLeft) + ' days late' : daysLeft + ' days left' : averageWaitTime + ' days wait';
+            		vendorOrders.push((vendorOrderVariant.done === false) ? <Label as='a' href={variant.designer ? '/designers/search?q=' + variant.designer.designerId : '/designers'} size='tiny' color={labelColor} key={'vendorOrderVariant-'+i}>{labelText}<Label.Detail>{labelDetail}</Label.Detail></Label> : null);
           	  }
           	  return vendorOrderVariant;
         	  });

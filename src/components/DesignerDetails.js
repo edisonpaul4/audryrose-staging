@@ -248,10 +248,11 @@ class VendorOrder extends Component {
     const emailMessage = (status === 'Pending') ? <Form><TextArea disabled={status !== 'Pending' ? true : false} placeholder='Enter a personal message' autoHeight value={this.state.message ? this.state.message : ''} onChange={this.handleMessageChange} /></Form> : <Segment basic><div className='pre-text'>{this.state.message}</div></Segment>;
     
 		const averageWaitTime = vendor.waitTime ? vendor.waitTime : 21;
-		const daysSinceOrdered = order.dateOrdered ? moment.utc().diff(moment(order.dateOrdered.iso), 'days') : 0;
-		const labelColor = status === 'Sent' ? daysSinceOrdered >= averageWaitTime ? 'red' : 'olive' : 'yellow';
-		const labelText = daysSinceOrdered > 0 ? 'Sent ' + daysSinceOrdered + ' days ago' : 'Sent today';
-		const label = status === 'Sent' ? <Label size='medium' color={labelColor}>{labelText}</Label> : null;    
+		const expectedDate = order.dateOrdered ? moment(order.dateOrdered.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
+		const daysLeft = order.dateOrdered ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
+		const labelColor = status === 'Sent' ? daysLeft < 0 ? 'red' : 'olive' : 'yellow';
+		const labelText = status === 'Sent' ? daysLeft < 0 ? Math.abs(daysLeft) + ' days late' : daysLeft + ' days left' : averageWaitTime + ' days average wait time';
+		const label = <Label size='small' color={labelColor}>{labelText}</Label>;    
 		
     return (
       <Segment secondary key={order.objectId}>
