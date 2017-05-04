@@ -11,6 +11,7 @@ class VendorEditModal extends Component {
       firstName: this.props.vendorData && this.props.vendorData.firstName ? this.props.vendorData.firstName : '',
       lastName: this.props.vendorData && this.props.vendorData.lastName ? this.props.vendorData.lastName : '',
       email: this.props.vendorData && this.props.vendorData.email ? this.props.vendorData.email : '',
+      waitTime: this.props.vendorData && this.props.vendorData.waitTime ? this.props.vendorData.waitTime : '',
       mode: this.props.mode ? this.props.mode : 'edit'
     };
     this.handleSaveVendor = this.handleSaveVendor.bind(this);
@@ -18,6 +19,7 @@ class VendorEditModal extends Component {
     this.handleFirstNameChange = this.handleFirstNameChange.bind(this);
     this.handleLastNameChange = this.handleLastNameChange.bind(this);
     this.handleEmailChange = this.handleEmailChange.bind(this);
+    this.handleWaitTimeChange = this.handleWaitTimeChange.bind(this);
     this.handleClose = this.handleClose.bind(this);
   }
   
@@ -28,7 +30,8 @@ class VendorEditModal extends Component {
       name: this.state.name,
       firstName: this.state.firstName,
       lastName: this.state.lastName,
-      email: this.state.email
+      email: this.state.email,
+      waitTime: this.state.waitTime
     };
     console.log(data);
 		this.props.handleSaveVendor(data);
@@ -42,7 +45,8 @@ class VendorEditModal extends Component {
       name: '',
       firstName: '',
       lastName: '',
-      email: ''
+      email: '',
+      waitTime: ''
     });
     this.props.handleVendorEditModalClose();
   }
@@ -77,6 +81,12 @@ class VendorEditModal extends Component {
   	});
 	}
 	
+	handleWaitTimeChange(e, {value}) {
+  	this.setState({
+    	waitTime: value
+  	});
+	}
+	
 	componentWillReceiveProps(nextProps) {
   	if (nextProps.vendorData) {
     	this.setState({
@@ -84,7 +94,8 @@ class VendorEditModal extends Component {
         name: nextProps.vendorData.name,
         firstName: nextProps.vendorData.firstName,
         lastName: nextProps.vendorData.lastName,
-        email: nextProps.vendorData.email
+        email: nextProps.vendorData.email,
+        waitTime: nextProps.vendorData.waitTime
     	});
   	}
 	}
@@ -105,6 +116,7 @@ class VendorEditModal extends Component {
             </Form.Group>
             <Form.Group widths='equal'>
               <Form.Input label='Email' type='email' value={this.state.email ? this.state.email : ''} onChange={this.handleEmailChange} />
+              <Form.Input label='Average Wait Time (days)' type='number' placeholder='21' value={this.state.waitTime ? this.state.waitTime : ''} onChange={this.handleWaitTimeChange} />
             </Form.Group>
           </Form>
         </Modal.Content>
