@@ -17,6 +17,7 @@ class VariantRow extends Component {
     this.handleSaveVariantClick = this.handleSaveVariantClick.bind(this);
     this.handleCancelVariantClick = this.handleCancelVariantClick.bind(this);
     this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
+    this.handleShowResizeFormClick = this.handleShowResizeFormClick.bind(this);
   }
   handleInventoryChange(e, {value}) {
     let edited = (parseFloat(value) !== parseFloat(this.props.data.inventoryLevel)) ? true : false;
@@ -40,8 +41,11 @@ class VariantRow extends Component {
     this.props.handleVariantEdited({objectId: this.props.data.objectId}, false);
 	}
 	handleShowOrderFormClick(e, {value}) {
-		this.props.handleShowOrderFormClick({productId: this.props.data.productId, variant: this.props.data.objectId});
+		this.props.handleShowOrderFormClick({productId: this.props.data.productId, variant: this.props.data.objectId, resize: false});
 	}
+	handleShowResizeFormClick(e, {value}) {
+		this.props.handleShowOrderFormClick({productId: this.props.data.productId, variant: this.props.data.objectId, resize: true});
+	}	
 	componentWillReceiveProps(nextProps) {
   	if (nextProps.updatedVariant && this.props.isSaving) {
     	this.setState({
@@ -84,7 +88,9 @@ class VariantRow extends Component {
     		return vendorOrderVariant;
   		});
     }
-	    
+    
+    const resizeButton = data.size_value ? <Dropdown.Item icon='exchange' text='Resize' disabled={this.props.isSaving || this.state.variantEdited} onClick={this.handleShowResizeFormClick} /> : null;
+     
     return (
       <Table.Row warning={this.state.variantEdited ? true: false} positive={this.state.variantSaved && !this.state.variantEdited ? true: false} disabled={this.props.isSaving}>
         <Table.Cell>{data.styleNumber ? data.styleNumber : ''}{stoneColorCode}</Table.Cell>
@@ -118,8 +124,8 @@ class VariantRow extends Component {
             <Button content='Order' disabled={this.props.isSaving || this.state.variantEdited} onClick={this.handleShowOrderFormClick} />
             <Dropdown floating button compact className='icon' disabled={this.props.isSaving || this.state.variantEdited}>
               <Dropdown.Menu>
-                <Dropdown.Item icon='exchange' text='Resize' />
-                <Dropdown.Item icon='hide' text='Hide' />
+                {resizeButton}
+                {/*<Dropdown.Item icon='hide' text='Hide' />*/}
               </Dropdown.Menu>
             </Dropdown>
           </Button.Group>

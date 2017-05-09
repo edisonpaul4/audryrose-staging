@@ -11,6 +11,7 @@ class ProductRow extends Component {
     super(props);
     this.handleShipModalOpen = this.handleShipModalOpen.bind(this);
     this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
+    this.handleShowResizeFormClick = this.handleShowResizeFormClick.bind(this);
   }
   handleShipModalOpen() {
     this.props.handleShipModalOpen();
@@ -29,7 +30,11 @@ class ProductRow extends Component {
   }
 	handleShowOrderFormClick(e, {value}) {
   	let variant = this.props.product.variants ? this.props.product.variants[0] : null;
-		this.props.handleShowOrderFormClick({productId: this.props.product.product_id, variant: variant});
+		this.props.handleShowOrderFormClick({productId: this.props.product.product_id, variant: variant, resize: false});
+	}
+	handleShowResizeFormClick(e, {value}) {
+  	let variant = this.props.product.variants ? this.props.product.variants[0] : null;
+		this.props.handleShowOrderFormClick({productId: this.props.product.product_id, variant: variant, resize: true});
 	}
 	render() {  	
 		const product = this.props.product;
@@ -70,7 +75,7 @@ class ProductRow extends Component {
             		const labelColor = vendorOrderVariant.ordered ? daysLeft < 0 ? 'red' : 'olive' : 'yellow';
             		const labelText = vendorOrderVariant.ordered ? vendorOrderVariant.units + ' Sent' : vendorOrderVariant.units + ' Pending';
             		const labelDetail = vendorOrder.dateOrdered ? daysLeft < 0 ? Math.abs(daysLeft) + ' days late' : daysLeft + ' days left' : averageWaitTime + ' days wait';
-            		vendorOrders.push((vendorOrderVariant.done === false) ? <Label as='a' href={variant.designer ? '/designers/search?q=' + variant.designer.designerId : '/designers'} size='tiny' color={labelColor} key={'vendorOrderVariant-'+i}>{labelText}<Label.Detail>{labelDetail}</Label.Detail></Label> : null);
+            		vendorOrders.push((vendorOrderVariant.done === false) ? <Label as='a' href={variant.designer ? '/designers/search?q=' + variant.designer.designerId : '/designers'} size='tiny' color={labelColor} key={'vendorOrderVariant-'+i+'-'+j+'-'+k}>{labelText}<Label.Detail>{labelDetail}</Label.Detail></Label> : null);
           	  }
           	  return vendorOrderVariant;
         	  });
@@ -89,14 +94,11 @@ class ProductRow extends Component {
     } else if (product.shippable) {
   	  primaryButton = <Button icon='shipping' content='Customize Shipment' onClick={this.handleShipModalOpen} />;
 	  } else if (product.resizable) {
-//   	  primaryButton = <Button icon='exchange' content='Resize' onClick={this.handleShowOrderFormClick} />;
-//   	  dropdownItems.push(<Dropdown.Item key='1' icon='add to cart' text='Order' onClick={this.handleShowOrderFormClick} />);
-      primaryButton = <Button icon='add to cart' content='Order' onClick={this.handleShowOrderFormClick} />; // TEMPORARY UNTIL RESIZE IS WORKING
-//   	  if (vendorOrders.length <= 0) pendingAction = true;
+  	  primaryButton = <Button icon='exchange' content='Resize' onClick={this.handleShowResizeFormClick} />;
+  	  dropdownItems.push(<Dropdown.Item key='1' icon='add to cart' text='Order' onClick={this.handleShowOrderFormClick} />);
 	  } else {
   	  primaryButton = <Button icon='add to cart' content='Order' onClick={this.handleShowOrderFormClick} />;
-//   	  dropdownItems.push(<Dropdown.Item key='1' icon='exchange' text='Resize' onClick={this.handleShowOrderFormClick} />);
-//   	  if (vendorOrders.length <= 0) pendingAction = true;
+  	  dropdownItems.push(<Dropdown.Item key='1' icon='exchange' text='Resize' onClick={this.handleShowResizeFormClick} />);
 	  }
 
     return (

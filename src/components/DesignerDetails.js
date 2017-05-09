@@ -90,6 +90,8 @@ class ProductRow extends Component {
 		const notes = (this.props.status === 'Pending') ? <Input type='text' value={this.state.notes ? this.state.notes : ''} onChange={this.handleNotesChange} min={0} disabled={this.props.isSaving} /> : this.state.notes;
 		const received = (this.props.status === 'Sent') ? <Table.Cell><Input type='number' value={this.state.received ? this.state.received : 0} onChange={this.handleReceivedChange} min={0} disabled={this.props.isSaving} /></Table.Cell> : null;
 		const cancelClass = this.isEdited() ? '' : 'invisible';
+		
+		const resize = vendorOrderVariant.isResize ? 'SIZE: ' + vendorOrderVariant.resizeVariant.size_value + ', INVENTORY: ' + vendorOrderVariant.resizeVariant.inventoryLevel : '';
 
     return (
       <Table.Row>
@@ -99,6 +101,7 @@ class ProductRow extends Component {
             return <span key={i}>{option}<br/></span>;
           })}
         </Table.Cell>
+				<Table.Cell>{resize}</Table.Cell>
 				<Table.Cell>{inventory}</Table.Cell>
 				<Table.Cell>{units}</Table.Cell>
 				<Table.Cell>{notes}</Table.Cell>
@@ -262,6 +265,7 @@ class VendorOrder extends Component {
             <Table.Row>
               <Table.HeaderCell>Product</Table.HeaderCell>
               <Table.HeaderCell>Options</Table.HeaderCell>
+              <Table.HeaderCell>Resize</Table.HeaderCell>
               <Table.HeaderCell>ACH OH</Table.HeaderCell>
               <Table.HeaderCell>Units {status === 'Pending' ? 'To Order' : 'Ordered'}</Table.HeaderCell>
               <Table.HeaderCell>Notes</Table.HeaderCell>

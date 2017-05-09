@@ -304,10 +304,11 @@ class Products extends Component {
     this.state.products.map(function(product, i) {
       if (product.get('productId') === data.productId) {
         productOrderData.product = product.toJSON();
-        productOrderData.variant = data.variant;
       }
       return product;
     });
+    productOrderData.variant = data.variant;
+    productOrderData.resize = data.resize;
     this.setState({
       productOrderOpen: true,
       productOrderData: productOrderData

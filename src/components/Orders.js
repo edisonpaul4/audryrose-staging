@@ -202,6 +202,7 @@ class Orders extends Component {
   	let productOrderData = this.state.productOrderData;
   	if (data.variant) productOrderData.variant = data.variant.objectId;
   	if (data.orderId) productOrderData.orderId = data.orderId;
+  	if (data.resize !== undefined) productOrderData.resize = data.resize;
   	this.props.getProduct(this.props.token, data.productId);
     this.setState({
       productOrderOpen: true,
