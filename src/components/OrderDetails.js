@@ -36,6 +36,10 @@ class ProductRow extends Component {
   	let variant = this.props.product.variants ? this.props.product.variants[0] : null;
 		this.props.handleShowOrderFormClick({productId: this.props.product.product_id, variant: variant, resize: true});
 	}
+	handleShowEditOrderProductFormClick(e, {value}) {
+//   	let variant = this.props.product.variants ? this.props.product.variants[0] : null;
+// 		this.props.handleShowEditOrderProductFormClick({productId: this.props.product.product_id, variant: variant, resize: false});
+	}
 	render() {  	
 		const product = this.props.product;
 		const shipment = this.props.shipment;
@@ -93,12 +97,15 @@ class ProductRow extends Component {
   	  primaryButton = <Button icon='shipping' content='View' onClick={this.handleShipModalOpen} />;
     } else if (product.shippable) {
   	  primaryButton = <Button icon='shipping' content='Customize Shipment' onClick={this.handleShipModalOpen} />;
+      dropdownItems.push(<Dropdown.Item key='1' icon='edit' text='Edit Product' onClick={this.handleShowEditOrderProductFormClick} />);
 	  } else if (product.resizable) {
   	  primaryButton = <Button icon='exchange' content='Resize' onClick={this.handleShowResizeFormClick} />;
   	  dropdownItems.push(<Dropdown.Item key='1' icon='add to cart' text='Order' onClick={this.handleShowOrderFormClick} />);
+  	  dropdownItems.push(<Dropdown.Item key='2' icon='edit' text='Edit Product' onClick={this.handleShowEditOrderProductFormClick} />);
 	  } else {
   	  primaryButton = <Button icon='add to cart' content='Order' onClick={this.handleShowOrderFormClick} />;
   	  dropdownItems.push(<Dropdown.Item key='1' icon='exchange' text='Resize' onClick={this.handleShowResizeFormClick} />);
+  	  dropdownItems.push(<Dropdown.Item key='2' icon='edit' text='Edit Product' onClick={this.handleShowEditOrderProductFormClick} />);
 	  }
 
     return (
