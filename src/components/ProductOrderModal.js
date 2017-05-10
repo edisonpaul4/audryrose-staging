@@ -28,7 +28,6 @@ class ProductOrderModal extends Component {
       variant: this.state.variant,
       resizeVariant: this.state.resizeVariant,
       resize: this.state.resize,
-      product: this.state.product,
       units: this.state.units,
       notes: this.state.notes
     }];
@@ -84,7 +83,6 @@ class ProductOrderModal extends Component {
 	
 	getRecommendedResize(variant, product) {
   	const variants = product && product.variants ? product.variants : [];
-  	console.log(variants)
   	let recommendedResize = '';
 		const selectedVariant = variants.find((variantObj) => { return variantObj.objectId === variant;});
 		
@@ -92,13 +90,17 @@ class ProductOrderModal extends Component {
 		variants.map(function(variantObj, i) {
   		let resizable = true;
   		if (!variantObj || !selectedVariant || !variantObj.size_value) resizable = false;
-  		if (!variantObj.inventoryLevel || variantObj.inventoryLevel <= 0) resizable = false;
+  		console.log('1 resizable: ' + resizable)
+  		if (variantObj.inventoryLevel <= 0) resizable = false;
+  		console.log('2 resizable: ' + resizable)
   		if (resizable && variantObj.color_value && selectedVariant.color_value && variantObj.color_value !== selectedVariant.color_value) {
     		resizable = false;
   		}
+  		console.log(variantObj.color_value + ' resizable: ' + resizable)
   		if (resizable && variantObj.gemstone_value && selectedVariant.gemstone_value && variantObj.gemstone_value !== selectedVariant.gemstone_value) {
     		resizable = false;
   		}
+  		console.log('4 resizable: ' + resizable)
   		if (resizable && variantObj.size_value && selectedVariant.size_value) {
     		const diff = Math.abs(variantObj.size_value - selectedVariant.size_value);
     		if (diff > 0 && diff < resizeDiff) {
@@ -107,6 +109,7 @@ class ProductOrderModal extends Component {
       		console.log('color:' + variantObj.color_value + ', size:' + variantObj.size_value + ', diff: ' + diff + ', inventory:' + variantObj.inventoryLevel);
     		}
   		}
+  		console.log('5 resizable: ' + resizable)
   		return variantObj;
 		});
 		return recommendedResize;
