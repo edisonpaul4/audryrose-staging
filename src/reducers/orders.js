@@ -135,6 +135,23 @@ const orders = (state = initialState, action) => {
       return {
         ...state
       }
+      
+    case 'CREATE_ORDER_RESIZE_REQUEST':
+      return {
+        ...state
+      }
+
+    case 'CREATE_ORDER_RESIZE_SUCCESS':
+      return {
+        ...state,
+        updatedOrders: action.res.updatedOrders,
+        tabCounts: action.res.tabCounts
+      };
+
+    case 'CREATE_ORDER_RESIZE_FAILURE':
+      return {
+        ...state
+      }
 			
     default:
       return state;

@@ -66,6 +66,14 @@ export const addOrderProductToVendorOrder = (token, orders, orderId) => Parse.Cl
   }
 );
 
+export const createResize = (token, resizes, orderId) => Parse.Cloud.run('createResize', 
+  {
+    sessionToken: token,
+    resizes, 
+    orderId
+  }
+);
+
 export const getProducts = (token, subpage, page, sort, search, filters) => Parse.Cloud.run('getProducts', 
   {
     sessionToken: token,
@@ -230,6 +238,7 @@ export default {
 	batchPrintShipments,
 	getProduct,
 	addOrderProductToVendorOrder,
+	createResize,
 	getProducts,
 	getProductFilters,
 	reloadProduct,

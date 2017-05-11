@@ -117,7 +117,6 @@ class ProductRow extends Component {
           })}
         </Table.Cell>
         <Table.Cell>{product.quantity ? product.quantity : ''}</Table.Cell>
-        <Table.Cell></Table.Cell>
 				<Table.Cell>{alwaysResize}</Table.Cell>
 				<Table.Cell>{inventory}</Table.Cell>
 				<Table.Cell>{vendorOrders}</Table.Cell>
@@ -376,7 +375,6 @@ class OrderDetails extends Component {
                     <Table.HeaderCell>Product</Table.HeaderCell>
                     <Table.HeaderCell>Options</Table.HeaderCell>
                     <Table.HeaderCell>Quantity</Table.HeaderCell>
-                    <Table.HeaderCell>Resizable</Table.HeaderCell>
                     <Table.HeaderCell>Always Resize</Table.HeaderCell>
                     <Table.HeaderCell>Inventory</Table.HeaderCell>
                     <Table.HeaderCell>Vendor Orders</Table.HeaderCell>

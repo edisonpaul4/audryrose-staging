@@ -48,3 +48,10 @@ export function addOrderProductToVendorOrder(token, orders, orderId) {
     promise: api.addOrderProductToVendorOrder(token, orders, orderId)
   }
 }
+
+export function createResize(token, resizes, orderId) {
+  return {
+    types: ['CREATE_ORDER_RESIZE_REQUEST', 'CREATE_ORDER_RESIZE_SUCCESS', 'CREATE_ORDER_RESIZE_FAILURE'],
+    promise: api.createResize(token, resizes, orderId)
+  }
+}

@@ -55,6 +55,7 @@ class Products extends Component {
     this.handleFilterClassChange = this.handleFilterClassChange.bind(this);
     this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
     this.handleAddToVendorOrder = this.handleAddToVendorOrder.bind(this);
+    this.handleCreateResize = this.handleCreateResize.bind(this);
     this.handleProductOrderModalClose = this.handleProductOrderModalClose.bind(this);
   }
 	
@@ -299,6 +300,22 @@ class Products extends Component {
 		this.props.addToVendorOrder(this.props.token, orders);
 	}
 	
+	handleCreateResize(resizes) {
+  	let currentlyReloading = this.state.isReloading;
+  	resizes.map(function(resize, i) {
+  		const index = currentlyReloading.indexOf(resize.productId);
+  		if (index < 0) {
+  			currentlyReloading.push(resize.productId);
+  		}
+    	return resize;
+  	});
+  	console.log(currentlyReloading)
+  	this.setState({
+    	isReloading: currentlyReloading
+  	});
+		this.props.createResize(this.props.token, resizes);
+	}
+	
 	handleShowOrderFormClick(data) {
   	let productOrderData = {};
     this.state.products.map(function(product, i) {
@@ -511,6 +528,7 @@ class Products extends Component {
     const productOrderModal = this.state.productOrderData ? <ProductOrderModal 
         open={this.state.productOrderOpen}
         handleAddToVendorOrder={this.handleAddToVendorOrder} 
+        handleCreateResize={this.handleCreateResize} 
         handleProductOrderModalClose={this.handleProductOrderModalClose} 
         handleProductOrder={this.handleProductOrder} 
         productOrderData={this.state.productOrderData} 

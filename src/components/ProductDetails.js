@@ -3,6 +3,7 @@ import { Table, Input, Button, Dropdown, Dimmer, Segment, Loader, Label, Form } 
 import classNames from 'classnames';
 import numeral from 'numeral';
 import moment from 'moment';
+// import ProductResizeModal from './ProductResizeModal.js';
 
 class VariantRow extends Component {
   constructor(props) {
@@ -74,7 +75,7 @@ class VariantRow extends Component {
     const stoneColorCode = data.code ? '-' + data.code : null;
 		const saveCancelClass = this.state.variantEdited ? '' : 'invisible';
 		
-		let vendorOrders = [];
+		let vendorOrderAndResizes = [];
 		if (data.vendorOrders) {
   		data.vendorOrders.map(function(vendorOrder, i) {
     		const vendorOrderVariant = vendorOrder.vendorOrderVariant;
@@ -84,8 +85,23 @@ class VariantRow extends Component {
     		const labelColor = vendorOrderVariant.ordered ? daysLeft < 0 ? 'red' : 'olive' : 'yellow';
     		const labelText = vendorOrderVariant.ordered ? vendorOrderVariant.units + ' Sent' : vendorOrderVariant.units + ' Pending';
     		const labelDetail = vendorOrderVariant.ordered ? daysLeft < 0 ? Math.abs(daysLeft) + ' days late' : daysLeft + ' days left' : averageWaitTime + ' days wait';
-    		vendorOrders.push((vendorOrderVariant.done === false) ? <Label as='a' href={data.designer ? '/designers/search?q=' + data.designer.designerId : '/designers'} size='tiny' color={labelColor} key={'vendorOrderVariant-'+i}>{labelText}<Label.Detail>{labelDetail}</Label.Detail></Label> : null);
+    		vendorOrderAndResizes.push((vendorOrderVariant.done === false) ? <Label as='a' href={data.designer ? '/designers/search?q=' + data.designer.designerId : '/designers'} size='tiny' color={labelColor} key={'vendorOrderVariant-'+i}>{labelText}<Label.Detail>{labelDetail}</Label.Detail></Label> : null);
     		return vendorOrderVariant;
+  		});
+    }
+    
+		if (data.resizes) {
+  		console.log(data.resizes)
+  		data.resizes.map(function(resize, i) {
+    		const averageWaitTime = 7;
+    		const expectedDate = resize.dateSent ? moment(resize.dateSent.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
+    		const daysLeft = resize.dateSent ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
+    		const labelColor = daysLeft < 0 ? 'red' : 'olive';
+    		const labelText = resize.units + ' Resizing';
+    		const labelDetail = daysLeft < 0 ? Math.abs(daysLeft) + ' days late' : daysLeft + ' days left';
+//     		vendorOrderAndResizes.push((resize.done === false) ? <Label as='a' href={data.designer ? '/designers/search?q=' + data.designer.designerId : '/designers'} size='tiny' color={labelColor} key={'resize-'+i}>{labelText}<Label.Detail>{labelDetail}</Label.Detail><ProductResizeModal productResizeData={resize} /></Label> : null);
+    		vendorOrderAndResizes.push((resize.done === false) ? <Label size='tiny' color={labelColor} key={'resize-'+i}>{labelText}<Label.Detail>{labelDetail}</Label.Detail></Label> : null);
+    		return resize;
   		});
     }
     
@@ -98,7 +114,7 @@ class VariantRow extends Component {
         <Table.Cell>{data.size_value ? data.size_value : 'OS'}</Table.Cell>
         <Table.Cell>{otherOptions ? otherOptions.join(', ') : null}</Table.Cell>
 				<Table.Cell><Input type='number' value={this.state.inventory ? this.state.inventory : 0} onChange={this.handleInventoryChange} min={0} disabled={this.props.isSaving} /></Table.Cell>
-				<Table.Cell>{vendorOrders}</Table.Cell>
+				<Table.Cell>{vendorOrderAndResizes}</Table.Cell>
 				<Table.Cell className='right aligned'>{numeral(price).format('$0,0.00')}</Table.Cell>
 				<Table.Cell className='right aligned' singleLine>
     		  <Button.Group size='mini'>
@@ -239,7 +255,7 @@ class VariantsTable extends Component {
               <Table.HeaderCell>Size</Table.HeaderCell>
               <Table.HeaderCell>Other Options</Table.HeaderCell>
               <Table.HeaderCell>ACT OH</Table.HeaderCell>
-              <Table.HeaderCell>Ordered</Table.HeaderCell>
+              <Table.HeaderCell>Ordered/Resizing</Table.HeaderCell>
               <Table.HeaderCell className='right aligned'>RETAIL $</Table.HeaderCell>
               <Table.HeaderCell className='right aligned'>Actions</Table.HeaderCell>
             </Table.Row>

@@ -28,24 +28,6 @@ export function saveProduct(token, data) {
   }
 }
 
-/*
-export function saveProductVendor(token, productId, vendorId) {
-  return {
-    types: ['PRODUCT_VENDOR_REQUEST', 'PRODUCT_VENDOR_SUCCESS', 'PRODUCT_VENDOR_FAILURE'],
-    promise: api.saveProductVendor(token, productId, vendorId)
-  }
-}
-*/
-
-/*
-export function saveProductType(token, productId, isBundle) {
-  return {
-    types: ['PRODUCT_TYPE_REQUEST', 'PRODUCT_TYPE_SUCCESS', 'PRODUCT_TYPE_FAILURE'],
-    promise: api.saveProductType(token, productId, isBundle)
-  }
-}
-*/
-
 export function saveVariants(token, variants) {
   return {
     types: ['VARIANTS_SAVE_REQUEST', 'VARIANTS_SAVE_SUCCESS', 'VARIANTS_SAVE_FAILURE'],
@@ -57,6 +39,13 @@ export function addToVendorOrder(token, orders) {
   return {
     types: ['ADD_TO_VENDOR_ORDER_REQUEST', 'ADD_TO_VENDOR_ORDER_SUCCESS', 'ADD_TO_VENDOR_ORDER_FAILURE'],
     promise: api.addToVendorOrder(token, orders)
+  }
+}
+
+export function createResize(token, resizes) {
+  return {
+    types: ['CREATE_PRODUCT_RESIZE_REQUEST', 'CREATE_PRODUCT_RESIZE_SUCCESS', 'CREATE_PRODUCT_RESIZE_FAILURE'],
+    promise: api.createResize(token, resizes)
   }
 }
 

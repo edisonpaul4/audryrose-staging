@@ -78,42 +78,6 @@ const products = (state = initialState, action) => {
       return {
         ...state
       }
-/*
-      
-    case 'PRODUCT_VENDOR_REQUEST':
-      return {
-        ...state
-      }
-
-    case 'PRODUCT_VENDOR_SUCCESS':
-      return {
-        ...state,
-        updatedProducts: [action.res.updatedProduct],
-        tabCounts: action.res.tabCounts
-      };
-
-    case 'PRODUCT_VENDOR_FAILURE':
-      return {
-        ...state
-      }
-      
-    case 'PRODUCT_TYPE_REQUEST':
-      return {
-        ...state
-      }
-
-    case 'PRODUCT_TYPE_SUCCESS':
-      return {
-        ...state,
-        updatedProducts: [action.res.updatedProduct],
-        tabCounts: action.res.tabCounts
-      };
-
-    case 'PRODUCT_TYPE_FAILURE':
-      return {
-        ...state
-      }
-*/
       
     case 'VARIANT_SAVE_REQUEST':
       return {
@@ -159,12 +123,28 @@ const products = (state = initialState, action) => {
     case 'ADD_TO_VENDOR_ORDER_SUCCESS':
       return {
         ...state,
-        updatedVariants: action.res.updatedVariants,
         updatedProducts: action.res.updatedProducts,
         tabCounts: action.res.tabCounts
       };
 
     case 'ADD_TO_VENDOR_ORDER_FAILURE':
+      return {
+        ...state
+      }
+      
+    case 'CREATE_PRODUCT_RESIZE_REQUEST':
+      return {
+        ...state
+      }
+
+    case 'CREATE_PRODUCT_RESIZE_SUCCESS':
+      return {
+        ...state,
+        updatedProducts: action.res.updatedProducts,
+        tabCounts: action.res.tabCounts
+      };
+
+    case 'CREATE_PRODUCT_RESIZE_FAILURE':
       return {
         ...state
       }

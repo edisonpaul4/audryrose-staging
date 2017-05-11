@@ -1,28 +1,28 @@
 import React, { Component } from 'react';
 import { Modal, Button, Header, Form } from 'semantic-ui-react';
 
-class ProductOrderModal extends Component {
+class ProductResizeModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
       formComplete: false,
-      product: this.props.productOrderData && this.props.productOrderData.product ? this.props.productOrderData.product : null, 
-      vendor: this.props.productOrderData.product && this.props.productOrderData.product.vendor ? this.props.productOrderData.product.vendor.objectId : null,
-      variant: this.props.productOrderData.variant ? this.props.productOrderData.variant : '',
-      resizeVariant: '',
-      resize: this.props.productOrderData.resize ? this.props.productOrderData.resize : false,
+      variant: this.props.productResizeData.variant ? this.props.productResizeData.variant : {},
+      resizeVariant: this.props.productResizeData.resizeVariant ? this.props.productResizeData.resizeVariant : {},
       units: 1,
+      received: '',
       notes: ''
     };
-    this.handleAddToVendorOrder = this.handleAddToVendorOrder.bind(this);
-    this.handleCreateResize = this.handleCreateResize.bind(this);
-    this.handleVariantChange = this.handleVariantChange.bind(this);
-    this.handleResizeVariantChange = this.handleResizeVariantChange.bind(this);
+//     this.handleAddToVendorOrder = this.handleAddToVendorOrder.bind(this);
+//     this.handleCreateResize = this.handleCreateResize.bind(this);
+//     this.handleVariantChange = this.handleVariantChange.bind(this);
+//     this.handleResizeVariantChange = this.handleResizeVariantChange.bind(this);
     this.handleUnitsChange = this.handleUnitsChange.bind(this);
-    this.handleNotesChange = this.handleNotesChange.bind(this);
+    this.handleReceivedChange = this.handleReceivedChange.bind(this);
+//     this.handleNotesChange = this.handleNotesChange.bind(this);
     this.handleClose = this.handleClose.bind(this);
   }
   
+/*
 	handleAddToVendorOrder() {
     const orders = [{
       productId: this.state.product ? this.state.product.productId : null,
@@ -31,11 +31,13 @@ class ProductOrderModal extends Component {
       units: this.state.units,
       notes: this.state.notes
     }];
-    const orderId = this.props.productOrderData.orderId ? this.props.productOrderData.orderId : null;
+    const orderId = this.props.productResizeData.orderId ? this.props.productResizeData.orderId : null;
 		this.props.handleAddToVendorOrder(orders, orderId);
 		this.props.handleProductOrderModalClose();
 	}
+*/
 	
+/*
 	handleCreateResize() {
     const resizes = [{
       productId: this.state.product ? this.state.product.productId : null,
@@ -45,19 +47,19 @@ class ProductOrderModal extends Component {
       units: this.state.units,
       notes: this.state.notes
     }];
-    const orderId = this.props.productOrderData.orderId ? this.props.productOrderData.orderId : null;
+    const orderId = this.props.productResizeData.orderId ? this.props.productResizeData.orderId : null;
 		this.props.handleCreateResize(resizes, orderId);
 		this.props.handleProductOrderModalClose();
 	}
+*/
 	
   handleClose() {
     this.setState({
       formComplete: false,
-      vendor: null,
-      variant: '',
-      resizeVariant: '',
-      resize: null,
+      variant: {},
+      resizeVariant: {},
       units: 1,
+      received: '',
       notes: ''
     });
     this.props.handleProductOrderModalClose();
@@ -95,46 +97,12 @@ class ProductOrderModal extends Component {
   	});
 	}
 	
-	getRecommendedResize(variant, product) {
-  	const variants = product && product.variants ? product.variants : [];
-  	let recommendedResize = '';
-		const selectedVariant = variants.find((variantObj) => { return variantObj.objectId === variant;});
-		
-		let resizeDiff = 1000;
-		variants.map(function(variantObj, i) {
-  		let resizable = true;
-  		if (!variantObj || !selectedVariant || !variantObj.size_value) resizable = false;
-//   		console.log('1 resizable: ' + resizable)
-  		if (variantObj.inventoryLevel <= 0) resizable = false;
-//   		console.log('2 resizable: ' + resizable)
-  		if (resizable && variantObj.color_value && selectedVariant.color_value && variantObj.color_value !== selectedVariant.color_value) {
-    		resizable = false;
-  		}
-//   		console.log(variantObj.color_value + ' resizable: ' + resizable)
-  		if (resizable && variantObj.gemstone_value && selectedVariant.gemstone_value && variantObj.gemstone_value !== selectedVariant.gemstone_value) {
-    		resizable = false;
-  		}
-//   		console.log('4 resizable: ' + resizable)
-  		if (resizable && variantObj.size_value && selectedVariant.size_value) {
-    		const diff = Math.abs(variantObj.size_value - selectedVariant.size_value);
-    		if (diff > 0 && diff < resizeDiff) {
-      		recommendedResize = variantObj.objectId;
-      		resizeDiff = diff;
-//       		console.log('color:' + variantObj.color_value + ', size:' + variantObj.size_value + ', diff: ' + diff + ', inventory:' + variantObj.inventoryLevel);
-    		}
-  		}
-//   		console.log('5 resizable: ' + resizable)
-  		return variantObj;
-		});
-		return recommendedResize;
-	}
-	
 	componentWillMount() {
-  	const variant = this.props.productOrderData && this.props.productOrderData.variant ? this.props.productOrderData.variant : '';
-  	const resize = this.props.productOrderData && this.props.productOrderData.resize ? this.props.productOrderData.resize : false;
-    const vendor = this.props.productOrderData && this.props.productOrderData.product && this.props.productOrderData.product.vendor ? this.props.productOrderData.product.vendor.objectId : null;
-  	const product = this.props.productOrderData && this.props.productOrderData.product ? this.props.productOrderData.product : null;
-  	const resizeVariant = this.props.productOrderData && variant !== '' ? this.getRecommendedResize(variant, product) : '';
+  	const variant = this.props.productResizeData && this.props.productResizeData.variant ? this.props.productResizeData.variant : '';
+  	const resize = this.props.productResizeData && this.props.productResizeData.resize ? this.props.productResizeData.resize : false;
+    const vendor = this.props.productResizeData && this.props.productResizeData.product && this.props.productResizeData.product.vendor ? this.props.productResizeData.product.vendor.objectId : null;
+  	const product = this.props.productResizeData && this.props.productResizeData.product ? this.props.productResizeData.product : null;
+  	const resizeVariant = this.props.productResizeData && variant !== '' ? this.getRecommendedResize(variant, product) : '';
   	this.setState({
     	variant: variant,
     	resize: resize,
@@ -145,10 +113,10 @@ class ProductOrderModal extends Component {
 	}
 	
 	componentWillReceiveProps(nextProps) {
-  	const variant = nextProps.productOrderData && nextProps.productOrderData.variant ? nextProps.productOrderData.variant : '';
-  	const resize = nextProps.productOrderData && nextProps.productOrderData.resize ? nextProps.productOrderData.resize : false;
-    const vendor = nextProps.productOrderData && nextProps.productOrderData.product && nextProps.productOrderData.product.vendor ? nextProps.productOrderData.product.vendor.objectId : null;
-  	const product = nextProps.productOrderData && nextProps.productOrderData.product ? nextProps.productOrderData.product : null;
+  	const variant = nextProps.productResizeData && nextProps.productResizeData.variant ? nextProps.productResizeData.variant : '';
+  	const resize = nextProps.productResizeData && nextProps.productResizeData.resize ? nextProps.productResizeData.resize : false;
+    const vendor = nextProps.productResizeData && nextProps.productResizeData.product && nextProps.productResizeData.product.vendor ? nextProps.productResizeData.product.vendor.objectId : null;
+  	const product = nextProps.productResizeData && nextProps.productResizeData.product ? nextProps.productResizeData.product : null;
   	this.setState({
     	variant: variant,
     	resize: resize,
@@ -231,23 +199,10 @@ class ProductOrderModal extends Component {
         <Modal.Content>
           <Form loading={!product}>
             <Form.Group>
-              <Form.Input label='Vendor' error={product && product.vendor ? false : true} value={product && product.vendor ? product.vendor.name : 'Product vendor missing'} readOnly />
-            </Form.Group>
-            <Form.Group widths='equal'>
-              <Form.Select 
-                label={this.state.resize ? 'Product Variant To Create' : 'Product Variant To Order'}
-                options={variantOptions} 
-                placeholder='Select a product variant' 
-                value={this.state.variant}
-                onChange={this.handleVariantChange} 
-              />
-            </Form.Group>
-            {resizeSelect}
-            <Form.Group>
               <Form.Input 
                 label='Units' 
                 type='number' 
-                min='1' 
+                disabled={true}
                 value={this.state.units}
                 onChange={this.handleUnitsChange} 
               />
@@ -270,4 +225,4 @@ class ProductOrderModal extends Component {
   }
 }
 
-export default ProductOrderModal;
+export default ProductResizeModal;

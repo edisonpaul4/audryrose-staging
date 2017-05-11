@@ -54,6 +54,7 @@ class Orders extends Component {
     this.handlePaginationClick = this.handlePaginationClick.bind(this);
     this._notificationSystem = null;
     this.handleAddToVendorOrder = this.handleAddToVendorOrder.bind(this);
+    this.handleCreateResize = this.handleCreateResize.bind(this);
     this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
     this.handleProductOrderModalClose = this.handleProductOrderModalClose.bind(this);
   }
@@ -196,6 +197,22 @@ class Orders extends Component {
       productOrderData: {}
   	});
 		this.props.addOrderProductToVendorOrder(this.props.token, orders, orderId);
+	}
+	
+	handleCreateResize(resizes, orderId) {
+  	let currentlyReloading = this.state.isReloading;
+    if (orderId) {
+  		const index = currentlyReloading.indexOf(orderId);
+  		if (index < 0) {
+  			currentlyReloading.push(orderId);
+  		}
+		}
+  	this.setState({
+    	isReloading: currentlyReloading,
+      productOrderOpen: false,
+      productOrderData: {}
+  	});
+		this.props.createResize(this.props.token, resizes, orderId);
 	}
 	
 	handleShowOrderFormClick(data) {
@@ -391,6 +408,7 @@ class Orders extends Component {
 				    handleReloadClick={scope.handleReloadClick} 
 				    handleCreateShipments={scope.handleCreateShipments}
 				    handleAddToVendorOrder={scope.handleAddToVendorOrder} 
+				    handleCreateResize={scope.handleCreateResize} 
 				    handleShowOrderFormClick={scope.handleShowOrderFormClick} 
 				    handleProductOrderModalClose={scope.handleProductOrderModalClose} 
 			    />
@@ -426,6 +444,7 @@ class Orders extends Component {
     const productOrderModal = this.state.productOrderData ? <ProductOrderModal 
         open={this.state.productOrderOpen}
         handleAddToVendorOrder={this.handleAddToVendorOrder} 
+        handleCreateResize={this.handleCreateResize} 
         handleProductOrderModalClose={this.handleProductOrderModalClose} 
         handleProductOrder={this.handleProductOrder} 
         productOrderData={this.state.productOrderData} 
