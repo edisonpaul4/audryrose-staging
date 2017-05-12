@@ -45,8 +45,6 @@ class Products extends Component {
     this.handleSaveAllVariantsClick = this.handleSaveAllVariantsClick.bind(this);
     this.handleVariantsEdited = this.handleVariantsEdited.bind(this);
     this.handleProductSave = this.handleProductSave.bind(this);
-//     this.handleVendorChange = this.handleVendorChange.bind(this);
-//     this.handleProductTypeChange = this.handleProductTypeChange.bind(this);
     this.handleEditBundleClick = this.handleEditBundleClick.bind(this);
     this.handleEditBundleModalClose = this.handleEditBundleModalClose.bind(this);
     this.handleProductBundleSave = this.handleProductBundleSave.bind(this);
@@ -212,34 +210,6 @@ class Products extends Component {
   	});
 		this.props.saveProduct(this.props.token, data);
 	}
-
-/*
-	handleVendorChange(productId, vendorId) {
-		let currentlyReloading = this.state.isReloading;
-		const index = currentlyReloading.indexOf(productId);
-		if (index < 0) {
-			currentlyReloading.push(productId);
-		}
-  	this.setState({
-    	isReloading: currentlyReloading
-  	});
-		this.props.saveProductVendor(this.props.token, productId, vendorId);
-	}
-*/
-	
-/*
-	handleProductTypeChange(productId, isBundle) {
-		let currentlyReloading = this.state.isReloading;
-		const index = currentlyReloading.indexOf(productId);
-		if (index < 0) {
-			currentlyReloading.push(productId);
-		}
-  	this.setState({
-    	isReloading: currentlyReloading
-  	});
-		this.props.saveProductType(this.props.token, productId, isBundle);
-	}
-*/
 	
 	handleEditBundleClick(productId) {
   	let bundleFormData = {};
@@ -480,7 +450,6 @@ class Products extends Component {
   				    handleShowOrderFormClick={scope.handleShowOrderFormClick} 
   				    handleVariantsEdited={scope.handleVariantsEdited}
   				    handleProductSave={scope.handleProductSave} 
-//   				    handleProductTypeChange={scope.handleProductTypeChange} 
   				    handleEditBundleClick={scope.handleEditBundleClick}
   				    savingVariants={scope.state.savingVariants} 
   				    updatedVariants={scope.state.updatedVariants} 

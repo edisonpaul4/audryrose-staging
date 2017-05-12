@@ -337,9 +337,10 @@ class ProductEditor extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      vendor: this.props.data.vendor ? this.props.data.vendor.objectId : '',
-      isBundle: this.props.data.isBundle !== undefined ? this.props.data.isBundle === true ? 'true' : 'false' : '',
-      designerProductName: this.props.data.designerProductName ? this.props.data.designerProductName : ''
+      productId: this.props.productId ? this.props.productId : '',
+      vendor: this.props.vendor ? this.props.vendor.objectId : '',
+      isBundle: this.props.isBundle !== undefined ? this.props.isBundle === true ? 'true' : 'false' : '',
+      designerProductName: this.props.designerProductName ? this.props.designerProductName : ''
     };
     this.handleVendorChange = this.handleVendorChange.bind(this);
     this.handleProductTypeChange = this.handleProductTypeChange.bind(this);
@@ -368,22 +369,22 @@ class ProductEditor extends Component {
   	}
 	}
 	handleProductSaveClick() {
-  	this.props.handleProductSave({productId: this.props.data.productId, vendorId: this.state.vendor, isBundle: this.state.isBundle, designerProductName: this.state.designerProductName});
+  	this.props.handleProductSave({productId: this.state.productId, vendorId: this.state.vendor, isBundle: this.state.isBundle, designerProductName: this.state.designerProductName});
 	}
 	isFormEdited() {
   	let edited = false;
   	if (
-    	  (this.props.data.vendor && this.state.vendor !== this.props.data.vendor.objectId) 
-    	  || (!this.props.data.vendor && this.state.vendor !== '')
+    	  (this.props.vendor && this.state.vendor !== this.props.vendor.objectId) 
+    	  || (!this.props.vendor && this.state.vendor !== '')
       ) edited = true;
   	if (
-    	  (this.props.data.isBundle === undefined && this.state.isBundle !== '') 
-    	  || (this.props.data.isBundle !== undefined && this.state.isBundle === 'true' && this.props.data.isBundle === false) 
-    	  || (this.props.data.isBundle !== undefined && this.state.isBundle === 'false' && this.props.data.isBundle === true)
+    	  (this.props.isBundle === undefined && this.state.isBundle !== '') 
+    	  || (this.props.isBundle !== undefined && this.state.isBundle === 'true' && this.props.isBundle === false) 
+    	  || (this.props.isBundle !== undefined && this.state.isBundle === 'false' && this.props.isBundle === true)
   	  ) edited = true;
   	if (
-    	  (this.props.data.designerProductName && this.state.designerProductName !== this.props.data.designerProductName) 
-    	  || (!this.props.data.designerProductName && this.state.designerProductName !== '')
+    	  (this.props.designerProductName && this.state.designerProductName !== this.props.designerProductName) 
+    	  || (!this.props.designerProductName && this.state.designerProductName !== '')
       ) edited = true;
   	return edited;
 	}
@@ -394,7 +395,7 @@ class ProductEditor extends Component {
 		];
   	const productTypeSelect = <Form.Select label='Product Type' placeholder='Select product type' value={this.state.isBundle} options={productTypeOptions} onChange={this.handleProductTypeChange} />
   	
-		const vendorOptions = this.props.data.designer && this.props.data.designer.vendors ? this.props.data.designer.vendors.map(function(vendor, i) {
+		const vendorOptions = this.props.designer && this.props.designer.vendors ? this.props.designer.vendors.map(function(vendor, i) {
   		return { key: i, value: vendor.objectId, text: vendor.name };
 		}) : null;
 		const vendorSelect = this.state.isBundle === 'false' || this.state.isBundle === '' ? <Form.Select label='Vendor' size='small' placeholder='Select a vendor' value={this.state.vendor} options={vendorOptions} onChange={this.handleVendorChange} /> : null;
@@ -615,7 +616,7 @@ class ProductDetails extends Component {
       /></Form.Field> : null;
 		
 		const saveAllButton = this.state.variantsEdited.length > 0 ? <Button primary circular compact size='small' icon='save' content='Save All' disabled={this.props.isReloading} onClick={this.handleSaveAllVariantsClick} /> : null;
-		const productEditor = this.state.showEditor ? <ProductEditor data={this.props.data} handleProductSave={this.handleProductSave}/> : null;
+		const productEditor = this.state.showEditor ? <ProductEditor productId={this.props.data.productId} designer={designer} vendor={vendor} isBundle={isBundle} designerProductName={this.props.data.designerProductName} handleProductSave={this.handleProductSave}/> : null;
 		
     return (
       <Table.Row className={rowClass}>
