@@ -89,6 +89,21 @@ class ProductRow extends Component {
     	  return vendor;
   	  });
 	  }
+    
+	  let resizes = [];
+		if (variant && variant.resizes && variant.resizes.length > 0) {
+  		variant.resizes.map(function(resize, i) {
+    		const averageWaitTime = 7;
+    		const expectedDate = resize.dateSent ? moment(resize.dateSent.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
+    		const daysLeft = resize.dateSent ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
+    		const labelColor = daysLeft < 0 ? 'red' : 'olive';
+    		const labelText = resize.units + ' Resizing';
+    		const labelDetail = daysLeft < 0 ? Math.abs(daysLeft) + ' days late' : daysLeft + ' days left';
+//     		vendorOrderAndResizes.push((resize.done === false) ? <Label as='a' href={data.designer ? '/designers/search?q=' + data.designer.designerId : '/designers'} size='tiny' color={labelColor} key={'resize-'+i}>{labelText}<Label.Detail>{labelDetail}</Label.Detail><ProductResizeModal productResizeData={resize} /></Label> : null);
+    		resizes.push((resize.done === false) ? <Label size='tiny' color={labelColor} key={'resize-'+i}>{labelText}<Label.Detail>{labelDetail}</Label.Detail></Label> : null);
+    		return resize;
+  		});
+    }
 		
 		let primaryButton;
 		let dropdownItems = [];
@@ -119,8 +134,8 @@ class ProductRow extends Component {
         <Table.Cell>{product.quantity ? product.quantity : ''}</Table.Cell>
 				<Table.Cell>{alwaysResize}</Table.Cell>
 				<Table.Cell>{inventory}</Table.Cell>
-				<Table.Cell>{vendorOrders}</Table.Cell>
 				<Table.Cell>{designerName}</Table.Cell>
+				<Table.Cell>{vendorOrders}{resizes}</Table.Cell>
 				<Table.Cell className='right aligned'>
           <Button.Group color='grey' size='mini' compact>
             {primaryButton}
@@ -377,8 +392,8 @@ class OrderDetails extends Component {
                     <Table.HeaderCell>Quantity</Table.HeaderCell>
                     <Table.HeaderCell>Always Resize</Table.HeaderCell>
                     <Table.HeaderCell>Inventory</Table.HeaderCell>
-                    <Table.HeaderCell>Vendor Orders</Table.HeaderCell>
                     <Table.HeaderCell>Designer</Table.HeaderCell>
+                    <Table.HeaderCell>Vendor Orders / Resize</Table.HeaderCell>
                     <Table.HeaderCell className='right aligned'>Actions</Table.HeaderCell>
                   </Table.Row>
                 </Table.Header>

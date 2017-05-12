@@ -145,7 +145,8 @@ const orders = (state = initialState, action) => {
       return {
         ...state,
         updatedOrders: action.res.updatedOrders,
-        tabCounts: action.res.tabCounts
+        tabCounts: action.res.tabCounts,
+        errors: action.res.errors
       };
 
     case 'CREATE_ORDER_RESIZE_FAILURE':
