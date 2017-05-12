@@ -47,6 +47,10 @@ class Product extends Component {
 		let sizes = [];
 		if (data.variants && data.variants.length > 1) {
 			data.variants.map(function(variant, i) {
+  			if (!variant.variantOptions) {
+    			console.log('variant has no options: ' + variant.productName + ' ' + variant.variantId); 
+    			return true;
+  			}
   			return variant.variantOptions.map(function(variantOption, j) {
     			if (variantOption.option_id === 32) sizes.push(parseFloat(variantOption.value));
     			return true;
