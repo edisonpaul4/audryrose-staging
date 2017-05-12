@@ -18,7 +18,8 @@
     "numeral": "^2.0.4",
     "parse": "latest",
     "path": "^0.12.7",
-    "react": "^15.3.2",
+    "prop-types": "^15.5.9",
+    "react": "^15.5.4",
     "react-addons-css-transition-group": "^15.4.2",
     "react-addons-transition-group": "^15.4.2",
     "react-dom": "^15.3.2",
@@ -26,12 +27,11 @@
     "react-redux": "^5.0.0",
     "react-router": "^3.0.0",
     "react-router-redux": "^4.0.5",
-    "reactstrap": "^4.1.1",
     "redux": "^3.6.0",
     "redux-session": "^1.0.2",
     "redux-thunk": "^2.1.0",
-    "semantic-ui-css": "^2.2.9",
-    "semantic-ui-react": "^0.67.0"
+    "semantic-ui-css": "^2.2.10",
+    "semantic-ui-react": "^0.68.3"
   },
   "scripts": {
     "start": "react-scripts start",
