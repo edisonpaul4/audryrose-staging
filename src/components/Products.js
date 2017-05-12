@@ -437,8 +437,10 @@ class Products extends Component {
 			bundleFormData: bundleFormData,
 			bundleFormIsLoading: bundleFormIsLoading
 		});	
-    
-  	if (nextPage !== this.state.page || nextProps.router.params.subpage !== this.state.subpage) {
+    console.log(nextProps.router.params.subpage)
+  	if (nextPage !== this.state.page || (nextProps.router.params.subpage !== undefined && nextProps.router.params.subpage !== this.state.subpage)) {
+    	console.log(nextProps.router.params.subpage !== this.state.subpage)
+    	console.log('page change')
     	this.props.getProducts(this.props.token, nextProps.router.params.subpage, nextPage, this.state.sort, search, this.state.filters);
   	}
 		
