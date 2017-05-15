@@ -58,7 +58,8 @@ class VariantRow extends Component {
   	}
 	}
 	render() {  	
-		const data = this.props.data;
+		const data = this.state.variantData;
+// 		console.log(data)
 		
 		// Create an array of other options values
 		let otherOptions = [];
@@ -85,13 +86,13 @@ class VariantRow extends Component {
     		const labelColor = vendorOrderVariant.ordered ? daysLeft < 0 ? 'red' : 'olive' : 'yellow';
     		const labelText = vendorOrderVariant.ordered ? vendorOrderVariant.units + ' Sent' : vendorOrderVariant.units + ' Pending';
     		const labelDetail = vendorOrderVariant.ordered ? daysLeft < 0 ? Math.abs(daysLeft) + ' days late' : daysLeft + ' days left' : averageWaitTime + ' days wait';
-    		vendorOrderAndResizes.push((vendorOrderVariant.done === false) ? <Label as='a' href={data.designer ? '/designers/search?q=' + data.designer.designerId : '/designers'} size='tiny' color={labelColor} key={'vendorOrderVariant-'+i}>{labelText}<Label.Detail>{labelDetail}</Label.Detail></Label> : null);
+    		vendorOrderAndResizes.push((vendorOrderVariant.done === false) ? <Label as='a' href={data.designer ? '/designers/search?q=' + data.designer.designerId : '/designers'} size='tiny' color={labelColor} key={'vendorOrder-'+i}>{labelText}<Label.Detail>{labelDetail}</Label.Detail></Label> : null);
     		return vendorOrderVariant;
   		});
     }
     
 		if (data.resizes) {
-  		console.log(data.resizes)
+//   		console.log(data.resizes)
   		data.resizes.map(function(resize, i) {
     		const averageWaitTime = 7;
     		const expectedDate = resize.dateSent ? moment(resize.dateSent.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
@@ -99,8 +100,23 @@ class VariantRow extends Component {
     		const labelColor = daysLeft < 0 ? 'red' : 'olive';
     		const labelText = resize.units + ' Resizing';
     		const labelDetail = daysLeft < 0 ? Math.abs(daysLeft) + ' days late' : daysLeft + ' days left';
-//     		vendorOrderAndResizes.push((resize.done === false) ? <Label as='a' href={data.designer ? '/designers/search?q=' + data.designer.designerId : '/designers'} size='tiny' color={labelColor} key={'resize-'+i}>{labelText}<Label.Detail>{labelDetail}</Label.Detail><ProductResizeModal productResizeData={resize} /></Label> : null);
-    		vendorOrderAndResizes.push((resize.done === false) ? <Label size='tiny' color={labelColor} key={'resize-'+i}>{labelText}<Label.Detail>{labelDetail}</Label.Detail></Label> : null);
+    		console.log(resize)
+    		vendorOrderAndResizes.push(
+    		  <Label 
+    		    size='tiny' 
+    		    color={labelColor} 
+    		    key={'resize-'+i}
+  		    >
+  		      {labelText}
+  		      <Label.Detail>{labelDetail}</Label.Detail>
+  		      {/*<ProductResizeModal productResizeData={resize} />*/}
+		      </Label>
+  		  );
+/*
+    		vendorOrderAndResizes.push(
+    		  <Label size='tiny' color={labelColor} key={'resize-'+i}>{labelText}<Label.Detail>{labelDetail}</Label.Detail></Label>
+  		  );
+*/
     		return resize;
   		});
     }
@@ -172,6 +188,7 @@ class VariantsTable extends Component {
 		const variants = this.props.variants;
 		const vendor = this.props.vendor;
 		const designer = this.props.designer;
+// 		const resizes = this.props.resizes;
 		
 		// Sort the data
 		if (variants.length && variants[0].size_value) {
@@ -223,6 +240,7 @@ class VariantsTable extends Component {
       	  });
         }
         if (vendorOrders.length > 0) variantData.vendorOrders = vendorOrders;
+        
         if (designer) variantData.designer = designer;
         
 				variantRows.push(
@@ -532,6 +550,7 @@ class ProductDetails extends Component {
   	const variants = this.props.data.variants;
   	const designer = this.props.data.designer;
   	const isBundle = this.props.data.isBundle;
+  	const resizes = this.props.data.resizes;
   	const vendor = this.props.data.vendor;
 		var rowClass = classNames(
 			{
@@ -545,6 +564,19 @@ class ProductDetails extends Component {
   		let variantGroupings = [];
   		// Determine variant groupings
 			variants.map(function(variantItem, i) {
+  			
+  			// Copy resizes to the variant if any exist
+  			if (resizes && resizes.length > 0) {
+    			var variantResizes = [];
+    			resizes.map(function(resize, j) {
+      			if (variantItem.objectId === resize.variant.objectId) {
+        			variantResizes.push(resize);
+      			}
+      			return resize;
+    			});
+    			if (variantResizes.length > 0) variantItem.resizes = variantResizes;
+  			}
+  			
   			const color = (variantItem.color_value) ? variantItem.color_value : null;
   			if (color && variantGroupings.indexOf(color) < 0) {
     			variantGroupings.push(color);
