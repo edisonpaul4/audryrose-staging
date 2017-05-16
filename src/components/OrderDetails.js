@@ -72,14 +72,13 @@ class ProductRow extends Component {
       	  vendor.vendorOrders.map(function(vendorOrder, j) {
         	  vendorOrder.vendorOrderVariants.map(function(vendorOrderVariant, k) {
           	  if (variant.objectId === vendorOrderVariant.variant.objectId && vendorOrderVariant.done === false) {
-//             	  vendorOrders.push(<Label key={i+'-'+j+'-'+k}>{vendorOrderVariant.ordered ? 'Sent' : 'Pending'}<Label.Detail>{vendorOrderVariant.units}</Label.Detail></Label>);
             		const averageWaitTime = vendor.waitTime ? vendor.waitTime : 21;
             		const expectedDate = vendorOrder.dateOrdered ? moment(vendorOrder.dateOrdered.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
             		const daysLeft = vendorOrder.dateOrdered ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
             		const labelColor = vendorOrderVariant.ordered ? daysLeft < 0 ? 'red' : 'olive' : 'yellow';
             		const labelText = vendorOrderVariant.ordered ? vendorOrderVariant.units + ' Sent' : vendorOrderVariant.units + ' Pending';
             		const labelDetail = vendorOrder.dateOrdered ? daysLeft < 0 ? Math.abs(daysLeft) + ' days late' : daysLeft + ' days left' : averageWaitTime + ' days wait';
-            		vendorOrders.push((vendorOrderVariant.done === false) ? <Label as='a' href={variant.designer ? '/designers/search?q=' + variant.designer.designerId : '/designers'} size='tiny' color={labelColor} key={'vendorOrderVariant-'+i+'-'+j+'-'+k}>{labelText}<Label.Detail>{labelDetail}</Label.Detail></Label> : null);
+            		vendorOrders.push((vendorOrderVariant.done === false) ? <Label as='a' href={variant.designer ? '/designers/search?q=' + variant.designer.designerId : '/designers'} size='tiny' color={labelColor} key={'vendorOrder-'+i+'-'+j+'-'+k}>{labelText}<Label.Detail>{labelDetail}</Label.Detail></Label> : null);
           	  }
           	  return vendorOrderVariant;
         	  });
@@ -91,16 +90,26 @@ class ProductRow extends Component {
 	  }
     
 	  let resizes = [];
-		if (variant && variant.resizes && variant.resizes.length > 0) {
-  		variant.resizes.map(function(resize, i) {
+		if (product && product.resizes && product.resizes.length > 0) {
+  		product.resizes.map(function(resize, i) {
     		const averageWaitTime = 7;
     		const expectedDate = resize.dateSent ? moment(resize.dateSent.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
     		const daysLeft = resize.dateSent ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
     		const labelColor = daysLeft < 0 ? 'red' : 'olive';
     		const labelText = resize.units + ' Resizing';
     		const labelDetail = daysLeft < 0 ? Math.abs(daysLeft) + ' days late' : daysLeft + ' days left';
-//     		vendorOrderAndResizes.push((resize.done === false) ? <Label as='a' href={data.designer ? '/designers/search?q=' + data.designer.designerId : '/designers'} size='tiny' color={labelColor} key={'resize-'+i}>{labelText}<Label.Detail>{labelDetail}</Label.Detail><ProductResizeModal productResizeData={resize} /></Label> : null);
-    		resizes.push((resize.done === false) ? <Label size='tiny' color={labelColor} key={'resize-'+i}>{labelText}<Label.Detail>{labelDetail}</Label.Detail></Label> : null);
+    		resizes.push(
+    		  <Label 
+    		    as='a' 
+    		    href={product.product_id ? '/products/search?q=' + product.product_id : null} 
+    		    size='tiny' 
+    		    color={labelColor} 
+    		    key={'resize-'+i}
+  		    >
+  		      {labelText}
+  		      <Label.Detail>{labelDetail}</Label.Detail>
+		      </Label>
+	      );
     		return resize;
   		});
     }

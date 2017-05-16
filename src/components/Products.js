@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router';
 import { Grid, Table, Dimmer, Loader, Checkbox, Header, Icon, Segment, Form, Select } from 'semantic-ui-react';
+import NotificationSystem from 'react-notification-system';
 import ProductsNav from './ProductsNav.js';
 import Product from './Product.js';
 import ProductDetails from './ProductDetails.js';
@@ -36,8 +37,10 @@ class Products extends Component {
 			productOrderOpen: false,
 			productOrderData: null,
 			bundleFormOpen: false,
-			bundleFormData: null
+			bundleFormData: null,
+			errors: []
     };
+    this._notificationSystem = null;
     this.handleToggleClick = this.handleToggleClick.bind(this);
     this.handlePaginationClick = this.handlePaginationClick.bind(this);
     this.handleReloadClick = this.handleReloadClick.bind(this);
@@ -54,10 +57,12 @@ class Products extends Component {
     this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
     this.handleAddToVendorOrder = this.handleAddToVendorOrder.bind(this);
     this.handleCreateResize = this.handleCreateResize.bind(this);
+    this.handleSaveResize = this.handleSaveResize.bind(this);
     this.handleProductOrderModalClose = this.handleProductOrderModalClose.bind(this);
   }
 	
 	componentDidMount() {
+  	this._notificationSystem = this.refs.notificationSystem;
 		this.props.getProducts(this.props.token, this.state.subpage, this.state.page, this.state.sort, this.state.search, this.state.filters);
 		this.props.getProductFilters(this.props.token);
 	}
@@ -279,7 +284,6 @@ class Products extends Component {
   		}
     	return resize;
   	});
-  	console.log(currentlyReloading)
   	this.setState({
     	isReloading: currentlyReloading
   	});
@@ -300,6 +304,18 @@ class Products extends Component {
       productOrderOpen: true,
       productOrderData: productOrderData
     });
+  }
+	
+	handleSaveResize(data) {
+  	let currentlyReloading = this.state.isReloading;
+  	const index = currentlyReloading.indexOf(data.productId);
+		if (index < 0) {
+			currentlyReloading.push(data.productId);
+		}
+  	this.setState({
+    	isReloading: currentlyReloading
+  	});
+		this.props.saveResize(this.props.token, data);
 	}
 	
 	handleProductOrderModalClose(data) {
@@ -310,6 +326,7 @@ class Products extends Component {
 	}
 	
 	componentWillReceiveProps(nextProps) {
+  	const scope = this;
   	let nextPage = parseFloat(nextProps.location.query.page);
   	if (!nextPage) nextPage = 1;
   	let expandedProducts = this.state.expandedProducts;
@@ -383,6 +400,30 @@ class Products extends Component {
     	bundleFormIsLoading = false;
   	}
   	
+		// Display any errors
+		let errors = [];
+		if (nextProps.errors) {
+  		nextProps.errors.map(function(errorMessage, i) {
+    		var errorExists = false;
+    		scope.state.errors.map(function(error, j) {
+      		if (errorMessage === error) errorExists = true;
+          return error;
+        });
+        if (!errorExists) {
+          scope._notificationSystem.addNotification({
+            message: errorMessage,
+            level: 'error',
+            autoDismiss: 0,
+            dismissible: true
+          });
+        }
+    		return errorMessage;
+  		});
+      errors = nextProps.errors.length > 0 ? nextProps.errors : this.state.errors;
+		} else {
+  		errors = this.state.errors;
+		}
+  	
   	// Update tab counts if available
   	const tabCounts = nextProps.tabCounts ? nextProps.tabCounts : this.state.tabCounts;
   	
@@ -405,9 +446,10 @@ class Products extends Component {
 			savingVariants: savingVariants,
 			tabCounts: tabCounts,
 			bundleFormData: bundleFormData,
-			bundleFormIsLoading: bundleFormIsLoading
+			bundleFormIsLoading: bundleFormIsLoading,
+			errors: errors
 		});	
-    console.log(nextProps.router.params.subpage)
+    
   	if (nextPage !== this.state.page || (nextProps.router.params.subpage !== undefined && nextProps.router.params.subpage !== this.state.subpage)) {
     	console.log(nextProps.router.params.subpage !== this.state.subpage)
     	console.log('page change')
@@ -444,6 +486,8 @@ class Products extends Component {
   				    expanded={expanded} 
   				    key={`${productJSON.productId}-2`} 
   				    isReloading={isReloading} 
+  				    savingVariants={scope.state.savingVariants} 
+  				    updatedVariants={scope.state.updatedVariants} 
   				    handleReloadClick={scope.handleReloadClick} 
   				    handleSaveVariantClick={scope.handleSaveVariantClick} 
   				    handleSaveAllVariantsClick={scope.handleSaveAllVariantsClick} 
@@ -451,8 +495,7 @@ class Products extends Component {
   				    handleVariantsEdited={scope.handleVariantsEdited}
   				    handleProductSave={scope.handleProductSave} 
   				    handleEditBundleClick={scope.handleEditBundleClick}
-  				    savingVariants={scope.state.savingVariants} 
-  				    updatedVariants={scope.state.updatedVariants} 
+  				    handleSaveResize={scope.handleSaveResize}
 				    />
 			    );
 				}
@@ -516,6 +559,7 @@ class Products extends Component {
     
     return (
 			<Grid.Column width='16'>
+  			<NotificationSystem ref="notificationSystem" />
 				<ProductsNav key={this.props.location.pathname} pathname={this.props.location.pathname} query={this.props.location.query} tabCounts={tabCounts} />
 			  <Segment basic size='small' className={filterBarClassNames}>
           <Form className='filter-form' size='tiny'>

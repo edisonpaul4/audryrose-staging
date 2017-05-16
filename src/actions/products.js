@@ -49,6 +49,13 @@ export function createResize(token, resizes) {
   }
 }
 
+export function saveResize(token, data) {
+  return {
+    types: ['SAVE_PRODUCT_RESIZE_REQUEST', 'SAVE_PRODUCT_RESIZE_SUCCESS', 'SAVE_PRODUCT_RESIZE_FAILURE'],
+    promise: api.saveResize(token, data)
+  }
+}
+
 export function getBundleFormData(token, productId) {
   return {
     types: ['GET_BUNDLE_FORM_REQUEST', 'GET_BUNDLE_FORM_SUCCESS', 'GET_BUNDLE_FORM_FAILURE'],

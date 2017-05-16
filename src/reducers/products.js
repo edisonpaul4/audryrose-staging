@@ -124,7 +124,8 @@ const products = (state = initialState, action) => {
       return {
         ...state,
         updatedProducts: action.res.updatedProducts,
-        tabCounts: action.res.tabCounts
+        tabCounts: action.res.tabCounts,
+        errors: action.res.errors
       };
 
     case 'ADD_TO_VENDOR_ORDER_FAILURE':
@@ -141,10 +142,29 @@ const products = (state = initialState, action) => {
       return {
         ...state,
         updatedProducts: action.res.updatedProducts,
-        tabCounts: action.res.tabCounts
+        tabCounts: action.res.tabCounts,
+        errors: action.res.errors
       };
 
     case 'CREATE_PRODUCT_RESIZE_FAILURE':
+      return {
+        ...state
+      }
+      
+    case 'SAVE_PRODUCT_RESIZE_REQUEST':
+      return {
+        ...state
+      }
+
+    case 'SAVE_PRODUCT_RESIZE_SUCCESS':
+      return {
+        ...state,
+        updatedProducts: action.res.updatedProducts,
+        tabCounts: action.res.tabCounts,
+        errors: action.res.errors
+      };
+
+    case 'SAVE_PRODUCT_RESIZE_FAILURE':
       return {
         ...state
       }

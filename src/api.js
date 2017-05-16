@@ -74,6 +74,13 @@ export const createResize = (token, resizes, orderId) => Parse.Cloud.run('create
   }
 );
 
+export const saveResize = (token, data) => Parse.Cloud.run('saveResize', 
+  {
+    sessionToken: token,
+    data
+  }
+);
+
 export const getProducts = (token, subpage, page, sort, search, filters) => Parse.Cloud.run('getProducts', 
   {
     sessionToken: token,
@@ -104,26 +111,6 @@ export const saveProduct = (token, data) => Parse.Cloud.run('saveProduct',
     data
   }
 );
-
-/*
-export const saveProductVendor = (token, productId, vendorId) => Parse.Cloud.run('saveProductVendor', 
-  {
-    sessionToken: token,
-    productId,
-    vendorId
-  }
-);
-*/
-
-/*
-export const saveProductType = (token, productId, isBundle) => Parse.Cloud.run('saveProductType', 
-  {
-    sessionToken: token,
-    productId,
-    isBundle
-  }
-);
-*/
 
 export const saveVariants = (token, variants) => Parse.Cloud.run('saveVariants', 
   {
@@ -239,12 +226,11 @@ export default {
 	getProduct,
 	addOrderProductToVendorOrder,
 	createResize,
+	saveResize,
 	getProducts,
 	getProductFilters,
 	reloadProduct,
 	saveProduct,
-// 	saveProductVendor,
-// 	saveProductType,
 	saveVariants,
 	addToVendorOrder,
 	getBundleFormData,

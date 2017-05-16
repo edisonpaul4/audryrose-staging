@@ -3,7 +3,7 @@ import { Table, Input, Button, Dropdown, Dimmer, Segment, Loader, Label, Form } 
 import classNames from 'classnames';
 import numeral from 'numeral';
 import moment from 'moment';
-// import ProductResizeModal from './ProductResizeModal.js';
+import ProductResizeModal from './ProductResizeModal.js';
 
 class VariantRow extends Component {
   constructor(props) {
@@ -19,6 +19,7 @@ class VariantRow extends Component {
     this.handleCancelVariantClick = this.handleCancelVariantClick.bind(this);
     this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
     this.handleShowResizeFormClick = this.handleShowResizeFormClick.bind(this);
+    this.handleSaveResize = this.handleSaveResize.bind(this);
   }
   handleInventoryChange(e, {value}) {
     let edited = (parseFloat(value) !== parseFloat(this.props.data.inventoryLevel)) ? true : false;
@@ -46,20 +47,26 @@ class VariantRow extends Component {
 	}
 	handleShowResizeFormClick(e, {value}) {
 		this.props.handleShowOrderFormClick({productId: this.props.data.productId, variant: this.props.data.objectId, resize: true});
-	}	
-	componentWillReceiveProps(nextProps) {
-  	if (nextProps.updatedVariant && this.props.isSaving) {
-    	this.setState({
-      	variantData: nextProps.updatedVariant,
-      	inventory: parseFloat(nextProps.updatedVariant.inventoryLevel),
-      	variantEdited: false,
-      	variantSaved: true
-    	});
-  	}
 	}
-	render() {  	
-		const data = this.state.variantData;
-// 		console.log(data)
+	handleSaveResize(data) {
+		this.props.handleSaveResize(data);
+	}
+	componentWillReceiveProps(nextProps) {
+  	let variantData = nextProps.data ? nextProps.data : this.state.variantData;
+  	if (nextProps.updatedVariant && this.props.isSaving) variantData = nextProps.updatedVariant;
+  	let inventory = nextProps.data ? nextProps.data.inventoryLevel : this.state.inventory;
+  	if (nextProps.updatedVariant && this.props.isSaving) inventory = nextProps.updatedVariant.inventoryLevel;
+    
+  	this.setState({
+    	variantData: variantData,
+    	inventory: inventory,
+    	variantEdited: (nextProps.updatedVariant && this.props.isSaving) ? false : this.state.variantEdited,
+    	variantSaved: (nextProps.updatedVariant && this.props.isSaving) ? true : this.state.variantSaved
+  	});
+	}
+	render() {
+  	const scope = this;
+		const data = this.props.data;
 		
 		// Create an array of other options values
 		let otherOptions = [];
@@ -92,7 +99,6 @@ class VariantRow extends Component {
     }
     
 		if (data.resizes) {
-//   		console.log(data.resizes)
   		data.resizes.map(function(resize, i) {
     		const averageWaitTime = 7;
     		const expectedDate = resize.dateSent ? moment(resize.dateSent.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
@@ -100,23 +106,16 @@ class VariantRow extends Component {
     		const labelColor = daysLeft < 0 ? 'red' : 'olive';
     		const labelText = resize.units + ' Resizing';
     		const labelDetail = daysLeft < 0 ? Math.abs(daysLeft) + ' days late' : daysLeft + ' days left';
-    		console.log(resize)
+    		const labelComponent = <Label as='a' size='tiny' color={labelColor}>{labelText}<Label.Detail>{labelDetail}</Label.Detail></Label>;
     		vendorOrderAndResizes.push(
-    		  <Label 
-    		    size='tiny' 
-    		    color={labelColor} 
-    		    key={'resize-'+i}
-  		    >
-  		      {labelText}
-  		      <Label.Detail>{labelDetail}</Label.Detail>
-  		      {/*<ProductResizeModal productResizeData={resize} />*/}
-		      </Label>
+		      <ProductResizeModal 
+		        data={resize} 
+		        label={labelComponent} 
+		        key={'resize-'+i} 
+		        isReloading={scope.props.isReloading}
+		        handleSaveResize={scope.handleSaveResize}
+	        />
   		  );
-/*
-    		vendorOrderAndResizes.push(
-    		  <Label size='tiny' color={labelColor} key={'resize-'+i}>{labelText}<Label.Detail>{labelDetail}</Label.Detail></Label>
-  		  );
-*/
     		return resize;
   		});
     }
@@ -173,6 +172,7 @@ class VariantsTable extends Component {
     this.handleSaveVariantClick = this.handleSaveVariantClick.bind(this);
     this.handleVariantEdited = this.handleVariantEdited.bind(this);
     this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
+    this.handleSaveResize = this.handleSaveResize.bind(this);
   }
   handleVariantEdited(data, edited) {
     this.props.handleVariantsEdited(data, edited)
@@ -182,6 +182,9 @@ class VariantsTable extends Component {
 	}
 	handleShowOrderFormClick(data) {
   	this.props.handleShowOrderFormClick(data);
+	}
+	handleSaveResize(data) {
+		this.props.handleSaveResize(data);
 	}
 	render() {  	
   	var scope = this;
@@ -250,11 +253,13 @@ class VariantsTable extends Component {
 				    adjuster={adjuster} 
 				    adjusterValue={adjusterValue} 
 				    key={i} 
+				    isReloading={scope.props.isReloading}
 				    handleSaveVariantClick={scope.handleSaveVariantClick} 
 				    handleVariantEdited={scope.handleVariantEdited} 
 				    isSaving={isSaving} 
 				    updatedVariant={updatedVariantMatch}
 				    handleShowOrderFormClick={scope.handleShowOrderFormClick}
+				    handleSaveResize={scope.handleSaveResize}
 			    />
 		    );
 				return variantRows;
@@ -455,6 +460,7 @@ class ProductDetails extends Component {
     this.handleEditBundleClick = this.handleEditBundleClick.bind(this);
     this.handleToggleEditorClick = this.handleToggleEditorClick.bind(this);
     this.handleProductSave = this.handleProductSave.bind(this);
+    this.handleSaveResize = this.handleSaveResize.bind(this);
   }
 	handleReloadClick(productId) {
 		this.props.handleReloadClick(productId);
@@ -498,6 +504,10 @@ class ProductDetails extends Component {
 	handleShowOrderFormClick(data) {
   	this.props.handleShowOrderFormClick(data);
 	}
+	handleSaveResize(data) {
+  	data.productId = this.props.data.productId;
+		this.props.handleSaveResize(data);
+	}	
 	
 /*
 	handleVendorChange(productId, value) {
@@ -600,11 +610,13 @@ class ProductDetails extends Component {
     	        title={variantGroup} 
     	        basePrice={scope.props.data.price} 
     	        key={i} 
+    	        isReloading={scope.props.isReloading}
     	        handleSaveVariantClick={scope.handleSaveVariantClick} 
     	        handleVariantsEdited={scope.handleVariantsEdited}
     	        savingVariants={scope.props.savingVariants} 
     	        updatedVariants={scope.props.updatedVariants}
     	        handleShowOrderFormClick={scope.handleShowOrderFormClick}
+    	        handleSaveResize={scope.handleSaveResize}
   	        />
 	        );
     	    return variantGroup;
@@ -618,11 +630,13 @@ class ProductDetails extends Component {
   	        designer={designer}
   	        basePrice={scope.props.data.price} 
   	        key={1} 
+  	        isReloading={scope.props.isReloading}
   	        handleSaveVariantClick={scope.handleSaveVariantClick} 
   	        handleVariantsEdited={scope.handleVariantsEdited}
   	        savingVariants={scope.props.savingVariants} 
   	        updatedVariants={scope.props.updatedVariants}
   	        handleShowOrderFormClick={scope.handleShowOrderFormClick}
+  	        handleSaveResize={scope.handleSaveResize}
 	        />
         );
       }

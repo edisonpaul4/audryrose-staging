@@ -44,6 +44,7 @@ class Orders extends Component {
 			files: [],
 			product: null
     };
+    this._notificationSystem = null;
     this.handleToggleClick = this.handleToggleClick.bind(this);
     this.handleCheckboxClick = this.handleCheckboxClick.bind(this);
     this.handleSelectAllClick = this.handleSelectAllClick.bind(this);
@@ -52,7 +53,6 @@ class Orders extends Component {
     this.handleShipSelectedClick = this.handleShipSelectedClick.bind(this);
     this.handlePrintSelectedClick = this.handlePrintSelectedClick.bind(this);
     this.handlePaginationClick = this.handlePaginationClick.bind(this);
-    this._notificationSystem = null;
     this.handleAddToVendorOrder = this.handleAddToVendorOrder.bind(this);
     this.handleCreateResize = this.handleCreateResize.bind(this);
     this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
