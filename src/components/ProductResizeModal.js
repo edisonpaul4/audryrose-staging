@@ -55,7 +55,6 @@ class ProductResizeModal extends Component {
 */
 
 	handleSaveResize() {
-  	console.log('handleSaveResize')
     const data = {
       resizeId: this.state.resizeId,
       variant: this.state.variant,
@@ -119,7 +118,7 @@ class ProductResizeModal extends Component {
 	render() {
 		const header = 'Mark units received for ' + (this.state.variant ? this.state.variant.productName : '');
 		
-		const saveButton = <Button disabled={this.props.isLoading || !this.isFormComplete()} color='olive' onClick={this.handleSaveResize}>Save Resize</Button>;
+		const saveButton = <Button disabled={this.props.isReloading || !this.isFormComplete()} color='olive' onClick={this.handleSaveResize}>Save Resize</Button>;
     
     return (
 	    <Modal trigger={this.props.label} size='small' closeIcon='close'>
@@ -133,7 +132,7 @@ class ProductResizeModal extends Component {
                 label='Units' 
                 type='number' 
                 min='1' 
-                disabled={this.props.isLoading}
+                disabled={this.props.isReloading}
                 value={this.state.units}
                 onChange={this.handleUnitsChange}
               />
@@ -141,7 +140,7 @@ class ProductResizeModal extends Component {
                 label='Received' 
                 type='number' 
                 min='1' 
-                disabled={this.props.isLoading}
+                disabled={this.props.isReloading}
                 value={this.state.received}
                 onChange={this.handleReceivedChange}
               />

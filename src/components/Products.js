@@ -110,14 +110,17 @@ class Products extends Component {
 	
 	handleSaveVariantClick(variantEdited) {
   	this.setState({
-    	savingVariants: [variantEdited]
+    	savingVariants: [variantEdited.objectId]
   	});
 		this.props.saveVariants(this.props.token, [variantEdited]);
 	}
 	
 	handleSaveAllVariantsClick(variantsEdited) {
+  	const ids = variantsEdited.map(function(variant, i) {
+    	return variant.objectId;
+  	});
   	this.setState({
-    	savingVariants: variantsEdited
+    	savingVariants: ids
   	});
 		this.props.saveVariants(this.props.token, variantsEdited);
 	}
@@ -240,7 +243,6 @@ class Products extends Component {
     });
 	}
 	
-	
 	handleProductBundleSave(data) {
   	let currentlyReloading = this.state.isReloading;
 		const index = currentlyReloading.indexOf(data.bundleProductId);
@@ -277,15 +279,16 @@ class Products extends Component {
 	
 	handleCreateResize(resizes) {
   	let currentlyReloading = this.state.isReloading;
+  	let savingVariants = this.state.savingVariants;
   	resizes.map(function(resize, i) {
-  		const index = currentlyReloading.indexOf(resize.productId);
-  		if (index < 0) {
-  			currentlyReloading.push(resize.productId);
-  		}
+  		if (currentlyReloading.indexOf(resize.productId) < 0) currentlyReloading.push(resize.productId);
+  		if (savingVariants.indexOf(resize.variant) < 0) savingVariants.push(resize.variant);
+  		if (savingVariants.indexOf(resize.resizeVariant) < 0) savingVariants.push(resize.resizeVariant);
     	return resize;
   	});
   	this.setState({
-    	isReloading: currentlyReloading
+    	isReloading: currentlyReloading,
+    	savingVariants: savingVariants
   	});
 		this.props.createResize(this.props.token, resizes);
 	}
@@ -313,7 +316,8 @@ class Products extends Component {
 			currentlyReloading.push(data.productId);
 		}
   	this.setState({
-    	isReloading: currentlyReloading
+    	isReloading: currentlyReloading,
+    	savingVariants: [data.variant, data.resizeVariant]
   	});
 		this.props.saveResize(this.props.token, data);
 	}
@@ -370,7 +374,7 @@ class Products extends Component {
       	if (savingVariants.length) {
         	let index = -1;
           savingVariants.map(function(variant, j) {
-            if (variant.objectId === updatedVariantJSON.objectId) index = j;
+            if (variant === updatedVariantJSON.objectId) index = j;
             return savingVariants;
           });
           if (index >= 0) {
@@ -451,8 +455,6 @@ class Products extends Component {
 		});	
     
   	if (nextPage !== this.state.page || (nextProps.router.params.subpage !== undefined && nextProps.router.params.subpage !== this.state.subpage)) {
-    	console.log(nextProps.router.params.subpage !== this.state.subpage)
-    	console.log('page change')
     	this.props.getProducts(this.props.token, nextProps.router.params.subpage, nextPage, this.state.sort, search, this.state.filters);
   	}
 		
@@ -539,7 +541,7 @@ class Products extends Component {
     const priceIcon = this.state.sort === 'price-desc' || this.state.sort === 'price-asc' ? null : <Icon disabled name='caret down' />;
     const stockIcon = this.state.sort === 'stock-desc' || this.state.sort === 'stock-asc' ? null : <Icon disabled name='caret down' />;
     
-    const productOrderModal = this.state.productOrderData ? <ProductOrderModal 
+    const productOrderModal = this.state.productOrderData && this.state.productOrderOpen === true ? <ProductOrderModal 
         open={this.state.productOrderOpen}
         handleAddToVendorOrder={this.handleAddToVendorOrder} 
         handleCreateResize={this.handleCreateResize} 
@@ -549,7 +551,7 @@ class Products extends Component {
         isLoading={this.props.isReloading}
       /> : null;
       
-    const productEditBundleModal = this.state.bundleFormData && this.state.bundleFormData.product ? <ProductEditBundleModal 
+    const productEditBundleModal = this.state.bundleFormData && this.state.bundleFormData.product && this.state.bundleFormOpen === true ? <ProductEditBundleModal 
         open={this.state.bundleFormOpen}
         handleEditBundleModalClose={this.handleEditBundleModalClose} 
         handleProductBundleSave={this.handleProductBundleSave} 

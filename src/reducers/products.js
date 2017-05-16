@@ -142,6 +142,7 @@ const products = (state = initialState, action) => {
       return {
         ...state,
         updatedProducts: action.res.updatedProducts,
+        updatedVariants: action.res.updatedVariants,
         tabCounts: action.res.tabCounts,
         errors: action.res.errors
       };
@@ -160,6 +161,7 @@ const products = (state = initialState, action) => {
       return {
         ...state,
         updatedProducts: action.res.updatedProducts,
+        updatedVariants: action.res.updatedVariants,
         tabCounts: action.res.tabCounts,
         errors: action.res.errors
       };

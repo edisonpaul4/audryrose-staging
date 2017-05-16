@@ -159,7 +159,6 @@ class ProductOrderModal extends Component {
 	}
   
 	render() {
-  	console.log(this.state.units)
 		const product = this.state.product;
 		const header = this.state.resize ? 'Send ' + (product ? product.name : '') + ' for resize' : 'Create an order for ' + (product ? product.name : '');
 		

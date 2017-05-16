@@ -10,7 +10,8 @@ class VariantRow extends Component {
     super(props);
     this.state = {
       variantData: this.props.data,
-      inventory: this.props.data.inventoryLevel ? parseFloat(this.props.data.inventoryLevel) : undefined,
+      inventory: this.props.data.inventoryLevel ? parseFloat(this.props.data.inventoryLevel) : 0,
+      startInventory: this.props.data.inventoryLevel ? parseFloat(this.props.data.inventoryLevel) : 0,
       variantEdited: false,
       variantSaved: false
     };
@@ -22,8 +23,9 @@ class VariantRow extends Component {
     this.handleSaveResize = this.handleSaveResize.bind(this);
   }
   handleInventoryChange(e, {value}) {
-    let edited = (parseFloat(value) !== parseFloat(this.props.data.inventoryLevel)) ? true : false;
-    if (!this.props.data.inventoryLevel && parseFloat(value) === 0) edited = false;
+    console.log(value)
+    let edited = (parseFloat(value) !== parseFloat(this.state.startInventory)) ? true : false;
+    if (!this.state.startInventory && parseFloat(value) === 0) edited = false;
     this.setState({
       inventory: parseFloat(value),
       variantEdited: edited,
@@ -36,7 +38,7 @@ class VariantRow extends Component {
 	}
 	handleCancelVariantClick(e, {value}) {
     this.setState({
-      inventory: this.props.data.inventoryLevel ? parseFloat(this.props.data.inventoryLevel) : undefined,
+      inventory: this.state.startInventory,
       variantEdited: false,
       variantSaved: false
     });
@@ -52,21 +54,21 @@ class VariantRow extends Component {
 		this.props.handleSaveResize(data);
 	}
 	componentWillReceiveProps(nextProps) {
-  	let variantData = nextProps.data ? nextProps.data : this.state.variantData;
-  	if (nextProps.updatedVariant && this.props.isSaving) variantData = nextProps.updatedVariant;
-  	let inventory = nextProps.data ? nextProps.data.inventoryLevel : this.state.inventory;
-  	if (nextProps.updatedVariant && this.props.isSaving) inventory = nextProps.updatedVariant.inventoryLevel;
-    
-  	this.setState({
-    	variantData: variantData,
-    	inventory: inventory,
-    	variantEdited: (nextProps.updatedVariant && this.props.isSaving) ? false : this.state.variantEdited,
-    	variantSaved: (nextProps.updatedVariant && this.props.isSaving) ? true : this.state.variantSaved
-  	});
+  	if (nextProps.updatedVariant) {
+    	console.log(nextProps.updatedVariant)
+    	this.setState({
+      	variantData: this.props.isSaving ? nextProps.data : this.state.variantData,
+      	inventory: nextProps.updatedVariant.inventoryLevel,
+      	startInventory: nextProps.updatedVariant.inventoryLevel,
+      	variantSaved: true
+    	});
+  	}
 	}
 	render() {
   	const scope = this;
 		const data = this.props.data;
+    let variantEdited = (this.state.inventory !== this.state.startInventory) ? true : false;
+    if (!this.state.startInventory && this.state.inventory === 0) variantEdited = false;
 		
 		// Create an array of other options values
 		let otherOptions = [];
@@ -81,7 +83,7 @@ class VariantRow extends Component {
 		if (this.props.adjuster && this.props.adjuster === 'relative') price += this.props.adjusterValue;
 
     const stoneColorCode = data.code ? '-' + data.code : null;
-		const saveCancelClass = this.state.variantEdited ? '' : 'invisible';
+		const saveCancelClass = variantEdited ? '' : 'invisible';
 		
 		let vendorOrderAndResizes = [];
 		if (data.vendorOrders) {
@@ -120,10 +122,10 @@ class VariantRow extends Component {
   		});
     }
     
-    const resizeButton = data.size_value ? <Dropdown.Item icon='exchange' text='Resize' disabled={this.props.isSaving || this.state.variantEdited} onClick={this.handleShowResizeFormClick} /> : null;
+    const resizeButton = data.size_value ? <Dropdown.Item icon='exchange' text='Resize' disabled={this.props.isSaving || variantEdited} onClick={this.handleShowResizeFormClick} /> : null;
      
     return (
-      <Table.Row warning={this.state.variantEdited ? true: false} positive={this.state.variantSaved && !this.state.variantEdited ? true: false} disabled={this.props.isSaving}>
+      <Table.Row warning={variantEdited ? true: false} positive={this.state.variantSaved && !variantEdited ? true: false} disabled={this.props.isSaving}>
         <Table.Cell>{data.styleNumber ? data.styleNumber : ''}{stoneColorCode}</Table.Cell>
         <Table.Cell>{data.color_value ? data.color_value : ''}</Table.Cell>
         <Table.Cell>{data.size_value ? data.size_value : 'OS'}</Table.Cell>
@@ -152,8 +154,8 @@ class VariantRow extends Component {
     		    />
     	    </Button.Group>  <span>&nbsp;</span>
           <Button.Group color='grey' size='mini' compact>
-            <Button content='Order' disabled={this.props.isSaving || this.state.variantEdited} onClick={this.handleShowOrderFormClick} />
-            <Dropdown floating button compact className='icon' disabled={this.props.isSaving || this.state.variantEdited}>
+            <Button content='Order' disabled={this.props.isSaving || variantEdited} onClick={this.handleShowOrderFormClick} />
+            <Dropdown floating button compact className='icon' disabled={this.props.isSaving || variantEdited}>
               <Dropdown.Menu>
                 {resizeButton}
                 {/*<Dropdown.Item icon='hide' text='Hide' />*/}
@@ -210,7 +212,7 @@ class VariantsTable extends Component {
         	scope.props.updatedVariants.map(function(updatedVariant, i) {
           	const updatedVariantDataJSON = updatedVariant.toJSON();
           	if (updatedVariantDataJSON.objectId === variantData.objectId) {
-            	variantData = updatedVariantDataJSON;
+//             	variantData = updatedVariantDataJSON;
             	updatedVariantMatch = updatedVariantDataJSON;
           	}
             return updatedVariant;
@@ -225,7 +227,7 @@ class VariantsTable extends Component {
   			}
         let index = -1;
         scope.props.savingVariants.map(function(savingVariant, i) {
-          if (savingVariant.objectId === variantData.objectId) index = i;
+          if (savingVariant === variantData.objectId) index = i;
           return savingVariant;
         });
         const isSaving = index < 0 ? false : true;
@@ -509,28 +511,6 @@ class ProductDetails extends Component {
 		this.props.handleSaveResize(data);
 	}	
 	
-/*
-	handleVendorChange(productId, value) {
-  	if (value !== this.state.vendor) {
-    	this.props.handleVendorChange(this.props.data.productId, value);
-    	this.setState({
-      	vendor: value
-    	});
-  	}
-	}
-*/
-	
-/*
-	handleProductTypeChange(e, {value}) {
-  	if (value !== this.state.isBundle) {
-    	this.props.handleProductTypeChange(this.props.data.productId, value);
-    	this.setState({
-      	isBundle: value
-    	});
-  	}
-	}
-*/
-	
 	handleEditBundleClick(productId) {
 		this.props.handleEditBundleClick(productId);
 	}
@@ -557,7 +537,7 @@ class ProductDetails extends Component {
 	render() {
   	const scope = this;
   	const showVariants = this.props.expanded ? true : false;
-  	const variants = this.props.data.variants;
+  	let variants = this.props.data.variants;
   	const designer = this.props.data.designer;
   	const isBundle = this.props.data.isBundle;
   	const resizes = this.props.data.resizes;
@@ -573,19 +553,19 @@ class ProductDetails extends Component {
 		if (variants && !isBundle) {
   		let variantGroupings = [];
   		// Determine variant groupings
-			variants.map(function(variantItem, i) {
+			variants = variants.map(function(variantItem, i) {
   			
   			// Copy resizes to the variant if any exist
+  			var variantResizes = [];
   			if (resizes && resizes.length > 0) {
-    			var variantResizes = [];
     			resizes.map(function(resize, j) {
-      			if (variantItem.objectId === resize.variant.objectId) {
+      			if (resize.variant && variantItem.objectId === resize.variant.objectId) {
         			variantResizes.push(resize);
       			}
       			return resize;
     			});
-    			if (variantResizes.length > 0) variantItem.resizes = variantResizes;
   			}
+  			variantItem.resizes = variantResizes;
   			
   			const color = (variantItem.color_value) ? variantItem.color_value : null;
   			if (color && variantGroupings.indexOf(color) < 0) {
