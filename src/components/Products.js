@@ -433,9 +433,11 @@ class Products extends Component {
   	
   	// Reset on subpage navigation
   	var search = nextProps.router.params.subpage !== 'search' ? null : this.state.search;
+/*
   	if (nextProps.router.params.subpage === 'waiting-to-receive') {
     	expandedProducts = products.map(function(product, i) { return product.get('productId'); })
   	}
+*/
     
 		this.setState({
   		subpage: nextProps.router.params.subpage,
