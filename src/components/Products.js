@@ -331,9 +331,13 @@ class Products extends Component {
 	
 	componentWillReceiveProps(nextProps) {
   	const scope = this;
+  	let state = {};
+  	
+  	if (nextProps.router.params.subpage !== this.state.subpage) state.subpage = nextProps.router.params.subpage;
+  	
   	let nextPage = parseFloat(nextProps.location.query.page);
   	if (!nextPage) nextPage = 1;
-  	let expandedProducts = this.state.expandedProducts;
+  	if (nextPage !== this.state.page) state.page = nextPage;
   	
   	let currentProducts = this.state.products;
   	if (nextProps.products) {
@@ -371,10 +375,12 @@ class Products extends Component {
     } else {
       products = currentProducts;
     }
+    if (nextProps.products || nextProps.updatedProducts) state.products = products;
+    state.isReloading = currentlyReloading;
     
     // Remove any updated variants from savingVariants state
-    let savingVariants = this.state.savingVariants;
   	if (nextProps.updatedVariants && nextProps.updatedVariants.length > 0) {
+    	let savingVariants = this.state.savingVariants;
     	nextProps.updatedVariants.map(function(updatedVariant, i) {
       	const updatedVariantJSON = updatedVariant.toJSON();
       	if (savingVariants.length) {
@@ -389,6 +395,8 @@ class Products extends Component {
         }
         return updatedVariant;
       });
+      state.updatedVariants = nextProps.updatedVariants;
+      state.savingVariants = nextProps.savingVariants;
     }
   	
   	// Process filters data
@@ -401,18 +409,17 @@ class Products extends Component {
       	return classObj.toJSON();
     	});
     	filterData = {designers: designers, classes: classes};
+    	state.filterData = filterData;
   	}
   	
-  	let bundleFormData = this.state.bundleFormData ? this.state.bundleFormData : {};
-  	let bundleFormIsLoading = this.state.bundleFormIsLoading;
   	if (nextProps.bundleFormData) {
-    	bundleFormData.products = nextProps.bundleFormData;
-    	bundleFormIsLoading = false;
+      state.bundleFormData.products = nextProps.bundleFormData;
+      state.bundleFormIsLoading = nextProps.bundleFormIsLoading;
   	}
   	
 		// Display any errors
-		let errors = [];
 		if (nextProps.errors) {
+  		let errors = [];
   		nextProps.errors.map(function(errorMessage, i) {
     		var errorExists = false;
     		scope.state.errors.map(function(error, j) {
@@ -430,40 +437,28 @@ class Products extends Component {
     		return errorMessage;
   		});
       errors = nextProps.errors.length > 0 ? nextProps.errors : this.state.errors;
-		} else {
-  		errors = this.state.errors;
+      state.errors = errors;
 		}
   	
   	// Update tab counts if available
-  	const tabCounts = nextProps.tabCounts ? nextProps.tabCounts : this.state.tabCounts;
+  	if (nextProps.tabCounts) {
+    	state.tabCounts = nextProps.tabCounts;
+  	}
   	
   	// Reset on subpage navigation
-  	var search = nextProps.router.params.subpage !== 'search' ? null : this.state.search;
-/*
-  	if (nextProps.router.params.subpage === 'waiting-to-receive') {
-    	expandedProducts = products.map(function(product, i) { return product.get('productId'); })
-  	}
-*/
-    
-		this.setState({
-  		subpage: nextProps.router.params.subpage,
-			page: nextPage,
-			search: search,
-			products: products,
-			filterData: filterData ? filterData : this.state.filterData,
-			updatedProducts: nextProps.updatedProducts,
-			updatedVariants: nextProps.updatedVariants,
-			expandedProducts: expandedProducts,
-			isReloading: currentlyReloading,
-			savingVariants: savingVariants,
-			tabCounts: tabCounts,
-			bundleFormData: bundleFormData,
-			bundleFormIsLoading: bundleFormIsLoading,
-			errors: errors
-		});	
+  	if (nextProps.router.params.subpage !== 'search') state.search = null;
+		
+		this.setState(state);	
     
   	if (nextPage !== this.state.page || (nextProps.router.params.subpage !== undefined && nextProps.router.params.subpage !== this.state.subpage)) {
-    	this.props.getProducts(this.props.token, nextProps.router.params.subpage, nextPage, this.state.sort, search, this.state.filters);
+    	this.props.getProducts(
+    	  this.props.token, 
+    	  nextProps.router.params.subpage, 
+    	  nextPage, 
+    	  this.state.sort, 
+    	  (state.search ? state.search : this.state.search), 
+    	  this.state.filters
+  	  );
   	}
 		
 	}
@@ -475,7 +470,6 @@ class Products extends Component {
 		const tabCounts = this.state.tabCounts;
 		
 		if (this.state.products) {
-  		console.log('Products: map products')
 			this.state.products.map(function(product, i) {
   			let isReloading = (scope.state.isReloading.indexOf(product.productId) >= 0) ? true : false;
   			let expanded = (scope.state.expandedProducts.indexOf(product.productId) >= 0) ? true : false;
