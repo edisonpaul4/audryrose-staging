@@ -384,11 +384,9 @@ class Orders extends Component {
 		let orderRows = [];
 		const tabCounts = this.state.tabCounts;
 		const files = this.state.files;
-		console.log(this.state.orders)
     
 		if (this.state.orders) {
 			this.state.orders.map(function(order, i) {
-//   			let order = orderRow.toJSON();
   			let isReloading = (scope.state.isReloading.indexOf(order.orderId) >= 0) ? true : false;
 				let expanded = (scope.state.expandedOrders.indexOf(order.orderId) >= 0) ? true : false;
 				let selected = (scope.state.selectedRows.indexOf(order.orderId) >= 0) ? true : false;
@@ -420,6 +418,8 @@ class Orders extends Component {
 				    selected={selected}
 			    />
 		    );
+		    
+		    // Create OrderDetails rows
 				if (expanded) orderRows.push(
 				  <OrderDetails 
   				  subpage={scope.state.subpage} 
