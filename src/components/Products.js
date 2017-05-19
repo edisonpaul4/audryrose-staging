@@ -335,7 +335,12 @@ class Products extends Component {
   	if (!nextPage) nextPage = 1;
   	let expandedProducts = this.state.expandedProducts;
   	
-  	const currentProducts = nextProps.products ? nextProps.products : this.state.products;
+  	let currentProducts = this.state.products;
+  	if (nextProps.products) {
+    	currentProducts = nextProps.products.map(function(product, i) {
+      	return product.toJSON();
+    	});
+  	}
   	let products = [];
   	let currentlyReloading = this.state.isReloading;
   	
@@ -343,16 +348,17 @@ class Products extends Component {
   	if (nextProps.updatedProducts) {
       currentProducts.map(function(product, i) {
         nextProps.updatedProducts.map(function(updatedProduct, i) {
+          const updatedProductJSON = updatedProduct.toJSON();
           // If updated product exists, push it into the state products array
-          if (updatedProduct.get('productId') === product.get('productId')) {
-            products.push(updatedProduct);
+          if (updatedProductJSON.productId === product.productId) {
+            products.push(updatedProductJSON);
           } else {
             products.push(product);
           }
           
           // If currently reloading and has successfully updated product, remove updated product
         	if (currentlyReloading.length) {
-          	const index = currentlyReloading.indexOf(updatedProduct.get('productId'));
+          	const index = currentlyReloading.indexOf(updatedProductJSON.productId);
             if (index >= 0) {
               currentlyReloading.splice(index, 1);
             }
@@ -469,26 +475,63 @@ class Products extends Component {
 		const tabCounts = this.state.tabCounts;
 		
 		if (this.state.products) {
-			this.state.products.map(function(productRow, i) {
-  			let productJSON = productRow.toJSON();
-  			let isReloading = (scope.state.isReloading.indexOf(productJSON.productId) >= 0) ? true : false;
-  			let expanded = (scope.state.expandedProducts.indexOf(productJSON.productId) >= 0) ? true : false;
+  		console.log('Products: map products')
+			this.state.products.map(function(product, i) {
+  			let isReloading = (scope.state.isReloading.indexOf(product.productId) >= 0) ? true : false;
+  			let expanded = (scope.state.expandedProducts.indexOf(product.productId) >= 0) ? true : false;
+  			
+  			// Create simple object for Product row
+  			let productData = {
+          productId: product.productId,
+          is_active: product.is_active,
+          total_stock: product.total_stock,
+          isBundle: product.isBundle,
+          is_visible: product.is_visible,
+          hasResizeRequest: product.hasResizeRequest,
+          hasVendorBuy: product.hasVendorBuy,
+          custom_url: product.custom_url,
+          name: product.name,
+          sku: product.sku,
+          designer: product.designer,
+          date_created: product.date_created,
+          primary_image: product.primary_image,
+          price: product.price,
+          classification: product.classification
+  			}
+    		let sizes = [];
+    		if (product.variants && product.variants.length > 1) {
+    			product.variants.map(function(variant, i) {
+      			if (!variant.variantOptions) {
+        			console.log('variant has no options: ' + variant.productName + ' ' + variant.variantId); 
+        			return true;
+      			}
+      			return variant.variantOptions.map(function(variantOption, j) {
+        			if (variantOption.option_id === 32) sizes.push(parseFloat(variantOption.value));
+        			return true;
+      			});
+    			});
+    		}
+    		sizes.sort((a, b) => (a - b));
+    		const sizeScale = (sizes.length > 0) ? sizes[0] + '-' + sizes[sizes.length-1] : 'OS' ;
+    		productData.sizeScale = sizeScale;
 				productRows.push(
 				  <Product 
-				    data={productJSON} 
+				    data={productData} 
 				    expanded={expanded} 
-				    key={`${productJSON.productId}-1`} 
+				    key={`${product.productId}-1`} 
 				    isReloading={isReloading} 
 				    handleToggleClick={scope.handleToggleClick} 
 				    handleProductSave={scope.handleProductSave} 
 			    />
 		    );
+		    
+		    // Create ProductDetails row
 				if (expanded) {
   				productRows.push(
   				  <ProductDetails 
-  				    data={productJSON} 
+  				    data={product} 
   				    expanded={expanded} 
-  				    key={`${productJSON.productId}-2`} 
+  				    key={`${product.productId}-2`} 
   				    isReloading={isReloading} 
   				    savingVariants={scope.state.savingVariants} 
   				    updatedVariants={scope.state.updatedVariants} 

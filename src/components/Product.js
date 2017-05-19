@@ -7,7 +7,8 @@ class Product extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      expanded: false
+      expanded: false,
+      data: this.props.data ? this.props.data : {}
     };
     this.handleToggleClick = this.handleToggleClick.bind(this);
     this.handleStatusChange = this.handleStatusChange.bind(this);
@@ -18,8 +19,14 @@ class Product extends Component {
 	handleStatusChange(e, {value}) {
 		this.props.handleProductSave({productId: this.props.data.productId, isActive: !this.props.data.is_active});
 	}
+	componentWillReceiveProps(nextProps) {
+  	const data = nextProps.data ? nextProps.data : this.state.data;
+  	this.setState({
+    	data: data
+  	});
+	}
 	render() {
-  	const data = this.props.data;
+  	const data = this.state.data;
   	
   	let labels = [];
   	if (data.total_stock > 0 && !data.isBundle) {
@@ -44,21 +51,6 @@ class Product extends Component {
 		let expandIcon = this.props.expanded ? 'minus' : 'plus';
 		
 		// Get the product size scale
-		let sizes = [];
-		if (data.variants && data.variants.length > 1) {
-			data.variants.map(function(variant, i) {
-  			if (!variant.variantOptions) {
-    			console.log('variant has no options: ' + variant.productName + ' ' + variant.variantId); 
-    			return true;
-  			}
-  			return variant.variantOptions.map(function(variantOption, j) {
-    			if (variantOption.option_id === 32) sizes.push(parseFloat(variantOption.value));
-    			return true;
-  			});
-			});
-		}
-		sizes.sort((a, b) => (a - b));
-		const sizeScale = (sizes.length > 0) ? sizes[0] + '-' + sizes[sizes.length-1] : 'OS' ;
 		const storeUrl = 'https://www.loveaudryrose.com' + data.custom_url;
 		const name = data.is_visible ? <a href={storeUrl} target="_blank">{data.name} <Icon link name='eye' /></a> : data.name;
 		const bcManageUrl = 'https://www.loveaudryrose.com/manage/products/' + data.productId + '/edit';
@@ -70,17 +62,17 @@ class Product extends Component {
           <Checkbox />
         </Table.Cell>
         <Table.Cell>
-          <span className='no-wrap'>{moment(data.date_created.iso).format('M/D/YY h:mm a')}</span>
+          <span className='no-wrap'>{data.date_created ? moment(data.date_created.iso).format('M/D/YY h:mm a') : null}</span>
         </Table.Cell>
         <Table.Cell>
-          <img src={data.primary_image.tiny_url ? data.primary_image.tiny_url.replace(/^http:\/\//i, 'https://') : '/imgs/no-image.png'} width='40' alt={data.name} />
+          <img src={data.primary_image && data.primary_image.tiny_url ? data.primary_image.tiny_url.replace(/^http:\/\//i, 'https://') : '/imgs/no-image.png'} width='40' alt={data.name} />
         </Table.Cell>
         <Table.Cell>{sku}</Table.Cell>
 				<Table.Cell>{name}</Table.Cell>
 				<Table.Cell>{designer}</Table.Cell>
 				<Table.Cell className='right aligned'>{numeral(data.price).format('$0,0.00')}</Table.Cell>
 				<Table.Cell>{data.classification ? data.classification.name : 'Unknown'}</Table.Cell>
-				<Table.Cell>{sizeScale}</Table.Cell>
+				<Table.Cell>{data.sizeScale}</Table.Cell>
 				<Table.Cell>
   				<Checkbox 
   				  slider 
