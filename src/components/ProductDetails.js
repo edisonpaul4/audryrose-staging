@@ -226,10 +226,12 @@ class VariantsTable extends Component {
     			});
   			}
         let index = -1;
-        scope.props.savingVariants.map(function(savingVariant, i) {
-          if (savingVariant === variantData.objectId) index = i;
-          return savingVariant;
-        });
+        if (scope.props.savingVariants) {
+          scope.props.savingVariants.map(function(savingVariant, i) {
+            if (savingVariant === variantData.objectId) index = i;
+            return savingVariant;
+          });
+        }
         const isSaving = index < 0 ? false : true;
         
         var vendorOrders = [];
