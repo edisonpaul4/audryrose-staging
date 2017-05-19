@@ -381,17 +381,17 @@ class OrderDetails extends Component {
     return (
       <Table.Row className={rowClass}>
         <Table.Cell colSpan={detailsColSpan} className='order-product-row'>
-          <Button circular compact basic size='tiny' 
-            icon='refresh' 
-            content='Reload' 
-            disabled={this.props.isReloading} 
-            onClick={()=>this.handleReloadClick(this.props.data.orderId)} 
-          />
-          {shipAllButton}
           <Dimmer.Dimmable as={Segment} vertical blurring dimmed={this.props.isReloading}>
             <Dimmer active={this.props.isReloading} inverted>
               <Loader>Loading</Loader>
             </Dimmer>
+            <Button circular compact basic size='tiny' 
+              icon='refresh' 
+              content='Reload' 
+              disabled={this.props.isReloading} 
+              onClick={()=>this.handleReloadClick(this.props.data.orderId)} 
+            />
+            {shipAllButton}
             <Segment secondary>
               <Table className='order-products-table' basic='very' size='small' columns={9}>
                 <Table.Header>

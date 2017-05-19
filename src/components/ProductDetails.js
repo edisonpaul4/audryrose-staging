@@ -649,38 +649,38 @@ class ProductDetails extends Component {
     return (
       <Table.Row className={rowClass}>
         <Table.Cell colSpan='13' className='variant-row'>
-          <Segment.Group horizontal compact className='toolbar'>
-            <Segment basic>
-              {productEditor}
-              <Form size='mini' loading={this.props.isReloading}>
-                <Form.Group inline>
-                  <Form.Field>
-                    <Form.Button circular compact basic size='small' type='button' icon='refresh' 
-                      content='Reload' 
-                      disabled={this.props.isReloading || this.state.showEditor} 
-                      onClick={()=>this.handleReloadClick(this.props.data.productId)} 
-                    />
-                  </Form.Field>
-                  <Form.Field>
-                    <Form.Button circular compact basic size='small' type='button' 
-                      icon={this.state.showEditor ? 'close' : 'edit'} 
-                      color={this.state.showEditor ? 'black' : null} 
-                      content={this.state.showEditor ? 'Close' : 'Edit Details'} 
-                      onClick={this.handleToggleEditorClick} 
-                    />
-                  </Form.Field>
-                  {editBundleButton}
-                </Form.Group>
-              </Form>
-            </Segment>
-            <Segment basic textAlign='right'>
-              {saveAllButton}
-            </Segment>
-          </Segment.Group>
           <Dimmer.Dimmable as={Segment} vertical dimmed={this.props.isReloading}>
             <Dimmer active={this.props.isReloading} inverted>
               <Loader>Loading</Loader>
             </Dimmer>
+            <Segment.Group horizontal compact className='toolbar'>
+              <Segment basic>
+                {productEditor}
+                <Form size='mini'>
+                  <Form.Group inline>
+                    <Form.Field>
+                      <Form.Button circular compact basic size='small' type='button' icon='refresh' 
+                        content='Reload' 
+                        disabled={this.props.isReloading || this.state.showEditor} 
+                        onClick={()=>this.handleReloadClick(this.props.data.productId)} 
+                      />
+                    </Form.Field>
+                    <Form.Field>
+                      <Form.Button circular compact basic size='small' type='button' 
+                        icon={this.state.showEditor ? 'close' : 'edit'} 
+                        color={this.state.showEditor ? 'black' : null} 
+                        content={this.state.showEditor ? 'Close' : 'Edit Details'} 
+                        onClick={this.handleToggleEditorClick} 
+                      />
+                    </Form.Field>
+                    {editBundleButton}
+                  </Form.Group>
+                </Form>
+              </Segment>
+              <Segment basic textAlign='right'>
+                {saveAllButton}
+              </Segment>
+            </Segment.Group>
             {variantsTables}
           </Dimmer.Dimmable>
         </Table.Cell>
