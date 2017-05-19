@@ -7,8 +7,9 @@ class Product extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      expanded: false,
-      data: this.props.data ? this.props.data : {}
+      data: this.props.data ? this.props.data : {},
+      expanded: this.props.expanded ? this.props.expanded : false,
+      isReloading: this.props.isReloading ? this.props.isReloading : false
     };
     this.handleToggleClick = this.handleToggleClick.bind(this);
     this.handleStatusChange = this.handleStatusChange.bind(this);
@@ -17,17 +18,19 @@ class Product extends Component {
 		this.props.handleToggleClick(productId);
 	}
 	handleStatusChange(e, {value}) {
-		this.props.handleProductSave({productId: this.state.productId, isActive: !this.state.is_active});
+		this.props.handleProductSave({productId: this.state.data.productId, isActive: !this.state.data.is_active});
 	}
 	componentWillReceiveProps(nextProps) {
-  	if (nextProps.data) {
-    	this.setState({
-      	data: nextProps.data
-    	});
-  	}
+  	let state = {};
+  	if (nextProps.data) state.data = nextProps.data;
+  	if (nextProps.expanded !== null) state.expanded = nextProps.expanded;
+  	if (nextProps.isReloading !== null) state.isReloading = nextProps.isReloading;
+  	this.setState(state);
 	}
 	render() {
   	const data = this.state.data;
+  	const expanded = this.state.expanded;
+  	const isReloading = this.state.isReloading;
   	
   	let labels = [];
   	if (data.total_stock > 0 && !data.isBundle) {
@@ -49,7 +52,7 @@ class Product extends Component {
     	labels.push(<Label key={5} basic horizontal circular size='mini' color='teal'>Bundle</Label>);
   	}
   	
-		let expandIcon = this.props.expanded ? 'minus' : 'plus';
+		let expandIcon = expanded ? 'minus' : 'plus';
 		
 		// Get the product size scale
 		const storeUrl = 'https://www.loveaudryrose.com' + data.custom_url;
@@ -80,7 +83,7 @@ class Product extends Component {
   				  label={data.is_active === false ? 'Done' : (data.is_active === true ? 'Active' : 'Unknown')}  
   				  checked={data.is_active === false ? false : (data.is_active === true ? true : false)}  
   				  name='is_active' 
-  				  disabled={this.props.isReloading} 
+  				  disabled={isReloading} 
   				  onChange={this.handleStatusChange}
 				  />
 		    </Table.Cell>

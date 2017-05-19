@@ -6,6 +6,13 @@ import moment from 'moment';
 class Order extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      data: this.props.data ? this.props.data : {},
+      expanded: this.props.expanded ? this.props.expanded : false,
+      isReloading: this.props.isReloading ? this.props.isReloading : false,
+      selected: this.props.selected ? this.props.selected : false,
+      subpage: this.props.subpage ? this.props.subpage : ''
+    };
     this.handleToggleClick = this.handleToggleClick.bind(this);
     this.handleCheckboxClick = this.handleCheckboxClick.bind(this);
   }
@@ -18,8 +25,22 @@ class Order extends Component {
   	this.props.handleCheckboxClick(orderId);
 	}
 	
+	componentWillReceiveProps(nextProps) {
+  	let state = {};
+  	if (nextProps.data) state.data = nextProps.data;
+  	if (nextProps.expanded !== null) state.expanded = nextProps.expanded;
+  	if (nextProps.isReloading !== null) state.isReloading = nextProps.isReloading;
+  	if (nextProps.selected !== null) state.selected = nextProps.selected;
+  	if (nextProps.subpage) state.subpage = nextProps.subpage;
+  	this.setState(state);
+	}
+	
 	render() {
-  	const data = this.props.data;
+  	const data = this.state.data;
+  	const expanded = this.state.expanded;
+  	const isReloading = this.state.isReloading;
+  	const selected = this.state.selected;
+  	const subpage = this.state.subpage;
   	
   	let labels = [];
   	if (data.fullyShippable && data.status !== 'Shipped') {
@@ -38,10 +59,10 @@ class Order extends Component {
     	labels.push(<Label key={5} basic horizontal circular size='mini' color='olive'>Shipped</Label>);
   	}
 		    
-		let expandIcon = this.props.expanded ? 'minus' : 'plus';
+		let expandIcon = expanded ? 'minus' : 'plus';
 		
 		const dateShipped = data.date_shipped ? moment(data.date_shipped.iso).calendar() : '?';
-		const dateShippedColumn = this.props.subpage === 'fulfilled' ? <Table.Cell verticalAlign='top' singleLine>{dateShipped}</Table.Cell> : null;
+		const dateShippedColumn = subpage === 'fulfilled' ? <Table.Cell verticalAlign='top' singleLine>{dateShipped}</Table.Cell> : null;
 		
 		const customerLink = 'https://www.loveaudryrose.com/manage/customers/' + data.customer_id + '/edit';
 		const customerName = <a href={customerLink} target='_blank'>{data.billing_address.first_name} {data.billing_address.last_name} <Icon link name='configure' /></a>
@@ -50,8 +71,8 @@ class Order extends Component {
 		const orderNote = data.customer_message ? <Popup trigger={<Icon name='sticky note outline' link />} on='click' content={data.customer_message} position='top center' /> : null;
 		
     return (
-      <Table.Row warning={data.customer_message ? true : undefined} disabled={this.props.isReloading}>
-        <Table.Cell verticalAlign='top'><Checkbox checked={this.props.selected} onClick={() => this.handleCheckboxClick(data.orderId)} /></Table.Cell>
+      <Table.Row warning={data.customer_message ? true : undefined} disabled={isReloading}>
+        <Table.Cell verticalAlign='top'><Checkbox checked={selected} onClick={() => this.handleCheckboxClick(data.orderId)} /></Table.Cell>
         <Table.Cell verticalAlign='top' singleLine>{moment(data.date_created.iso).calendar()}</Table.Cell>
         {dateShippedColumn}
         <Table.Cell verticalAlign='top'>{orderId}</Table.Cell>

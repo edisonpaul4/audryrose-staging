@@ -98,8 +98,8 @@ class Orders extends Component {
       selectAllRows = false;
   	} else {
     	selectedRows = this.state.orders.map(function(order, i) {
-      	let orderJSON = order.toJSON();
-      	return orderJSON.orderId;
+//       	let orderJSON = order.toJSON();
+      	return order.orderId;
     	});	
     	selectAllRows = true;
   	}
@@ -240,16 +240,21 @@ class Orders extends Component {
   	if (!nextPage) nextPage = 1;
   	let expandedOrders = this.state.expandedOrders;
   	
+  	let currentOrders = this.state.orders;
+  	if (nextProps.orders) {
+    	currentOrders = nextProps.orders.map(function(order, i) {
+      	return order.toJSON();
+    	});
+  	}
   	let orders = [];
   	let currentlyReloading = this.state.isReloading;
+  	
   	if (nextProps.updatedOrders) {
-      nextProps.orders.map(function(order, i) {
-        const orderJSON = order.toJSON();
+      currentOrders.map(function(order, i) {
         let addUpdatedOrder;
         nextProps.updatedOrders.map(function(updatedOrder, i) {
         	// If updated product exists, push it into the state products array
-        	const updatedOrderJSON = updatedOrder.toJSON();
-        	if (updatedOrderJSON.orderId === orderJSON.orderId) addUpdatedOrder = updatedOrder;
+        	if (updatedOrder.get('orderId') === order.orderId) addUpdatedOrder = updatedOrder.toJSON();
         	return updatedOrder;
       	});
         if (addUpdatedOrder) {
@@ -259,14 +264,14 @@ class Orders extends Component {
         }
         // If currently reloading and has successfully updated order, remove updated order
       	if (currentlyReloading.length && addUpdatedOrder) {
-        	const index = currentlyReloading.indexOf(addUpdatedOrder.get('orderId'));
+        	const index = currentlyReloading.indexOf(addUpdatedOrder.orderId);
           if (index >= 0) currentlyReloading.splice(index, 1);
         }
         return order;
       });
       
     } else {
-      orders = nextProps.orders;
+      orders = currentOrders;
     }
     
   	// Update tab counts if available
@@ -379,19 +384,36 @@ class Orders extends Component {
 		let orderRows = [];
 		const tabCounts = this.state.tabCounts;
 		const files = this.state.files;
+		console.log(this.state.orders)
     
 		if (this.state.orders) {
-			this.state.orders.map(function(orderRow, i) {
-  			let orderJSON = orderRow.toJSON();
-  			let isReloading = (scope.state.isReloading.indexOf(orderJSON.orderId) >= 0) ? true : false;
-				let expanded = (scope.state.expandedOrders.indexOf(orderJSON.orderId) >= 0) ? true : false;
-				let selected = (scope.state.selectedRows.indexOf(orderJSON.orderId) >= 0) ? true : false;
+			this.state.orders.map(function(order, i) {
+//   			let order = orderRow.toJSON();
+  			let isReloading = (scope.state.isReloading.indexOf(order.orderId) >= 0) ? true : false;
+				let expanded = (scope.state.expandedOrders.indexOf(order.orderId) >= 0) ? true : false;
+				let selected = (scope.state.selectedRows.indexOf(order.orderId) >= 0) ? true : false;
+				
+				// Create Order rows with simpilified order data object
+				let orderData = {
+          status: order.status,
+          fullyShippable: order.fullyShippable,
+          partiallyShippable: order.partiallyShippable,
+          resizable: order.resizable,
+          date_created: order.date_created,
+          date_shipped: order.date_shipped,
+          customer_id: order.customer_id,
+          billing_address: order.billing_address,
+          orderId: order.orderId,
+          customer_message: order.customer_message,
+          total_inc_tax: order.total_inc_tax,
+          items_total: order.items_total
+				};
 				orderRows.push(
 				  <Order 
 				    subpage={scope.state.subpage}
-				    data={orderJSON} 
+				    data={orderData} 
 				    expanded={expanded} 
-				    key={`${orderJSON.orderId}-1`} 
+				    key={`${orderData.orderId}-1`} 
 				    isReloading={isReloading} 
 				    handleToggleClick={scope.handleToggleClick} 
 				    handleCheckboxClick={scope.handleCheckboxClick} 
@@ -400,10 +422,10 @@ class Orders extends Component {
 		    );
 				if (expanded) orderRows.push(
 				  <OrderDetails 
-  				  subpage={scope.state.subpage}
-				    data={orderJSON} 
+  				  subpage={scope.state.subpage} 
+				    data={order} 
 				    expanded={expanded} 
-				    key={`${orderJSON.orderId}-2`} 
+				    key={`${order.orderId}-2`} 
 				    isReloading={isReloading} 
 				    handleReloadClick={scope.handleReloadClick} 
 				    handleCreateShipments={scope.handleCreateShipments}

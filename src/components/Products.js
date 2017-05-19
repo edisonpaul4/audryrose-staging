@@ -222,7 +222,7 @@ class Products extends Component {
 	handleEditBundleClick(productId) {
   	let bundleFormData = {};
     this.state.products.map(function(product, i) {
-      if (product.get('productId') === productId) {
+      if (product.productId === productId) {
         bundleFormData.product = product.toJSON();
       }
       return product;
@@ -296,7 +296,7 @@ class Products extends Component {
 	handleShowOrderFormClick(data) {
   	let productOrderData = {};
     this.state.products.map(function(product, i) {
-      if (product.get('productId') === data.productId) {
+      if (product.productId === data.productId) {
         productOrderData.product = product.toJSON();
       }
       return product;
