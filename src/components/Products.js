@@ -383,7 +383,7 @@ class Products extends Component {
     	let savingVariants = this.state.savingVariants;
     	nextProps.updatedVariants.map(function(updatedVariant, i) {
       	const updatedVariantJSON = updatedVariant.toJSON();
-      	if (savingVariants.length) {
+      	if (savingVariants && savingVariants.length) {
         	let index = -1;
           savingVariants.map(function(variant, j) {
             if (variant === updatedVariantJSON.objectId) index = j;
@@ -396,7 +396,7 @@ class Products extends Component {
         return updatedVariant;
       });
       state.updatedVariants = nextProps.updatedVariants;
-      state.savingVariants = nextProps.savingVariants;
+      state.savingVariants = savingVariants;
     }
   	
   	// Process filters data
