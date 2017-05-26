@@ -242,14 +242,12 @@ class Designers extends Component {
  		// Display any success messages
 		let successMessages = this.state.successMessages;
 		if (nextProps.successMessage) {
-  		console.log('nextProps.successMessage found')
   		var successMessageExists = false;
   		successMessages.map(function(successMessage, i) {
     		if (successMessage === nextProps.successMessage) successMessageExists = true;
         return successMessage;
       });
       if (!successMessageExists) {
-        console.log('!successMessageExists')
         this._notificationSystem.addNotification({
           message: nextProps.successMessage,
           level: 'success',
@@ -257,11 +255,7 @@ class Designers extends Component {
           dismissible: true
         });
         successMessages.push(nextProps.successMessage);
-      } else {
-        console.log('successMessageExists')
       }
-		} else {
-  		console.log('nextProps.successMessage not found')
 		}
     
 		// Display any errors
