@@ -248,7 +248,7 @@ class VendorOrder extends Component {
     
     const receivedHeader = (status === 'Sent') ? <Table.HeaderCell>Units Received</Table.HeaderCell> : null;
     
-    const emailMessage = (status === 'Pending') ? <Form><TextArea disabled={status !== 'Pending' ? true : false} placeholder='Enter a personal message' autoHeight value={this.state.message ? this.state.message : ''} onChange={this.handleMessageChange} /></Form> : <Segment basic><div className='pre-text'>{this.state.message}</div></Segment>;
+    const emailMessage = (status === 'Pending') ? <Form><Divider /><TextArea disabled={status !== 'Pending' ? true : false} placeholder='Enter a personal message' autoHeight value={this.state.message ? this.state.message : ''} onChange={this.handleMessageChange} /><Divider /></Form> : null;
     
 		const averageWaitTime = vendor.waitTime ? vendor.waitTime : 21;
 		const expectedDate = order.dateOrdered ? moment(order.dateOrdered.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
@@ -278,9 +278,7 @@ class VendorOrder extends Component {
             {orderProductRows}
           </Table.Body>
         </Table>
-        <Divider />
-          {emailMessage}
-        <Divider />
+        {emailMessage}
         <Segment.Group horizontal compact className='toolbar'>
           <Segment basic secondary>
             {saveChangesButton}
