@@ -33,7 +33,7 @@ class ProductOrderModal extends Component {
     }];
     const orderId = this.props.productOrderData.orderId ? this.props.productOrderData.orderId : null;
 		this.props.handleAddToVendorOrder(orders, orderId);
-		this.props.handleProductOrderModalClose();
+		this.handleClose();
 	}
 	
 	handleCreateResize() {
@@ -47,7 +47,7 @@ class ProductOrderModal extends Component {
     }];
     const orderId = this.props.productOrderData.orderId ? this.props.productOrderData.orderId : null;
 		this.props.handleCreateResize(resizes, orderId);
-		this.props.handleProductOrderModalClose();
+		this.handleClose();
 	}
 	
   handleClose() {
