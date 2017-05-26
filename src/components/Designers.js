@@ -138,7 +138,7 @@ class Designers extends Component {
       expanded: [],
       isReloading: [],
 			isSavingDesigners: [],
-			successMessage: null,
+			successMessages: [],
 			errors: []
     };
     this.handlePaginationClick = this.handlePaginationClick.bind(this);
@@ -239,15 +239,30 @@ class Designers extends Component {
       }
     }
     
-    let successMessage = nextProps.successMessage ? nextProps.successMessage : this.state.successMessage;
-    if (nextProps.successMessage && successMessage) {
-      this._notificationSystem.addNotification({
-        message: successMessage,
-        level: 'success',
-        autoDismiss: 0,
-        dismissible: true
+ 		// Display any success messages
+		let successMessages = this.state.successMessages;
+		if (nextProps.successMessage) {
+  		console.log('nextProps.successMessage found')
+  		var successMessageExists = false;
+  		successMessages.map(function(successMessage, i) {
+    		if (successMessage === nextProps.successMessage) successMessageExists = true;
+        return successMessage;
       });
-    }
+      if (!successMessageExists) {
+        console.log('!successMessageExists')
+        this._notificationSystem.addNotification({
+          message: nextProps.successMessage,
+          level: 'success',
+          autoDismiss: 0,
+          dismissible: true
+        });
+        successMessages.push(nextProps.successMessage);
+      } else {
+        console.log('successMessageExists')
+      }
+		} else {
+  		console.log('nextProps.successMessage not found')
+		}
     
 		// Display any errors
 		let errors = [];
@@ -276,7 +291,6 @@ class Designers extends Component {
   	// Reset on subpage navigation
   	const search = nextProps.router.params.subpage !== 'search' ? null : this.state.search;
   	expanded = nextProps.router.params.subpage !== this.state.subpage ? [] : expanded;
-  	successMessage = nextProps.router.params.subpage !== this.state.subpage ? null : successMessage;
   	
 		this.setState({
 			subpage: nextProps.router.params.subpage,
@@ -285,12 +299,12 @@ class Designers extends Component {
 			search: search,
 			expanded: expanded,
 			isSavingDesigners: isSavingDesigners,
-			successMessage: successMessage,
+			successMessages: successMessages,
 			errors: errors
 		});
 		
 		if (nextPage !== this.state.page || nextProps.router.params.subpage !== this.state.subpage) {
-    	this.props.getDesigners(this.props.token,  nextProps.router.params.subpage, nextPage, this.state.search);
+    	this.props.getDesigners(this.props.token, nextProps.router.params.subpage, nextPage, this.state.search);
   	}
   	
 	}
@@ -298,7 +312,7 @@ class Designers extends Component {
   render() {
     const scope = this;
 		const { error, isLoadingDesigners, totalPages } = this.props;
-		const { designers } = this.state;
+		const { designers, subpage } = this.state;
 		let designerRows = [];
     
 		if (designers) {
@@ -313,7 +327,7 @@ class Designers extends Component {
       			if (vendor.vendorOrders && vendor.vendorOrders.length > 0) {
         			vendor.vendorOrders.map(function(vendorOrder, j) {
                 const status = vendorOrder.orderedAll && vendorOrder.receivedAll === false ? 'Sent' : 'Pending';
-          			vendorOrders.push({status:status, order:vendorOrder, vendor:vendor});
+          			if ((status === 'Sent' && subpage === 'sent') || (status === 'Pending' && subpage === 'pending') || subpage === 'search' || subpage === 'all') vendorOrders.push({status:status, order:vendorOrder, vendor:vendor});
           			return vendorOrders;
           		});
         			
