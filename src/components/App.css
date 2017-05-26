@@ -60,8 +60,9 @@ a:hover i.link.icon {
   padding: 0 0 5px;
 }
 
-.ui.horizontal.label {
+.ui.label {
   white-space: nowrap;
+  margin: 0.14285714em 0.14285714em !important;
 }
 
 .ui.label > .detail {
