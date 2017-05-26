@@ -29,12 +29,12 @@ class ProductRow extends Component {
     return inventoryLevel;
   }
 	handleShowOrderFormClick(e, {value}) {
-  	let variant = this.props.product.variants ? this.props.product.variants[0] : null;
-		this.props.handleShowOrderFormClick({productId: this.props.product.product_id, variant: variant, resize: false});
+  	let variant = this.props.variant ? this.props.variant : null;
+		this.props.handleShowOrderFormClick({productId: variant.productId, variant: variant, resize: false});
 	}
 	handleShowResizeFormClick(e, {value}) {
-  	let variant = this.props.product.variants ? this.props.product.variants[0] : null;
-		this.props.handleShowOrderFormClick({productId: this.props.product.product_id, variant: variant, resize: true});
+  	let variant = this.props.variant ? this.props.variant : null;
+		this.props.handleShowOrderFormClick({productId: variant.productId, variant: variant, resize: true});
 	}
 	handleShowEditOrderProductFormClick(e, {value}) {
 //   	let variant = this.props.product.variants ? this.props.product.variants[0] : null;
@@ -43,7 +43,7 @@ class ProductRow extends Component {
 	render() {  	
 		const product = this.props.product;
 		const shipment = this.props.shipment;
-		const variant = this.props.product.variants ? this.props.product.variants[0] : null;
+		const variant = this.props.variant;
 		// Create an array of other options values
 		let options = [];
 		if (product.product_options) {
@@ -53,12 +53,13 @@ class ProductRow extends Component {
 	    });
 		}
 		const productName = product.name ? product.name : '';
+		const variantName = variant.productName ? variant.productName : null;
 		const productUrl = '/products/search?q=' + product.product_id;
-		const productLink = <a href={productUrl}>{productName}</a>;
+		const productLink = <a href={productUrl}>{productName + (product.isBundle ? ': ' + variantName : '')}</a>;
 		
-		const alwaysResize = product.variants && product.variants.length === 1 ? product.variants[0].alwaysResize : '';
-		const inventory = product.variants && product.variants.length > 0 ? this.getProductInventory(product.variants) : '';
-		const designerName = product.variants && product.variants.length === 1 && product.variants[0].designer ? product.variants[0].designer.name : '';
+		const alwaysResize = variant ? variant.alwaysResize : '';
+		const inventory = variant ? variant.inventoryLevel : '';
+		const designerName = variant && variant.designer ? variant.designer.name : '';
 		const shippingLabel = shipment && shipment.labelWithPackingSlipUrl ? 
 		  <Button as={Link} href={shipment.labelWithPackingSlipUrl} target='_blank'>
 		    <Icon name='print' />Print
@@ -116,20 +117,19 @@ class ProductRow extends Component {
 		
 		let primaryButton;
 		let dropdownItems = [];
-// 		let pendingAction = false;
     if (shipment) {
   	  primaryButton = <Button icon='shipping' content='View' onClick={this.handleShipModalOpen} />;
     } else if (product.shippable) {
-  	  primaryButton = <Button icon='shipping' content='Customize Shipment' onClick={this.handleShipModalOpen} />;
-      dropdownItems.push(<Dropdown.Item key='1' icon='edit' text='Edit Product' onClick={this.handleShowEditOrderProductFormClick} />);
+  	  primaryButton = <Button icon='shipping' content='Custom Shipment' onClick={this.handleShipModalOpen} />;
+//       dropdownItems.push(<Dropdown.Item key='1' icon='edit' text='Edit Product' onClick={this.handleShowEditOrderProductFormClick} />);
 	  } else if (product.resizable) {
   	  primaryButton = <Button icon='exchange' content='Resize' onClick={this.handleShowResizeFormClick} />;
   	  dropdownItems.push(<Dropdown.Item key='1' icon='add to cart' text='Order' onClick={this.handleShowOrderFormClick} />);
-  	  dropdownItems.push(<Dropdown.Item key='2' icon='edit' text='Edit Product' onClick={this.handleShowEditOrderProductFormClick} />);
+//   	  dropdownItems.push(<Dropdown.Item key='2' icon='edit' text='Edit Product' onClick={this.handleShowEditOrderProductFormClick} />);
 	  } else {
   	  primaryButton = <Button icon='add to cart' content='Order' onClick={this.handleShowOrderFormClick} />;
   	  dropdownItems.push(<Dropdown.Item key='1' icon='exchange' text='Resize' onClick={this.handleShowResizeFormClick} />);
-  	  dropdownItems.push(<Dropdown.Item key='2' icon='edit' text='Edit Product' onClick={this.handleShowEditOrderProductFormClick} />);
+//   	  dropdownItems.push(<Dropdown.Item key='2' icon='edit' text='Edit Product' onClick={this.handleShowEditOrderProductFormClick} />);
 	  }
 
     return (
@@ -362,7 +362,11 @@ class OrderDetails extends Component {
       			return shipmentObj;
     			});
   			}
-				productRows.push(<ProductRow product={productRow} shipment={shipment} handleShipModalOpen={scope.handleShipModalOpen} key={i} handleShowOrderFormClick={scope.handleShowOrderFormClick} />);
+  			productRow.variants.map(function(variant, j) {
+    			productRows.push(<ProductRow product={productRow} variant={variant} shipment={shipment} handleShipModalOpen={scope.handleShipModalOpen} key={i+'-'+j} handleShowOrderFormClick={scope.handleShowOrderFormClick} />);
+    			return variant;
+  			});
+				
 				return productRows;
 	    });
 		}
