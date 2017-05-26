@@ -412,7 +412,9 @@ class Products extends Component {
     	state.filterData = filterData;
   	}
   	
-  	if (nextProps.bundleFormData) {
+  	let bundleFormData = this.state.bundleFormData;
+  	if (bundleFormData && nextProps.bundleFormData) {
+    	state.bundleFormData = bundleFormData;
       state.bundleFormData.products = nextProps.bundleFormData;
       state.bundleFormIsLoading = nextProps.bundleFormIsLoading;
   	}
