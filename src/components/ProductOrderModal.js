@@ -26,6 +26,7 @@ class ProductOrderModal extends Component {
 	handleAddToVendorOrder() {
     const orders = [{
       productId: this.state.product ? this.state.product.productId : null,
+      orderProductId: this.props.productOrderData.orderProductId ? this.props.productOrderData.orderProductId : null,
       vendor: this.state.vendor,
       variant: this.state.variant,
       units: this.state.units,
@@ -39,6 +40,7 @@ class ProductOrderModal extends Component {
 	handleCreateResize() {
     const resizes = [{
       productId: this.state.product ? this.state.product.productId : null,
+      orderProductId: this.props.productOrderData.orderProductId ? this.props.productOrderData.orderProductId : null,
       vendor: this.state.vendor,
       variant: this.state.variant,
       resizeVariant: this.state.resizeVariant,

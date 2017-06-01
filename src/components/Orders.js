@@ -183,7 +183,7 @@ class Orders extends Component {
   	this.props.createShipments(this.props.token, shipmentGroups);
 	}
 	
-	handleAddToVendorOrder(orders, orderId) {
+	handleAddToVendorOrder(orders, orderId, orderProductId) {
   	let currentlyReloading = this.state.isReloading;
     if (orderId) {
   		const index = currentlyReloading.indexOf(orderId);
@@ -196,7 +196,7 @@ class Orders extends Component {
       productOrderOpen: false,
       productOrderData: {}
   	});
-		this.props.addOrderProductToVendorOrder(this.props.token, orders, orderId);
+		this.props.addOrderProductToVendorOrder(this.props.token, orders, orderId, orderProductId);
 	}
 	
 	handleCreateResize(resizes, orderId) {
@@ -219,6 +219,7 @@ class Orders extends Component {
   	let productOrderData = this.state.productOrderData;
   	if (data.variant) productOrderData.variant = data.variant.objectId;
   	if (data.orderId) productOrderData.orderId = data.orderId;
+  	if (data.orderProductId) productOrderData.orderProductId = data.orderProductId;
   	if (data.resize !== undefined) productOrderData.resize = data.resize;
   	this.props.getProduct(this.props.token, data.productId);
     this.setState({

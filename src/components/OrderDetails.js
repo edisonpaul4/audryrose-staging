@@ -30,11 +30,13 @@ class ProductRow extends Component {
   }
 	handleShowOrderFormClick(e, {value}) {
   	let variant = this.props.variant ? this.props.variant : null;
-		this.props.handleShowOrderFormClick({productId: variant.productId, variant: variant, resize: false});
+  	let orderProductId = this.props.product && this.props.product.orderProductId ? this.props.product.orderProductId : null;
+		this.props.handleShowOrderFormClick({productId: variant.productId, orderProductId: orderProductId, variant: variant, resize: false});
 	}
 	handleShowResizeFormClick(e, {value}) {
   	let variant = this.props.variant ? this.props.variant : null;
-		this.props.handleShowOrderFormClick({productId: variant.productId, variant: variant, resize: true});
+  	let orderProductId = this.props.product && this.props.product.orderProductId ? this.props.product.orderProductId : null;
+		this.props.handleShowOrderFormClick({productId: variant.productId, orderProductId: orderProductId, variant: variant, resize: true});
 	}
 	handleShowEditOrderProductFormClick(e, {value}) {
 //   	let variant = this.props.product.variants ? this.props.product.variants[0] : null;
@@ -67,26 +69,22 @@ class ProductRow extends Component {
 	    
 	  // Check if variant has been ordered
 	  let vendorOrders = [];
-	  if (variant && variant.designer && variant.designer.vendors) {
-  	  variant.designer.vendors.map(function(vendor, i) {
-    	  if (vendor.vendorOrders) {
-      	  vendor.vendorOrders.map(function(vendorOrder, j) {
-        	  vendorOrder.vendorOrderVariants.map(function(vendorOrderVariant, k) {
-          	  if (variant.objectId === vendorOrderVariant.variant.objectId && vendorOrderVariant.done === false) {
-            		const averageWaitTime = vendor.waitTime ? vendor.waitTime : 21;
-            		const expectedDate = vendorOrder.dateOrdered ? moment(vendorOrder.dateOrdered.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
-            		const daysLeft = vendorOrder.dateOrdered ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
-            		const labelColor = vendorOrderVariant.ordered ? daysLeft < 0 ? 'red' : 'olive' : 'yellow';
-            		const labelText = vendorOrderVariant.ordered ? vendorOrderVariant.units + ' Sent' : vendorOrderVariant.units + ' Pending';
-            		const labelDetail = vendorOrder.dateOrdered ? daysLeft < 0 ? Math.abs(daysLeft) + ' days late' : daysLeft + ' days left' : averageWaitTime + ' days wait';
-            		vendorOrders.push((vendorOrderVariant.done === false) ? <Label as='a' href={variant.designer ? '/designers/search?q=' + variant.designer.designerId : '/designers'} size='tiny' color={labelColor} key={'vendorOrder-'+i+'-'+j+'-'+k}>{labelText}<Label.Detail>{labelDetail}</Label.Detail></Label> : null);
-          	  }
-          	  return vendorOrderVariant;
-        	  });
-        	  return vendorOrder;
-      	  });
-    	  }
-    	  return vendor;
+	  if (product && product.vendorOrders) {
+  	  product.vendorOrders.map(function(vendorOrder, i) {
+    	  vendorOrder.vendorOrderVariants.map(function(vendorOrderVariant, j) {
+      	  if (variant.objectId === vendorOrderVariant.variant.objectId && vendorOrderVariant.done === false) {
+        		const averageWaitTime = vendorOrder.vendor.waitTime ? vendorOrder.vendor.waitTime : 21;
+        		const expectedDate = vendorOrder.dateOrdered ? moment(vendorOrder.dateOrdered.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
+        		const daysLeft = vendorOrder.dateOrdered ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
+        		const labelColor = vendorOrderVariant.ordered ? daysLeft < 0 ? 'red' : 'olive' : 'yellow';
+        		let labelText = vendorOrderVariant.ordered ? vendorOrderVariant.units + ' Sent' : vendorOrderVariant.units + ' Pending';
+        		if (vendorOrderVariant.ordered && vendorOrderVariant.received > 0) labelText += ', ' + vendorOrderVariant.received + ' Received';
+        		const labelDetail = vendorOrder.dateOrdered ? daysLeft < 0 ? Math.abs(daysLeft) + ' days late' : daysLeft + ' days left' : averageWaitTime + ' days wait';
+        		vendorOrders.push((vendorOrderVariant.done === false) ? <Label as='a' href={variant.designer ? '/designers/search?q=' + variant.designer.designerId : '/designers'} size='tiny' color={labelColor} key={'product-'+product.objectId+'-'+i+'-'+j}>{labelText}<Label.Detail>{labelDetail}</Label.Detail></Label> : null);
+      	  }
+      	  return vendorOrderVariant;
+    	  });
+    	  return vendorOrder;
   	  });
 	  }
     
@@ -362,10 +360,12 @@ class OrderDetails extends Component {
       			return shipmentObj;
     			});
   			}
-  			productRow.variants.map(function(variant, j) {
-    			productRows.push(<ProductRow product={productRow} variant={variant} shipment={shipment} handleShipModalOpen={scope.handleShipModalOpen} key={i+'-'+j} handleShowOrderFormClick={scope.handleShowOrderFormClick} />);
-    			return variant;
-  			});
+  			if (productRow.variants) {
+    			productRow.variants.map(function(variant, j) {
+      			productRows.push(<ProductRow product={productRow} variant={variant} shipment={shipment} handleShipModalOpen={scope.handleShipModalOpen} key={i+'-'+j} handleShowOrderFormClick={scope.handleShowOrderFormClick} />);
+      			return variant;
+    			});
+  			}
 				
 				return productRows;
 	    });
