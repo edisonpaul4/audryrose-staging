@@ -217,12 +217,17 @@ class VendorOrder extends Component {
   	
   	// Create Pending Order Table
 		let orderProductRows = [];
+		let totalReceived = 0;
 		if (order && order.vendorOrderVariants.length > 0) {
 			order.vendorOrderVariants.map(function(vendorOrderVariant, i) {
+  			totalReceived += vendorOrderVariant.received;
 				orderProductRows.push(<ProductRow status={scope.props.status} vendorOrderVariant={vendorOrderVariant} key={vendorOrderVariant.objectId} handleVariantEdited={scope.handleVariantEdited} isSaving={scope.props.isSaving} />);
 				return vendorOrderVariant;
 	    });
 		}
+		
+		const partiallyReceived = (order.orderedAll === true && order.receivedAll === false && totalReceived > 0) ? true : false;
+		const partiallyReceivedLabel = partiallyReceived ? <Label size='small' color='orange'>Partially Received</Label> : null;
 		
 		const saveChangesButton = this.state.variantsEdited || this.state.formEdited ? <Button 
       primary 
@@ -260,7 +265,7 @@ class VendorOrder extends Component {
 		
     return (
       <Segment secondary key={order.objectId}>
-        <Header>{status} Order for {vendor.name} {label}</Header>
+        <Header>{status} Order for {vendor.name} {label} {partiallyReceivedLabel}</Header>
         <Table className='order-products-table' basic='very' compact size='small' columns={6}>
           <Table.Header>
             <Table.Row>
