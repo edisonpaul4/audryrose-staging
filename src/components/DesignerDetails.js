@@ -91,7 +91,8 @@ class ProductRow extends Component {
 		const received = (this.props.status === 'Sent') ? <Table.Cell><Input type='number' value={this.state.received ? this.state.received : 0} onChange={this.handleReceivedChange} min={0} disabled={this.props.isSaving} /></Table.Cell> : null;
 		const cancelClass = this.isEdited() ? '' : 'invisible';
 		
-		const resize = vendorOrderVariant.isResize ? 'SIZE: ' + vendorOrderVariant.resizeVariant.size_value + ', INVENTORY: ' + vendorOrderVariant.resizeVariant.inventoryLevel : '';
+    if (vendorOrderVariant.orderProducts) console.log(vendorOrderVariant.orderProducts[0])
+		const orderNumber = vendorOrderVariant.orderProducts ? '#' + vendorOrderVariant.orderProducts[0].order_id : '';
 
     return (
       <Table.Row>
@@ -101,7 +102,7 @@ class ProductRow extends Component {
             return <span key={i}>{option}<br/></span>;
           })}
         </Table.Cell>
-				<Table.Cell>{resize}</Table.Cell>
+        <Table.Cell>{orderNumber}</Table.Cell>
 				<Table.Cell>{inventory}</Table.Cell>
 				<Table.Cell>{units}</Table.Cell>
 				<Table.Cell>{notes}</Table.Cell>
@@ -265,7 +266,7 @@ class VendorOrder extends Component {
             <Table.Row>
               <Table.HeaderCell>Product</Table.HeaderCell>
               <Table.HeaderCell>Options</Table.HeaderCell>
-              <Table.HeaderCell>Resize</Table.HeaderCell>
+              <Table.HeaderCell>Customer Order</Table.HeaderCell>
               <Table.HeaderCell>ACH OH</Table.HeaderCell>
               <Table.HeaderCell>Units {status === 'Pending' ? 'To Order' : 'Ordered'}</Table.HeaderCell>
               <Table.HeaderCell>Notes</Table.HeaderCell>
