@@ -106,7 +106,10 @@ class VariantRow extends Component {
     		const expectedDate = resize.dateSent ? moment(resize.dateSent.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
     		const daysLeft = resize.dateSent ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
     		const labelColor = daysLeft < 0 ? 'red' : 'olive';
-    		const labelText = resize.units + ' Resizing';
+    		let labelText = resize.units + ' Resizing';
+    		if (resize.orderProduct) {
+      		labelText += ' / #' + resize.orderProduct.order_id;
+    		}
     		const labelDetail = daysLeft < 0 ? Math.abs(daysLeft) + ' days late' : daysLeft + ' days left';
     		const labelComponent = <Label as='a' size='tiny' color={labelColor}>{labelText}<Label.Detail>{labelDetail}</Label.Detail></Label>;
     		vendorOrderAndResizes.push(

@@ -72,15 +72,40 @@ class ProductRow extends Component {
 	  if (product && product.vendorOrders) {
   	  product.vendorOrders.map(function(vendorOrder, i) {
     	  vendorOrder.vendorOrderVariants.map(function(vendorOrderVariant, j) {
-      	  if (variant.objectId === vendorOrderVariant.variant.objectId && vendorOrderVariant.done === false) {
+      	  console.log(vendorOrderVariant)
+      	  if (variant.objectId === vendorOrderVariant.variant.objectId) {
         		const averageWaitTime = vendorOrder.vendor.waitTime ? vendorOrder.vendor.waitTime : 21;
         		const expectedDate = vendorOrder.dateOrdered ? moment(vendorOrder.dateOrdered.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
         		const daysLeft = vendorOrder.dateOrdered ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
-        		const labelColor = vendorOrderVariant.ordered ? daysLeft < 0 ? 'red' : 'olive' : 'yellow';
+        		let labelColor = 'yellow';
+        		let labelIcon;
+        		if (vendorOrderVariant.done === true) {
+          		labelColor = 'olive';
+          		labelIcon = <Icon name='checkmark' />;
+        		} else if (vendorOrderVariant.ordered && daysLeft < 0) {
+          		labelColor = 'red';
+        		} else if (vendorOrderVariant.ordered) {
+          		labelColor = 'olive';
+        		}
         		let labelText = vendorOrderVariant.ordered ? vendorOrderVariant.units + ' Sent' : vendorOrderVariant.units + ' Pending';
-        		if (vendorOrderVariant.ordered && vendorOrderVariant.received > 0) labelText += ', ' + vendorOrderVariant.received + ' Received';
-        		const labelDetail = vendorOrder.dateOrdered ? daysLeft < 0 ? Math.abs(daysLeft) + ' days late' : daysLeft + ' days left' : averageWaitTime + ' days wait';
-        		vendorOrders.push((vendorOrderVariant.done === false) ? <Label as='a' href={variant.designer ? '/designers/search?q=' + variant.designer.designerId : '/designers'} size='tiny' color={labelColor} key={'product-'+product.objectId+'-'+i+'-'+j}>{labelText}<Label.Detail>{labelDetail}</Label.Detail></Label> : null);
+        		
+        		if (vendorOrderVariant.done === true) {
+          		labelText = vendorOrderVariant.received + ' Received';
+        		} else if (vendorOrderVariant.ordered && vendorOrderVariant.received > 0) {
+          		labelText += ', ' + vendorOrderVariant.received + ' Received';
+        		}
+        		const labelDetailText = vendorOrder.dateOrdered ? daysLeft < 0 ? Math.abs(daysLeft) + ' days late' : daysLeft + ' days left' : averageWaitTime + ' days wait';
+        		const labelDetail = vendorOrderVariant.done === false ? <Label.Detail>{labelDetailText}</Label.Detail> : null;
+        		const labelLink = vendorOrderVariant.done === false ? variant.designer ? '/designers/search?q=' + variant.designer.designerId : '/designers' : null;
+        		let showLabel = false;
+        		if (vendorOrderVariant.done === true && vendorOrderVariant.shipped === undefined) {
+          		showLabel = true;
+        		} else if (vendorOrderVariant.done === true) {
+          		showLabel = vendorOrderVariant.shipped < vendorOrderVariant.received ? true : false;
+        		} else {
+          		showLabel = true;
+        		}
+        		vendorOrders.push(showLabel ? <Label as={labelLink ? 'a' : null} href={labelLink} size='tiny' color={labelColor} key={'product-'+product.objectId+'-'+i+'-'+j}>{labelIcon}{labelText}{labelDetail}</Label> : null);
       	  }
       	  return vendorOrderVariant;
     	  });
@@ -94,20 +119,38 @@ class ProductRow extends Component {
     		const averageWaitTime = 7;
     		const expectedDate = resize.dateSent ? moment(resize.dateSent.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
     		const daysLeft = resize.dateSent ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
-    		const labelColor = daysLeft < 0 ? 'red' : 'olive';
-    		const labelText = resize.units + ' Resizing';
-    		const labelDetail = daysLeft < 0 ? Math.abs(daysLeft) + ' days late' : daysLeft + ' days left';
+    		let labelColor = 'olive';
+    		let labelIcon;
+    		if (resize.done === true) {
+      		labelIcon = <Icon name='checkmark' />;
+    		} else if (daysLeft < 0) {
+      		labelColor = 'red';
+    		}
+    		const labelLink = resize.done === false && product.product_id ? '/products/search?q=' + product.product_id : null;
+    		let labelText = resize.units + ' Resizing';
+    		if (resize.received >= resize.units) labelText = resize.received + ' Received';
+    		const labelDetailText = daysLeft < 0 ? Math.abs(daysLeft) + ' days late' : daysLeft + ' days left';
+    		const labelDetail = resize.done === false ? <Label.Detail>{labelDetailText}</Label.Detail> : null;
+    		let showLabel = false;
+    		if (resize.done === true && resize.shipped === undefined) {
+      		showLabel = true;
+    		} else if (resize.done === true) {
+      		showLabel = resize.shipped < resize.received ? true : false;
+    		} else {
+      		showLabel = true;
+    		}
     		resizes.push(
-    		  <Label 
-    		    as='a' 
-    		    href={product.product_id ? '/products/search?q=' + product.product_id : null} 
+    		  showLabel ? <Label 
+    		    as={labelLink ? 'a' : null} 
+    		    href={labelLink} 
     		    size='tiny' 
     		    color={labelColor} 
     		    key={'resize-'+i}
   		    >
+  		      {labelIcon}
   		      {labelText}
-  		      <Label.Detail>{labelDetail}</Label.Detail>
-		      </Label>
+  		      {labelDetail}
+		      </Label> : null
 	      );
     		return resize;
   		});
