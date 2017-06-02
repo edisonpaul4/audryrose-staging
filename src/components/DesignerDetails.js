@@ -91,7 +91,6 @@ class ProductRow extends Component {
 		const received = (this.props.status === 'Sent') ? <Table.Cell><Input type='number' value={this.state.received ? this.state.received : 0} onChange={this.handleReceivedChange} min={0} disabled={this.props.isSaving} /></Table.Cell> : null;
 		const cancelClass = this.isEdited() ? '' : 'invisible';
 		
-    if (vendorOrderVariant.orderProducts) console.log(vendorOrderVariant.orderProducts[0])
 		const orderNumber = vendorOrderVariant.orderProducts ? '#' + vendorOrderVariant.orderProducts[0].order_id : '';
 
     return (
@@ -256,7 +255,8 @@ class VendorOrder extends Component {
 		const daysLeft = order.dateOrdered ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
 		const labelColor = status === 'Sent' ? daysLeft < 0 ? 'red' : 'olive' : 'yellow';
 		const labelText = status === 'Sent' ? daysLeft < 0 ? Math.abs(daysLeft) + ' days late' : daysLeft + ' days left' : averageWaitTime + ' days average wait time';
-		const label = <Label size='small' color={labelColor}>{labelText}</Label>;    
+		const labelDetail = order.dateOrdered ? <Label.Detail>{'Sent ' + moment(order.dateOrdered.iso).format('M-D-YY')}</Label.Detail> : null;
+		const label = <Label size='small' color={labelColor}>{labelText}{labelDetail}</Label>;    
 		
     return (
       <Segment secondary key={order.objectId}>

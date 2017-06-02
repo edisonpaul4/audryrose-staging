@@ -72,8 +72,17 @@ class ProductRow extends Component {
 	  if (product && product.vendorOrders) {
   	  product.vendorOrders.map(function(vendorOrder, i) {
     	  vendorOrder.vendorOrderVariants.map(function(vendorOrderVariant, j) {
-      	  console.log(vendorOrderVariant)
-      	  if (variant.objectId === vendorOrderVariant.variant.objectId) {
+      	  var orderProductMatch;
+      	  if (vendorOrderVariant.orderProducts) {
+        	  vendorOrderVariant.orderProducts.map(function(vendorOrderVariantProduct, k) {
+          	  if (vendorOrderVariantProduct.objectId === product.objectId) {
+            	  console.log('op match: ' + product.objectId);
+            	  orderProductMatch = product.objectId;
+          	  }
+          	  return vendorOrderVariantProduct;
+        	  });
+      	  }
+      	  if (orderProductMatch && variant.objectId === vendorOrderVariant.variant.objectId) {
         		const averageWaitTime = vendorOrder.vendor.waitTime ? vendorOrder.vendor.waitTime : 21;
         		const expectedDate = vendorOrder.dateOrdered ? moment(vendorOrder.dateOrdered.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
         		const daysLeft = vendorOrder.dateOrdered ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
@@ -94,7 +103,8 @@ class ProductRow extends Component {
         		} else if (vendorOrderVariant.ordered && vendorOrderVariant.received > 0) {
           		labelText += ', ' + vendorOrderVariant.received + ' Received';
         		}
-        		const labelDetailText = vendorOrder.dateOrdered ? daysLeft < 0 ? Math.abs(daysLeft) + ' days late' : daysLeft + ' days left' : averageWaitTime + ' days wait';
+        		if (orderProductMatch) labelText += ' #' + product.order_id;
+        		const labelDetailText = vendorOrder.dateOrdered ? daysLeft < 0 ? moment(vendorOrder.dateOrdered.iso).format('M-D-YY') + ' (' + Math.abs(daysLeft) + ' days late)' : moment(vendorOrder.dateOrdered.iso).format('M-D-YY') + ' (' + daysLeft + ' days left)' : averageWaitTime + ' days wait';
         		const labelDetail = vendorOrderVariant.done === false ? <Label.Detail>{labelDetailText}</Label.Detail> : null;
         		const labelLink = vendorOrderVariant.done === false ? variant.designer ? '/designers/search?q=' + variant.designer.designerId : '/designers' : null;
         		let showLabel = false;
@@ -116,6 +126,13 @@ class ProductRow extends Component {
 	  let resizes = [];
 		if (product && product.resizes && product.resizes.length > 0) {
   		product.resizes.map(function(resize, i) {
+    	  var orderProductMatch;
+    	  if (resize.orderProduct) {
+      	  if (resize.orderProduct.objectId === product.objectId) {
+        	  console.log('op match: ' + product.objectId);
+        	  orderProductMatch = product.objectId;
+      	  }
+    	  }
     		const averageWaitTime = 7;
     		const expectedDate = resize.dateSent ? moment(resize.dateSent.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
     		const daysLeft = resize.dateSent ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
@@ -129,7 +146,8 @@ class ProductRow extends Component {
     		const labelLink = resize.done === false && product.product_id ? '/products/search?q=' + product.product_id : null;
     		let labelText = resize.units + ' Resizing';
     		if (resize.received >= resize.units) labelText = resize.received + ' Received';
-    		const labelDetailText = daysLeft < 0 ? Math.abs(daysLeft) + ' days late' : daysLeft + ' days left';
+    		if (orderProductMatch) labelText += ' #' + product.order_id;
+    		const labelDetailText = daysLeft < 0 ? moment(resize.dateSent.iso).format('M-D-YY') + ' (' + Math.abs(daysLeft) + ' days late)' : moment(resize.dateSent.iso).format('M-D-YY') + ' (' + daysLeft + ' days left)';
     		const labelDetail = resize.done === false ? <Label.Detail>{labelDetailText}</Label.Detail> : null;
     		let showLabel = false;
     		if (resize.done === true && resize.shipped === undefined) {
