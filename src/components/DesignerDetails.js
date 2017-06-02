@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Button, Dimmer, Segment, Loader, Header, Form,Input, TextArea, Divider, Label } from 'semantic-ui-react';
+import { Table, Button, Dimmer, Segment, Loader, Header, Form,Input, TextArea, Divider, Label, Icon } from 'semantic-ui-react';
 import classNames from 'classnames';
 import moment from 'moment';
 
@@ -88,6 +88,7 @@ class ProductRow extends Component {
 		const inventory = vendorOrderVariant.variant.inventoryLevel ? vendorOrderVariant.variant.inventoryLevel : 0;
 		const units = (this.props.status === 'Pending') ? <Input type='number' value={this.state.units ? this.state.units : 0} onChange={this.handleUnitsChange} min={0} disabled={this.props.isSaving} /> : this.state.units;
 		const notes = (this.props.status === 'Pending') ? <Input type='text' value={this.state.notes ? this.state.notes : ''} onChange={this.handleNotesChange} min={0} disabled={this.props.isSaving} /> : this.state.notes;
+		const doneIconClass = vendorOrderVariant.done ? '' : 'invisible';
 		const received = (this.props.status === 'Sent') ? <Table.Cell><Input type='number' value={this.state.received ? this.state.received : 0} onChange={this.handleReceivedChange} min={0} disabled={this.props.isSaving} /></Table.Cell> : null;
 		const cancelClass = this.isEdited() ? '' : 'invisible';
 		
@@ -117,6 +118,9 @@ class ProductRow extends Component {
       		    onClick={this.handleCancelVariantClick} 
     		    />
     	    </Button.Group> 
+				</Table.Cell>
+				<Table.Cell className='right aligned'>
+  				<Icon name='checkmark' color='olive' size='large' className={doneIconClass} />
 				</Table.Cell>
       </Table.Row>
     );
@@ -276,8 +280,8 @@ class VendorOrder extends Component {
               <Table.HeaderCell>Units {status === 'Pending' ? 'To Order' : 'Ordered'}</Table.HeaderCell>
               <Table.HeaderCell>Notes</Table.HeaderCell>
               {receivedHeader}
-              <Table.HeaderCell className='right aligned'> 
-              </Table.HeaderCell>
+              <Table.HeaderCell className='right aligned'></Table.HeaderCell>
+              <Table.HeaderCell></Table.HeaderCell>
             </Table.Row>
           </Table.Header>
           <Table.Body>
