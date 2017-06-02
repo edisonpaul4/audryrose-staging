@@ -160,7 +160,7 @@ class ProductRow extends Component {
 		let dropdownItems = [];
     if (shipment) {
   	  primaryButton = <Button icon='shipping' content='View' onClick={this.handleShipModalOpen} />;
-    } else if (product.shippable) {
+    } else if (product.shippable || product.partiallyShippable) {
   	  primaryButton = <Button icon='shipping' content='Custom Shipment' onClick={this.handleShipModalOpen} />;
 //       dropdownItems.push(<Dropdown.Item key='1' icon='edit' text='Edit Product' onClick={this.handleShowEditOrderProductFormClick} />);
 	  } else if (product.resizable) {
@@ -331,7 +331,7 @@ class OrderDetails extends Component {
             shippedGroups[shipmentIndex].orderProducts.push(orderProduct);
           }
       		
-    		} else if (orderProduct.shippable && orderProduct.quantity_shipped !== orderProduct.quantity) {
+    		} else if ((orderProduct.shippable || orderProduct.partiallyShippable) && orderProduct.quantity_shipped < orderProduct.quantity) {
 //       		console.log('product is shippable');
       		
       		// Check whether product is being shipped to a unique address
