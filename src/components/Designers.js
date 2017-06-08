@@ -321,7 +321,7 @@ class Designers extends Component {
       			if (vendor.vendorOrders && vendor.vendorOrders.length > 0) {
         			vendor.vendorOrders.map(function(vendorOrder, j) {
                 const status = vendorOrder.orderedAll && vendorOrder.receivedAll === false ? 'Sent' : 'Pending';
-          			if ((status === 'Sent' && subpage === 'sent') || (status === 'Pending' && subpage === 'pending') || subpage === 'search' || subpage === 'all') vendorOrders.push({status:status, order:vendorOrder, vendor:vendor});
+          			if ((status === 'Sent' && subpage === 'sent') || (status === 'Pending' && subpage === 'pending') || subpage === 'search' || subpage === 'all' || subpage === undefined) vendorOrders.push({status:status, order:vendorOrder, vendor:vendor});
           			return vendorOrders;
           		});
         			
