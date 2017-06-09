@@ -125,6 +125,8 @@ class VariantRow extends Component {
   		});
     }
     
+    const totalAwaitingInventory = data.totalAwaitingInventory ? data.totalAwaitingInventory : '';
+    
     const resizeButton = data.size_value ? <Dropdown.Item icon='exchange' text='Resize' disabled={this.props.isSaving || variantEdited} onClick={this.handleShowResizeFormClick} /> : null;
      
     return (
@@ -134,6 +136,7 @@ class VariantRow extends Component {
         <Table.Cell>{data.size_value ? data.size_value : 'OS'}</Table.Cell>
         <Table.Cell>{otherOptions ? otherOptions.join(', ') : null}</Table.Cell>
 				<Table.Cell><Input type='number' value={this.state.inventory ? this.state.inventory : 0} onChange={this.handleInventoryChange} min={0} disabled={this.props.isSaving} /></Table.Cell>
+				<Table.Cell>{totalAwaitingInventory}</Table.Cell>
 				<Table.Cell>{vendorOrderAndResizes}</Table.Cell>
 				<Table.Cell className='right aligned'>{numeral(price).format('$0,0.00')}</Table.Cell>
 				<Table.Cell className='right aligned' singleLine>
@@ -285,6 +288,7 @@ class VariantsTable extends Component {
               <Table.HeaderCell>Size</Table.HeaderCell>
               <Table.HeaderCell>Other Options</Table.HeaderCell>
               <Table.HeaderCell>ACT OH</Table.HeaderCell>
+              <Table.HeaderCell>Total Awaiting</Table.HeaderCell>
               <Table.HeaderCell>Ordered/Resizing</Table.HeaderCell>
               <Table.HeaderCell className='right aligned'>RETAIL $</Table.HeaderCell>
               <Table.HeaderCell className='right aligned'>Actions</Table.HeaderCell>
