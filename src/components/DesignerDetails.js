@@ -269,7 +269,7 @@ class VendorOrder extends Component {
 		
     return (
       <Segment secondary key={order.objectId}>
-        <Header>{status} Order for {vendor.name} {label} {partiallyReceivedLabel}</Header>
+        <Header>{status} Order {order.vendorOrderNumber} {label} {partiallyReceivedLabel}</Header>
         <Table className='order-products-table' basic='very' compact size='small' columns={6}>
           <Table.Header>
             <Table.Row>
