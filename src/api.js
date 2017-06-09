@@ -74,6 +74,13 @@ export const createResize = (token, resizes, orderId) => Parse.Cloud.run('create
   }
 );
 
+export const saveOrder = (token, data) => Parse.Cloud.run('saveOrder', 
+  {
+    sessionToken: token,
+    data
+  }
+);
+
 export const saveResize = (token, data) => Parse.Cloud.run('saveResize', 
   {
     sessionToken: token,
@@ -226,6 +233,7 @@ export default {
 	getProduct,
 	addOrderProductToVendorOrder,
 	createResize,
+	saveOrder,
 	saveResize,
 	getProducts,
 	getProductFilters,

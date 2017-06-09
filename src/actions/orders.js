@@ -55,3 +55,10 @@ export function createResize(token, resizes, orderId) {
     promise: api.createResize(token, resizes, orderId)
   }
 }
+
+export function saveOrder(token, data) {
+  return {
+    types: ['ORDER_SAVE_REQUEST', 'ORDER_SAVE_SUCCESS', 'ORDER_SAVE_FAILURE'],
+    promise: api.saveOrder(token, data)
+  }
+}

@@ -457,7 +457,7 @@ class OrderDetails extends Component {
         onClick={this.handleCreateShipments} 
       /> : null;
       
-    const detailsColSpan = this.props.subpage === 'fulfilled' ? '11' : '10';
+    const detailsColSpan = this.props.subpage === 'fulfilled' ? '12' : '11';
 		
     return (
       <Table.Row className={rowClass}>

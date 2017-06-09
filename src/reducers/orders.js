@@ -153,6 +153,22 @@ const orders = (state = initialState, action) => {
       return {
         ...state
       }
+      
+    case 'ORDER_SAVE_REQUEST':
+      return {
+        ...state
+      }
+
+    case 'ORDER_SAVE_SUCCESS':
+      return {
+        ...state,
+        updatedOrders: action.res.updatedOrders
+      };
+
+    case 'ORDER_SAVE_FAILURE':
+      return {
+        ...state
+      }
 			
     default:
       return state;

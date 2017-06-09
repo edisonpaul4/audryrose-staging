@@ -57,6 +57,7 @@ class Orders extends Component {
     this.handleCreateResize = this.handleCreateResize.bind(this);
     this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
     this.handleProductOrderModalClose = this.handleProductOrderModalClose.bind(this);
+    this.handleDateNeededChange = this.handleDateNeededChange.bind(this);
   }
 	
 	componentDidMount() {
@@ -213,6 +214,20 @@ class Orders extends Component {
       productOrderData: {}
   	});
 		this.props.createResize(this.props.token, resizes, orderId);
+	}
+	
+	handleDateNeededChange(data) {
+  	let currentlyReloading = this.state.isReloading;
+    if (data.orderId) {
+  		const index = currentlyReloading.indexOf(data.orderId);
+  		if (index < 0) {
+  			currentlyReloading.push(data.orderId);
+  		}
+		}
+  	this.setState({
+    	isReloading: currentlyReloading
+  	});
+		this.props.saveOrder(this.props.token, data);
 	}
 	
 	handleShowOrderFormClick(data) {
@@ -400,6 +415,7 @@ class Orders extends Component {
           resizable: order.resizable,
           date_created: order.date_created,
           date_shipped: order.date_shipped,
+          dateNeeded: order.dateNeeded,
           customer_id: order.customer_id,
           billing_address: order.billing_address,
           orderId: order.orderId,
@@ -416,6 +432,7 @@ class Orders extends Component {
 				    isReloading={isReloading} 
 				    handleToggleClick={scope.handleToggleClick} 
 				    handleCheckboxClick={scope.handleCheckboxClick} 
+				    handleDateNeededChange={scope.handleDateNeededChange}
 				    selected={selected}
 			    />
 		    );
@@ -443,11 +460,13 @@ class Orders extends Component {
 		// Get sort column name without sort direction
 		let sortColumn = '';
 		sortColumn = (this.state.sort.includes('date-added')) ? 'date-added' : sortColumn;
+		sortColumn = (this.state.sort.includes('date-needed')) ? 'date-needed' : sortColumn;
 		sortColumn = (this.state.sort.includes('date-shipped')) ? 'date-shipped' : sortColumn;
 		sortColumn = (this.state.sort.includes('total')) ? 'total' : sortColumn;
 		
     const searchHeader = this.state.search ? <Header as='h2'>{totalOrders} results for "{this.props.location.query.q}"</Header> : null;
     const dateIcon = this.state.sort === 'date-added-desc' || this.state.sort === 'date-added-asc' ? null : <Icon disabled name='caret down' />;
+    const dateNeededIcon = this.state.sort === 'date-needed-desc' || this.state.sort === 'date-needed-asc' ? null : <Icon disabled name='caret down' />;
     const dateShippedIcon = this.state.sort === 'date-shipped-desc' || this.state.sort === 'date-shipped-asc' ? null : <Icon disabled name='caret down' />;
     const totalIcon = this.state.sort === 'total-desc' || this.state.sort === 'total-asc' ? null : <Icon disabled name='caret down' />;
     const shipSelectedName = 'Create ' + this.state.selectedRows.length + ' Shipments';
@@ -501,6 +520,11 @@ class Orders extends Component {
                     sorted={sortColumn === 'date-added' ? (this.state.sort === 'date-added-asc' ? 'ascending' : 'descending') : null} 
                     onClick={this.state.sort === 'date-added-desc' ? ()=>this.handleSortClick('date-added-asc') : ()=>this.handleSortClick('date-added-desc')}>
                     Date {dateIcon}
+                  </Table.HeaderCell>
+                  <Table.HeaderCell 
+                    sorted={sortColumn === 'date-needed' ? (this.state.sort === 'date-needed-asc' ? 'ascending' : 'descending') : null} 
+                    onClick={this.state.sort === 'date-needed-desc' ? ()=>this.handleSortClick('date-needed-asc') : ()=>this.handleSortClick('date-needed-desc')}>
+                    Date Needed By {dateNeededIcon}
                   </Table.HeaderCell>
                   {dateShippedColumn}
                   <Table.HeaderCell>Order #</Table.HeaderCell>

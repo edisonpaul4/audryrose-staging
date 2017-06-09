@@ -76,3 +76,15 @@ a:hover i.link.icon {
 .pre-text {
   white-space: pre-wrap;
 }
+
+.SingleDatePicker {
+  font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+}
+.SingleDatePicker .SingleDatePickerInput .DateInput {
+  padding: 0;
+  font-size: 14px;
+}
+
+.SingleDatePickerInput__clear-date--hover {
+  background: none !important;
+}

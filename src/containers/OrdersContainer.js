@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { getOrders, reloadOrder, createShipments, batchCreateShipments, batchPrintShipments, getProduct, addOrderProductToVendorOrder, createResize } from '../actions/orders';
+import { getOrders, reloadOrder, createShipments, batchCreateShipments, batchPrintShipments, getProduct, addOrderProductToVendorOrder, createResize, saveOrder } from '../actions/orders';
 import Orders from '../components/Orders';
 
 const select = state => ({
@@ -25,7 +25,8 @@ const actions = {
   batchPrintShipments,
   getProduct,
   addOrderProductToVendorOrder,
-  createResize
+  createResize,
+  saveOrder
 };
 
 export default connect(select, actions)(Orders);
