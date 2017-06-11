@@ -6,6 +6,7 @@ const select = state => ({
   error: state.error,
   isLoggedIn: state.auth.isLoggedIn,
 	token: state.auth.token,
+	timeout: state.auth.timeout
 });
 
 const actions = {

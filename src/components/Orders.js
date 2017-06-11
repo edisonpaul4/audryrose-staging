@@ -289,6 +289,7 @@ class Orders extends Component {
     } else {
       orders = currentOrders;
     }
+    if (nextProps.timeout) currentlyReloading = [];
     
   	// Update tab counts if available
   	const tabCounts = nextProps.tabCounts ? nextProps.tabCounts : this.state.tabCounts;
@@ -298,9 +299,12 @@ class Orders extends Component {
   	expandedOrders = nextProps.router.params.subpage !== this.state.subpage ? [] : expandedOrders;
   	
 		// Display any errors
+		let newErrors = [];
 		let errors = [];
-		if (nextProps.errors) {
-  		nextProps.errors.map(function(errorMessage, i) {
+		if (nextProps.timeout) newErrors.push(nextProps.timeout);
+		if (nextProps.errors && nextProps.errors.length > 0) newErrors = newErrors.concat(nextProps.errors);
+		if (newErrors.length > 0) {
+  		newErrors.map(function(errorMessage, i) {
     		var errorExists = false;
     		scope.state.errors.map(function(error, j) {
       		if (errorMessage === error) errorExists = true;
@@ -316,9 +320,7 @@ class Orders extends Component {
         }
     		return errorMessage;
   		});
-      errors = nextProps.errors.length > 0 ? nextProps.errors : this.state.errors;
-		} else {
-  		errors = this.state.errors;
+      errors = newErrors.length > 0 ? newErrors : this.state.errors;
 		}
 		
 		// Display generated files with notification system

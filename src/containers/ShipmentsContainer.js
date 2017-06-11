@@ -7,7 +7,8 @@ const select = state => ({
 	isLoadingShipments: state.shipments.isLoadingShipments,
 	shipments: state.shipments.shipments,
 	totalPages: state.shipments.totalPages,
-	error: state.error
+	error: state.error,
+	timeout: state.shipments.timeout
 });
 
 const actions = {

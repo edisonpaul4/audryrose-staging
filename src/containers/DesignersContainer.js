@@ -11,7 +11,8 @@ const select = state => ({
 	successMessage: state.designers.successMessage,
 	totalPages: state.designers.totalPages,
 	error: state.error,
-	errors: state.designers.errors
+	errors: state.designers.errors,
+	timeout: state.designers.timeout
 });
 
 const actions = {

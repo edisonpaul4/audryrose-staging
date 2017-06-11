@@ -14,6 +14,7 @@ const products = (state = initialState, action) => {
       }
 
     case 'PRODUCTS_SUCCESS':
+      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
         ...state,
         isLoadingProducts: false,
@@ -35,6 +36,7 @@ const products = (state = initialState, action) => {
       }
 
     case 'PRODUCT_FILTERS_SUCCESS':
+      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
         ...state,
         filterData: action.res
@@ -51,10 +53,11 @@ const products = (state = initialState, action) => {
       }
 
     case 'PRODUCT_RELOAD_SUCCESS':
+      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
         ...state,
         updatedProducts: [action.res.updatedProduct],
-        tabCounts: action.res.tabCounts
+        tabCounts: action.res.tabCounts ? action.res.tabCounts : {}
       };
 
     case 'PRODUCT_RELOAD_FAILURE':
@@ -68,6 +71,7 @@ const products = (state = initialState, action) => {
       }
 
     case 'PRODUCT_SAVE_SUCCESS':
+      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
         ...state,
         updatedProducts: [action.res.updatedProduct],
@@ -85,6 +89,7 @@ const products = (state = initialState, action) => {
       }
 
     case 'VARIANT_SAVE_SUCCESS':
+      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
         ...state,
         updatedVariants: [action.res.updatedVariant],
@@ -103,6 +108,7 @@ const products = (state = initialState, action) => {
       }
 
     case 'VARIANTS_SAVE_SUCCESS':
+      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
         ...state,
         updatedVariants: action.res.updatedVariants,
@@ -121,6 +127,7 @@ const products = (state = initialState, action) => {
       }
 
     case 'ADD_TO_VENDOR_ORDER_SUCCESS':
+      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
         ...state,
         updatedProducts: action.res.updatedProducts,
@@ -139,6 +146,7 @@ const products = (state = initialState, action) => {
       }
 
     case 'CREATE_PRODUCT_RESIZE_SUCCESS':
+      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
         ...state,
         updatedProducts: action.res.updatedProducts,
@@ -158,6 +166,7 @@ const products = (state = initialState, action) => {
       }
 
     case 'SAVE_PRODUCT_RESIZE_SUCCESS':
+      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
         ...state,
         updatedProducts: action.res.updatedProducts,
@@ -177,6 +186,7 @@ const products = (state = initialState, action) => {
       }
 
     case 'GET_BUNDLE_FORM_SUCCESS':
+      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
         ...state,
         bundleFormData: action.res
@@ -193,6 +203,7 @@ const products = (state = initialState, action) => {
       }
 
     case 'BUNDLE_SAVE_SUCCESS':
+      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
         ...state,
         updatedProducts: action.res.updatedProducts

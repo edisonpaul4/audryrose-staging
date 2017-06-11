@@ -77,10 +77,6 @@ class VariantRow extends Component {
 		if (data.letter_value) otherOptions.push(data.letter_value);
 		if (data.length_value) otherOptions.push(data.length_value);
 		if (data.font_value) otherOptions.push(data.font_value);
-		
-		let price = this.props.basePrice;
-		if (this.props.adjuster && this.props.adjuster === 'absolute') price = this.props.adjusterValue;
-		if (this.props.adjuster && this.props.adjuster === 'relative') price += this.props.adjusterValue;
 
     const stoneColorCode = data.code ? '-' + data.code : null;
 		const saveCancelClass = variantEdited ? '' : 'invisible';
@@ -138,7 +134,7 @@ class VariantRow extends Component {
 				<Table.Cell><Input type='number' value={this.state.inventory ? this.state.inventory : 0} onChange={this.handleInventoryChange} min={0} disabled={this.props.isSaving} /></Table.Cell>
 				<Table.Cell>{totalAwaitingInventory}</Table.Cell>
 				<Table.Cell>{vendorOrderAndResizes}</Table.Cell>
-				<Table.Cell className='right aligned'>{numeral(price).format('$0,0.00')}</Table.Cell>
+				<Table.Cell className='right aligned'>{numeral(data.adjustedPrice).format('$0,0.00')}</Table.Cell>
 				<Table.Cell className='right aligned' singleLine>
     		  <Button.Group size='mini'>
     		    <Button 
@@ -211,26 +207,17 @@ class VariantsTable extends Component {
 		let variantRows = [];
 		if (variants) {
 			variants.map(function(variantData, i) {
-  			let adjuster = null;
-  			let adjusterValue = 0;
   			let updatedVariantMatch;
   			if (scope.props.updatedVariants && scope.props.updatedVariants.length > 0) {
         	scope.props.updatedVariants.map(function(updatedVariant, i) {
           	const updatedVariantDataJSON = updatedVariant.toJSON();
           	if (updatedVariantDataJSON.objectId === variantData.objectId) {
-//             	variantData = updatedVariantDataJSON;
             	updatedVariantMatch = updatedVariantDataJSON;
           	}
             return updatedVariant;
           });
   			}
-  			if (variantData.variantOptions) {
-    			variantData.variantOptions.map(function(variantOption, j) {
-      			if (variantOption.adjuster) adjuster = variantOption.adjuster;
-      			if (variantOption.adjuster_value) adjusterValue = variantOption.adjuster_value;
-      			return variantOption;
-    			});
-  			}
+
         let index = -1;
         if (scope.props.savingVariants) {
           scope.props.savingVariants.map(function(savingVariant, i) {
@@ -254,14 +241,11 @@ class VariantsTable extends Component {
         }
         if (vendorOrders.length > 0) variantData.vendorOrders = vendorOrders;
         
-        if (designer) variantData.designer = designer;
+//         if (designer) variantData.designer = designer;
         
 				variantRows.push(
 				  <VariantRow 
 				    data={variantData} 
-				    basePrice={scope.props.basePrice} 
-				    adjuster={adjuster} 
-				    adjusterValue={adjusterValue} 
 				    key={i} 
 				    isReloading={scope.props.isReloading}
 				    handleSaveVariantClick={scope.handleSaveVariantClick} 
@@ -597,7 +581,6 @@ class ProductDetails extends Component {
     	        vendor={vendor}
     	        designer={designer}
     	        title={variantGroup} 
-    	        basePrice={scope.props.data.price} 
     	        key={i} 
     	        isReloading={scope.props.isReloading}
     	        handleSaveVariantClick={scope.handleSaveVariantClick} 
@@ -617,7 +600,6 @@ class ProductDetails extends Component {
   	        variants={variants} 
   	        vendor={vendor}
   	        designer={designer}
-  	        basePrice={scope.props.data.price} 
   	        key={1} 
   	        isReloading={scope.props.isReloading}
   	        handleSaveVariantClick={scope.handleSaveVariantClick} 

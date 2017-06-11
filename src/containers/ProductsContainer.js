@@ -14,7 +14,8 @@ const select = state => ({
 	totalProducts: state.products.totalProducts,
 	tabCounts: state.products.tabCounts,
 	error: state.error,
-	errors: state.products.errors
+	errors: state.products.errors,
+	timeout: state.products.timeout
 });
 
 const actions = {

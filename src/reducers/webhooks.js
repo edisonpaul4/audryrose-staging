@@ -14,6 +14,7 @@ const webhooks = (state = initialState, action) => {
       }
 
     case 'WEBHOOKS_SUCCESS':
+      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
         ...state,
         isLoadingWebhooks: false,
@@ -34,6 +35,7 @@ const webhooks = (state = initialState, action) => {
       }
 
     case 'CREATE_WEBHOOK_SUCCESS':
+      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
         ...state,
         isLoadingWebhooks: false,
@@ -54,6 +56,7 @@ const webhooks = (state = initialState, action) => {
       }
 
     case 'DELETE_WEBHOOK_SUCCESS':
+      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
         ...state,
         isLoadingWebhooks: false,

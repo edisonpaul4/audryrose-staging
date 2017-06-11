@@ -13,6 +13,7 @@ const orders = (state = initialState, action) => {
       };
 
     case 'ORDERS_SUCCESS':
+      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
         ...state,
         isLoadingOrders: false,
@@ -35,6 +36,7 @@ const orders = (state = initialState, action) => {
       };
 
     case 'ORDER_RELOAD_SUCCESS':
+      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
         ...state,
         updatedOrders: action.res.updatedOrders,
@@ -52,6 +54,7 @@ const orders = (state = initialState, action) => {
       };
 
     case 'CREATE_SHIPMENTS_SUCCESS':
+      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
         ...state,
         updatedOrders: action.res.updatedOrders,
@@ -71,6 +74,7 @@ const orders = (state = initialState, action) => {
       };
 
     case 'BATCH_CREATE_SHIPMENTS_SUCCESS':
+      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
         ...state,
         updatedOrders: action.res.updatedOrders,
@@ -91,6 +95,7 @@ const orders = (state = initialState, action) => {
       };
 
     case 'BATCH_PRINT_SHIPMENTS_SUCCESS':
+      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
         ...state,
         errors: action.res.errors,
@@ -109,6 +114,7 @@ const orders = (state = initialState, action) => {
       };
 
     case 'GET_PRODUCT_SUCCESS':
+      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
         ...state,
         product: action.res.product
@@ -125,6 +131,7 @@ const orders = (state = initialState, action) => {
       }
 
     case 'ADD_ORDER_PRODUCT_TO_VENDOR_ORDER_SUCCESS':
+      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
         ...state,
         updatedOrders: action.res.updatedOrders,
@@ -142,6 +149,7 @@ const orders = (state = initialState, action) => {
       }
 
     case 'CREATE_ORDER_RESIZE_SUCCESS':
+      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
         ...state,
         updatedOrders: action.res.updatedOrders,
@@ -160,6 +168,7 @@ const orders = (state = initialState, action) => {
       }
 
     case 'ORDER_SAVE_SUCCESS':
+      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
         ...state,
         updatedOrders: action.res.updatedOrders

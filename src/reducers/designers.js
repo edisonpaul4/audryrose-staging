@@ -13,6 +13,7 @@ const designers = (state = initialState, action) => {
       }
 
     case 'DESIGNERS_SUCCESS':
+      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
         ...state,
         isLoadingDesigners: false,
@@ -33,6 +34,7 @@ const designers = (state = initialState, action) => {
       }
 
     case 'VENDOR_SAVE_SUCCESS':
+      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
         ...state,
         updatedDesigner: action.res
@@ -49,6 +51,7 @@ const designers = (state = initialState, action) => {
       }
 
     case 'VENDOR_ORDER_SAVE_SUCCESS':
+      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
         ...state,
         updatedDesigner: action.res
@@ -65,6 +68,7 @@ const designers = (state = initialState, action) => {
       }
 
     case 'VENDOR_ORDER_SEND_SUCCESS':
+      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
         ...state,
         updatedDesigner: action.res.updatedDesigner,

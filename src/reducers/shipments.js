@@ -13,6 +13,7 @@ const shipments = (state = initialState, action) => {
       }
 
     case 'SHIPMENTS_SUCCESS':
+      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
         ...state,
         isLoadingShipments: false,

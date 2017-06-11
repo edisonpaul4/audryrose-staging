@@ -376,7 +376,7 @@ class Products extends Component {
       products = currentProducts;
     }
     if (nextProps.products || nextProps.updatedProducts) state.products = products;
-    state.isReloading = currentlyReloading;
+    state.isReloading = nextProps.timeout ? [] : currentlyReloading;
     
     // Remove any updated variants from savingVariants state
   	if (nextProps.updatedVariants && nextProps.updatedVariants.length > 0) {
@@ -420,9 +420,11 @@ class Products extends Component {
   	}
   	
 		// Display any errors
-		if (nextProps.errors) {
-  		let errors = [];
-  		nextProps.errors.map(function(errorMessage, i) {
+		let newErrors = [];
+		if (nextProps.timeout) newErrors.push(nextProps.timeout);
+		if (nextProps.errors && nextProps.errors.length > 0) newErrors = newErrors.concat(nextProps.errors);
+		if (newErrors.length > 0) {
+  		newErrors.map(function(errorMessage, i) {
     		var errorExists = false;
     		scope.state.errors.map(function(error, j) {
       		if (errorMessage === error) errorExists = true;
@@ -438,7 +440,7 @@ class Products extends Component {
         }
     		return errorMessage;
   		});
-      errors = nextProps.errors.length > 0 ? nextProps.errors : this.state.errors;
+      const errors = newErrors.length > 0 ? newErrors : this.state.errors;
       state.errors = errors;
 		}
   	

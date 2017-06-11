@@ -7,7 +7,8 @@ const select = state => ({
 	isLoadingOptions: state.options.isLoadingOptions,
 	updatedOption: state.options.updatedOption,
 	options: state.options.options,
-	error: state.error
+	error: state.error,
+	timeout: state.options.timeout
 });
 
 const actions = {

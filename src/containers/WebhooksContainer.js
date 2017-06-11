@@ -7,7 +7,8 @@ const select = state => ({
 	isLoadingWebhooks: state.webhooks.isLoadingWebhooks,
 	webhooks: state.webhooks.webhooks,
 	webhookEndpoints: state.webhooks.webhookEndpoints,
-	error: state.error
+	error: state.error,
+	timeout: state.webhooks.timeout
 });
 
 const actions = {
