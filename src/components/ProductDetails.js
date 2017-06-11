@@ -241,7 +241,7 @@ class VariantsTable extends Component {
         }
         if (vendorOrders.length > 0) variantData.vendorOrders = vendorOrders;
         
-//         if (designer) variantData.designer = designer;
+        if (designer) variantData.designer = designer;
         
 				variantRows.push(
 				  <VariantRow 
