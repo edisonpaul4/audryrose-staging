@@ -270,7 +270,10 @@ class Orders extends Component {
         let addUpdatedOrder;
         nextProps.updatedOrders.map(function(updatedOrder, i) {
         	// If updated product exists, push it into the state products array
-        	if (updatedOrder.get('orderId') === order.orderId) addUpdatedOrder = updatedOrder.toJSON();
+        	if (updatedOrder.get('orderId') === order.orderId) {
+          	addUpdatedOrder = updatedOrder.toJSON();
+          	if (!addUpdatedOrder.dateNeeded) addUpdatedOrder.dateNeeded = '';
+        	}
         	return updatedOrder;
       	});
         if (addUpdatedOrder) {

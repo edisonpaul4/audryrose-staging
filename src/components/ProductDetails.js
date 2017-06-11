@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Input, Button, Dropdown, Dimmer, Segment, Loader, Label, Form } from 'semantic-ui-react';
+import { Table, Input, Button, Dropdown, Dimmer, Segment, Loader, Label, Form, Icon } from 'semantic-ui-react';
 import classNames from 'classnames';
 import numeral from 'numeral';
 import moment from 'moment';
@@ -23,7 +23,6 @@ class VariantRow extends Component {
     this.handleSaveResize = this.handleSaveResize.bind(this);
   }
   handleInventoryChange(e, {value}) {
-    console.log(value)
     let edited = (parseFloat(value) !== parseFloat(this.state.startInventory)) ? true : false;
     if (!this.state.startInventory && parseFloat(value) === 0) edited = false;
     this.setState({
@@ -53,9 +52,80 @@ class VariantRow extends Component {
 	handleSaveResize(data) {
 		this.props.handleSaveResize(data);
 	}
+	getVendorOrderLabel(product, variant, vendorOrderVariant, vendorOrder, orderProductMatch) {
+  	if (!vendorOrder) {
+    	vendorOrder = vendorOrderVariant.vendorOrder;
+  	}
+  	if (!vendorOrder) return <Label size='tiny' color='red' key={'vendorOrder-'+vendorOrder.objectId+'-'+vendorOrderVariant.objectId}>Error: Missing vendor order data</Label>;
+  	
+  	const averageWaitTime = vendorOrder.vendor.waitTime ? vendorOrder.vendor.waitTime : 21;
+  	const expectedDate = vendorOrder.dateOrdered ? moment(vendorOrder.dateOrdered.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
+  	const daysLeft = vendorOrder.dateOrdered ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
+  	let labelColor = 'yellow';
+  	let labelIcon;
+  	if (vendorOrderVariant.done === true) {
+  		labelColor = 'olive';
+  		labelIcon = <Icon name='checkmark' />;
+  	} else if (vendorOrderVariant.ordered && daysLeft < 0) {
+  		labelColor = 'red';
+  	} else if (vendorOrderVariant.ordered) {
+  		labelColor = 'olive';
+  	}
+  	let labelText = vendorOrderVariant.ordered ? vendorOrderVariant.units + ' Sent' : vendorOrderVariant.units + ' Pending';
+  	
+  	if (vendorOrderVariant.done === true) {
+  		labelText = vendorOrderVariant.received + ' Received';
+  	} else if (vendorOrderVariant.ordered && vendorOrderVariant.received > 0) {
+  		labelText += ', ' + vendorOrderVariant.received + ' Received';
+  	}
+  	if (vendorOrderVariant.orderProducts) {
+    	vendorOrderVariant.orderProducts.map(function(orderProduct, i) {
+      	labelText += ' #' + orderProduct.order_id;
+      	return orderProduct;
+    	});
+  	}
+  	const labelDetailText = vendorOrder.dateOrdered ? daysLeft < 0 ? moment(vendorOrder.dateOrdered.iso).format('M-D-YY') + ' (' + Math.abs(daysLeft) + ' days late)' : moment(vendorOrder.dateOrdered.iso).format('M-D-YY') + ' (' + daysLeft + ' days left)' : averageWaitTime + ' days wait';
+  	const labelDetail = vendorOrderVariant.done === false ? <Label.Detail>{labelDetailText}</Label.Detail> : null;
+  	const labelLink = vendorOrderVariant.done === false ? variant.designer ? '/designers/search?q=' + variant.designer.designerId : '/designers' : null;
+  	let showLabel = false;
+  	if (vendorOrderVariant.done === true && vendorOrderVariant.shipped === undefined) {
+  		showLabel = true;
+  	} else if (vendorOrderVariant.done === true) {
+  		showLabel = vendorOrderVariant.shipped < vendorOrderVariant.received ? true : false;
+  	} else {
+  		showLabel = true;
+  	}
+  	return showLabel ? <Label as={labelLink ? 'a' : null} href={labelLink} size='tiny' color={labelColor} key={'vendorOrder-'+vendorOrder.objectId+'-'+vendorOrderVariant.objectId}>{labelIcon}{labelText}{labelDetail}</Label> : null;
+	}
+	getResizeLabel(product, variant, resize, orderProductMatch) {
+		const averageWaitTime = 7;
+		const expectedDate = resize.dateSent ? moment(resize.dateSent.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
+		const daysLeft = resize.dateSent ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
+		let labelColor = 'olive';
+		let labelIcon;
+		if (resize.done === true) {
+  		labelIcon = <Icon name='checkmark' />;
+		} else if (daysLeft < 0) {
+  		labelColor = 'red';
+		}
+		const labelLink = resize.done === false && product && product.product_id ? '/products/search?q=' + product.product_id : null;
+		let labelText = resize.units + ' Resizing';
+		if (resize.received >= resize.units) labelText = resize.received + ' Received';
+  	if (resize.orderProduct) labelText += ' #' + resize.orderProduct.order_id;
+		const labelDetailText = daysLeft < 0 ? moment(resize.dateSent.iso).format('M-D-YY') + ' (' + Math.abs(daysLeft) + ' days late)' : moment(resize.dateSent.iso).format('M-D-YY') + ' (' + daysLeft + ' days left)';
+		const labelDetail = resize.done === false ? <Label.Detail>{labelDetailText}</Label.Detail> : null;
+		let showLabel = false;
+		if (resize.done === true && resize.shipped === undefined) {
+  		showLabel = true;
+		} else if (resize.done === true) {
+  		showLabel = resize.shipped < resize.received ? true : false;
+		} else {
+  		showLabel = true;
+		}
+		return showLabel ? <Label as={labelLink ? 'a' : null} href={labelLink} size='tiny' color={labelColor} key={'resize-'+resize.objectId}>{labelIcon}{labelText}{labelDetail}</Label> : null;
+	}
 	componentWillReceiveProps(nextProps) {
   	if (nextProps.updatedVariant) {
-    	console.log(nextProps.updatedVariant)
     	this.setState({
       	variantData: this.props.isSaving ? nextProps.data : this.state.variantData,
       	inventory: nextProps.updatedVariant.inventoryLevel,
@@ -84,39 +154,26 @@ class VariantRow extends Component {
 		let vendorOrderAndResizes = [];
 		if (data.vendorOrders) {
   		data.vendorOrders.map(function(vendorOrder, i) {
-    		const vendorOrderVariant = vendorOrder.vendorOrderVariant;
-    		const averageWaitTime = vendorOrder.vendor.waitTime ? vendorOrder.vendor.waitTime : 21;
-    		const expectedDate = vendorOrder.order.dateOrdered ? moment(vendorOrder.order.dateOrdered.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
-    		const daysLeft = vendorOrder.order.dateOrdered ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
-    		const labelColor = vendorOrderVariant.ordered ? daysLeft < 0 ? 'red' : 'olive' : 'yellow';
-    		const labelText = vendorOrderVariant.ordered ? vendorOrderVariant.units + ' Sent' : vendorOrderVariant.units + ' Pending';
-    		const labelDetail = vendorOrderVariant.ordered ? daysLeft < 0 ? Math.abs(daysLeft) + ' days late' : daysLeft + ' days left' : averageWaitTime + ' days wait';
-    		vendorOrderAndResizes.push((vendorOrderVariant.done === false) ? <Label as='a' href={data.designer ? '/designers/search?q=' + data.designer.designerId : '/designers'} size='tiny' color={labelColor} key={'vendorOrder-'+i}>{labelText}<Label.Detail>{labelDetail}</Label.Detail></Label> : null);
-    		return vendorOrderVariant;
+    	  var vendorOrderLabel = scope.getVendorOrderLabel(null, data, vendorOrder.vendorOrderVariant, vendorOrder.order);
+    	  if (vendorOrderLabel) vendorOrderAndResizes.push(vendorOrderLabel);
+    		return vendorOrder;
   		});
     }
     
 		if (data.resizes) {
   		data.resizes.map(function(resize, i) {
-    		const averageWaitTime = 7;
-    		const expectedDate = resize.dateSent ? moment(resize.dateSent.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
-    		const daysLeft = resize.dateSent ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
-    		const labelColor = daysLeft < 0 ? 'red' : 'olive';
-    		let labelText = resize.units + ' Resizing';
-    		if (resize.orderProduct) {
-      		labelText += ' / #' + resize.orderProduct.order_id;
-    		}
-    		const labelDetail = daysLeft < 0 ? Math.abs(daysLeft) + ' days late' : daysLeft + ' days left';
-    		const labelComponent = <Label as='a' size='tiny' color={labelColor}>{labelText}<Label.Detail>{labelDetail}</Label.Detail></Label>;
-    		vendorOrderAndResizes.push(
-		      <ProductResizeModal 
-		        data={resize} 
-		        label={labelComponent} 
-		        key={'resize-'+i} 
-		        isReloading={scope.props.isReloading}
-		        handleSaveResize={scope.handleSaveResize}
-	        />
-  		  );
+        var resizeLabel = scope.getResizeLabel(null, data, resize);
+        if (resizeLabel) {
+      		vendorOrderAndResizes.push(
+  		      <ProductResizeModal 
+  		        data={resize} 
+  		        label={resizeLabel} 
+  		        key={'resize-'+i} 
+  		        isReloading={scope.props.isReloading}
+  		        handleSaveResize={scope.handleSaveResize}
+  	        />
+    		  );
+  		  }
     		return resize;
   		});
     }

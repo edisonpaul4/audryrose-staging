@@ -333,8 +333,6 @@ class Products extends Component {
   	const scope = this;
   	let state = {};
   	
-  	if (nextProps.router.params.subpage !== this.state.subpage) state.subpage = nextProps.router.params.subpage;
-  	
   	let nextPage = parseFloat(nextProps.location.query.page);
   	if (!nextPage) nextPage = 1;
   	if (nextPage !== this.state.page) state.page = nextPage;
@@ -451,6 +449,11 @@ class Products extends Component {
   	
   	// Reset on subpage navigation
   	if (nextProps.router.params.subpage !== 'search') state.search = null;
+  	
+  	if (nextProps.router.params.subpage !== this.state.subpage) {
+    	state.subpage = nextProps.router.params.subpage;
+    	state.products = [];
+  	}
 		
 		this.setState(state);	
     
@@ -482,6 +485,7 @@ class Products extends Component {
   			let productData = {
           productId: product.productId,
           is_active: product.is_active,
+          sizeScale: product.sizeScale,
           total_stock: product.total_stock,
           isBundle: product.isBundle,
           is_visible: product.is_visible,
@@ -490,28 +494,12 @@ class Products extends Component {
           custom_url: product.custom_url,
           name: product.name,
           sku: product.sku,
-          designer: product.designer,
+          designer: {designerId: product.designer.designerId, name: product.designer.name},
           date_created: product.date_created,
           primary_image: product.primary_image,
           price: product.price,
           classification: product.classification
   			}
-    		let sizes = [];
-    		if (product.variants && product.variants.length > 1) {
-    			product.variants.map(function(variant, i) {
-      			if (!variant.variantOptions) {
-        			console.log('variant has no options: ' + variant.productName + ' ' + variant.variantId); 
-        			return true;
-      			}
-      			return variant.variantOptions.map(function(variantOption, j) {
-        			if (variantOption.option_id === 32) sizes.push(parseFloat(variantOption.value));
-        			return true;
-      			});
-    			});
-    		}
-    		sizes.sort((a, b) => (a - b));
-    		const sizeScale = (sizes.length > 0) ? sizes[0] + '-' + sizes[sizes.length-1] : 'OS' ;
-    		productData.sizeScale = sizeScale;
 				productRows.push(
 				  <Product 
 				    data={productData} 
