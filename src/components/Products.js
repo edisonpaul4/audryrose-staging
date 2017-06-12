@@ -494,7 +494,7 @@ class Products extends Component {
           custom_url: product.custom_url,
           name: product.name,
           sku: product.sku,
-          designer: {designerId: product.designer.designerId, name: product.designer.name},
+          designer: {designerId: product.designer ? product.designer.designerId : '', name: product.designer ? product.designer.name : ''},
           date_created: product.date_created,
           primary_image: product.primary_image,
           price: product.price,
@@ -512,10 +512,33 @@ class Products extends Component {
 		    );
 		    
 		    // Create ProductDetails row
+  			let productDetailsData = {
+          productId: product.productId,
+          is_active: product.is_active,
+          sizeScale: product.sizeScale,
+          total_stock: product.total_stock,
+          isBundle: product.isBundle,
+          is_visible: product.is_visible,
+          hasResizeRequest: product.hasResizeRequest,
+          hasVendorBuy: product.hasVendorBuy,
+          custom_url: product.custom_url,
+          name: product.name,
+          sku: product.sku,
+          designer: {designerId: product.designer ? product.designer.designerId : '', name: product.designer ? product.designer.name : ''},
+          date_created: product.date_created,
+          primary_image: product.primary_image,
+          price: product.price,
+          classification: product.classification,
+          variants: product.variants,
+          resizes: product.resizes,
+          department: product.department,
+          vendor: product.vendor,
+          bundleVariants: product.bundleVariants
+  			}
 				if (expanded) {
   				productRows.push(
   				  <ProductDetails 
-  				    data={product} 
+  				    data={productDetailsData} 
   				    expanded={expanded} 
   				    key={`${product.productId}-2`} 
   				    isReloading={isReloading} 
