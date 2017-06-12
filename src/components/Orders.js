@@ -257,11 +257,7 @@ class Orders extends Component {
   	let expandedOrders = this.state.expandedOrders;
   	
   	let currentOrders = this.state.orders;
-  	if (nextProps.orders) {
-    	currentOrders = nextProps.orders.map(function(order, i) {
-      	return order.toJSON();
-    	});
-  	}
+  	if (nextProps.orders) currentOrders = nextProps.orders;
   	let orders = [];
   	let currentlyReloading = this.state.isReloading;
   	

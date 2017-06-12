@@ -15,10 +15,16 @@ const products = (state = initialState, action) => {
 
     case 'PRODUCTS_SUCCESS':
       if (action.res.timeout) return { ...state, timeout: action.res.timeout };
+      let products = [];
+      if (action.res.products) {
+      	products = action.res.products.map(function(product, i) {
+        	return product.toJSON();
+      	});
+      }
       return {
         ...state,
         isLoadingProducts: false,
-        products: action.res.products,
+        products: products,
         totalPages: action.res.totalPages,
         totalProducts: action.res.totalProducts,
         tabCounts: action.res.tabCounts

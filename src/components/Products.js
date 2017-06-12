@@ -338,11 +338,7 @@ class Products extends Component {
   	if (nextPage !== this.state.page) state.page = nextPage;
   	
   	let currentProducts = this.state.products;
-  	if (nextProps.products) {
-    	currentProducts = nextProps.products.map(function(product, i) {
-      	return product.toJSON();
-    	});
-  	}
+  	if (nextProps.products) currentProducts = nextProps.products;
   	let products = [];
   	let currentlyReloading = this.state.isReloading;
   	

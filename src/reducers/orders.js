@@ -14,10 +14,16 @@ const orders = (state = initialState, action) => {
 
     case 'ORDERS_SUCCESS':
       if (action.res.timeout) return { ...state, timeout: action.res.timeout };
+      let orders = [];
+      if (action.res.orders) {
+      	orders = action.res.orders.map(function(order, i) {
+        	return order.toJSON();
+      	});
+      }
       return {
         ...state,
         isLoadingOrders: false,
-        orders: action.res.orders,
+        orders: orders,
         totalPages: action.res.totalPages,
         totalOrders: action.res.totalOrders,
         tabCounts: action.res.tabCounts,
