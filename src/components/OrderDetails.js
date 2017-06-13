@@ -43,9 +43,6 @@ class ProductRow extends Component {
 // 		this.props.handleShowEditOrderProductFormClick({productId: this.props.product.product_id, variant: variant, resize: false});
 	}
 	getVendorOrderLabel(product, variant, vendorOrderVariant, vendorOrder, orderProductMatch) {
-  	if (!vendorOrder) {
-    	vendorOrder = vendorOrderVariant.vendorOrder;
-  	}
   	if (!vendorOrder) return <Label size='tiny' color='red' key={'product-'+product.objectId+'-'+vendorOrderVariant.objectId}>Error: Missing vendor order data</Label>;
   	
   	const averageWaitTime = vendorOrder.vendor.waitTime ? vendorOrder.vendor.waitTime : 21;
@@ -179,11 +176,41 @@ class ProductRow extends Component {
     
 	  let awaitingInventoryQueue = [];
 		if (product && product.awaitingInventory && product.awaitingInventory.length > 0) {
+  		let label;
   		product.awaitingInventory.map(function(inventoryItem, i) {
-//     		console.log(inventoryItem)
     		const isVendorOrder = inventoryItem.className === 'VendorOrderVariant' ? true : false;
     		
-    		var label = isVendorOrder ? scope.getVendorOrderLabel(product, variant, inventoryItem) : scope.getResizeLabel(product, variant, inventoryItem);
+    		if (isVendorOrder){
+      		// Get the vendor order from product variant
+      		let vendorOrderMatch;
+      		if (product.variants) {
+        		product.variants.map(function(variant, i) {
+          		if (variant.designer && variant.designer.vendors) {
+            		variant.designer.vendors.map(function(vendor, j) {
+              		if (vendor.vendorOrders) {
+                		vendor.vendorOrders.map(function(vendorOrder, k) {
+                  		if (vendorOrder.vendorOrderVariants) {
+                    		vendorOrder.vendorOrderVariants.map(function(vendorOrderVariant, l) {
+                      		if (inventoryItem.objectId === vendorOrderVariant.objectId) {
+                        		vendorOrderMatch = vendorOrder;
+                      		}
+                      		return vendorOrderVariant;
+                    		});
+                  		}
+                  		return vendorOrder;
+                		});
+              		}
+              		return vendor;
+            		});
+          		}
+          		return variant;
+        		});
+      		}
+      		label = scope.getVendorOrderLabel(product, variant, inventoryItem, vendorOrderMatch)
+    		} else {
+      		label = scope.getResizeLabel(product, variant, inventoryItem)
+    		}
+    		
     		if (label) awaitingInventoryQueue.push(label);
 
     		return inventoryItem;

@@ -53,9 +53,6 @@ class VariantRow extends Component {
 		this.props.handleSaveResize(data);
 	}
 	getVendorOrderLabel(product, variant, vendorOrderVariant, vendorOrder, orderProductMatch) {
-  	if (!vendorOrder) {
-    	vendorOrder = vendorOrderVariant.vendorOrder;
-  	}
   	if (!vendorOrder) return <Label size='tiny' color='red' key={'vendorOrder-'+vendorOrder.objectId+'-'+vendorOrderVariant.objectId}>Error: Missing vendor order data</Label>;
   	
   	const averageWaitTime = vendorOrder.vendor.waitTime ? vendorOrder.vendor.waitTime : 21;
