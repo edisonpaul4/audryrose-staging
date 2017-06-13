@@ -178,32 +178,22 @@ class ProductRow extends Component {
 		if (product && product.awaitingInventory && product.awaitingInventory.length > 0) {
   		let label;
   		product.awaitingInventory.map(function(inventoryItem, i) {
+//     		console.log(inventoryItem)
     		const isVendorOrder = inventoryItem.className === 'VendorOrderVariant' ? true : false;
-    		
     		if (isVendorOrder){
-      		// Get the vendor order from product variant
       		let vendorOrderMatch;
-      		if (product.variants) {
-        		product.variants.map(function(variant, i) {
-          		if (variant.designer && variant.designer.vendors) {
-            		variant.designer.vendors.map(function(vendor, j) {
-              		if (vendor.vendorOrders) {
-                		vendor.vendorOrders.map(function(vendorOrder, k) {
-                  		if (vendorOrder.vendorOrderVariants) {
-                    		vendorOrder.vendorOrderVariants.map(function(vendorOrderVariant, l) {
-                      		if (inventoryItem.objectId === vendorOrderVariant.objectId) {
-                        		vendorOrderMatch = vendorOrder;
-                      		}
-                      		return vendorOrderVariant;
-                    		});
-                  		}
-                  		return vendorOrder;
-                		});
+      		if (product.awaitingInventoryVendorOrders) {
+        		product.awaitingInventoryVendorOrders.map(function(vendorOrder, j) {
+          		console.log(vendorOrder)
+          		if (vendorOrder.vendorOrderVariants) {
+            		vendorOrder.vendorOrderVariants.map(function(vendorOrderVariant, l) {
+              		if (inventoryItem.objectId === vendorOrderVariant.objectId) {
+                		vendorOrderMatch = vendorOrder;
               		}
-              		return vendor;
+              		return vendorOrderVariant;
             		});
           		}
-          		return variant;
+          		return vendorOrder;
         		});
       		}
       		label = scope.getVendorOrderLabel(product, variant, inventoryItem, vendorOrderMatch)

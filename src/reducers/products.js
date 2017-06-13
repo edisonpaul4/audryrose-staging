@@ -1,3 +1,7 @@
+import * as schema from './schema';
+
+import { normalize } from 'normalizr';
+
 const initialState = {
   isLoadingProducts: false,
 	products: [],
@@ -20,7 +24,11 @@ const products = (state = initialState, action) => {
       	products = action.res.products.map(function(product, i) {
         	return product.toJSON();
       	});
+//         console.log(products)
+//       	const normalizedProducts = normalize(products, schema.productListSchema);
+//       	products = normalizedProducts;
       }
+//       console.log(products)
       return {
         ...state,
         isLoadingProducts: false,
