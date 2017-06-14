@@ -220,15 +220,7 @@ class Designers extends Component {
   	if (!nextPage) nextPage = 1;
   	let expanded = this.state.expanded;
   	
-  	let designers = nextProps.designers ? nextProps.designers : [];
-  	if (nextProps.updatedDesigner) {
-    	// If updated designer exists, push it into the state designers array
-    	const updatedDesignerJSON = nextProps.updatedDesigner.toJSON();
-      designers = designers.map(function(designer, i) {
-        const designerJSON = designer.toJSON();
-        return (updatedDesignerJSON.objectId === designerJSON.objectId) ? nextProps.updatedDesigner : designer;
-      });
-    }
+  	let designers = nextProps.designers ? nextProps.designers : this.state.designers;
   	
     let isSavingDesigners = this.state.isSavingDesigners;
   	if (nextProps.updatedDesigner) {
@@ -310,14 +302,13 @@ class Designers extends Component {
 		let designerRows = [];
     
 		if (designers) {
-			designers.map(function(designerRow, i) {
-  			let designerJSON = designerRow.toJSON();
-  			let isSaving = scope.state.isSavingDesigners.indexOf(designerJSON.objectId) >= 0 ? true : false;
-  			let expanded = (scope.state.expanded.indexOf(designerJSON.objectId) >= 0 || scope.state.search || scope.state.subpage === 'pending' || scope.state.subpage === 'sent') ? true : false;
+			designers.map(function(designer, i) {
+  			let isSaving = scope.state.isSavingDesigners.indexOf(designer.objectId) >= 0 ? true : false;
+  			let expanded = (scope.state.expanded.indexOf(designer.objectId) >= 0 || scope.state.search || scope.state.subpage === 'pending' || scope.state.subpage === 'sent') ? true : false;
   			
         let vendorOrders = [];
-        if (designerJSON.vendors) {
-        	designerJSON.vendors.map(function(vendor, i) {
+        if (designer.vendors) {
+        	designer.vendors.map(function(vendor, i) {
       			if (vendor.vendorOrders && vendor.vendorOrders.length > 0) {
         			vendor.vendorOrders.map(function(vendorOrder, j) {
                 const status = vendorOrder.orderedAll && vendorOrder.receivedAll === false ? 'Sent' : 'Pending';
@@ -332,29 +323,29 @@ class Designers extends Component {
   			
 				designerRows.push(
 				  <Designer 
-				    data={designerJSON} 
+				    data={designer} 
 				    vendorOrders={vendorOrders} 
 				    isSaving={isSaving} 
 				    expanded={expanded} 
 				    handleSaveVendor={scope.handleSaveVendor} 
 				    handleToggleClick={scope.handleToggleClick} 
-				    key={`${designerJSON.designerId}-1`} 
+				    key={`${designer.designerId}-1`} 
 			    />
 		    );
 				if (expanded) {
   				designerRows.push(
   				  <DesignerDetails 
-  				    data={designerJSON} 
+  				    data={designer} 
   				    vendorOrders={vendorOrders} 
   				    expanded={expanded} 
-  				    key={`${designerJSON.designerId}-2`} 
+  				    key={`${designer.designerId}-2`} 
   				    isSaving={isSaving} 
   				    handleSaveVendorOrder={scope.handleSaveVendorOrder}
   				    handleSendVendorOrder={scope.handleSendVendorOrder}
 				    />
 			    );
 				}
-				return designerRow;
+				return designer;
 	    });
 		}
 		

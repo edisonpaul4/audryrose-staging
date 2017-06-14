@@ -13,12 +13,17 @@ const designers = (state = initialState, action) => {
       }
 
     case 'DESIGNERS_SUCCESS':
-      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
+      let designers = [];
+      if (action.res.designers) {
+      	designers = action.res.designers.map(function(designer, i) {
+        	return designer.toJSON();
+      	});
+      }
       return {
         ...state,
+        timeout: action.res.timeout ? action.res.timeout : undefined,
         isLoadingDesigners: false,
-        designers: action.res.designers,
-        products: action.res.products,
+        designers: designers,
         totalPages: action.res.totalPages
       };
 
@@ -34,10 +39,20 @@ const designers = (state = initialState, action) => {
       }
 
     case 'VENDOR_SAVE_SUCCESS':
-      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
+      if (state.designers && action.res) {
+      	designers = state.designers.map(function(designer, i) {
+        	if (designer.objectId === action.res.id) {
+          	console.log('updated designer loaded ' + designer.objectId);
+          	designer = action.res.toJSON();
+        	}
+        	return designer;
+      	});
+    	}
       return {
         ...state,
-        updatedDesigner: action.res
+        timeout: action.res.timeout ? action.res.timeout : undefined,
+        designers: designers ? designers : undefined,
+        updatedDesigner: action.res ? action.res : undefined
       };
 
     case 'VENDOR_SAVE_FAILURE':
@@ -51,10 +66,20 @@ const designers = (state = initialState, action) => {
       }
 
     case 'VENDOR_ORDER_SAVE_SUCCESS':
-      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
+      if (state.designers && action.res) {
+      	designers = state.designers.map(function(designer, i) {
+        	if (designer.objectId === action.res.id) {
+          	console.log('updated designer loaded ' + designer.objectId);
+          	designer = action.res.toJSON();
+        	}
+        	return designer;
+      	});
+    	}
       return {
         ...state,
-        updatedDesigner: action.res
+        timeout: action.res.timeout ? action.res.timeout : undefined,
+        designers: designers ? designers : undefined,
+        updatedDesigner: action.res ? action.res : undefined
       };
 
     case 'VENDOR_ORDER_SAVE_FAILURE':
@@ -68,12 +93,22 @@ const designers = (state = initialState, action) => {
       }
 
     case 'VENDOR_ORDER_SEND_SUCCESS':
-      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
+      if (state.designers && action.res.updatedDesigner) {
+      	designers = state.designers.map(function(designer, i) {
+        	if (designer.objectId === action.res.updatedDesigner.id) {
+          	console.log('updated designer loaded ' + designer.objectId);
+          	designer = action.res.updatedDesigner.toJSON();
+        	}
+        	return designer;
+      	});
+    	}
       return {
         ...state,
-        updatedDesigner: action.res.updatedDesigner,
-        successMessage: action.res.successMessage,
-        errors: action.res.errors
+        timeout: action.res.timeout ? action.res.timeout : undefined,
+        designers: designers ? designers : undefined,
+        updatedDesigner: action.res.updatedDesigner ? action.res.updatedDesigner : undefined,
+        successMessage: action.res.successMessage ? action.res.successMessage : undefined,
+        errors: action.res.errors ? action.res.errors : undefined
       };
 
     case 'VENDOR_ORDER_SEND_FAILURE':

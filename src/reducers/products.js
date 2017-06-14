@@ -18,7 +18,6 @@ const products = (state = initialState, action) => {
       }
 
     case 'PRODUCTS_SUCCESS':
-      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       let products = [];
       if (action.res.products) {
       	products = action.res.products.map(function(product, i) {
@@ -30,6 +29,7 @@ const products = (state = initialState, action) => {
       }
       return {
         ...state,
+        timeout: action.res.timeout ? action.res.timeout : undefined,
         isLoadingProducts: false,
         products: products,
         totalPages: action.res.totalPages,
