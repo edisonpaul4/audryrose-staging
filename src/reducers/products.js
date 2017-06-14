@@ -28,7 +28,6 @@ const products = (state = initialState, action) => {
 //       	const normalizedProducts = normalize(products, schema.productListSchema);
 //       	products = normalizedProducts;
       }
-//       console.log(products)
       return {
         ...state,
         isLoadingProducts: false,
@@ -67,11 +66,21 @@ const products = (state = initialState, action) => {
       }
 
     case 'PRODUCT_RELOAD_SUCCESS':
-      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
+      if (state.products && action.res.updatedProduct) {
+      	products = state.products.map(function(product, i) {
+        	if (product.objectId === action.res.updatedProduct.id) {
+          	console.log('updated product loaded ' + product.objectId);
+          	product = action.res.updatedProduct.toJSON();
+        	}
+        	return product;
+      	});
+    	}
       return {
         ...state,
-        updatedProducts: [action.res.updatedProduct],
-        tabCounts: action.res.tabCounts ? action.res.tabCounts : {}
+        timeout: action.res.timeout ? action.res.timeout : undefined,
+        products: products ? products : undefined,
+        updatedProducts: action.res.updatedProduct ? [action.res.updatedProduct] : undefined,
+        tabCounts: action.res.tabCounts ? action.res.tabCounts : undefined
       };
 
     case 'PRODUCT_RELOAD_FAILURE':
@@ -85,11 +94,21 @@ const products = (state = initialState, action) => {
       }
 
     case 'PRODUCT_SAVE_SUCCESS':
-      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
+      if (state.products && action.res.updatedProduct) {
+      	products = state.products.map(function(product, i) {
+        	if (product.objectId === action.res.updatedProduct.id) {
+          	console.log('updated product loaded ' + product.objectId);
+          	product = action.res.updatedProduct.toJSON();
+        	}
+        	return product;
+      	});
+    	}
       return {
         ...state,
-        updatedProducts: [action.res.updatedProduct],
-        tabCounts: action.res.tabCounts
+        timeout: action.res.timeout ? action.res.timeout : undefined,
+        products: products ? products : undefined,
+        updatedProducts: action.res.updatedProduct ? [action.res.updatedProduct] : undefined,
+        tabCounts: action.res.tabCounts ? action.res.tabCounts : undefined
       };
 
     case 'PRODUCT_SAVE_FAILURE':
@@ -103,12 +122,22 @@ const products = (state = initialState, action) => {
       }
 
     case 'VARIANT_SAVE_SUCCESS':
-      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
+      if (state.products && action.res.updatedProduct) {
+      	products = state.products.map(function(product, i) {
+        	if (product.objectId === action.res.updatedProduct.id) {
+          	console.log('updated product loaded ' + product.objectId);
+          	product = action.res.updatedProduct.toJSON();
+        	}
+        	return product;
+      	});
+    	}
       return {
         ...state,
-        updatedVariants: [action.res.updatedVariant],
-        updatedProducts: [action.res.updatedProduct],
-        tabCounts: action.res.tabCounts
+        timeout: action.res.timeout ? action.res.timeout : undefined,
+        products: products ? products : undefined,
+        updatedProducts: action.res.updatedProduct ? [action.res.updatedProduct] : undefined,
+        updatedVariants: action.res.updatedVariant ? [action.res.updatedVariant] : undefined,
+        tabCounts: action.res.tabCounts ? action.res.tabCounts : undefined
       };
 
     case 'VARIANT_SAVE_FAILURE':
@@ -122,12 +151,22 @@ const products = (state = initialState, action) => {
       }
 
     case 'VARIANTS_SAVE_SUCCESS':
-      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
+      if (state.products && action.res.updatedProduct) {
+      	products = state.products.map(function(product, i) {
+        	if (product.objectId === action.res.updatedProduct.id) {
+          	console.log('updated product loaded ' + product.objectId);
+          	product = action.res.updatedProduct.toJSON();
+        	}
+        	return product;
+      	});
+    	}
       return {
         ...state,
-        updatedVariants: action.res.updatedVariants,
-        updatedProducts: action.res.updatedProducts,
-        tabCounts: action.res.tabCounts
+        timeout: action.res.timeout ? action.res.timeout : undefined,
+        products: products ? products : undefined,
+        updatedProducts: action.res.updatedProducts ? action.res.updatedProducts : undefined,
+        updatedVariants: action.res.updatedVariants ? action.res.updatedVariants : undefined,
+        tabCounts: action.res.tabCounts ? action.res.tabCounts : undefined
       };
 
     case 'VARIANTS_SAVE_FAILURE':
@@ -141,12 +180,22 @@ const products = (state = initialState, action) => {
       }
 
     case 'ADD_TO_VENDOR_ORDER_SUCCESS':
-      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
+      if (state.products && action.res.updatedProduct) {
+      	products = state.products.map(function(product, i) {
+        	if (product.objectId === action.res.updatedProduct.id) {
+          	console.log('updated product loaded ' + product.objectId);
+          	product = action.res.updatedProduct.toJSON();
+        	}
+        	return product;
+      	});
+    	}
       return {
         ...state,
-        updatedProducts: action.res.updatedProducts,
-        tabCounts: action.res.tabCounts,
-        errors: action.res.errors
+        timeout: action.res.timeout ? action.res.timeout : undefined,
+        products: products ? products : undefined,
+        updatedProducts: action.res.updatedProducts ? action.res.updatedProducts : undefined,
+        tabCounts: action.res.tabCounts ? action.res.tabCounts : undefined,
+        errors: action.res.errors ? action.res.errors : undefined
       };
 
     case 'ADD_TO_VENDOR_ORDER_FAILURE':
@@ -160,13 +209,23 @@ const products = (state = initialState, action) => {
       }
 
     case 'CREATE_PRODUCT_RESIZE_SUCCESS':
-      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
+      if (state.products && action.res.updatedProduct) {
+      	products = state.products.map(function(product, i) {
+        	if (product.objectId === action.res.updatedProduct.id) {
+          	console.log('updated product loaded ' + product.objectId);
+          	product = action.res.updatedProduct.toJSON();
+        	}
+        	return product;
+      	});
+    	}
       return {
         ...state,
-        updatedProducts: action.res.updatedProducts,
-        updatedVariants: action.res.updatedVariants,
-        tabCounts: action.res.tabCounts,
-        errors: action.res.errors
+        timeout: action.res.timeout ? action.res.timeout : undefined,
+        products: products ? products : undefined,
+        updatedProducts: action.res.updatedProducts ? action.res.updatedProducts : undefined,
+        updatedVariants: action.res.updatedVariants ? action.res.updatedVariants : undefined,
+        tabCounts: action.res.tabCounts ? action.res.tabCounts : undefined,
+        errors: action.res.errors ? action.res.errors : undefined
       };
 
     case 'CREATE_PRODUCT_RESIZE_FAILURE':
@@ -180,13 +239,23 @@ const products = (state = initialState, action) => {
       }
 
     case 'SAVE_PRODUCT_RESIZE_SUCCESS':
-      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
+      if (state.products && action.res.updatedProduct) {
+      	products = state.products.map(function(product, i) {
+        	if (product.objectId === action.res.updatedProduct.id) {
+          	console.log('updated product loaded ' + product.objectId);
+          	product = action.res.updatedProduct.toJSON();
+        	}
+        	return product;
+      	});
+    	}
       return {
         ...state,
-        updatedProducts: action.res.updatedProducts,
-        updatedVariants: action.res.updatedVariants,
-        tabCounts: action.res.tabCounts,
-        errors: action.res.errors
+        timeout: action.res.timeout ? action.res.timeout : undefined,
+        products: products ? products : undefined,
+        updatedProducts: action.res.updatedProducts ? action.res.updatedProducts : undefined,
+        updatedVariants: action.res.updatedVariants ? action.res.updatedVariants : undefined,
+        tabCounts: action.res.tabCounts ? action.res.tabCounts : undefined,
+        errors: action.res.errors ? action.res.errors : undefined
       };
 
     case 'SAVE_PRODUCT_RESIZE_FAILURE':
@@ -217,10 +286,21 @@ const products = (state = initialState, action) => {
       }
 
     case 'BUNDLE_SAVE_SUCCESS':
-      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
+      if (state.products && action.res.updatedProduct) {
+      	products = state.products.map(function(product, i) {
+        	if (product.objectId === action.res.updatedProduct.id) {
+          	console.log('updated product loaded ' + product.objectId);
+          	product = action.res.updatedProduct.toJSON();
+        	}
+        	return product;
+      	});
+    	}
       return {
         ...state,
-        updatedProducts: action.res.updatedProducts
+        timeout: action.res.timeout ? action.res.timeout : undefined,
+        products: products ? products : undefined,
+        updatedProducts: action.res.updatedProducts ? action.res.updatedProducts : undefined,
+        errors: action.res.errors ? action.res.errors : undefined
       };
 
     case 'BUNDLE_SAVE_FAILURE':

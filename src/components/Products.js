@@ -337,39 +337,23 @@ class Products extends Component {
   	if (!nextPage) nextPage = 1;
   	if (nextPage !== this.state.page) state.page = nextPage;
   	
-  	let currentProducts = this.state.products;
-  	if (nextProps.products) currentProducts = nextProps.products;
-  	let products = [];
+  	if (nextProps.products) state.products = nextProps.products;
   	let currentlyReloading = this.state.isReloading;
   	
   	// Process updated products from reloadProduct, saveProductStatus, saveVariants
   	if (nextProps.updatedProducts) {
-      currentProducts.map(function(product, i) {
-        nextProps.updatedProducts.map(function(updatedProduct, i) {
-          const updatedProductJSON = updatedProduct.toJSON();
-          // If updated product exists, push it into the state products array
-          if (updatedProductJSON.productId === product.productId) {
-            products.push(updatedProductJSON);
-          } else {
-            products.push(product);
+      nextProps.updatedProducts.map(function(updatedProduct, i) {
+        // If currently reloading and has successfully updated product, remove updated product
+      	if (currentlyReloading.length > 0) {
+        	const index = currentlyReloading.indexOf(updatedProduct.get('productId'));
+          if (index >= 0) {
+            currentlyReloading.splice(index, 1);
           }
-          
-          // If currently reloading and has successfully updated product, remove updated product
-        	if (currentlyReloading.length) {
-          	const index = currentlyReloading.indexOf(updatedProductJSON.productId);
-            if (index >= 0) {
-              currentlyReloading.splice(index, 1);
-            }
-          }
-          
-          return updatedProduct; 
-        });
-        return product;
+        }
+        return updatedProduct; 
       });
-    } else {
-      products = currentProducts;
     }
-    if (nextProps.products || nextProps.updatedProducts) state.products = products;
+    
     state.isReloading = nextProps.timeout ? [] : currentlyReloading;
     
     // Remove any updated variants from savingVariants state
@@ -444,26 +428,30 @@ class Products extends Component {
   	}
   	
   	// Reset on subpage navigation
-  	if (nextProps.router.params.subpage !== 'search') state.search = null;
+  	if (nextProps.router.params.subpage !== 'search') {
+    	state.search = null;
+  	} else {
+    	state.search = this.props.location.query.q;
+  	}
   	
   	if (nextProps.router.params.subpage !== this.state.subpage) {
     	state.subpage = nextProps.router.params.subpage;
     	state.products = [];
   	}
 		
-		this.setState(state);	
-    
-  	if (nextPage !== this.state.page || (nextProps.router.params.subpage !== undefined && nextProps.router.params.subpage !== this.state.subpage)) {
+  	if (nextPage !== this.state.page || state.subpage) {
     	this.props.getProducts(
     	  this.props.token, 
-    	  nextProps.router.params.subpage, 
+    	  state.subpage, 
     	  nextPage, 
     	  this.state.sort, 
-    	  (state.search ? state.search : this.state.search), 
+    	  (state.search ? state.search : null),
     	  this.state.filters
   	  );
   	}
 		
+		this.setState(state);	
+
 	}
 	
   render() {
