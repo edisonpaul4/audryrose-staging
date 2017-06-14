@@ -1,6 +1,6 @@
-import * as schema from './schema';
+// import * as schema from './schema';
 
-import { normalize } from 'normalizr';
+// import { normalize } from 'normalizr';
 
 const initialState = {
   isLoadingProducts: false,
