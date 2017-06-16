@@ -19,7 +19,7 @@ class Products extends Component {
   	let sort = this.props.location.query.sort;
   	if (!sort) sort = 'date-added-desc';
   	let search = this.props.location.query.q;
-  	let filters = {designer: this.props.location.query.designer, price: this.props.location.query.price, class: this.props.location.query.class };
+  	let filters = {designer: this.props.location.query.designer, price: this.props.location.query.price, class: this.props.location.query.class, sizeInStock: this.props.location.query.sizeInStock };
     this.state = {
       subpage: subpage,
 			page: page,
@@ -54,6 +54,7 @@ class Products extends Component {
     this.handleFilterDesignerChange = this.handleFilterDesignerChange.bind(this);
     this.handleFilterPriceChange = this.handleFilterPriceChange.bind(this);
     this.handleFilterClassChange = this.handleFilterClassChange.bind(this);
+    this.handleFilterSizeInStockChange = this.handleFilterSizeInStockChange.bind(this);
     this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
     this.handleAddToVendorOrder = this.handleAddToVendorOrder.bind(this);
     this.handleCreateResize = this.handleCreateResize.bind(this);
@@ -147,64 +148,97 @@ class Products extends Component {
   handleFilterDesignerChange(e, {value}) {
 		const router = this.props.router;
 		const queries = router.location.query;
-		queries.page = 1;
-		queries.designer = value;
-    router.replace({
-      pathname: router.location.pathname,
-      page: 1,
-      query: queries
-    });
-    var filters = this.state.filters;
-    filters.designer = value;
-    this.setState({
-      page: 1,
-      filters: filters,
-      search: null,
-      expandedProducts: []
-    });
-    this.props.getProducts(this.props.token, this.state.subpage, 1, this.state.sort, this.state.search, filters);
+		if (queries && queries.designer !== value) {
+  		if (!queries.designer && value === 'all') return;
+  		queries.page = 1;
+  		queries.designer = value;
+      router.replace({
+        pathname: router.location.pathname,
+        page: 1,
+        query: queries
+      });
+      var filters = this.state.filters;
+      filters.designer = value;
+      this.setState({
+        page: 1,
+        filters: filters,
+        search: null,
+        expandedProducts: []
+      });
+      this.props.getProducts(this.props.token, this.state.subpage, 1, this.state.sort, this.state.search, filters);
+    }
 	}	
 	
   handleFilterPriceChange(e, {value}) {
 		const router = this.props.router;
 		const queries = router.location.query;
-		queries.page = 1;
-		queries.price = value;
-    router.replace({
-      pathname: router.location.pathname,
-      page: 1,
-      query: queries
-    });
-    var filters = this.state.filters;
-    filters.price = value;
-    this.setState({
-      page: 1,
-      filters: filters,
-      search: null,
-      expandedProducts: []
-    });
-    this.props.getProducts(this.props.token, this.state.subpage, 1, this.state.sort, this.state.search, filters);
+		if (queries && queries.price !== value) {
+  		if (!queries.price && value === 'all') return;
+  		queries.page = 1;
+  		queries.price = value;
+      router.replace({
+        pathname: router.location.pathname,
+        page: 1,
+        query: queries
+      });
+      var filters = this.state.filters;
+      filters.price = value;
+      this.setState({
+        page: 1,
+        filters: filters,
+        search: null,
+        expandedProducts: []
+      });
+      this.props.getProducts(this.props.token, this.state.subpage, 1, this.state.sort, this.state.search, filters);
+    }
 	}	
 	
   handleFilterClassChange(e, {value}) {
 		const router = this.props.router;
 		const queries = router.location.query;
-		queries.page = 1;
-		queries.class = value;
-    router.replace({
-      pathname: router.location.pathname,
-      page: 1,
-      query: queries
-    });
-    var filters = this.state.filters;
-    filters.class = value;
-    this.setState({
-      page: 1,
-      filters: filters,
-      search: null,
-      expandedProducts: []
-    });
-    this.props.getProducts(this.props.token, this.state.subpage, 1, this.state.sort, this.state.search, filters);
+		if (queries && queries.class !== value) {
+  		if (!queries.class && value === 'all') return;
+  		queries.page = 1;
+  		queries.class = value;
+      router.replace({
+        pathname: router.location.pathname,
+        page: 1,
+        query: queries
+      });
+      var filters = this.state.filters;
+      filters.class = value;
+      this.setState({
+        page: 1,
+        filters: filters,
+        search: null,
+        expandedProducts: []
+      });
+      this.props.getProducts(this.props.token, this.state.subpage, 1, this.state.sort, this.state.search, filters);
+    }
+	}	
+	
+  handleFilterSizeInStockChange(e, {value}) {
+		const router = this.props.router;
+		const queries = router.location.query;
+		if (queries && queries.sizeInStock !== value) {
+  		if (!queries.sizeInStock && value === 'all') return;
+  		queries.page = 1;
+  		queries.sizeInStock = value;
+      router.replace({
+        pathname: router.location.pathname,
+        page: 1,
+        query: queries
+      });
+      var filters = this.state.filters;
+      filters.sizeInStock = value;
+      this.setState({
+        page: 1,
+        filters: filters,
+        search: null,
+        expandedProducts: []
+      });
+      this.props.getProducts(this.props.token, this.state.subpage, 1, this.state.sort, this.state.search, filters);
+    }
 	}	
 	
 	handleProductSave(data) {
@@ -552,6 +586,14 @@ class Products extends Component {
 		// Populate filter selects from state
 		let filterDesigners = [{ key: 0, value: 'all', text: 'All' }];
 		let filterClass = [{ key: 0, value: 'all', text: 'All' }];
+	  if (this.state.filterData) {
+  		this.state.filterData.designers.map(function(designer, i) {
+    		return filterDesigners.push({ key: designer.designerId, value: designer.name, text: designer.name });
+  		});
+  		this.state.filterData.classes.map(function(classObj, i) {
+    		return filterClass.push({ key: i+1, value: classObj.name, text: classObj.name });
+  		});
+		}
 		const filterPrice = [
 		  { key: 0, value: 'all', text: 'All' },
 		  { key: 1, value: '0-150', text: '$0-$150' },
@@ -561,17 +603,29 @@ class Products extends Component {
       { key: 5, value: '851-1500', text: '$851-$1,500' },
       { key: 6, value: '1500', text: '$1,500+' },
 	  ];
+		const filterSizeInStock = [
+		  { key: 0, value: 'all', text: 'All' },
+		  { key: 1, value: '2', text: '2' },
+      { key: 2, value: '3', text: '3' },
+      { key: 3, value: '4', text: '4' },
+      { key: 4, value: '4.5', text: '4.5' },
+      { key: 5, value: '5', text: '5' },
+      { key: 6, value: '5.5', text: '5.5' },
+      { key: 7, value: '6', text: '6' },
+      { key: 8, value: '6.5', text: '6.5' },
+      { key: 9, value: '7', text: '7' },
+      { key: 10, value: '7.5', text: '7.5' },
+      { key: 11, value: '8', text: '8' },
+      { key: 12, value: '8.5', text: '8.5' },
+      { key: 13, value: '9', text: '9' },
+      { key: 14, value: '9.5', text: '9.5' },
+      { key: 15, value: '10', text: '10' },
+      { key: 16, value: '10.5', text: '10.5' },
+	  ];
 	  let defaultDesigner = scope.props.location.query.designer ? scope.props.location.query.designer : 'all';
 	  let defaultClass = scope.props.location.query.class ? scope.props.location.query.class : 'all';
 	  let defaultPrice = scope.props.location.query.price ? scope.props.location.query.price : 'all';
-	  if (this.state.filterData) {
-  		this.state.filterData.designers.map(function(designer, i) {
-    		return filterDesigners.push({ key: designer.designerId, value: designer.name, text: designer.name });
-  		});
-  		this.state.filterData.classes.map(function(classObj, i) {
-    		return filterClass.push({ key: i+1, value: classObj.name, text: classObj.name });
-  		});
-		}
+	  let defaultSizeInStock = scope.props.location.query.sizeInStock ? scope.props.location.query.sizeInStock : 'all';
 		
     const searchHeader = this.state.search ? <Header as='h2'>{totalProducts} results for "{this.state.search}"</Header> : null;
     const filterBarClassNames = this.state.search ? 'toolbar hidden' : 'toolbar';
@@ -615,6 +669,10 @@ class Products extends Component {
               <Form.Field>
                 <label>Class:</label>
                 <Select options={filterClass} defaultValue={defaultClass} onChange={this.handleFilterClassChange} />
+              </Form.Field>
+              <Form.Field>
+                <label>Size OH:</label>
+                <Select options={filterSizeInStock} defaultValue={defaultSizeInStock} onChange={this.handleFilterSizeInStockChange} />
               </Form.Field>
             </Form.Group>
           </Form>
