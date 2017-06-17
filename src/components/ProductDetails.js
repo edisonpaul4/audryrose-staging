@@ -96,20 +96,23 @@ class VariantRow extends Component {
 	}
 	getResizeLabel(product, variant, resize, orderProductMatch) {
 		const averageWaitTime = 7;
-		const expectedDate = resize.dateSent ? moment(resize.dateSent.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
-		const daysLeft = resize.dateSent ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
+// 		const expectedDate = resize.dateSent ? moment(resize.dateSent.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
+// 		const daysLeft = resize.dateSent ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
+		const daysSinceSent = resize.dateSent ? moment.utc().diff(resize.dateSent.iso, 'days') : null;
 		let labelColor = 'olive';
 		let labelIcon;
 		if (resize.done === true) {
   		labelIcon = <Icon name='checkmark' />;
-		} else if (daysLeft < 0) {
+		} else if (daysSinceSent > averageWaitTime) {
   		labelColor = 'red';
 		}
 		const labelLink = resize.done === false && product && product.product_id ? '/products/search?q=' + product.product_id : null;
-		let labelText = resize.units + ' Resizing';
-		if (resize.received >= resize.units) labelText = resize.received + ' Received';
+    
+		let labelText = resize.units + ' Resize' + (resize.units > 1 ? 's' : '') + (resize.dateSent ? ' Sent' : ' Pending');
+		if (resize.received >= resize.units) labelText = resize.received + ' Resize Received';
   	if (resize.orderProduct) labelText += ' #' + resize.orderProduct.order_id;
-		const labelDetailText = daysLeft < 0 ? moment(resize.dateSent.iso).format('M-D-YY') + ' (' + Math.abs(daysLeft) + ' days late)' : moment(resize.dateSent.iso).format('M-D-YY') + ' (' + daysLeft + ' days left)';
+// 		const labelDetailText = daysLeft < 0 ? moment(resize.dateSent.iso).format('M-D-YY') + ' (' + Math.abs(daysLeft) + ' days late)' : moment(resize.dateSent.iso).format('M-D-YY') + ' (' + daysLeft + ' days left)';
+		const labelDetailText = resize.dateSent ?  daysSinceSent + ' days ago' : '';
 		const labelDetail = resize.done === false ? <Label.Detail>{labelDetailText}</Label.Detail> : null;
 		let showLabel = false;
 		if (resize.done === true && resize.shipped === undefined) {
@@ -119,7 +122,7 @@ class VariantRow extends Component {
 		} else {
   		showLabel = true;
 		}
-		return showLabel ? <Label as={labelLink ? 'a' : null} href={labelLink} size='tiny' color={labelColor} key={'resize-'+resize.objectId}>{labelIcon}{labelText}{labelDetail}</Label> : null;
+		return showLabel ? <Label as='a' href={labelLink} size='tiny' color={labelColor} key={'resize-'+resize.objectId}>{labelIcon}{labelText}{labelDetail}</Label> : null;
 	}
 	componentWillReceiveProps(nextProps) {
   	if (nextProps.updatedVariant) {
@@ -136,7 +139,6 @@ class VariantRow extends Component {
 		const data = this.props.data;
     let variantEdited = (this.state.inventory !== this.state.startInventory) ? true : false;
     if (!this.state.startInventory && this.state.inventory === 0) variantEdited = false;
-		
 		// Create an array of other options values
 		let otherOptions = [];
 		if (data.gemstone_value) otherOptions.push(data.gemstone_value);
@@ -250,6 +252,7 @@ class VariantsTable extends Component {
 		const vendor = this.props.vendor;
 		const designer = this.props.designer;
 // 		const resizes = this.props.resizes;
+    const subpage = this.props.subpage;
 		
 		// Sort the data
 		if (variants.length && variants[0].size_value) {
@@ -281,6 +284,12 @@ class VariantsTable extends Component {
         }
         const isSaving = index < 0 ? false : true;
         
+        // Only show pending resize variants in /products/being-resized
+        if (subpage === 'being-resized'){
+          if (!variantData.resizes) return variantData;
+          if (variantData.resizes && variantData.resizes.length < 1) return variantData;
+        }
+        
         var vendorOrders = [];
         if (vendor && vendor.vendorOrders) {
       	  vendor.vendorOrders.map(function(vendorOrder, j) {
@@ -300,6 +309,7 @@ class VariantsTable extends Component {
 				variantRows.push(
 				  <VariantRow 
 				    data={variantData} 
+				    subpage={subpage} 
 				    key={i} 
 				    isReloading={scope.props.isReloading}
 				    handleSaveVariantClick={scope.handleSaveVariantClick} 
@@ -310,7 +320,7 @@ class VariantsTable extends Component {
 				    handleSaveResize={scope.handleSaveResize}
 			    />
 		    );
-				return variantRows;
+				return variantData;
 	    });
 		}
 		const tableTitle = (this.props.title) ? <h3>{this.props.title}</h3> : null;
@@ -371,6 +381,7 @@ class BundleVariantRow extends Component {
 class BundleVariantsTable extends Component {
 	render() {  	
 		const bundleVariants = this.props.bundleVariants;
+		const subpage = this.props.subpage;
     
 		let variantRows = [];
 		if (bundleVariants) {
@@ -378,6 +389,7 @@ class BundleVariantsTable extends Component {
 				variantRows.push(
 				  <BundleVariantRow 
 				    variant={variantData} 
+				    subpage={subpage}
 				    key={i} 
 			    />
 		    );
@@ -589,6 +601,7 @@ class ProductDetails extends Component {
   	const isBundle = this.props.data.isBundle;
   	const resizes = this.props.data.resizes;
   	const vendor = this.props.data.vendor;
+  	const subpage = this.props.subpage;
 		var rowClass = classNames(
 			{
 				'': showVariants,
@@ -635,6 +648,7 @@ class ProductDetails extends Component {
     	        vendor={vendor}
     	        designer={designer}
     	        title={variantGroup} 
+    	        subpage={subpage}
     	        key={i} 
     	        isReloading={scope.props.isReloading}
     	        handleSaveVariantClick={scope.handleSaveVariantClick} 
@@ -654,6 +668,7 @@ class ProductDetails extends Component {
   	        variants={variants} 
   	        vendor={vendor}
   	        designer={designer}
+  	        subpage={subpage} 
   	        key={1} 
   	        isReloading={scope.props.isReloading}
   	        handleSaveVariantClick={scope.handleSaveVariantClick} 
@@ -671,6 +686,7 @@ class ProductDetails extends Component {
   	      <BundleVariantsTable 
   	        bundleVariants={this.props.data.bundleVariants} 
   	        bundleVariantsProducts={this.props.bundleVariantsProducts} 
+  	        subpage={subpage}
   	        key={1} 
 	        />
         );

@@ -468,6 +468,8 @@ class Products extends Component {
     	state.search = this.props.location.query.q;
   	}
   	
+  	if (state.products && nextProps.router.params.subpage === 'being-resized') state.expandedProducts = state.products.map(function(product) { return product.productId });
+  	
   	if (nextProps.router.params.subpage !== this.state.subpage) {
     	state.subpage = nextProps.router.params.subpage;
     	state.products = [];
@@ -490,6 +492,7 @@ class Products extends Component {
 	
   render() {
 		const { error, isLoadingProducts, totalPages, totalProducts } = this.props;
+		const { subpage } = this.state;
 		let scope = this;
 		let productRows = [];
 		const tabCounts = this.state.tabCounts;
@@ -557,6 +560,7 @@ class Products extends Component {
   				productRows.push(
   				  <ProductDetails 
   				    data={productDetailsData} 
+  				    subpage={subpage} 
   				    expanded={expanded} 
   				    key={`${product.productId}-2`} 
   				    isReloading={isReloading} 

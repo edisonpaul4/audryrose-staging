@@ -122,12 +122,15 @@ const products = (state = initialState, action) => {
       }
 
     case 'VARIANT_SAVE_SUCCESS':
-      if (state.products && action.res.updatedProduct) {
+      if (state.products && action.res.updatedProducts) {
       	products = state.products.map(function(product, i) {
-        	if (product.objectId === action.res.updatedProduct.id) {
-          	console.log('updated product loaded ' + product.objectId);
-          	product = action.res.updatedProduct.toJSON();
-        	}
+        	action.res.updatedProducts.map(function(updatedProduct, j) {
+          	if (product.objectId === updatedProduct.id) {
+            	console.log('updated product loaded ' + product.objectId);
+            	product = updatedProduct.toJSON();
+          	}
+          	return updatedProduct;
+          });
         	return product;
       	});
     	}
@@ -136,7 +139,7 @@ const products = (state = initialState, action) => {
         timeout: action.res.timeout ? action.res.timeout : undefined,
         products: products ? products : undefined,
         updatedProducts: action.res.updatedProduct ? [action.res.updatedProduct] : undefined,
-        updatedVariants: action.res.updatedVariant ? [action.res.updatedVariant] : undefined,
+        updatedVariants: action.res.updatedVariants ? action.res.updatedVariants : undefined,
         tabCounts: action.res.tabCounts ? action.res.tabCounts : undefined
       };
 
@@ -151,12 +154,15 @@ const products = (state = initialState, action) => {
       }
 
     case 'VARIANTS_SAVE_SUCCESS':
-      if (state.products && action.res.updatedProduct) {
+      if (state.products && action.res.updatedProducts) {
       	products = state.products.map(function(product, i) {
-        	if (product.objectId === action.res.updatedProduct.id) {
-          	console.log('updated product loaded ' + product.objectId);
-          	product = action.res.updatedProduct.toJSON();
-        	}
+        	action.res.updatedProducts.map(function(updatedProduct, j) {
+          	if (product.objectId === updatedProduct.id) {
+            	console.log('updated product loaded ' + product.objectId);
+            	product = updatedProduct.toJSON();
+          	}
+          	return updatedProduct;
+          });
         	return product;
       	});
     	}
@@ -180,12 +186,15 @@ const products = (state = initialState, action) => {
       }
 
     case 'ADD_TO_VENDOR_ORDER_SUCCESS':
-      if (state.products && action.res.updatedProduct) {
+      if (state.products && action.res.updatedProducts) {
       	products = state.products.map(function(product, i) {
-        	if (product.objectId === action.res.updatedProduct.id) {
-          	console.log('updated product loaded ' + product.objectId);
-          	product = action.res.updatedProduct.toJSON();
-        	}
+        	action.res.updatedProducts.map(function(updatedProduct, j) {
+          	if (product.objectId === updatedProduct.id) {
+            	console.log('updated product loaded ' + product.objectId);
+            	product = updatedProduct.toJSON();
+          	}
+          	return updatedProduct;
+          });
         	return product;
       	});
     	}
@@ -194,6 +203,7 @@ const products = (state = initialState, action) => {
         timeout: action.res.timeout ? action.res.timeout : undefined,
         products: products ? products : undefined,
         updatedProducts: action.res.updatedProducts ? action.res.updatedProducts : undefined,
+        updatedVariants: action.res.updatedVariants ? action.res.updatedVariants : undefined,
         tabCounts: action.res.tabCounts ? action.res.tabCounts : undefined,
         errors: action.res.errors ? action.res.errors : undefined
       };
@@ -209,12 +219,15 @@ const products = (state = initialState, action) => {
       }
 
     case 'CREATE_PRODUCT_RESIZE_SUCCESS':
-      if (state.products && action.res.updatedProduct) {
+      if (state.products && action.res.updatedProducts) {
       	products = state.products.map(function(product, i) {
-        	if (product.objectId === action.res.updatedProduct.id) {
-          	console.log('updated product loaded ' + product.objectId);
-          	product = action.res.updatedProduct.toJSON();
-        	}
+        	action.res.updatedProducts.map(function(updatedProduct, j) {
+          	if (product.objectId === updatedProduct.id) {
+            	console.log('updated product loaded ' + product.objectId);
+            	product = updatedProduct.toJSON();
+          	}
+          	return updatedProduct;
+          });
         	return product;
       	});
     	}
@@ -239,12 +252,15 @@ const products = (state = initialState, action) => {
       }
 
     case 'SAVE_PRODUCT_RESIZE_SUCCESS':
-      if (state.products && action.res.updatedProduct) {
+      if (state.products && action.res.updatedProducts) {
       	products = state.products.map(function(product, i) {
-        	if (product.objectId === action.res.updatedProduct.id) {
-          	console.log('updated product loaded ' + product.objectId);
-          	product = action.res.updatedProduct.toJSON();
-        	}
+        	action.res.updatedProducts.map(function(updatedProduct, j) {
+          	if (product.objectId === updatedProduct.id) {
+            	console.log('updated product loaded ' + product.objectId);
+            	product = updatedProduct.toJSON();
+          	}
+          	return updatedProduct;
+          });
         	return product;
       	});
     	}
@@ -286,12 +302,15 @@ const products = (state = initialState, action) => {
       }
 
     case 'BUNDLE_SAVE_SUCCESS':
-      if (state.products && action.res.updatedProduct) {
+      if (state.products && action.res.updatedProducts) {
       	products = state.products.map(function(product, i) {
-        	if (product.objectId === action.res.updatedProduct.id) {
-          	console.log('updated product loaded ' + product.objectId);
-          	product = action.res.updatedProduct.toJSON();
-        	}
+        	action.res.updatedProducts.map(function(updatedProduct, j) {
+          	if (product.objectId === updatedProduct.id) {
+            	console.log('updated product loaded ' + product.objectId);
+            	product = updatedProduct.toJSON();
+          	}
+          	return updatedProduct;
+          });
         	return product;
       	});
     	}
