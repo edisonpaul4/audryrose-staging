@@ -80,22 +80,22 @@ class ProductRow extends Component {
   	return showLabel ? <Label as={labelLink ? 'a' : null} href={labelLink} size='tiny' color={labelColor} key={'product-'+product.objectId+'-'+vendorOrderVariant.objectId}>{labelIcon}{labelText}{labelDetail}</Label> : null;
 	}
 	getResizeLabel(product, variant, resize, orderProductMatch) {
-//   	console.log(resize)
 		const averageWaitTime = 7;
-		const expectedDate = resize.dateSent ? moment(resize.dateSent.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
-		const daysLeft = resize.dateSent ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
+		const daysSinceSent = resize.dateSent ? moment.utc().diff(resize.dateSent.iso, 'days') : null;
 		let labelColor = 'olive';
 		let labelIcon;
 		if (resize.done === true) {
   		labelIcon = <Icon name='checkmark' />;
-		} else if (daysLeft < 0) {
+		} else if (daysSinceSent > averageWaitTime) {
   		labelColor = 'red';
 		}
-		const labelLink = resize.done === false && product.product_id ? '/products/search?q=' + product.product_id : null;
-		let labelText = resize.units + ' Resizing';
-		if (resize.received >= resize.units) labelText = resize.received + ' Received';
-		if (orderProductMatch) labelText += ' #' + product.order_id;
-		const labelDetailText = daysLeft < 0 ? moment(resize.dateSent.iso).format('M-D-YY') + ' (' + Math.abs(daysLeft) + ' days late)' : moment(resize.dateSent.iso).format('M-D-YY') + ' (' + daysLeft + ' days left)';
+		const labelLink = resize.done === false && product && product.product_id ? '/products/search?q=' + product.product_id : null;
+    
+		let labelText = resize.units + ' Resize' + (resize.units > 1 ? 's' : '') + (resize.dateSent ? ' Sent' : ' Pending');
+		if (resize.received >= resize.units) labelText = resize.received + ' Resize Received';
+		console.log(orderProductMatch)
+  	if (resize.orderProduct) labelText += ' #' + product.order_id;
+		const labelDetailText = resize.dateSent ?  daysSinceSent + ' days ago' : '';
 		const labelDetail = resize.done === false ? <Label.Detail>{labelDetailText}</Label.Detail> : null;
 		let showLabel = false;
 		if (resize.done === true && resize.shipped === undefined) {
@@ -105,7 +105,7 @@ class ProductRow extends Component {
 		} else {
   		showLabel = true;
 		}
-		return showLabel ? <Label as={labelLink ? 'a' : null} href={labelLink} size='tiny' color={labelColor} key={'resize-'+resize.objectId}>{labelIcon}{labelText}{labelDetail}</Label> : null;
+		return showLabel ? <Label as='a' href={labelLink} size='tiny' color={labelColor} key={'resize-'+resize.objectId}>{labelIcon}{labelText}{labelDetail}</Label> : null;
 	}
 	render() {  	
   	const scope = this;
