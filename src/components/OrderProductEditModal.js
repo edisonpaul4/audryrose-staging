@@ -33,7 +33,7 @@ class OrderProductEditModal extends Component {
   }
   
   componentWillMount() {
-    let productVariants = this.props.productVariants;
+    let productVariants = [];
     productVariants = this.getProductVariants(productVariants, this.props.orderProductEditFormData);
   	this.setState({
     	productVariants: productVariants
