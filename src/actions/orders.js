@@ -62,3 +62,17 @@ export function saveOrder(token, data) {
     promise: api.saveOrder(token, data)
   }
 }
+
+export function saveOrderProduct(token, data) {
+  return {
+    types: ['ORDER_PRODUCT_SAVE_REQUEST', 'ORDER_PRODUCT_SAVE_SUCCESS', 'ORDER_PRODUCT_SAVE_FAILURE'],
+    promise: api.saveOrderProduct(token, data)
+  }
+}
+
+export function getOrderProductFormData(token, orderProductId) {
+  return {
+    types: ['GET_ORDER_PRODUCT_FORM_REQUEST', 'GET_ORDER_PRODUCT_FORM_SUCCESS', 'GET_ORDER_PRODUCT_FORM_FAILURE'],
+    promise: api.getOrderProductFormData(token, orderProductId)
+  }
+}

@@ -12,6 +12,7 @@ class ProductRow extends Component {
     this.handleShipModalOpen = this.handleShipModalOpen.bind(this);
     this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
     this.handleShowResizeFormClick = this.handleShowResizeFormClick.bind(this);
+    this.handleShowEditOrderProductFormClick = this.handleShowEditOrderProductFormClick.bind(this);
   }
   handleShipModalOpen() {
     this.props.handleShipModalOpen();
@@ -39,8 +40,8 @@ class ProductRow extends Component {
 		this.props.handleShowOrderFormClick({productId: variant.productId, orderProductId: orderProductId, variant: variant, resize: true});
 	}
 	handleShowEditOrderProductFormClick(e, {value}) {
-//   	let variant = this.props.product.variants ? this.props.product.variants[0] : null;
-// 		this.props.handleShowEditOrderProductFormClick({productId: this.props.product.product_id, variant: variant, resize: false});
+  	let variant = this.props.product.variants ? this.props.product.variants[0] : null;
+		this.props.handleOrderProductEditClick({orderProductId: this.props.product.orderProductId, variant: variant});
 	}
 	getVendorOrderLabel(product, variant, vendorOrderVariant, vendorOrder, orderProductMatch) {
   	if (!vendorOrder) return <Label size='tiny' color='red' key={'product-'+product.objectId+'-'+vendorOrderVariant.objectId}>Error: Missing vendor order data</Label>;
@@ -93,7 +94,6 @@ class ProductRow extends Component {
     
 		let labelText = resize.units + ' Resize' + (resize.units > 1 ? 's' : '') + (resize.dateSent ? ' Sent' : ' Pending');
 		if (resize.received >= resize.units) labelText = resize.received + ' Resize Received';
-		console.log(orderProductMatch)
   	if (resize.orderProduct) labelText += ' #' + product.order_id;
 		const labelDetailText = resize.dateSent ?  daysSinceSent + ' days ago' : '';
 		const labelDetail = resize.done === false ? <Label.Detail>{labelDetailText}</Label.Detail> : null;
@@ -121,9 +121,9 @@ class ProductRow extends Component {
 	    });
 		}
 		const productName = product.name ? product.name : '';
-		const variantName = variant.productName ? variant.productName : null;
-		const productUrl = '/products/search?q=' + product.product_id;
-		const productLink = <a href={productUrl}>{productName + (product.isBundle ? ': ' + variantName : '')}</a>;
+		const variantName = variant && variant.productName ? variant.productName : null;
+		const productUrl = product.product_id ? '/products/search?q=' + product.product_id : null;
+		const productLink = productUrl ? <a href={productUrl}>{productName + (product.isBundle ? ': ' + variantName : '')}</a> : productName;
 		
 		const alwaysResize = variant ? variant.alwaysResize : '';
 		const inventory = variant ? variant.inventoryLevel : '';
@@ -184,7 +184,6 @@ class ProductRow extends Component {
       		let vendorOrderMatch;
       		if (product.awaitingInventoryVendorOrders) {
         		product.awaitingInventoryVendorOrders.map(function(vendorOrder, j) {
-          		console.log(vendorOrder)
           		if (vendorOrder.vendorOrderVariants) {
             		vendorOrder.vendorOrderVariants.map(function(vendorOrderVariant, l) {
               		if (inventoryItem.objectId === vendorOrderVariant.objectId) {
@@ -209,19 +208,24 @@ class ProductRow extends Component {
 		
 		let primaryButton;
 		let dropdownItems = [];
+		const allowEditing = vendorOrders.length < 1 && resizes.length < 1;
     if (shipment) {
   	  primaryButton = <Button icon='shipping' content='View' onClick={this.handleShipModalOpen} />;
     } else if (product.shippable || product.partiallyShippable) {
   	  primaryButton = <Button icon='shipping' content='Custom Shipment' onClick={this.handleShipModalOpen} />;
-//       dropdownItems.push(<Dropdown.Item key='1' icon='edit' text='Edit Product' onClick={this.handleShowEditOrderProductFormClick} />);
+      if (allowEditing) dropdownItems.push(<Dropdown.Item key='1' icon='edit' text='Edit Product' onClick={this.handleShowEditOrderProductFormClick} />);
 	  } else if (product.resizable) {
   	  primaryButton = <Button icon='exchange' content='Resize' onClick={this.handleShowResizeFormClick} />;
   	  dropdownItems.push(<Dropdown.Item key='1' icon='add to cart' text='Order' onClick={this.handleShowOrderFormClick} />);
-//   	  dropdownItems.push(<Dropdown.Item key='2' icon='edit' text='Edit Product' onClick={this.handleShowEditOrderProductFormClick} />);
-	  } else {
+  	  if (allowEditing) dropdownItems.push(<Dropdown.Item key='2' icon='edit' text='Edit Product' onClick={this.handleShowEditOrderProductFormClick} />);
+	  } else if (product.variants) {
   	  primaryButton = <Button icon='add to cart' content='Order' onClick={this.handleShowOrderFormClick} />;
-  	  dropdownItems.push(<Dropdown.Item key='1' icon='exchange' text='Resize' onClick={this.handleShowResizeFormClick} />);
+//   	  dropdownItems.push(<Dropdown.Item key='1' icon='exchange' text='Resize' onClick={this.handleShowResizeFormClick} />);
+  	  if (allowEditing) dropdownItems.push(<Dropdown.Item key='2' icon='edit' text='Edit Product' onClick={this.handleShowEditOrderProductFormClick} />);
+	  } else if (product.isCustom) {
+//   	  primaryButton = <Button icon='shipping' content='Custom Shipment' onClick={this.handleShipModalOpen} />;
 //   	  dropdownItems.push(<Dropdown.Item key='2' icon='edit' text='Edit Product' onClick={this.handleShowEditOrderProductFormClick} />);
+  	  if (allowEditing) primaryButton = <Button icon='edit' content='Edit Product' onClick={this.handleShowEditOrderProductFormClick} />;
 	  }
 
     return (
@@ -272,6 +276,7 @@ class OrderDetails extends Component {
     this.handleShipModalClose = this.handleShipModalClose.bind(this);
     this.handleCreateShipments = this.handleCreateShipments.bind(this);
     this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
+    this.handleOrderProductEditClick = this.handleOrderProductEditClick.bind(this);
   }
 	handleReloadClick(orderId) {
 		this.props.handleReloadClick(orderId);
@@ -299,6 +304,9 @@ class OrderDetails extends Component {
 	handleShowOrderFormClick(data) {
   	data.orderId = this.state.order.orderId;
   	this.props.handleShowOrderFormClick(data);
+	}
+	handleOrderProductEditClick(data) {
+  	this.props.handleOrderProductEditClick(data);
 	}
 	componentWillMount() {
   	const {shippedGroups, shippableGroups, unshippableGroups} = this.createShipmentGroups(this.props.data, this.props.data.orderProducts, this.props.data.orderShipments)
@@ -454,11 +462,14 @@ class OrderDetails extends Component {
       			return shipmentObj;
     			});
   			}
-  			if (productRow.variants) {
-    			productRow.variants.map(function(variant, j) {
-      			productRows.push(<ProductRow product={productRow} variant={variant} shipment={shipment} handleShipModalOpen={scope.handleShipModalOpen} key={i+'-'+j} handleShowOrderFormClick={scope.handleShowOrderFormClick} />);
+  			let variants = productRow.editedVariants ? productRow.editedVariants : productRow.variants ? productRow.variants : null;
+  			if (variants) {
+    			variants.map(function(variant, j) {
+      			productRows.push(<ProductRow product={productRow} variant={variant} shipment={shipment} handleShipModalOpen={scope.handleShipModalOpen} key={i+'-'+j} handleShowOrderFormClick={scope.handleShowOrderFormClick} handleOrderProductEditClick={scope.handleOrderProductEditClick} />);
       			return variant;
     			});
+  			} else if (productRow.isCustom) {
+    			productRows.push(<ProductRow product={productRow} shipment={shipment} handleShipModalOpen={scope.handleShipModalOpen} key={i+'-Custom'} handleShowOrderFormClick={scope.handleShowOrderFormClick} handleOrderProductEditClick={scope.handleOrderProductEditClick} />);
   			}
 				
 				return productRows;

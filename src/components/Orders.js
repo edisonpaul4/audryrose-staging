@@ -7,6 +7,7 @@ import Order from './Order.js';
 import OrderDetails from './OrderDetails.js';
 import Pagination from './Pagination.js';
 import ProductOrderModal from './ProductOrderModal.js';
+import OrderProductEditModal from './OrderProductEditModal.js';
 
 class Orders extends Component {
   constructor(props) {
@@ -40,6 +41,9 @@ class Orders extends Component {
 			generatedFile: null,
 			productOrderOpen: false,
 			productOrderData: {},
+			orderProductEditFormOpen: false,
+			orderProductEditFormData: {},
+			orderProductEditFormIsLoading: false,
 			errors: [],
 			files: [],
 			product: null
@@ -58,6 +62,9 @@ class Orders extends Component {
     this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
     this.handleProductOrderModalClose = this.handleProductOrderModalClose.bind(this);
     this.handleDateNeededChange = this.handleDateNeededChange.bind(this);
+    this.handleOrderProductEditClick = this.handleOrderProductEditClick.bind(this);
+    this.handleOrderProductEditClose = this.handleOrderProductEditClose.bind(this);
+    this.handleOrderProductSave = this.handleOrderProductSave.bind(this);
   }
 	
 	componentDidMount() {
@@ -250,6 +257,47 @@ class Orders extends Component {
     });
 	}
 	
+	handleOrderProductEditClick(data) {
+  	let orderProductEditFormData = this.state.orderProductEditFormData;
+    this.state.orders.map(function(order) {
+      order.orderProducts.map(function(orderProduct) {
+        if (orderProduct.orderProductId === data.orderProductId) {
+          orderProductEditFormData.orderProduct = orderProduct;
+        }
+        return orderProduct;
+      });
+      return order;
+    });
+    this.setState({
+      orderProductEditFormOpen: true,
+      orderProductEditFormData: orderProductEditFormData,
+      orderProductEditFormIsLoading: orderProductEditFormData.products ? false : true
+    });
+		if (!orderProductEditFormData.products) this.props.getOrderProductFormData(this.props.token, data.orderProductId);
+	}
+	
+	handleOrderProductEditClose(data) {
+  	let orderProductEditFormData = this.state.orderProductEditFormData;
+  	orderProductEditFormData.orderProduct = null;
+    this.setState({
+      orderProductEditFormOpen: false,
+      orderProductEditFormData: orderProductEditFormData,
+      orderProductEditFormIsLoading: false
+    });
+	}
+	
+	handleOrderProductSave(data) {
+		let currentlyReloading = this.state.isReloading;
+		const index = currentlyReloading.indexOf(data.orderId);
+		if (index < 0) {
+			currentlyReloading.push(data.orderId);
+		}
+  	this.setState({
+    	isReloading: currentlyReloading
+  	});
+		this.props.saveOrderProduct(this.props.token, data);
+	}
+	
 	componentWillReceiveProps(nextProps) {
   	let scope = this;
   	let nextPage = parseFloat(nextProps.location.query.page);
@@ -370,6 +418,17 @@ class Orders extends Component {
       product = nextProps.product.toJSON();
       productOrderData.product = product;
     }
+    
+  	let orderProductEditFormData = this.state.orderProductEditFormData;
+  	let orderProductEditFormIsLoading = this.state.orderProductEditFormIsLoading;
+  	if (orderProductEditFormData && nextProps.orderProductEditFormData) {
+      orderProductEditFormData.products = nextProps.orderProductEditFormData.products;
+      orderProductEditFormData.colorCodes = nextProps.orderProductEditFormData.colorCodes;
+      orderProductEditFormData.stoneCodes = nextProps.orderProductEditFormData.stoneCodes;
+      orderProductEditFormData.sizeCodes = nextProps.orderProductEditFormData.sizeCodes;
+      orderProductEditFormData.miscCodes = nextProps.orderProductEditFormData.miscCodes;
+      orderProductEditFormIsLoading = false;
+  	}
   	
 		this.setState({
   		subpage: nextProps.router.params.subpage,
@@ -387,7 +446,9 @@ class Orders extends Component {
 			errors: errors,
 			files: files,
 			product: product,
-			productOrderData: productOrderData
+			productOrderData: productOrderData,
+			orderProductEditFormData: orderProductEditFormData,
+			orderProductEditFormIsLoading: orderProductEditFormIsLoading
 		});	
 		
   	if (nextPage !== this.state.page || nextProps.router.params.subpage !== this.state.subpage) {
@@ -414,6 +475,7 @@ class Orders extends Component {
           fullyShippable: order.fullyShippable,
           partiallyShippable: order.partiallyShippable,
           resizable: order.resizable,
+          hasCustom: order.hasCustom,
           date_created: order.date_created,
           date_shipped: order.date_shipped,
           dateNeeded: order.dateNeeded,
@@ -452,6 +514,7 @@ class Orders extends Component {
 				    handleCreateResize={scope.handleCreateResize} 
 				    handleShowOrderFormClick={scope.handleShowOrderFormClick} 
 				    handleProductOrderModalClose={scope.handleProductOrderModalClose} 
+				    handleOrderProductEditClick={scope.handleOrderProductEditClick}
 			    />
 		    );
 				return orderRows;
@@ -493,6 +556,15 @@ class Orders extends Component {
         productOrderData={this.state.productOrderData} 
         isLoading={this.props.isReloading}
       /> : null;
+    
+    const orderProductEditModal = this.state.orderProductEditFormData && this.state.orderProductEditFormData.orderProduct && this.state.orderProductEditFormOpen === true ? <OrderProductEditModal 
+        open={this.state.orderProductEditFormOpen}
+        handleOrderProductEditModalClose={this.handleOrderProductEditModalClose} 
+        handleOrderProductSave={this.handleOrderProductSave} 
+        handleOrderProductEditClose={this.handleOrderProductEditClose} 
+        orderProductEditFormData={this.state.orderProductEditFormData} 
+        isLoading={this.state.orderProductEditFormIsLoading}
+      /> : null; 
 		
     return (
 			<Grid.Column width='16'>
@@ -557,6 +629,7 @@ class Orders extends Component {
   		    </Sidebar.Pusher>
 		    </Sidebar.Pushable>
 		    {productOrderModal}
+		    {orderProductEditModal}
 			</Grid.Column>
     );
   }

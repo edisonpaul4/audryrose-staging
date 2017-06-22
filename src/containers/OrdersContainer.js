@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { getOrders, reloadOrder, createShipments, batchCreateShipments, batchPrintShipments, getProduct, addOrderProductToVendorOrder, createResize, saveOrder } from '../actions/orders';
+import { getOrders, reloadOrder, createShipments, batchCreateShipments, batchPrintShipments, getProduct, addOrderProductToVendorOrder, createResize, saveOrder, saveOrderProduct, getOrderProductFormData } from '../actions/orders';
 import Orders from '../components/Orders';
 
 const select = state => ({
@@ -15,7 +15,8 @@ const select = state => ({
 	files: state.orders.files,
 	error: state.error,
 	product: state.orders.product,
-	timeout: state.orders.timeout
+	timeout: state.orders.timeout,
+	orderProductEditFormData: state.orders.orderProductEditFormData
 });
 
 const actions = {
@@ -27,7 +28,9 @@ const actions = {
   getProduct,
   addOrderProductToVendorOrder,
   createResize,
-  saveOrder
+  saveOrder,
+  saveOrderProduct, 
+  getOrderProductFormData
 };
 
 export default connect(select, actions)(Orders);

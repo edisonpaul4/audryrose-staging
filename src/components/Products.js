@@ -38,6 +38,7 @@ class Products extends Component {
 			productOrderData: null,
 			bundleFormOpen: false,
 			bundleFormData: null,
+			bundleFormIsLoading: false,
 			errors: []
     };
     this._notificationSystem = null;

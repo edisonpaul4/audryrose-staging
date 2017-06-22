@@ -71,8 +71,11 @@ class Order extends Component {
   	if (data.resizable) {
     	labels.push(<Label key={4} basic horizontal circular size='mini' color='yellow'>Resizable</Label>);
   	}
+  	if (data.hasCustom) {
+    	labels.push(<Label key={5} basic horizontal circular size='mini' color='teal'>Custom</Label>);
+  	}
   	if (data.status === 'Shipped') {
-    	labels.push(<Label key={5} basic horizontal circular size='mini' color='olive'>Shipped</Label>);
+    	labels.push(<Label key={6} basic horizontal circular size='mini' color='olive'>Shipped</Label>);
   	}
 		    
 		let expandIcon = expanded ? 'minus' : 'plus';

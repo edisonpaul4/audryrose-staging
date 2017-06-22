@@ -184,6 +184,40 @@ const orders = (state = initialState, action) => {
       return {
         ...state
       }
+      
+    case 'ORDER_PRODUCT_SAVE_REQUEST':
+      return {
+        ...state
+      }
+
+    case 'ORDER_PRODUCT_SAVE_SUCCESS':
+      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
+      return {
+        ...state,
+        updatedOrders: action.res.updatedOrders
+      };
+
+    case 'ORDER_PRODUCT_SAVE_FAILURE':
+      return {
+        ...state
+      }
+      
+    case 'GET_ORDER_PRODUCT_FORM_REQUEST':
+      return {
+        ...state
+      }
+
+    case 'GET_ORDER_PRODUCT_FORM_SUCCESS':
+      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
+      return {
+        ...state,
+        orderProductEditFormData: action.res
+      };
+
+    case 'GET_ORDER_PRODUCT_FORM_FAILURE':
+      return {
+        ...state
+      }
 			
     default:
       return state;
