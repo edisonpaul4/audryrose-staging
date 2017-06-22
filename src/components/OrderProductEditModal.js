@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Modal, Button, Table, Form, Input, Header, Segment } from 'semantic-ui-react';
+import { Modal, Button, Table, Form, Input, Header, Segment, Dimmer, Loader } from 'semantic-ui-react';
 
 class OrderProductEditModal extends Component {
   constructor(props) {
@@ -11,6 +11,7 @@ class OrderProductEditModal extends Component {
       colorCodes: this.props.orderProductEditFormData && this.props.orderProductEditFormData.colorCodes ? this.props.orderProductEditFormData.colorCodes : [],
       stoneCodes: this.props.orderProductEditFormData && this.props.orderProductEditFormData.stoneCodes ? this.props.orderProductEditFormData.stoneCodes : [],
       sizeCodes: this.props.orderProductEditFormData && this.props.orderProductEditFormData.sizeCodes ? this.props.orderProductEditFormData.sizeCodes : [],
+      sizeCodeAddition: null,
       miscCodes: this.props.orderProductEditFormData && this.props.orderProductEditFormData.miscCodes ? this.props.orderProductEditFormData.miscCodes : [],
       selectedProduct: '',
       selectedColor: '',
@@ -25,6 +26,7 @@ class OrderProductEditModal extends Component {
     this.handleColorChange = this.handleColorChange.bind(this);
     this.handleStoneChange = this.handleStoneChange.bind(this);
     this.handleSizeChange = this.handleSizeChange.bind(this);
+    this.handleSizeAddition = this.handleSizeAddition.bind(this);
     this.handleMiscChange = this.handleMiscChange.bind(this);
     this.handleInventoryChange = this.handleInventoryChange.bind(this);
     this.handleAdd = this.handleAdd.bind(this);
@@ -58,6 +60,7 @@ class OrderProductEditModal extends Component {
       colorCodes: this.props.orderProductEditFormData && this.props.orderProductEditFormData.colorCodes ? this.props.orderProductEditFormData.colorCodes : [],
       stoneCodes: this.props.orderProductEditFormData && this.props.orderProductEditFormData.stoneCodes ? this.props.orderProductEditFormData.stoneCodes : [],
       sizeCodes: this.props.orderProductEditFormData && this.props.orderProductEditFormData.sizeCodes ? this.props.orderProductEditFormData.sizeCodes : [],
+      sizeCodeAddition: null,
       miscCodes: this.props.orderProductEditFormData && this.props.orderProductEditFormData.miscCodes ? this.props.orderProductEditFormData.miscCodes : [],
       selectedProduct: '',
       selectedColor: '',
@@ -106,6 +109,14 @@ class OrderProductEditModal extends Component {
   	}
 	}
 	
+  handleSizeAddition(e, { value }) {
+    const sizeCodeAddition = { key: 'sizeCodeAddition', value: value, text: value };
+    this.setState({
+      sizeCodeAddition: sizeCodeAddition,
+      selectedSize: value
+    });
+  }
+	
 	handleSizeChange(e, {value}) {
   	if (value !== this.state.selectedSize) {
     	this.setState({
@@ -113,7 +124,7 @@ class OrderProductEditModal extends Component {
     	});
   	}
 	}
-	
+  
 	handleMiscChange(e, {value}) {
   	if (value !== this.state.selectedMisc) {
     	this.setState({
@@ -141,6 +152,7 @@ class OrderProductEditModal extends Component {
       variantData.selectedColor = this.state.selectedColor;
       variantData.selectedStone = this.state.selectedStone;
       variantData.selectedSize = this.state.selectedSize;
+      if (this.state.sizeCodeAddition && this.state.sizeCodeAddition.value === this.state.selectedSize) variantData.manualSize = this.state.selectedSize;
       variantData.selectedMisc = this.state.selectedMisc;
     }
     productVariants.push(variantData);
@@ -149,6 +161,7 @@ class OrderProductEditModal extends Component {
       selectedColor: '',
       selectedStone: '',
       selectedSize: '',
+      sizeCodeAddition: null,
       selectedMisc: '', 	
     	productVariants: productVariants
   	});
@@ -176,10 +189,10 @@ class OrderProductEditModal extends Component {
         }
         if (variantData.isCustom) {
           variantData.selectedProduct = productVariant.productId;
-          variantData.selectedColor = productVariant.colorCode ? productVariant.colorCode.objectId : '';
-          variantData.selectedStone = productVariant.stoneCode ? productVariant.stoneCode.objectId : '';
-          variantData.selectedSize = productVariant.sizeCode ? productVariant.sizeCode.objectId : '';
-          variantData.selectedMisc = productVariant.miscCode ? productVariant.miscCode.objectId : '';
+          variantData.selectedColor = productVariant.colorCode ? productVariant.colorCode.objectId : productVariant.color_label;
+          variantData.selectedStone = productVariant.stoneCode ? productVariant.stoneCode.objectId : productVariant.gemstone_label;
+          variantData.selectedSize = productVariant.sizeCode ? productVariant.sizeCode.objectId : productVariant.size_label;
+          variantData.selectedMisc = productVariant.miscCode ? productVariant.miscCode.objectId : variantData.selectedMisc;
           variantData.inventoryLevel = productVariant.inventoryLevel ? productVariant.inventoryLevel : '';
         }
         return variantData; 
@@ -225,7 +238,7 @@ class OrderProductEditModal extends Component {
   
 	render() {
   	const scope = this;
-  	const { productData, products, colorCodes, stoneCodes, sizeCodes, miscCodes } = this.state;
+  	const { productData, products, productVariants, colorCodes, stoneCodes, sizeCodes, miscCodes } = this.state;
   	
   	// Create add product dropdown options
   	let productsOptions = [];
@@ -236,7 +249,7 @@ class OrderProductEditModal extends Component {
 		
 		// Create product variant rows
 		let productVariantRows = [];
-		this.state.productVariants.map(function(productVariant, i) {
+		productVariants.map(function(productVariant, i) {
   		let productVariantRow;
   		if (productVariant.isCustom) {
     		let productName = '';
@@ -248,6 +261,7 @@ class OrderProductEditModal extends Component {
       		}
       		return product;
     		});
+    		
     		let colorCodeText = '';
         scope.state.colorCodes.map(function(colorCode, j) {
           if (productVariant.selectedColor && productVariant.selectedColor === colorCode.objectId) {
@@ -255,6 +269,7 @@ class OrderProductEditModal extends Component {
           }
           return colorCode;
         });
+        
         let stoneCodeText = '';
         scope.state.stoneCodes.map(function(stoneCode, j) {
           if (productVariant.selectedStone && productVariant.selectedStone === stoneCode.objectId) {
@@ -262,13 +277,18 @@ class OrderProductEditModal extends Component {
           }
           return stoneCode;
         });
+        
         let sizeCodeText = '';
         scope.state.sizeCodes.map(function(sizeCode, j) {
           if (productVariant.selectedSize && productVariant.selectedSize === sizeCode.objectId) {
             sizeCodeText = sizeCode.display_name + ' - ' + sizeCode.label;
+          } else if (productVariant.manualSize) {
+            sizeCodeText = productVariant.manualSize;
           }
           return sizeCode;
         });
+        if (sizeCodeText === '' && productVariant.selectedSize) sizeCodeText = productVariant.selectedSize;
+        
         let miscCodeText = '';
         scope.state.miscCodes.map(function(miscCode, j) {
           if (productVariant.selectedMisc && productVariant.selectedMisc === miscCode.objectId) {
@@ -412,7 +432,10 @@ class OrderProductEditModal extends Component {
   		return { key: 'sizeCode-'+i, value: sizeCode.objectId, text: sizeCode.display_name + ' - ' + sizeCode.label };
 		});
 		sizeOptions.unshift({ key: 'sizeCode-none', value: '', text: 'None' });
-		const sizeSelect = sizeOptions.length > 0 ? <Form.Select search selection placeholder='Select size' value={this.state.selectedSize} options={sizeOptions} onChange={this.handleSizeChange} /> : null;
+		if (this.state.sizeCodeAddition) {
+  		sizeOptions.unshift(this.state.sizeCodeAddition);
+		}
+		const sizeSelect = sizeOptions.length > 0 ? <Form.Select search selection allowAdditions additionLabel='Enter manual value: ' placeholder='Select size' value={this.state.selectedSize} options={sizeOptions} onAddItem={this.handleSizeAddition} onChange={this.handleSizeChange} /> : null;
 		
 		// Create misc select
 		const miscOptions = miscCodes.map(function(miscCode, i) { 
@@ -517,65 +540,69 @@ class OrderProductEditModal extends Component {
   		});
     }
 		
-		const addButton = <Button type='button' basic icon='plus' content='Add Custom Product' disabled={this.props.isLoading || !this.isFormComplete()} color='olive' onClick={()=>this.handleAdd('Custom-' + this.state.productVariants.length)} />;
+		const addButton = <Button type='button' basic icon='plus' content='Add Custom Product' disabled={this.props.isLoading || !this.isFormComplete()} color='olive' onClick={()=>this.handleAdd('Custom-' + productVariants.length)} />;
     
     return (
 	    <Modal open={this.props.open} onClose={this.handleClose} size='large' closeIcon='close'>
         <Modal.Content>
           <Header>Editing Order Product {productData.orderProductId} - {productData.name}</Header>
-          <p></p>
-          <Segment loading={this.props.isLoading}>
-            <Header>Order product variants</Header>
-            <Table basic='very' celled>
-              <Table.Header>
-                <Table.Row>
-                  <Table.HeaderCell>Product Id</Table.HeaderCell>
-                  <Table.HeaderCell>Product Name</Table.HeaderCell>
-                  <Table.HeaderCell>Color</Table.HeaderCell>
-                  <Table.HeaderCell>Stone</Table.HeaderCell>
-                  <Table.HeaderCell>Size</Table.HeaderCell>
-                  <Table.HeaderCell>Misc</Table.HeaderCell>
-                  <Table.HeaderCell>Is Custom</Table.HeaderCell>
-                  <Table.HeaderCell>Inventory</Table.HeaderCell>
-                  <Table.HeaderCell className='right aligned'> </Table.HeaderCell>
-                </Table.Row>
-              </Table.Header>
-              <Table.Body>
-                {productVariantRows}
-              </Table.Body>
-            </Table>
-          </Segment>
-            
-          <Segment>
-            <Form loading={this.props.isLoading}>
-              <Header>Add a product with custom options</Header>
-              <Form.Field>
-                {productsSelect}
-              </Form.Field>
-              <Form.Group widths='equal'>
+          <Dimmer.Dimmable dimmed={this.props.isLoading}>
+            <Dimmer active={this.props.isLoading} inverted>
+              <Loader>Loading</Loader>
+            </Dimmer>
+            <Segment>
+              <Header>Order product variants</Header>
+              <Table basic='very' celled>
+                <Table.Header>
+                  <Table.Row>
+                    <Table.HeaderCell>Product Id</Table.HeaderCell>
+                    <Table.HeaderCell>Product Name</Table.HeaderCell>
+                    <Table.HeaderCell>Color</Table.HeaderCell>
+                    <Table.HeaderCell>Stone</Table.HeaderCell>
+                    <Table.HeaderCell>Size</Table.HeaderCell>
+                    <Table.HeaderCell>Misc</Table.HeaderCell>
+                    <Table.HeaderCell>Is Custom</Table.HeaderCell>
+                    <Table.HeaderCell>Inventory</Table.HeaderCell>
+                    <Table.HeaderCell className='right aligned'> </Table.HeaderCell>
+                  </Table.Row>
+                </Table.Header>
+                <Table.Body>
+                  {productVariantRows}
+                </Table.Body>
+              </Table>
+            </Segment>
+              
+            <Segment>
+              <Form>
+                <Header>Add a product with custom options</Header>
                 <Form.Field>
-                  {colorSelect}
+                  {productsSelect}
                 </Form.Field>
+                <Form.Group widths='equal'>
+                  <Form.Field>
+                    {colorSelect}
+                  </Form.Field>
+                  <Form.Field>
+                    {stoneSelect}
+                  </Form.Field>
+                  <Form.Field>
+                    {sizeSelect}
+                  </Form.Field>
+                  <Form.Field>
+                    {miscSelect}
+                  </Form.Field>
+                </Form.Group>
+                <Form.Group>
+                  <Form.Field>
+                    {variantSuggestions}
+                  </Form.Field>
+                </Form.Group>
                 <Form.Field>
-                  {stoneSelect}
+                  {addButton}
                 </Form.Field>
-                <Form.Field>
-                  {sizeSelect}
-                </Form.Field>
-                <Form.Field>
-                  {miscSelect}
-                </Form.Field>
-              </Form.Group>
-              <Form.Group>
-                <Form.Field>
-                  {variantSuggestions}
-                </Form.Field>
-              </Form.Group>
-              <Form.Field>
-                {addButton}
-              </Form.Field>
-            </Form>
-          </Segment>
+              </Form>
+            </Segment>
+          </Dimmer.Dimmable>
         </Modal.Content>
         <Modal.Actions>
           <Button basic disabled={this.props.isLoading} color='grey' content='Cancel' onClick={this.handleClose} />
