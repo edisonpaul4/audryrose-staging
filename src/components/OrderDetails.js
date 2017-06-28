@@ -237,13 +237,11 @@ class ProductRow extends Component {
   	  primaryButton = <Button icon='exchange' content='Resize' onClick={this.handleShowResizeFormClick} />;
   	  dropdownItems.push(<Dropdown.Item key='1' icon='add to cart' text='Order' onClick={this.handleShowOrderFormClick} />);
   	  if (allowEditing) dropdownItems.push(<Dropdown.Item key='2' icon='edit' text='Edit Product' onClick={this.handleShowEditOrderProductFormClick} />);
-	  } else if (product.variants) {
+	  } else if (product.variants || product.editedVariants) {
   	  primaryButton = <Button icon='add to cart' content='Order' onClick={this.handleShowOrderFormClick} />;
-//   	  dropdownItems.push(<Dropdown.Item key='1' icon='exchange' text='Resize' onClick={this.handleShowResizeFormClick} />);
   	  if (allowEditing) dropdownItems.push(<Dropdown.Item key='2' icon='edit' text='Edit Product' onClick={this.handleShowEditOrderProductFormClick} />);
 	  } else if (product.isCustom) {
 //   	  primaryButton = <Button icon='shipping' content='Custom Shipment' onClick={this.handleShipModalOpen} />;
-//   	  dropdownItems.push(<Dropdown.Item key='2' icon='edit' text='Edit Product' onClick={this.handleShowEditOrderProductFormClick} />);
   	  if (allowEditing) primaryButton = <Button icon='edit' content='Edit Product' onClick={this.handleShowEditOrderProductFormClick} />;
 	  }
 
