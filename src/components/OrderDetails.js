@@ -112,14 +112,33 @@ class ProductRow extends Component {
 		const product = this.props.product;
 		const shipment = this.props.shipment;
 		const variant = this.props.variant;
-		// Create an array of other options values
+
+		// Create an array of options values
 		let options = [];
-		if (product.product_options) {
+		if (variant && variant.isCustom) {
+  		if (variant.color_value) options.push('COLOR: ' + variant.color_value);
+  		if (variant.size_value) options.push('SIZE: ' + variant.size_value);
+  		if (variant.gemstone_value) options.push('STONE: ' + variant.gemstone_value);
+  		if (variant.length_value) options.push('LENGTH: ' + variant.length_value);
+  		if (variant.font_value) options.push('FONT: ' + variant.font_value);
+  		if (variant.letter_value) options.push('LETTER: ' + variant.letter_value);
+  		if (variant.singlepair_value) options.push('SINGLE/PAIR: ' + variant.singlepair_value);
+  		
+		} else if (variant && variant.variantOptions) {
+			variant.variantOptions.map(function(option, i) {
+				options.push(option.display_name + ': ' + option.label);
+				return option;
+	    });
+		} else if (product.product_options) {
 			product.product_options.map(function(option, i) {
 				options.push(option.display_name + ': ' + option.display_value);
 				return options;
 	    });
 		}
+		options = options.map(function(option, i) {
+  		return <span key={i}>{option}<br/></span>;
+		});
+		
 		const productName = product.name ? product.name : '';
 		const variantName = variant && variant.productName ? variant.productName : null;
 		const productUrl = product.product_id ? '/products/search?q=' + product.product_id : null;
@@ -232,9 +251,7 @@ class ProductRow extends Component {
       <Table.Row>
         <Table.Cell>{productLink}</Table.Cell>
         <Table.Cell>
-          {options.map(function(option, i) {
-            return <span key={i}>{option}<br/></span>;
-          })}
+          {options}
         </Table.Cell>
         <Table.Cell>{product.quantity ? product.quantity : ''}</Table.Cell>
 				<Table.Cell>{alwaysResize}</Table.Cell>
@@ -462,8 +479,9 @@ class OrderDetails extends Component {
       			return shipmentObj;
     			});
   			}
-  			let variants = productRow.editedVariants ? productRow.editedVariants : productRow.variants ? productRow.variants : null;
-  			if (variants) {
+  			let variants = productRow.editedVariants && productRow.editedVariants.length > 0 ? productRow.editedVariants : productRow.variants ? productRow.variants : null;
+  			
+        if (variants) {
     			variants.map(function(variant, j) {
       			productRows.push(<ProductRow product={productRow} variant={variant} shipment={shipment} handleShipModalOpen={scope.handleShipModalOpen} key={i+'-'+j} handleShowOrderFormClick={scope.handleShowOrderFormClick} handleOrderProductEditClick={scope.handleOrderProductEditClick} />);
       			return variant;
@@ -472,7 +490,7 @@ class OrderDetails extends Component {
     			productRows.push(<ProductRow product={productRow} shipment={shipment} handleShipModalOpen={scope.handleShipModalOpen} key={i+'-Custom'} handleShowOrderFormClick={scope.handleShowOrderFormClick} handleOrderProductEditClick={scope.handleOrderProductEditClick} />);
   			}
 				
-				return productRows;
+				return productRow;
 	    });
 		}
 		

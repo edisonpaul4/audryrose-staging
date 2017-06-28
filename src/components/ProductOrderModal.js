@@ -9,6 +9,7 @@ class ProductOrderModal extends Component {
       product: this.props.productOrderData && this.props.productOrderData.product ? this.props.productOrderData.product : null, 
       vendor: this.props.productOrderData.product && this.props.productOrderData.product.vendor ? this.props.productOrderData.product.vendor.objectId : null,
       variant: this.props.productOrderData.variant ? this.props.productOrderData.variant : '',
+      originalVariant: this.props.productOrderData && this.props.productOrderData.variant ? this.props.productOrderData.variant : '',
       resizeVariant: '',
       resize: this.props.productOrderData.resize ? this.props.productOrderData.resize : false,
       units: 1,
@@ -133,12 +134,14 @@ class ProductOrderModal extends Component {
 	
 	componentWillMount() {
   	const variant = this.props.productOrderData && this.props.productOrderData.variant ? this.props.productOrderData.variant : '';
+  	const originalVariant = this.props.productOrderData && this.props.productOrderData.variant ? this.props.productOrderData.variant : '';
   	const resize = this.props.productOrderData && this.props.productOrderData.resize ? this.props.productOrderData.resize : false;
     const vendor = this.props.productOrderData && this.props.productOrderData.product && this.props.productOrderData.product.vendor ? this.props.productOrderData.product.vendor.objectId : null;
   	const product = this.props.productOrderData && this.props.productOrderData.product ? this.props.productOrderData.product : null;
   	const resizeVariant = this.props.productOrderData && variant !== '' ? this.getRecommendedResize(variant, product) : '';
   	this.setState({
     	variant: variant,
+    	originalVariant: originalVariant,
     	resize: resize,
     	product: product,
     	resizeVariant: resizeVariant,
@@ -148,11 +151,13 @@ class ProductOrderModal extends Component {
 	
 	componentWillReceiveProps(nextProps) {
   	const variant = nextProps.productOrderData && nextProps.productOrderData.variant ? nextProps.productOrderData.variant : '';
+  	const originalVariant = this.props.productOrderData && this.props.productOrderData.variant ? this.props.productOrderData.variant : '';
   	const resize = nextProps.productOrderData && nextProps.productOrderData.resize ? nextProps.productOrderData.resize : false;
     const vendor = nextProps.productOrderData && nextProps.productOrderData.product && nextProps.productOrderData.product.vendor ? nextProps.productOrderData.product.vendor.objectId : null;
   	const product = nextProps.productOrderData && nextProps.productOrderData.product ? nextProps.productOrderData.product : null;
   	this.setState({
     	variant: variant,
+    	originalVariant: originalVariant,
     	resize: resize,
     	product: product,
     	resizeVariant: this.getRecommendedResize(variant, product),
@@ -161,6 +166,7 @@ class ProductOrderModal extends Component {
 	}
   
 	render() {
+  	const scope = this;
 		const product = this.state.product;
 		const header = this.state.resize ? 'Send ' + (product ? product.name : '') + ' for resize' : 'Create an order for ' + (product ? product.name : '');
 		
@@ -168,6 +174,7 @@ class ProductOrderModal extends Component {
 		let variantOptions = [];
 		let resizeVariantOptions = [];
 		let resizeSelect = null;
+		let originalVariantFound = false;
 		if (variants.length > 0) {
   		const hasColorValue = variants[0].color_value !== undefined;
   		const hasStoneValue = variants[0].gemstone_value !== undefined;
@@ -181,6 +188,8 @@ class ProductOrderModal extends Component {
   		}
       
   		variants.map(function(variant, i) {
+	  		if (variant.objectId === scope.state.originalVariant) originalVariantFound = true;
+    		
     		let styleCode = variant.styleNumber;
     		let optionText = '';
     		if (variant.code) {
@@ -221,6 +230,15 @@ class ProductOrderModal extends Component {
           value={this.state.resizeVariant}
           onChange={this.handleResizeVariantChange} 
         /></Form.Group> : null;
+		}
+		
+		if (!originalVariantFound) {
+  		variantOptions.push({ 
+    		key: 'custom', 
+    		text: 'Custom', 
+    		value: this.state.originalVariant,
+    		content: <Header content='Custom' />
+  		});
 		}
 		
 		const createOrderButton = <Button disabled={this.props.isLoading || !this.isFormComplete() || (product && !product.vendor)} color='olive' onClick={this.state.resize ? this.handleCreateResize : this.handleAddToVendorOrder}>{this.state.resize ? 'Create Resize' : 'Add To Order'}</Button>;

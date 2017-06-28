@@ -74,18 +74,29 @@ class ProductRow extends Component {
 	}
 	render() {  	
 		const vendorOrderVariant = this.props.vendorOrderVariant;
-		const productName = vendorOrderVariant.variant.designerProductName ? vendorOrderVariant.variant.designerProductName : vendorOrderVariant.variant.productName ? vendorOrderVariant.variant.productName : '';
-		const productUrl = '/products/search?q=' + vendorOrderVariant.variant.productId;
+		const variant = vendorOrderVariant.variant;
+		const productName = variant.designerProductName ? variant.designerProductName : variant.productName ? variant.productName : '';
+		const productUrl = '/products/search?q=' + variant.productId;
 		const productLink = <a href={productUrl}>{productName}</a>;
+		
 		// Create an array of other options values
 		let options = [];
-		if (vendorOrderVariant.variant.variantOptions) {
-			vendorOrderVariant.variant.variantOptions.map(function(option, i) {
+		if (variant.isCustom) {
+  		if (variant.color_value) options.push('COLOR: ' + variant.color_value);
+  		if (variant.size_value) options.push('SIZE: ' + variant.size_value);
+  		if (variant.gemstone_value) options.push('STONE: ' + variant.gemstone_value);
+  		if (variant.length_value) options.push('LENGTH: ' + variant.length_value);
+  		if (variant.font_value) options.push('FONT: ' + variant.font_value);
+  		if (variant.letter_value) options.push('LETTER: ' + variant.letter_value);
+  		if (variant.singlepair_value) options.push('SINGLE/PAIR: ' + variant.singlepair_value);
+  		
+		} else if (variant.variantOptions) {
+			variant.variantOptions.map(function(option, i) {
 				options.push(option.display_name + ': ' + option.label);
 				return options;
 	    });
 		}
-		const inventory = vendorOrderVariant.variant.inventoryLevel ? vendorOrderVariant.variant.inventoryLevel : 0;
+		const inventory = variant.inventoryLevel ? variant.inventoryLevel : 0;
 		const units = (this.props.status === 'Pending') ? <Input type='number' value={this.state.units ? this.state.units : 0} onChange={this.handleUnitsChange} min={0} disabled={this.props.isSaving} /> : this.state.units;
 		const notes = (this.props.status === 'Pending') ? <Input type='text' value={this.state.notes ? this.state.notes : ''} onChange={this.handleNotesChange} min={0} disabled={this.props.isSaving} /> : this.state.notes;
 		const doneIconClass = vendorOrderVariant.done ? '' : 'invisible';
