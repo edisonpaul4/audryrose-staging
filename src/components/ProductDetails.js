@@ -179,7 +179,8 @@ class VariantRow extends Component {
     
     const totalAwaitingInventory = data.totalAwaitingInventory ? data.totalAwaitingInventory : '';
     
-    const resizeButton = data.size_value ? <Dropdown.Item icon='exchange' text='Resize' disabled={this.props.isSaving || variantEdited} onClick={this.handleShowResizeFormClick} /> : null;
+    const dropdownItems = [];
+    if (data.size_value) dropdownItems.push(<Dropdown.Item icon='exchange' text='Resize' disabled={this.props.isSaving || variantEdited} onClick={this.handleShowResizeFormClick} key={'dropdown-resize'} />);
      
     return (
       <Table.Row warning={variantEdited ? true: false} positive={this.state.variantSaved && !variantEdited ? true: false} disabled={this.props.isSaving}>
@@ -213,12 +214,12 @@ class VariantRow extends Component {
     	    </Button.Group>  <span>&nbsp;</span>
           <Button.Group color='grey' size='mini' compact>
             <Button content='Order' disabled={this.props.isSaving || variantEdited} onClick={this.handleShowOrderFormClick} />
-            <Dropdown floating button compact className='icon' disabled={this.props.isSaving || variantEdited}>
-              <Dropdown.Menu>
-                {resizeButton}
-                {/*<Dropdown.Item icon='hide' text='Hide' />*/}
-              </Dropdown.Menu>
-            </Dropdown>
+            {dropdownItems.length > 0 ? 
+              <Dropdown floating button compact className='icon' disabled={this.props.isSaving || variantEdited}>
+                <Dropdown.Menu>
+                  {dropdownItems}
+                </Dropdown.Menu>
+              </Dropdown> : null}
           </Button.Group>
 				</Table.Cell>
       </Table.Row>

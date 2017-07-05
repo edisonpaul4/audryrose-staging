@@ -81,7 +81,7 @@ class ProductRow extends Component {
 		
 		// Create an array of other options values
 		let options = [];
-		if (variant.isCustom) {
+		if (variant) {
   		if (variant.color_value) options.push('COLOR: ' + variant.color_value);
   		if (variant.size_value) options.push('SIZE: ' + variant.size_value);
   		if (variant.gemstone_value) options.push('STONE: ' + variant.gemstone_value);
@@ -90,11 +90,6 @@ class ProductRow extends Component {
   		if (variant.letter_value) options.push('LETTER: ' + variant.letter_value);
   		if (variant.singlepair_value) options.push('SINGLE/PAIR: ' + variant.singlepair_value);
   		
-		} else if (variant.variantOptions) {
-			variant.variantOptions.map(function(option, i) {
-				options.push(option.display_name + ': ' + option.label);
-				return options;
-	    });
 		}
 		const inventory = variant.inventoryLevel ? variant.inventoryLevel : 0;
 		const units = (this.props.status === 'Pending') ? <Input type='number' value={this.state.units ? this.state.units : 0} onChange={this.handleUnitsChange} min={0} disabled={this.props.isSaving} /> : this.state.units;

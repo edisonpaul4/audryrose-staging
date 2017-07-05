@@ -249,165 +249,126 @@ class OrderProductEditModal extends Component {
 		
 		// Create product variant rows
 		let productVariantRows = [];
-		productVariants.map(function(productVariant, i) {
-  		let productVariantRow;
-  		if (productVariant.isCustom) {
-    		let productName = '';
-    		let productId = '';
-    		scope.state.products.map(function(product, j) {
-      		if (productVariant.selectedProduct === product.productId) {
-        		productName = product.name;
-        		productId = product.productId;
-      		}
-      		return product;
-    		});
-    		
-    		let colorCodeText = '';
-        scope.state.colorCodes.map(function(colorCode, j) {
-          if (productVariant.selectedColor && productVariant.selectedColor === colorCode.objectId) {
-            colorCodeText = colorCode.display_name + ' - ' + colorCode.label;
-          }
-          return colorCode;
-        });
-        
-        let stoneCodeText = '';
-        scope.state.stoneCodes.map(function(stoneCode, j) {
-          if (productVariant.selectedStone && productVariant.selectedStone === stoneCode.objectId) {
-            stoneCodeText = stoneCode.display_name + ' - ' + stoneCode.label;
-          }
-          return stoneCode;
-        });
-        
-        let sizeCodeText = '';
-        scope.state.sizeCodes.map(function(sizeCode, j) {
-          if (productVariant.selectedSize && productVariant.selectedSize === sizeCode.objectId) {
-            sizeCodeText = sizeCode.display_name + ' - ' + sizeCode.label;
-          } else if (productVariant.manualSize) {
-            sizeCodeText = productVariant.manualSize;
-          }
-          return sizeCode;
-        });
-        if (sizeCodeText === '' && productVariant.selectedSize) sizeCodeText = productVariant.selectedSize;
-        
-        let miscCodeText = '';
-        scope.state.miscCodes.map(function(miscCode, j) {
-          if (productVariant.selectedMisc && productVariant.selectedMisc === miscCode.objectId) {
-            miscCodeText = miscCode.display_name + ' - ' + miscCode.label;
-          }
-          return miscCode;
-        });
-        productVariantRow = {
-          id: productVariant.id ? productVariant.id : 'Custom-' + i,
-          rowId: 'Custom-' + i, 
-          productId: productId, 
-          name: productName, 
-          colorCodeText: colorCodeText, 
-          stoneCodeText: stoneCodeText, 
-          sizeCodeText: sizeCodeText, 
-          miscCodeText: miscCodeText,
-          isCustom: true,
-          inventoryLevel: productVariant.inventoryLevel
-        };
-  		  
-  		} else {
-    		scope.state.products.map(function(product, j) {
-      		product.variants.map(function(variant, k) {
-        		if (variant.objectId === productVariant.id) {
-          		const rowId = i + '-' + j + '-' + k;
-              let colorCodeText;
-              if (variant.variantOptions) {
-                variant.variantOptions.map(function(variantOption, l) {
-                  scope.state.colorCodes.map(function(colorCode, m) {
-                    if (variantOption.option_id === colorCode.option_id && variantOption.option_value_id === colorCode.option_value_id) {
-                      colorCodeText = variantOption.display_name + ' - ' + variantOption.label;
-                    }
-                    return colorCode;
-                  });
-                  return variantOption;
-                });
-              }
-              let stoneCodeText;
-              if (variant.variantOptions) {
-                variant.variantOptions.map(function(variantOption, l) {
-                  scope.state.stoneCodes.map(function(stoneCode, m) {
-                    if (variantOption.option_id === stoneCode.option_id && variantOption.option_value_id === stoneCode.option_value_id) {
-                      stoneCodeText = variantOption.display_name + ' - ' + variantOption.label;
-                    }
-                    return stoneCode;
-                  });
-                  return variantOption;
-                });
-              }
-              let sizeCodeText;
-              if (variant.variantOptions) {
-                variant.variantOptions.map(function(variantOption, l) {
-                  scope.state.sizeCodes.map(function(sizeCode, m) {
-                    if (variantOption.option_id === sizeCode.option_id && variantOption.option_value_id === sizeCode.option_value_id) {
-                      sizeCodeText = variantOption.display_name + ' - ' + variantOption.label;
-                    }
-                    return sizeCode;
-                  });
-                  return variantOption;
-                });
-              }
-              let miscCodeText;
-              if (variant.variantOptions) {
-                variant.variantOptions.map(function(variantOption, l) {
-                  scope.state.miscCodes.map(function(miscCode, m) {
-                    if (variantOption.option_id === miscCode.option_id && variantOption.option_value_id === miscCode.option_value_id) {
-                      miscCodeText = variantOption.display_name + ' - ' + variantOption.label;
-                    }
-                    return miscCode;
-                  });
-                  return variantOption;
-                });
-              }
-              productVariantRow = {
-                id: productVariant.id ? productVariant.id : rowId,
-                rowId: rowId, 
-                productId: product.productId, 
-                name: product.name, 
-                colorCodeText: colorCodeText, 
-                stoneCodeText: stoneCodeText, 
-                sizeCodeText: sizeCodeText, 
-                miscCodeText: miscCodeText,
-                isCustom: false,
-                inventoryLevel: variant.inventoryLevel
-              };
+		if (productVariants && productVariants.length > 0) {
+  		productVariants.map(function(productVariant, i) {
+    		let productVariantRow;
+    		if (productVariant.isCustom) {
+      		let productName = '';
+      		let productId = '';
+      		scope.state.products.map(function(product, j) {
+        		if (productVariant.selectedProduct === product.productId) {
+          		productName = product.name;
+          		productId = product.productId;
         		}
-        		return variant;
+        		return product;
       		});
-      		return product;
-    		});
-  		}
-  		if (productVariantRow) {
-    		const inventoryInput = productVariantRow.isCustom ? <Input type='number' value={productVariantRow.inventoryLevel ? productVariantRow.inventoryLevel : 0} onChange={scope.handleInventoryChange} name={productVariantRow.id} min={0} /> : productVariantRow.inventoryLevel;
-        productVariantRows.push(
-          <Table.Row key={productVariantRow.rowId}>
-            <Table.Cell>{productVariantRow.productId}</Table.Cell>
-            <Table.Cell>{productVariantRow.name}</Table.Cell>
-            <Table.Cell>{productVariantRow.colorCodeText}</Table.Cell>
-            <Table.Cell>{productVariantRow.stoneCodeText}</Table.Cell>
-            <Table.Cell>{productVariantRow.sizeCodeText}</Table.Cell>
-            <Table.Cell>{productVariantRow.miscCodeText}</Table.Cell>
-            <Table.Cell>{productVariantRow.isCustom ? 'Yes' : 'No'}</Table.Cell>
-            <Table.Cell>{inventoryInput}</Table.Cell>
-            <Table.Cell className='right aligned'>
-              <Button 
-                type='button' 
-                basic 
-                content='Remove' 
-                disabled={scope.props.isLoading} 
-                color='red' 
-                size='tiny'
-                onClick={()=>scope.handleRemove(productVariant.id)} 
-              />
-            </Table.Cell>
-          </Table.Row>
-        );
-      }
-  		return productVariant;
-		});
+      		
+      		let colorCodeText = '';
+          scope.state.colorCodes.map(function(colorCode, j) {
+            if (productVariant.selectedColor && productVariant.selectedColor === colorCode.objectId) {
+              colorCodeText = colorCode.display_name + ' - ' + colorCode.label;
+            }
+            return colorCode;
+          });
+          
+          let stoneCodeText = '';
+          scope.state.stoneCodes.map(function(stoneCode, j) {
+            if (productVariant.selectedStone && productVariant.selectedStone === stoneCode.objectId) {
+              stoneCodeText = stoneCode.display_name + ' - ' + stoneCode.label;
+            }
+            return stoneCode;
+          });
+          
+          let sizeCodeText = '';
+          scope.state.sizeCodes.map(function(sizeCode, j) {
+            if (productVariant.selectedSize && productVariant.selectedSize === sizeCode.objectId) {
+              sizeCodeText = sizeCode.display_name + ' - ' + sizeCode.label;
+            } else if (productVariant.manualSize) {
+              sizeCodeText = productVariant.manualSize;
+            }
+            return sizeCode;
+          });
+          if (sizeCodeText === '' && productVariant.selectedSize) sizeCodeText = productVariant.selectedSize;
+          
+          let miscCodeText = '';
+          scope.state.miscCodes.map(function(miscCode, j) {
+            if (productVariant.selectedMisc && productVariant.selectedMisc === miscCode.objectId) {
+              miscCodeText = miscCode.display_name + ' - ' + miscCode.label;
+            }
+            return miscCode;
+          });
+          productVariantRow = {
+            id: productVariant.id ? productVariant.id : 'Custom-' + i,
+            rowId: 'Custom-' + i, 
+            productId: productId, 
+            name: productName, 
+            colorCodeText: colorCodeText, 
+            stoneCodeText: stoneCodeText, 
+            sizeCodeText: sizeCodeText, 
+            miscCodeText: miscCodeText,
+            isCustom: true,
+            inventoryLevel: productVariant.inventoryLevel
+          };
+    		  
+    		} else {
+      		scope.state.products.map(function(product, j) {
+        		if (product.variants) {
+          		product.variants.map(function(variant, k) {
+            		if (variant.objectId === productVariant.id) {
+              		const rowId = i + '-' + j + '-' + k;
+                  const colorCodeText = variant.color_value ? variant.color_value : null;
+                  const stoneCodeText = variant.stone_value ? variant.stone_value : null;
+                  const sizeCodeText = variant.size_value ? variant.size_value : null;
+                  const miscCodeText = variant.misc_value ? variant.misc_value : null;
+                  
+                  productVariantRow = {
+                    id: productVariant.id ? productVariant.id : rowId,
+                    rowId: rowId, 
+                    productId: product.productId, 
+                    name: product.name, 
+                    colorCodeText: colorCodeText, 
+                    stoneCodeText: stoneCodeText, 
+                    sizeCodeText: sizeCodeText, 
+                    miscCodeText: miscCodeText,
+                    isCustom: false,
+                    inventoryLevel: variant.inventoryLevel
+                  };
+            		}
+            		return variant;
+          		});
+            }
+        		return product;
+      		});
+    		}
+    		if (productVariantRow) {
+      		const inventoryInput = productVariantRow.isCustom ? <Input type='number' value={productVariantRow.inventoryLevel ? productVariantRow.inventoryLevel : 0} onChange={scope.handleInventoryChange} name={productVariantRow.id} min={0} /> : productVariantRow.inventoryLevel;
+          productVariantRows.push(
+            <Table.Row key={productVariantRow.rowId}>
+              <Table.Cell>{productVariantRow.productId}</Table.Cell>
+              <Table.Cell>{productVariantRow.name}</Table.Cell>
+              <Table.Cell>{productVariantRow.colorCodeText}</Table.Cell>
+              <Table.Cell>{productVariantRow.stoneCodeText}</Table.Cell>
+              <Table.Cell>{productVariantRow.sizeCodeText}</Table.Cell>
+              <Table.Cell>{productVariantRow.miscCodeText}</Table.Cell>
+              <Table.Cell>{productVariantRow.isCustom ? 'Yes' : 'No'}</Table.Cell>
+              <Table.Cell>{inventoryInput}</Table.Cell>
+              <Table.Cell className='right aligned'>
+                <Button 
+                  type='button' 
+                  basic 
+                  content='Remove' 
+                  disabled={scope.props.isLoading} 
+                  color='red' 
+                  size='tiny'
+                  onClick={()=>scope.handleRemove(productVariant.id)} 
+                />
+              </Table.Cell>
+            </Table.Row>
+          );
+        }
+    		return productVariant;
+  		});
+		}
 		
 		// Create product select
 		productsOptions.unshift({ key: 'product-none', value: '', text: 'None' });
@@ -453,83 +414,62 @@ class OrderProductEditModal extends Component {
   		scope.state.products.map(function(product, i) {
     		if (product.productId === scope.state.selectedProduct) {
       		product.variants.map(function(variant, j) {
-        		if (!variant.variantOptions) return variant;
             let numOptionsSelected = 0;
         		let numOptionMatches = 0;
         		
         		// Check for color code match
-        		if (scope.state.selectedColor !== '' && variant.variantOptions) {
+        		if (scope.state.selectedColor !== '') {
           		numOptionsSelected++;
           		let colorCodeObject;
           		colorCodes.map(function(colorCode, k) {
             		if (colorCode.objectId === scope.state.selectedColor) colorCodeObject = colorCode;
             		return colorCode;
           		});
-          		if (colorCodeObject) {
-            		variant.variantOptions.map(function(variantOption, k) {
-              		if (variantOption.value === colorCodeObject.value) {
-                		numOptionMatches++;
-              		}
-              		return variantOption;
-            		});
+          		if (variant.color_value === colorCodeObject.value) {
+            		numOptionMatches++;
           		}
         		}
         		
         		// Check for stone code match
-        		if (scope.state.selectedStone !== '' && variant.variantOptions) {
+        		if (scope.state.selectedStone !== '') {
           		numOptionsSelected++;
           		let stoneCodeObject;
           		stoneCodes.map(function(stoneCode, k) {
             		if (stoneCode.objectId === scope.state.selectedStone) stoneCodeObject = stoneCode;
             		return stoneCode;
           		});
-          		if (stoneCodeObject) {
-            		variant.variantOptions.map(function(variantOption, k) {
-              		if (variantOption.value === stoneCodeObject.value) {
-                		numOptionMatches++;
-              		}
-              		return variantOption;
-            		});
+          		if (variant.stone_value === stoneCodeObject.value) {
+            		numOptionMatches++;
           		}
         		}
         		
         		// Check for size match
-        		if (scope.state.selectedSize !== '' && variant.variantOptions) {
+        		if (scope.state.selectedSize !== '') {
           		numOptionsSelected++;
           		let sizeCodeObject;
           		sizeCodes.map(function(sizeCode, k) {
             		if (sizeCode.objectId === scope.state.selectedSize) sizeCodeObject = sizeCode;
             		return sizeCode;
           		});
-          		if (sizeCodeObject) {
-            		variant.variantOptions.map(function(variantOption, k) {
-              		if (variantOption.value === sizeCodeObject.value) {
-                		numOptionMatches++;
-              		}
-              		return variantOption;
-            		});
+          		if (variant.size_value === sizeCodeObject.value) {
+            		numOptionMatches++;
           		}
         		}
         		
         		// Check for misc match
-        		if (scope.state.selectedMisc !== '' && variant.variantOptions) {
+        		if (scope.state.selectedMisc !== '') {
           		numOptionsSelected++;
           		let miscCodeObject;
           		miscCodes.map(function(miscCode, k) {
             		if (miscCode.objectId === scope.state.selectedMisc) miscCodeObject = miscCode;
             		return miscCode;
           		});
-          		if (miscCodeObject) {
-            		variant.variantOptions.map(function(variantOption, k) {
-              		if (variantOption.value === miscCodeObject.value) {
-                		numOptionMatches++;
-              		}
-              		return variantOption;
-            		});
+          		if (variant.misc_value === miscCodeObject.value) {
+            		numOptionMatches++;
           		}
         		}
         		
-        		if (numOptionMatches === variant.variantOptions.length && numOptionsSelected <= variant.variantOptions.length) {
+        		if (numOptionMatches === numOptionsSelected) {
           		let buttonLabel = 'Add ' + product.name +  ' - ' + scope.getVariantText(variant);
           		variantSuggestions.push(<Button key={'variantSuggestion-'+i+'-'+j} type='button' basic icon='plus' content={buttonLabel} color='olive' onClick={()=>scope.handleAdd(variant.objectId)} />);
         		}

@@ -115,7 +115,7 @@ class ProductRow extends Component {
 
 		// Create an array of options values
 		let options = [];
-		if (variant && variant.isCustom) {
+		if (variant) {
   		if (variant.color_value) options.push('COLOR: ' + variant.color_value);
   		if (variant.size_value) options.push('SIZE: ' + variant.size_value);
   		if (variant.gemstone_value) options.push('STONE: ' + variant.gemstone_value);
@@ -124,11 +124,6 @@ class ProductRow extends Component {
   		if (variant.letter_value) options.push('LETTER: ' + variant.letter_value);
   		if (variant.singlepair_value) options.push('SINGLE/PAIR: ' + variant.singlepair_value);
   		
-		} else if (variant && variant.variantOptions) {
-			variant.variantOptions.map(function(option, i) {
-				options.push(option.display_name + ': ' + option.label);
-				return option;
-	    });
 		} else if (product.product_options) {
 			product.product_options.map(function(option, i) {
 				options.push(option.display_name + ': ' + option.display_value);
