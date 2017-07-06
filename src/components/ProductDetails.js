@@ -156,7 +156,8 @@ class VariantRow extends Component {
     	state.applyAllData = nextProps.applyAllData;
     	if (nextProps.applyAllData.color) {
       	state.color = nextProps.applyAllData.color;
-      	this.props.handleVariantEdited({objectId: this.props.data.objectId, inventory: state.inventory, color: nextProps.applyAllData.color}, (state.inventory === state.startInventory && state.color === state.startColor));
+      	this.props.handleVariantEdited({objectId: this.props.data.objectId, inventory: state.inventory, color: nextProps.applyAllData.color}, (state.inventory 
+      	!== state.startInventory || nextProps.applyAllData.color !== state.startColor));
     	}
     	this.props.handleClearApplyAllData();
   	}
@@ -614,7 +615,6 @@ class ProductDetails extends Component {
     } else if (edited && index >= 0) {
       variantsEdited[index] = data;
     }
-    
   	this.setState({
     	variantsEdited: variantsEdited
   	});
@@ -768,14 +768,14 @@ class ProductDetails extends Component {
       }
     } else if (isBundle) {
 	    // Display table of bundle products
-  	    variantsTables.push(
-  	      <BundleVariantsTable 
-  	        bundleVariants={this.props.data.bundleVariants} 
-  	        bundleVariantsProducts={this.props.bundleVariantsProducts} 
-  	        subpage={subpage}
-  	        key={1} 
-	        />
-        );
+	    variantsTables.push(
+	      <BundleVariantsTable 
+	        bundleVariants={this.props.data.bundleVariants} 
+	        bundleVariantsProducts={this.props.bundleVariantsProducts} 
+	        subpage={subpage}
+	        key={1} 
+        />
+      );
     }
 		
 		const editBundleButton = isBundle ? 
@@ -788,7 +788,6 @@ class ProductDetails extends Component {
         onClick={()=>this.handleEditBundleClick(this.props.data.productId)} 
       /></Form.Field> : null;
 		
-		console.log(this.state.variantsEdited)
 		const saveAllButton = this.state.variantsEdited.length > 0 ? <Button primary circular compact size='small' icon='save' content='Save All' disabled={this.props.isReloading} onClick={this.handleSaveAllVariantsClick} /> : null;
 		const productEditor = this.state.showEditor ? <ProductEditor productId={this.props.data.productId} designer={designer} vendor={vendor} isBundle={isBundle} designerProductName={this.props.data.designerProductName} handleProductSave={this.handleProductSave}/> : null;
 		
