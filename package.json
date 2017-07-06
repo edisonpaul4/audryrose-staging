@@ -34,7 +34,7 @@
     "redux-session": "^1.0.3",
     "redux-thunk": "^2.1.0",
     "semantic-ui-css": "^2.2.10",
-    "semantic-ui-react": "^0.68.5"
+    "semantic-ui-react": "^0.70.0"
   },
   "scripts": {
     "start": "react-scripts start",
