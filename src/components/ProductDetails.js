@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Input, Button, Dropdown, Dimmer, Segment, Loader, Label, Form, Icon, Select } from 'semantic-ui-react';
+import { Table, Input, Button, Dropdown, Dimmer, Segment, Loader, Label, Form, Icon, Select, Popup } from 'semantic-ui-react';
 import classNames from 'classnames';
 import numeral from 'numeral';
 import moment from 'moment';
@@ -13,7 +13,7 @@ class VariantRow extends Component {
       inventory: this.props.data.inventoryLevel ? parseFloat(this.props.data.inventoryLevel) : 0,
       startInventory: this.props.data.inventoryLevel ? parseFloat(this.props.data.inventoryLevel) : 0,
       color: this.props.data.color_value ? this.props.data.color_value : '',
-      startColor: this.props.data.color_value ? this.props.data.color_value : 0,
+      startColor: this.props.data.color_value ? this.props.data.color_value : '',
       variantEdited: false,
       variantSaved: false
     };
@@ -23,6 +23,7 @@ class VariantRow extends Component {
     this.handleCancelVariantClick = this.handleCancelVariantClick.bind(this);
     this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
     this.handleShowResizeFormClick = this.handleShowResizeFormClick.bind(this);
+    this.handleApplyToAllClick = this.handleApplyToAllClick.bind(this);
     this.handleSaveResize = this.handleSaveResize.bind(this);
   }
   handleInventoryChange(e, {value}) {
@@ -64,6 +65,9 @@ class VariantRow extends Component {
 	}
 	handleShowResizeFormClick(e, {value}) {
 		this.props.handleShowOrderFormClick({productId: this.props.data.productId, variant: this.props.data.objectId, resize: true});
+	}
+	handleApplyToAllClick(e, {value}) {
+  	this.props.handleApplyToAll({color: this.state.color});
 	}
 	handleSaveResize(data) {
 		this.props.handleSaveResize(data);
@@ -141,14 +145,22 @@ class VariantRow extends Component {
 		return showLabel ? <Label as='a' href={labelLink} size='tiny' color={labelColor} key={'resize-'+resize.objectId}>{labelIcon}{labelText}{labelDetail}</Label> : null;
 	}
 	componentWillReceiveProps(nextProps) {
+  	const state = this.state;
   	if (nextProps.updatedVariant) {
-    	this.setState({
-      	variantData: this.props.isSaving ? nextProps.data : this.state.variantData,
-      	startInventory: nextProps.updatedVariant.inventoryLevel,
-      	startColor: nextProps.updatedVariant.color_value,
-      	variantSaved: true
-    	});
+    	state.variantData = this.props.isSaving ? nextProps.data : this.state.variantData;
+    	state.startInventory = nextProps.updatedVariant.inventoryLevel;
+    	state.startColor = nextProps.updatedVariant.color_value;
+      state.variantSaved = true;
   	}
+  	if (nextProps.applyAllData) {
+    	state.applyAllData = nextProps.applyAllData;
+    	if (nextProps.applyAllData.color) {
+      	state.color = nextProps.applyAllData.color;
+      	this.props.handleVariantEdited({objectId: this.props.data.objectId, inventory: state.inventory, color: nextProps.applyAllData.color}, (state.inventory === state.startInventory && state.color === state.startColor));
+    	}
+    	this.props.handleClearApplyAllData();
+  	}
+  	if (nextProps.updatedVariant || nextProps.applyAllData) this.setState(state);
 	}
 	render() {
   	const scope = this;
@@ -212,7 +224,18 @@ class VariantRow extends Component {
     return (
       <Table.Row warning={variantEdited ? true: false} positive={this.state.variantSaved && !variantEdited ? true: false} disabled={this.props.isSaving}>
         <Table.Cell>{data.styleNumber ? data.styleNumber : ''}{stoneColorCode}</Table.Cell>
-        <Table.Cell><Select placeholder='Select a color' options={colorOptions} value={this.state.color} disabled={this.props.isSaving} onChange={this.handleColorChange} /></Table.Cell>
+        <Table.Cell className='no-wrap hover-icon'>
+          <Select placeholder='Select a color' options={colorOptions} value={this.state.color} disabled={this.props.isSaving} onChange={this.handleColorChange} />
+          {this.state.color !== '' ? <Popup
+            trigger={<Icon name='angle double down' />}
+            position='right center'
+            size='tiny'
+            on='click'
+          >
+            <Button content={`Apply ${this.state.color} to all`} primary compact size='tiny' onClick={this.handleApplyToAllClick} />
+          </Popup> : null}
+          {/*resize vertical*/}
+        </Table.Cell>
         <Table.Cell>{data.size_value ? data.size_value : 'OS'}</Table.Cell>
         <Table.Cell>{otherOptions ? otherOptions.join(', ') : null}</Table.Cell>
 				<Table.Cell><Input type='number' value={this.state.inventory ? this.state.inventory : 0} onChange={this.handleInventoryChange} min={0} disabled={this.props.isSaving} /></Table.Cell>
@@ -260,6 +283,8 @@ class VariantsTable extends Component {
     this.handleSaveVariantClick = this.handleSaveVariantClick.bind(this);
     this.handleVariantEdited = this.handleVariantEdited.bind(this);
     this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
+    this.handleApplyToAll = this.handleApplyToAll.bind(this);
+    this.handleClearApplyAllData = this.handleClearApplyAllData.bind(this);
     this.handleSaveResize = this.handleSaveResize.bind(this);
   }
   handleVariantEdited(data, edited) {
@@ -270,6 +295,12 @@ class VariantsTable extends Component {
 	}
 	handleShowOrderFormClick(data) {
   	this.props.handleShowOrderFormClick(data);
+	}
+	handleApplyToAll(data) {
+  	this.props.handleApplyToAll(data);
+	}
+	handleClearApplyAllData() {
+  	this.props.handleClearApplyAllData();
 	}
 	handleSaveResize(data) {
 		this.props.handleSaveResize(data);
@@ -338,6 +369,7 @@ class VariantsTable extends Component {
 				    data={variantData} 
 				    subpage={subpage} 
 				    optionsData={scope.props.optionsData} 
+				    applyAllData={scope.props.applyAllData}
 				    key={i} 
 				    isReloading={scope.props.isReloading}
 				    handleSaveVariantClick={scope.handleSaveVariantClick} 
@@ -345,6 +377,8 @@ class VariantsTable extends Component {
 				    isSaving={isSaving} 
 				    updatedVariant={updatedVariantMatch}
 				    handleShowOrderFormClick={scope.handleShowOrderFormClick}
+				    handleApplyToAll={scope.handleApplyToAll}
+				    handleClearApplyAllData={scope.handleClearApplyAllData}
 				    handleSaveResize={scope.handleSaveResize}
 			    />
 		    );
@@ -537,7 +571,8 @@ class ProductDetails extends Component {
       showEditor: false,
 			variantsEdited: [],
 			vendor: this.props.data.vendor ? this.props.data.vendor.objectId : '',
-			isBundle: this.props.data.isBundle !== undefined ? this.props.data.isBundle === true ? 'true' : 'false' : ''
+			isBundle: this.props.data.isBundle !== undefined ? this.props.data.isBundle === true ? 'true' : 'false' : '',
+			applyAllData: null
     };
     this.handleReloadClick = this.handleReloadClick.bind(this);
     this.handleSaveVariantClick = this.handleSaveVariantClick.bind(this);
@@ -548,6 +583,8 @@ class ProductDetails extends Component {
 //     this.handleProductTypeChange = this.handleProductTypeChange.bind(this);
     this.handleEditBundleClick = this.handleEditBundleClick.bind(this);
     this.handleToggleEditorClick = this.handleToggleEditorClick.bind(this);
+    this.handleApplyToAll = this.handleApplyToAll.bind(this);
+    this.handleClearApplyAllData = this.handleClearApplyAllData.bind(this);
     this.handleProductSave = this.handleProductSave.bind(this);
     this.handleSaveResize = this.handleSaveResize.bind(this);
   }
@@ -590,6 +627,17 @@ class ProductDetails extends Component {
     	showEditor: showEditor
   	});
 	}	
+	handleApplyToAll(data) {
+  	this.setState({
+    	applyAllData: data
+  	});
+	}
+	handleClearApplyAllData() {
+  	this.setState({
+    	applyAllData: null
+  	});
+	}
+	
 	handleShowOrderFormClick(data) {
   	this.props.handleShowOrderFormClick(data);
 	}
@@ -631,6 +679,7 @@ class ProductDetails extends Component {
   	const vendor = this.props.data.vendor;
   	const subpage = this.props.subpage;
   	const optionsData = this.props.optionsData;
+  	const applyAllData = this.state.applyAllData;
 		var rowClass = classNames(
 			{
 				'': showVariants,
@@ -679,6 +728,7 @@ class ProductDetails extends Component {
     	        title={variantGroup} 
     	        subpage={subpage}
     	        optionsData={optionsData} 
+    	        applyAllData={applyAllData}
     	        key={i} 
     	        isReloading={scope.props.isReloading}
     	        handleSaveVariantClick={scope.handleSaveVariantClick} 
@@ -687,6 +737,8 @@ class ProductDetails extends Component {
     	        updatedVariants={scope.props.updatedVariants}
     	        handleShowOrderFormClick={scope.handleShowOrderFormClick}
     	        handleSaveResize={scope.handleSaveResize}
+    	        handleApplyToAll={scope.handleApplyToAll}
+    	        handleClearApplyAllData={scope.handleClearApplyAllData}
   	        />
 	        );
     	    return variantGroup;
@@ -700,6 +752,7 @@ class ProductDetails extends Component {
   	        designer={designer}
   	        subpage={subpage} 
   	        optionsData={optionsData} 
+  	        applyAllData={applyAllData}
   	        key={1} 
   	        isReloading={scope.props.isReloading}
   	        handleSaveVariantClick={scope.handleSaveVariantClick} 
@@ -708,6 +761,8 @@ class ProductDetails extends Component {
   	        updatedVariants={scope.props.updatedVariants}
   	        handleShowOrderFormClick={scope.handleShowOrderFormClick}
   	        handleSaveResize={scope.handleSaveResize}
+  	        handleApplyToAll={scope.handleApplyToAll}
+  	        handleClearApplyAllData={scope.handleClearApplyAllData}
 	        />
         );
       }
@@ -733,6 +788,7 @@ class ProductDetails extends Component {
         onClick={()=>this.handleEditBundleClick(this.props.data.productId)} 
       /></Form.Field> : null;
 		
+		console.log(this.state.variantsEdited)
 		const saveAllButton = this.state.variantsEdited.length > 0 ? <Button primary circular compact size='small' icon='save' content='Save All' disabled={this.props.isReloading} onClick={this.handleSaveAllVariantsClick} /> : null;
 		const productEditor = this.state.showEditor ? <ProductEditor productId={this.props.data.productId} designer={designer} vendor={vendor} isBundle={isBundle} designerProductName={this.props.data.designerProductName} handleProductSave={this.handleProductSave}/> : null;
 		

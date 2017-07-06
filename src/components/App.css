@@ -32,7 +32,7 @@ table .variant-row > .segment {
   background: rgba(0, 0, 0, 0);
 }
 
-a i.link.icon {
+.hover-icon i.icon {
   opacity: 0 !important;
 }
 
@@ -40,8 +40,8 @@ i.disabled.icon.caret.down {
   opacity: 0.25 !important;
 }
 
-a:hover i.link.icon {
-  opacity: 0.8 !important;
+.hover-icon:hover i.icon {
+  opacity: 1 !important;
 }
 
 .ui.segment.toolbar,
