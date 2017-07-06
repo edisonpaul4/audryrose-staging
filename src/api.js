@@ -119,6 +119,12 @@ export const getProductFilters = (token) => Parse.Cloud.run('getProductFilters',
   }
 );
 
+export const getProductOptions = (token) => Parse.Cloud.run('getProductOptions', 
+  {
+    sessionToken: token
+  }
+);
+
 export const reloadProduct = (token, productId) => Parse.Cloud.run('reloadProduct', 
   {
     sessionToken: token,
@@ -253,6 +259,7 @@ export default {
 	saveResize,
 	getProducts,
 	getProductFilters,
+	getProductOptions,
 	reloadProduct,
 	saveProduct,
 	saveVariants,

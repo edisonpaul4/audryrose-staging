@@ -28,6 +28,7 @@ class Products extends Component {
 			search: search,
 			products: [],
 			filterData: null,
+			optionsData: null,
 			updatedProducts: null,
 			updatedVariants: [],
 			expandedProducts: [],
@@ -67,6 +68,7 @@ class Products extends Component {
   	this._notificationSystem = this.refs.notificationSystem;
 		this.props.getProducts(this.props.token, this.state.subpage, this.state.page, this.state.sort, this.state.search, this.state.filters);
 		this.props.getProductFilters(this.props.token);
+		this.props.getProductOptions(this.props.token);
 	}
 	
 	handleToggleClick(productId) {
@@ -425,6 +427,16 @@ class Products extends Component {
     	state.filterData = filterData;
   	}
   	
+  	// Process options data
+  	var optionsData = null;
+  	if (nextProps.optionsData && !this.state.optionsData) {
+    	var colors = nextProps.optionsData.colors.map(function(color) {
+      	return color.toJSON();
+    	});
+    	optionsData = {colors: colors};
+    	state.optionsData = optionsData;
+  	}
+  	
   	let bundleFormData = this.state.bundleFormData;
   	if (bundleFormData && nextProps.bundleFormData) {
     	state.bundleFormData = bundleFormData;
@@ -493,7 +505,7 @@ class Products extends Component {
 	
   render() {
 		const { error, isLoadingProducts, totalPages, totalProducts } = this.props;
-		const { subpage } = this.state;
+		const { subpage, optionsData } = this.state;
 		let scope = this;
 		let productRows = [];
 		const tabCounts = this.state.tabCounts;
@@ -563,6 +575,7 @@ class Products extends Component {
   				    data={productDetailsData} 
   				    subpage={subpage} 
   				    expanded={expanded} 
+  				    optionsData={optionsData}
   				    key={`${product.productId}-2`} 
   				    isReloading={isReloading} 
   				    savingVariants={scope.state.savingVariants} 

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Input, Button, Dropdown, Dimmer, Segment, Loader, Label, Form, Icon } from 'semantic-ui-react';
+import { Table, Input, Button, Dropdown, Dimmer, Segment, Loader, Label, Form, Icon, Select } from 'semantic-ui-react';
 import classNames from 'classnames';
 import numeral from 'numeral';
 import moment from 'moment';
@@ -12,10 +12,13 @@ class VariantRow extends Component {
       variantData: this.props.data,
       inventory: this.props.data.inventoryLevel ? parseFloat(this.props.data.inventoryLevel) : 0,
       startInventory: this.props.data.inventoryLevel ? parseFloat(this.props.data.inventoryLevel) : 0,
+      color: this.props.data.color_value ? this.props.data.color_value : '',
+      startColor: this.props.data.color_value ? this.props.data.color_value : 0,
       variantEdited: false,
       variantSaved: false
     };
     this.handleInventoryChange = this.handleInventoryChange.bind(this);
+    this.handleColorChange = this.handleColorChange.bind(this);
     this.handleSaveVariantClick = this.handleSaveVariantClick.bind(this);
     this.handleCancelVariantClick = this.handleCancelVariantClick.bind(this);
     this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
@@ -25,19 +28,32 @@ class VariantRow extends Component {
   handleInventoryChange(e, {value}) {
     let edited = (parseFloat(value) !== parseFloat(this.state.startInventory)) ? true : false;
     if (!this.state.startInventory && parseFloat(value) === 0) edited = false;
+    if (this.state.color !== this.state.startColor) edited = true;
     this.setState({
       inventory: parseFloat(value),
       variantEdited: edited,
       variantSaved: false
     });
-    this.props.handleVariantEdited({objectId: this.props.data.objectId, inventory: parseFloat(value)}, edited);
+    this.props.handleVariantEdited({objectId: this.props.data.objectId, inventory: parseFloat(value), color: this.state.color}, edited);
+  }
+  handleColorChange(e, {value}) {
+    let edited = (value !== this.state.startColor) ? true : false;
+    if (!this.state.startColor && value === '') edited = false;
+    if (this.state.inventory !== this.state.startInventory) edited = true;
+    this.setState({
+      color: value,
+      variantEdited: edited,
+      variantSaved: false
+    });
+    this.props.handleVariantEdited({objectId: this.props.data.objectId, inventory: this.state.inventory, color: value}, edited);
   }
 	handleSaveVariantClick(e, {value}) {
-		this.props.handleSaveVariantClick({objectId: this.props.data.objectId, inventory: this.state.inventory});
+		this.props.handleSaveVariantClick({objectId: this.props.data.objectId, inventory: this.state.inventory, color: this.state.color});
 	}
 	handleCancelVariantClick(e, {value}) {
     this.setState({
       inventory: this.state.startInventory,
+      color: this.state.startColor,
       variantEdited: false,
       variantSaved: false
     });
@@ -128,8 +144,8 @@ class VariantRow extends Component {
   	if (nextProps.updatedVariant) {
     	this.setState({
       	variantData: this.props.isSaving ? nextProps.data : this.state.variantData,
-      	inventory: nextProps.updatedVariant.inventoryLevel,
       	startInventory: nextProps.updatedVariant.inventoryLevel,
+      	startColor: nextProps.updatedVariant.color_value,
       	variantSaved: true
     	});
   	}
@@ -137,8 +153,11 @@ class VariantRow extends Component {
 	render() {
   	const scope = this;
 		const data = this.props.data;
-    let variantEdited = (this.state.inventory !== this.state.startInventory) ? true : false;
-    if (!this.state.startInventory && this.state.inventory === 0) variantEdited = false;
+		const optionsData = this.props.optionsData;
+    let variantEdited = (this.state.inventory !== this.state.startInventory || this.state.color !== this.state.startColor) ? true : false;
+//     if (!this.state.startInventory && this.state.inventory === 0) variantEdited = false;
+//     if (!this.state.startColor && this.state.color === '') variantEdited = false;
+    
 		// Create an array of other options values
 		let otherOptions = [];
 		if (data.gemstone_value) otherOptions.push(data.gemstone_value);
@@ -177,6 +196,14 @@ class VariantRow extends Component {
   		});
     }
     
+    const colorOptions = [];
+    if (optionsData && optionsData.colors) {
+      optionsData.colors.map(function(color, i) {
+        colorOptions.push({key: `colorOption-${i}`, value: color.value, text: color.value});
+        return color;
+      });
+    }
+    
     const totalAwaitingInventory = data.totalAwaitingInventory ? data.totalAwaitingInventory : '';
     
     const dropdownItems = [];
@@ -185,7 +212,7 @@ class VariantRow extends Component {
     return (
       <Table.Row warning={variantEdited ? true: false} positive={this.state.variantSaved && !variantEdited ? true: false} disabled={this.props.isSaving}>
         <Table.Cell>{data.styleNumber ? data.styleNumber : ''}{stoneColorCode}</Table.Cell>
-        <Table.Cell>{data.color_value ? data.color_value : ''}</Table.Cell>
+        <Table.Cell><Select placeholder='Select a color' options={colorOptions} value={this.state.color} disabled={this.props.isSaving} onChange={this.handleColorChange} /></Table.Cell>
         <Table.Cell>{data.size_value ? data.size_value : 'OS'}</Table.Cell>
         <Table.Cell>{otherOptions ? otherOptions.join(', ') : null}</Table.Cell>
 				<Table.Cell><Input type='number' value={this.state.inventory ? this.state.inventory : 0} onChange={this.handleInventoryChange} min={0} disabled={this.props.isSaving} /></Table.Cell>
@@ -247,7 +274,7 @@ class VariantsTable extends Component {
 	handleSaveResize(data) {
 		this.props.handleSaveResize(data);
 	}
-	render() {  	
+	render() {
   	var scope = this;
 		const variants = this.props.variants;
 		const vendor = this.props.vendor;
@@ -306,11 +333,11 @@ class VariantsTable extends Component {
         if (vendorOrders.length > 0) variantData.vendorOrders = vendorOrders;
         
         if (designer) variantData.designer = designer;
-        
 				variantRows.push(
 				  <VariantRow 
 				    data={variantData} 
 				    subpage={subpage} 
+				    optionsData={scope.props.optionsData} 
 				    key={i} 
 				    isReloading={scope.props.isReloading}
 				    handleSaveVariantClick={scope.handleSaveVariantClick} 
@@ -603,6 +630,7 @@ class ProductDetails extends Component {
   	const resizes = this.props.data.resizes;
   	const vendor = this.props.data.vendor;
   	const subpage = this.props.subpage;
+  	const optionsData = this.props.optionsData;
 		var rowClass = classNames(
 			{
 				'': showVariants,
@@ -650,6 +678,7 @@ class ProductDetails extends Component {
     	        designer={designer}
     	        title={variantGroup} 
     	        subpage={subpage}
+    	        optionsData={optionsData} 
     	        key={i} 
     	        isReloading={scope.props.isReloading}
     	        handleSaveVariantClick={scope.handleSaveVariantClick} 
@@ -670,6 +699,7 @@ class ProductDetails extends Component {
   	        vendor={vendor}
   	        designer={designer}
   	        subpage={subpage} 
+  	        optionsData={optionsData} 
   	        key={1} 
   	        isReloading={scope.props.isReloading}
   	        handleSaveVariantClick={scope.handleSaveVariantClick} 

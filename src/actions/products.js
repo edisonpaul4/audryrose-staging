@@ -14,6 +14,13 @@ export function getProductFilters(token) {
   }
 }
 
+export function getProductOptions(token) {
+  return {
+    types: ['PRODUCT_OPTIONS_REQUEST', 'PRODUCT_OPTIONS_SUCCESS', 'PRODUCT_OPTIONS_FAILURE'],
+    promise: api.getProductOptions(token)
+  }
+}
+
 export function reloadProduct(token, productId) {
   return {
     types: ['PRODUCT_RELOAD_REQUEST', 'PRODUCT_RELOAD_SUCCESS', 'PRODUCT_RELOAD_FAILURE'],

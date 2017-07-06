@@ -60,6 +60,23 @@ const products = (state = initialState, action) => {
         ...state
       }
       
+    case 'PRODUCT_OPTIONS_REQUEST':
+      return {
+        ...state
+      }
+
+    case 'PRODUCT_OPTIONS_SUCCESS':
+      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
+      return {
+        ...state,
+        optionsData: action.res
+      };
+
+    case 'PRODUCT_OPTIONS_FAILURE':
+      return {
+        ...state
+      }
+      
     case 'PRODUCT_RELOAD_REQUEST':
       return {
         ...state
