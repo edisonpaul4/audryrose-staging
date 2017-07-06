@@ -84,9 +84,9 @@ class Order extends Component {
 		const dateShippedColumn = subpage === 'fulfilled' ? <Table.Cell verticalAlign='top' singleLine>{dateShipped}</Table.Cell> : null;
 		
 		const customerLink = 'https://www.loveaudryrose.com/manage/customers/' + data.customer_id + '/edit';
-		const customerName = <a href={customerLink} target='_blank'>{data.billing_address.first_name} {data.billing_address.last_name} <Icon link name='configure' /></a>
+		const customerName = <a href={customerLink} className='hover-icon' target='_blank'>{data.billing_address.first_name} {data.billing_address.last_name} <Icon link name='configure' /></a>
 		const orderLink = 'https://www.loveaudryrose.com/manage/orders/' + data.orderId;
-		const orderId = <a href={orderLink} target='_blank'>{data.orderId} <Icon link name='external' /></a>
+		const orderId = <a href={orderLink} className='hover-icon' target='_blank'>{data.orderId} <Icon link name='external' /></a>
 		const orderNote = data.customer_message ? <Popup trigger={<Icon name='sticky note outline' link />} on='click' content={data.customer_message} position='top center' /> : null;
 		
     return (
