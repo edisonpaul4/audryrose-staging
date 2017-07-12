@@ -70,14 +70,7 @@ class ProductRow extends Component {
   	const labelDetailText = vendorOrder.dateOrdered ? daysLeft < 0 ? moment(vendorOrder.dateOrdered.iso).format('M-D-YY') + ' (' + Math.abs(daysLeft) + ' days late)' : moment(vendorOrder.dateOrdered.iso).format('M-D-YY') + ' (' + daysLeft + ' days left)' : averageWaitTime + ' days wait';
   	const labelDetail = vendorOrderVariant.done === false ? <Label.Detail>{labelDetailText}</Label.Detail> : null;
   	const labelLink = vendorOrderVariant.done === false ? variant.designer ? '/designers/search?q=' + variant.designer.designerId : '/designers' : null;
-  	let showLabel = false;
-  	if (vendorOrderVariant.done === true && vendorOrderVariant.shipped === undefined) {
-  		showLabel = true;
-  	} else if (vendorOrderVariant.done === true) {
-  		showLabel = vendorOrderVariant.shipped < vendorOrderVariant.received ? true : false;
-  	} else {
-  		showLabel = true;
-  	}
+  	let showLabel = true;
   	return showLabel ? <Label as={labelLink ? 'a' : null} href={labelLink} size='tiny' color={labelColor} key={'product-'+product.objectId+'-'+vendorOrderVariant.objectId}>{labelIcon}{labelText}{labelDetail}</Label> : null;
 	}
 	getResizeLabel(product, variant, resize, orderProductMatch) {
