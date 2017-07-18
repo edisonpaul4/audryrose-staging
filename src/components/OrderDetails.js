@@ -132,6 +132,9 @@ class ProductRow extends Component {
 		const productUrl = product.product_id ? '/products/search?q=' + product.product_id : null;
 		const productLink = productUrl ? <a href={productUrl}>{productName + (product.isBundle ? ': ' + variantName : '')}</a> : productName;
 		
+		let productQuantity = product.quantity ? product.quantity : '';
+		if (product.quantity_shipped) productQuantity = `${productQuantity} (shipped ${product.quantity_shipped})`;
+		
 		const alwaysResize = variant ? variant.alwaysResize : '';
 		const inventory = variant ? variant.inventoryLevel : '';
 		const designerName = variant && variant.designer ? variant.designer.name : '';
@@ -239,7 +242,7 @@ class ProductRow extends Component {
         <Table.Cell>
           {options}
         </Table.Cell>
-        <Table.Cell>{product.quantity ? product.quantity : ''}</Table.Cell>
+        <Table.Cell>{productQuantity}</Table.Cell>
 				<Table.Cell>{alwaysResize}</Table.Cell>
 				<Table.Cell>{inventory}</Table.Cell>
 				<Table.Cell>{designerName}</Table.Cell>
