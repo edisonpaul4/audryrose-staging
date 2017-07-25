@@ -1,9 +1,33 @@
 import config from './config';
 import { Parse } from 'parse';
+import axios from 'axios';
 
 const BASE_URL = process.env.REACT_APP_SERVER_URL;
 Parse.initialize(config.parseAppId);
 Parse.serverURL = BASE_URL;
+
+// Use axios for submitting jobs
+axios.defaults.baseURL = process.env.REACT_APP_SERVER_URL;
+axios.defaults.headers.common['X-Parse-Application-Id'] = process.env.REACT_APP_APP_ID;
+axios.defaults.headers.common['X-Parse-Master-Key'] = process.env.REACT_APP_MASTER_KEY;
+
+const delay = function(t) {
+  return new Promise(function(resolve) { 
+    setTimeout(resolve, t)
+  });
+}
+
+const poll = function(fn, retries, timeoutBetweenAttempts){
+  return Promise.resolve()
+    .then( fn )
+    .catch(function retry(err){
+      if(retries-- > 0)
+        return delay( timeoutBetweenAttempts )
+          .then( fn )
+          .catch( retry );
+      throw err;
+    });
+}
 
 export const signup = (username, password) => Parse.User.signUp( username, password );
 
@@ -23,12 +47,34 @@ export const getOrders = (token, subpage, page, sort, search) => Parse.Cloud.run
   }
 );
 
-export const reloadOrder = (token, orderId) => Parse.Cloud.run('reloadOrder', 
-  {
-    sessionToken: token,
-    orderId
+export const reloadOrder = (token, orderId) => axios.post('/jobs/reloadOrder', {
+  orderId: orderId
+}).then(function (response) {
+  const jobId = response.headers['x-parse-job-status-id'];
+  if (jobId) {
+    return poll(() => Parse.Cloud.run('getJobStatus', {
+      sessionToken: token,
+      jobId: jobId
+    }).then(function(result) {
+      if(result.status !== 'succeeded') {
+        throw result;
+      } else {
+        return Parse.Cloud.run('getUpdatedOrders', {
+          sessionToken: token,
+          orderIds: [result.params.orderId]
+        });
+      }
+    }).then(function(result) {
+      return result;
+    })
+    , 120, 1000);
+  } else {
+    return;
   }
-);
+}).catch(function (error) {
+  console.log(error);
+  return error;
+});
 
 export const createShipments = (token, shipmentGroups) => Parse.Cloud.run('createShipments', 
   {
@@ -37,19 +83,100 @@ export const createShipments = (token, shipmentGroups) => Parse.Cloud.run('creat
   }
 );
 
+/*
 export const batchCreateShipments = (token, ordersToShip) => Parse.Cloud.run('batchCreateShipments', 
   {
     sessionToken: token,
     ordersToShip
   }
 );
+*/
 
-export const batchPrintShipments = (token, ordersToPrint) => Parse.Cloud.run('batchPrintShipments', 
-  {
-    sessionToken: token,
-    ordersToPrint
+export const batchCreateShipments = (token, ordersToShip) => axios.post('/jobs/batchCreateShipments', {
+  ordersToShip: ordersToShip
+}).then(function (response) {
+  const jobId = response.headers['x-parse-job-status-id'];
+  let updatedOrders;
+  let tabCounts;
+  let generatedFile;
+  let newFiles;
+  if (jobId) {
+    return poll(() => Parse.Cloud.run('getJobStatus', {
+      sessionToken: token,
+      jobId: jobId
+    }).then(function(result) {
+      if(result.status !== 'succeeded') {
+        console.log(result)
+        throw result;
+      } else {
+        if (result.message) generatedFile = result.message;
+        console.log(result)
+        return Parse.Cloud.run('getUpdatedOrders', {
+          sessionToken: token,
+          orderIds: ordersToShip
+        });
+      }
+    }).then(function(result) {
+      console.log(result)
+      updatedOrders = result.updatedOrders;
+      tabCounts = result.tabCounts;
+      return Parse.Cloud.run('getRecentBatchPdfs', {
+        sessionToken: token
+      });
+    }).then(function(result) {
+      console.log(result)
+      newFiles = result.newFiles;
+      return {updatedOrders: updatedOrders, tabCounts: tabCounts, generatedFile: generatedFile, newFiles: newFiles};
+    })
+    , 120, 1000);
+  } else {
+    return;
   }
-);
+}).catch(function (error) {
+  console.log(error);
+  return error;
+});
+
+export const batchPrintShipments = (token, ordersToPrint) => axios.post('/jobs/batchPrintShipments', {
+  ordersToPrint: ordersToPrint
+}).then(function (response) {
+  const jobId = response.headers['x-parse-job-status-id'];
+  let updatedOrders;
+  let tabCounts;
+  let generatedFile;
+  let newFiles;
+  if (jobId) {
+    return poll(() => Parse.Cloud.run('getJobStatus', {
+      sessionToken: token,
+      jobId: jobId
+    }).then(function(result) {
+      if(result.status !== 'succeeded') {
+        throw result;
+      } else {
+        if (result.message) generatedFile = result.message;
+        return Parse.Cloud.run('getUpdatedOrders', {
+          sessionToken: token,
+          orderIds: ordersToPrint
+        });
+      }
+    }).then(function(result) {
+      updatedOrders = result.updatedOrders;
+      tabCounts = result.tabCounts;
+      return Parse.Cloud.run('getRecentBatchPdfs', {
+        sessionToken: token
+      });
+    }).then(function(result) {
+      newFiles = result.newFiles;
+      return {updatedOrders: updatedOrders, tabCounts: tabCounts, generatedFile: generatedFile, newFiles: newFiles};
+    })
+    , 120, 1000);
+  } else {
+    return;
+  }
+}).catch(function (error) {
+  console.log(error);
+  return error;
+});
 
 export const getProduct = (token, productId) => Parse.Cloud.run('getProduct', 
   {

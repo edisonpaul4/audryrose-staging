@@ -81,6 +81,7 @@ const orders = (state = initialState, action) => {
 
     case 'BATCH_CREATE_SHIPMENTS_SUCCESS':
       if (action.res.timeout) return { ...state, timeout: action.res.timeout };
+      console.log(action.res)
       return {
         ...state,
         updatedOrders: action.res.updatedOrders,

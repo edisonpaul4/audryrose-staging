@@ -394,12 +394,10 @@ class Orders extends Component {
   	let newFiles = [];
   	if (nextProps.newFiles) {
       nextProps.newFiles.map(function(newFile, i) {
-        const newFileJSON = newFile.toJSON();
         let addUpdatedFile = true;
         nextProps.files.map(function(file, i) {
         	// If new file exists, don't push it into the array
-        	const fileJSON = file.toJSON();
-        	if (newFileJSON.objectId === fileJSON.objectId) addUpdatedFile = false;
+        	if (newFile.objectId === file.objectId) addUpdatedFile = false;
         	return file;
       	});
         if (addUpdatedFile) {
@@ -407,10 +405,11 @@ class Orders extends Component {
         }
         return newFile;
       });
-      files = files.concat(newFiles);
+      files = newFiles.concat(files);
     } else {
       files = nextProps.files;
     }
+    if (files) files.sort(function(a,b){ return new Date(b.createdAt) - new Date(a.createdAt); });
     
     let product = this.state.product;
     let productOrderData = this.state.productOrderData;

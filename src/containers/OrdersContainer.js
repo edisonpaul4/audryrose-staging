@@ -8,6 +8,7 @@ const select = state => ({
 	orders: state.orders.orders,
 	updatedOrders: state.orders.updatedOrders,
 	generatedFile: state.orders.generatedFile,
+	newFiles: state.orders.newFiles,
 	errors: state.orders.errors,
 	totalPages: state.orders.totalPages,
 	totalOrders: state.orders.totalOrders,

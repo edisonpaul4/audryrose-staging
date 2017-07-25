@@ -21,7 +21,7 @@ class OrdersNav extends Component {
     		    target='_blank' 
     		    text={file.name} 
     		    description={date} 
-    		    key={i} 
+    		    key={file.objectId} 
     		    className='file-item'
   		    />
 		    );
