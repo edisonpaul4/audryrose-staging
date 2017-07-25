@@ -83,15 +83,6 @@ export const createShipments = (token, shipmentGroups) => Parse.Cloud.run('creat
   }
 );
 
-/*
-export const batchCreateShipments = (token, ordersToShip) => Parse.Cloud.run('batchCreateShipments', 
-  {
-    sessionToken: token,
-    ordersToShip
-  }
-);
-*/
-
 export const batchCreateShipments = (token, ordersToShip) => axios.post('/jobs/batchCreateShipments', {
   ordersToShip: ordersToShip
 }).then(function (response) {
@@ -106,7 +97,6 @@ export const batchCreateShipments = (token, ordersToShip) => axios.post('/jobs/b
       jobId: jobId
     }).then(function(result) {
       if(result.status !== 'succeeded') {
-        console.log(result)
         throw result;
       } else {
         if (result.message) generatedFile = result.message;
@@ -117,14 +107,12 @@ export const batchCreateShipments = (token, ordersToShip) => axios.post('/jobs/b
         });
       }
     }).then(function(result) {
-      console.log(result)
       updatedOrders = result.updatedOrders;
       tabCounts = result.tabCounts;
       return Parse.Cloud.run('getRecentBatchPdfs', {
         sessionToken: token
       });
     }).then(function(result) {
-      console.log(result)
       newFiles = result.newFiles;
       return {updatedOrders: updatedOrders, tabCounts: tabCounts, generatedFile: generatedFile, newFiles: newFiles};
     })
