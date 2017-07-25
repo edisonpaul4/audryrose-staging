@@ -29,6 +29,8 @@ class OrdersNav extends Component {
   		});
 		}
 		
+		const searchUrl = window.location.hostname === 'localhost' ? `${window.location.protocol}//${window.location.hostname}:${window.location.port}/orders/search` : `${window.location.protocol}//${window.location.hostname}/orders/search`;
+		
     return (
 	    <Menu pointing secondary>
 	      <Menu.Item 
@@ -87,9 +89,10 @@ class OrdersNav extends Component {
             </Dropdown>
           </Menu.Item>
           <Menu.Item fitted className='subnav-search'>
-            <Form action='/orders/search' method='get' size='small'>
+            <Form action={searchUrl} method='get' size='small'>
               <Form.Input 
                 action={{ icon: 'search', basic: true, size: 'small' }} 
+                type='search'
                 name='q' 
                 defaultValue={search} 
                 placeholder='Search by name, order id, product, email ...' 

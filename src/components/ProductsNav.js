@@ -7,6 +7,8 @@ class ProductsNav extends Component {
 		const pathName = this.props.pathname;
 		const search = this.props.query.q ? this.props.query.q : '';
 		const tabCounts = this.props.tabCounts;
+		const searchUrl = window.location.hostname === 'localhost' ? `${window.location.protocol}//${window.location.hostname}:${window.location.port}/products/search/` : `${window.location.protocol}//${window.location.hostname}/products/search/`;
+		
     return (
       <Grid>
         <Grid.Row>
@@ -49,7 +51,7 @@ class ProductsNav extends Component {
       				</Menu.Item>
               <Menu.Menu position='right'>
                 <Menu.Item fitted className='subnav-search'>
-                  <Form action='/products/search' method='get' size='small'>
+                  <Form action={searchUrl} method='get' size='small'>
                     <Form.Input 
                       action={{ icon: 'search', basic: true, size: 'small' }} 
                       name='q' 
