@@ -475,11 +475,12 @@ class Orders extends Component {
           partiallyShippable: order.partiallyShippable,
           resizable: order.resizable,
           hasCustom: order.hasCustom,
-          date_created: order.date_created,
-          date_shipped: order.date_shipped,
-          dateNeeded: order.dateNeeded,
+          date_created: order.date_created ? order.date_created.iso : null,
+          date_shipped: order.date_shipped ? order.date_shipped.iso : null,
+          dateNeeded: order.dateNeeded ? order.dateNeeded.iso : null,
           customer_id: order.customer_id,
-          billing_address: order.billing_address,
+          first_name: order.billing_address ? order.billing_address.first_name : null,
+          last_name: order.billing_address ? order.billing_address.last_name : null,
           orderId: order.orderId,
           customer_message: order.customer_message,
           total_inc_tax: order.total_inc_tax,
@@ -500,22 +501,37 @@ class Orders extends Component {
 		    );
 		    
 		    // Create OrderDetails rows
-				if (expanded) orderRows.push(
-				  <OrderDetails 
-  				  subpage={scope.state.subpage} 
-				    data={order} 
-				    expanded={expanded} 
-				    key={`${order.orderId}-2`} 
-				    isReloading={isReloading} 
-				    handleReloadClick={scope.handleReloadClick} 
-				    handleCreateShipments={scope.handleCreateShipments}
-				    handleAddToVendorOrder={scope.handleAddToVendorOrder} 
-				    handleCreateResize={scope.handleCreateResize} 
-				    handleShowOrderFormClick={scope.handleShowOrderFormClick} 
-				    handleProductOrderModalClose={scope.handleProductOrderModalClose} 
-				    handleOrderProductEditClick={scope.handleOrderProductEditClick}
-			    />
-		    );
+				if (expanded) {
+  				let orderData = {
+    				billing_address: order.billing_address,
+            date_created: order.date_created ? order.date_created.iso : null,
+            date_modified: order.date_modified ? order.date_modified.iso : null,
+            date_shipped: order.date_shipped ? order.date_shipped.iso : null,
+            discount_amount: order.discount_amount,
+            fullyShippable: order.fullyShippable,
+            objectId: order.objectId,
+            orderId: order.orderId,
+            orderProducts: order.orderProducts, //TODO: SIMPLIFY THIS OBJECT
+            orderShipments: order.orderShipments,
+            status: order.status
+  				};
+  				orderRows.push(
+  				  <OrderDetails 
+    				  subpage={scope.state.subpage} 
+  				    data={orderData} 
+  				    expanded={expanded} 
+  				    key={`${order.orderId}-2`} 
+  				    isReloading={isReloading} 
+  				    handleReloadClick={scope.handleReloadClick} 
+  				    handleCreateShipments={scope.handleCreateShipments}
+  				    handleAddToVendorOrder={scope.handleAddToVendorOrder} 
+  				    handleCreateResize={scope.handleCreateResize} 
+  				    handleShowOrderFormClick={scope.handleShowOrderFormClick} 
+  				    handleProductOrderModalClose={scope.handleProductOrderModalClose} 
+  				    handleOrderProductEditClick={scope.handleOrderProductEditClick}
+  			    />
+  		    );
+		    }
 				return orderRows;
 	    });
 		}

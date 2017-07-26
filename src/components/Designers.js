@@ -304,7 +304,7 @@ class Designers extends Component {
 		if (designers) {
 			designers.map(function(designer, i) {
   			let isSaving = scope.state.isSavingDesigners.indexOf(designer.objectId) >= 0 ? true : false;
-  			let expanded = (scope.state.expanded.indexOf(designer.objectId) >= 0 || scope.state.search || scope.state.subpage === 'pending' || scope.state.subpage === 'sent') ? true : false;
+  			let expanded = (scope.state.expanded.indexOf(designer.objectId) >= 0 || scope.state.search/*  || scope.state.subpage === 'pending' || scope.state.subpage === 'sent' */) ? true : false;
   			
         let vendorOrders = [];
         if (designer.vendors) {

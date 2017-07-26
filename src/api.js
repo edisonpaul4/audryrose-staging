@@ -100,7 +100,6 @@ export const batchCreateShipments = (token, ordersToShip) => axios.post('/jobs/b
         throw result;
       } else {
         if (result.message) generatedFile = result.message;
-        console.log(result)
         return Parse.Cloud.run('getUpdatedOrders', {
           sessionToken: token,
           orderIds: ordersToShip

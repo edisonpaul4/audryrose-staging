@@ -481,7 +481,7 @@ class Products extends Component {
     	state.search = this.props.location.query.q;
   	}
   	
-  	if (state.products && nextProps.router.params.subpage === 'being-resized') state.expandedProducts = state.products.map(function(product) { return product.productId });
+  	//if (state.products && nextProps.router.params.subpage === 'being-resized') state.expandedProducts = state.products.map(function(product) { return product.productId });
   	
   	if (nextProps.router.params.subpage !== this.state.subpage) {
     	state.subpage = nextProps.router.params.subpage;
@@ -517,22 +517,23 @@ class Products extends Component {
   			
   			// Create simple object for Product row
   			let productData = {
-          productId: product.productId,
+    			classificationName: product.classification ? product.classification.name : null,
+    			custom_url: product.custom_url,
+    			date_created: product.date_created ? product.date_created.iso : null,
+    			designerId: product.designer ? product.designer.designerId : '',
+    			designerName: product.designer ? product.designer.name : '',
+    			hasResizeRequest: product.hasResizeRequest,
+    			hasVendorBuy: product.hasVendorBuy,
+    			isBundle: product.isBundle,
           is_active: product.is_active,
-          sizeScale: product.sizeScale,
-          total_stock: product.total_stock,
-          isBundle: product.isBundle,
           is_visible: product.is_visible,
-          hasResizeRequest: product.hasResizeRequest,
-          hasVendorBuy: product.hasVendorBuy,
-          custom_url: product.custom_url,
           name: product.name,
-          sku: product.sku,
-          designer: {designerId: product.designer ? product.designer.designerId : '', name: product.designer ? product.designer.name : ''},
-          date_created: product.date_created,
-          primary_image: product.primary_image,
           price: product.price,
-          classification: product.classification
+          image: product.primary_image ? product.primary_image.tiny_url : '',
+          productId: product.productId,
+          sizeScale: product.sizeScale,
+          sku: product.sku,
+          total_stock: product.total_stock
   			}
 				productRows.push(
 				  <Product 

@@ -1,11 +1,11 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Table, Checkbox, Button, Icon, Popup, Label } from 'semantic-ui-react';
 import { SingleDatePicker } from 'react-dates';
 import 'react-dates/lib/css/_datepicker.css';
 import numeral from 'numeral';
 import moment from 'moment';
 
-class Order extends Component {
+class Order extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -14,7 +14,7 @@ class Order extends Component {
       isReloading: this.props.isReloading ? this.props.isReloading : false,
       selected: this.props.selected ? this.props.selected : false,
       subpage: this.props.subpage ? this.props.subpage : '',
-      dateNeeded: this.props.data && this.props.data.dateNeeded ? this.props.data.dateNeeded.iso : null,
+      dateNeeded: this.props.data && this.props.data.dateNeeded ? this.props.data.dateNeeded : null,
       dateNeededFocused: false
     };
     this.handleToggleClick = this.handleToggleClick.bind(this);
@@ -42,7 +42,7 @@ class Order extends Component {
   	let state = {};
   	if (nextProps.data) {
     	state.data = nextProps.data;
-    	state.dateNeeded = nextProps.data.dateNeeded && nextProps.data.dateNeeded.iso ? nextProps.data.dateNeeded.iso : null;
+    	state.dateNeeded = nextProps.data.dateNeeded && nextProps.data.dateNeeded ? nextProps.data.dateNeeded : null;
   	}
   	if (nextProps.expanded !== null) state.expanded = nextProps.expanded;
   	if (nextProps.isReloading !== null) state.isReloading = nextProps.isReloading;
@@ -80,11 +80,11 @@ class Order extends Component {
 		    
 		let expandIcon = expanded ? 'minus' : 'plus';
 		
-		const dateShipped = data.date_shipped ? moment(data.date_shipped.iso).calendar() : '';
+		const dateShipped = data.date_shipped ? moment(data.date_shipped).calendar() : '';
 		const dateShippedColumn = subpage === 'fulfilled' ? <Table.Cell verticalAlign='top' singleLine>{dateShipped}</Table.Cell> : null;
 		
 		const customerLink = 'https://www.loveaudryrose.com/manage/customers/' + data.customer_id + '/edit';
-		const customerName = <a href={customerLink} className='hover-icon' target='_blank'>{data.billing_address.first_name} {data.billing_address.last_name} <Icon link name='configure' /></a>
+		const customerName = <a href={customerLink} className='hover-icon' target='_blank'>{data.first_name} {data.last_name} <Icon link name='configure' /></a>
 		const orderLink = 'https://www.loveaudryrose.com/manage/orders/' + data.orderId;
 		const orderId = <a href={orderLink} className='hover-icon' target='_blank'>{data.orderId} <Icon link name='external' /></a>
 		const orderNote = data.customer_message ? <Popup trigger={<Icon name='sticky note outline' link />} on='click' content={data.customer_message} position='top center' /> : null;
@@ -92,7 +92,7 @@ class Order extends Component {
     return (
       <Table.Row warning={data.customer_message ? true : undefined} disabled={isReloading}>
         <Table.Cell verticalAlign='middle'><Checkbox checked={selected} onClick={() => this.handleCheckboxClick(data.orderId)} /></Table.Cell>
-        <Table.Cell verticalAlign='middle' singleLine>{moment(data.date_created.iso).calendar()}</Table.Cell>
+        <Table.Cell verticalAlign='middle' singleLine>{moment(data.date_created).calendar()}</Table.Cell>
         <Table.Cell verticalAlign='middle' singleLine>
           <SingleDatePicker
             date={this.state.dateNeeded ? moment(this.state.dateNeeded) : null}

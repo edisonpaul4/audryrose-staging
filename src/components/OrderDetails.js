@@ -9,6 +9,11 @@ import OrderShipModal from './OrderShipModal.js';
 class ProductRow extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      product: this.props.product,
+      shipment: this.props.shipment,
+      variant: this.props.variant
+    };
     this.handleShipModalOpen = this.handleShipModalOpen.bind(this);
     this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
     this.handleShowResizeFormClick = this.handleShowResizeFormClick.bind(this);
@@ -30,18 +35,18 @@ class ProductRow extends Component {
     return inventoryLevel;
   }
 	handleShowOrderFormClick(e, {value}) {
-  	let variant = this.props.variant ? this.props.variant : null;
-  	let orderProductId = this.props.product && this.props.product.orderProductId ? this.props.product.orderProductId : null;
+  	let variant = this.state.variant ? this.state.variant : null;
+  	let orderProductId = this.state.product && this.state.product.orderProductId ? this.state.product.orderProductId : null;
 		this.props.handleShowOrderFormClick({productId: variant.productId, orderProductId: orderProductId, variant: variant, resize: false});
 	}
 	handleShowResizeFormClick(e, {value}) {
-  	let variant = this.props.variant ? this.props.variant : null;
-  	let orderProductId = this.props.product && this.props.product.orderProductId ? this.props.product.orderProductId : null;
+  	let variant = this.state.variant ? this.state.variant : null;
+  	let orderProductId = this.state.product && this.state.product.orderProductId ? this.state.product.orderProductId : null;
 		this.props.handleShowOrderFormClick({productId: variant.productId, orderProductId: orderProductId, variant: variant, resize: true});
 	}
 	handleShowEditOrderProductFormClick(e, {value}) {
-  	let variant = this.props.product.variants ? this.props.product.variants[0] : null;
-		this.props.handleOrderProductEditClick({orderProductId: this.props.product.orderProductId, variant: variant});
+  	let variant = this.state.product.variants ? this.state.product.variants[0] : null;
+		this.props.handleOrderProductEditClick({orderProductId: this.state.product.orderProductId, variant: variant});
 	}
 	getVendorOrderLabel(product, variant, vendorOrderVariant, vendorOrder, orderProductMatch) {
   	if (!vendorOrder) return <Label size='tiny' color='red' key={'product-'+product.objectId+'-'+vendorOrderVariant.objectId}>Error: Missing vendor order data</Label>;
@@ -100,11 +105,18 @@ class ProductRow extends Component {
 		}
 		return showLabel ? <Label as='a' href={labelLink} size='tiny' color={labelColor} key={'resize-'+resize.objectId}>{labelIcon}{labelText}{labelDetail}</Label> : null;
 	}
+	componentWillReceiveProps(nextProps) {
+  	let state = {};
+  	if (nextProps.product) state.product = nextProps.product;
+  	if (nextProps.shipment) state.shipment = nextProps.shipment;
+  	if (nextProps.variant) state.variant = nextProps.variant;
+  	this.setState(state);
+	}
 	render() {  	
   	const scope = this;
-		const product = this.props.product;
-		const shipment = this.props.shipment;
-		const variant = this.props.variant;
+		const product = this.state.product;
+		const shipment = this.state.shipment;
+		const variant = this.state.variant;
 
 		// Create an array of options values
 		let options = [];
@@ -152,7 +164,6 @@ class ProductRow extends Component {
       	  if (vendorOrderVariant.orderProducts) {
         	  vendorOrderVariant.orderProducts.map(function(vendorOrderVariantProduct, k) {
           	  if (vendorOrderVariantProduct.objectId === product.objectId) {
-//             	  console.log('op match: ' + product.objectId);
             	  orderProductMatch = product.objectId;
           	  }
           	  return vendorOrderVariantProduct;
@@ -174,7 +185,6 @@ class ProductRow extends Component {
     	  var orderProductMatch;
     	  if (resize.orderProduct) {
       	  if (resize.orderProduct.objectId === product.objectId) {
-//         	  console.log('op match: ' + product.objectId);
         	  orderProductMatch = product.objectId;
       	  }
     	  }
@@ -188,7 +198,6 @@ class ProductRow extends Component {
 		if (product && product.awaitingInventory && product.awaitingInventory.length > 0) {
   		let label;
   		product.awaitingInventory.map(function(inventoryItem, i) {
-//     		console.log(inventoryItem)
     		const isVendorOrder = inventoryItem.className === 'VendorOrderVariant' ? true : false;
     		if (isVendorOrder){
       		let vendorOrderMatch;
@@ -314,11 +323,38 @@ class OrderDetails extends Component {
 	handleOrderProductEditClick(data) {
   	this.props.handleOrderProductEditClick(data);
 	}
+	createProductObjects(products) {
+  	const objs = products.map((product) => {
+    	return {
+  			edited: product.edited,
+  			editedVariants: product.editedVariants,
+  			isBundle: product.isBundle,
+  			isCustom: product.isCustom,
+  			name: product.name,
+  			objectId: product.objectId,
+  			orderProductId: product.orderProductId,
+  			order_address_id: product.order_address_id,
+  			order_id: product.order_id,
+  			partiallyShippable: product.partiallyShippable,
+  			product_id: product.product_id,
+  			product_options: product.product_options,
+  			quantity: product.quantity,
+  			quantity_shipped: product.quantity_shipped,
+  			resizable: product.resizable,
+  			shippable: product.shippable,
+  			shippingAddress: product.shippingAddress,
+  			variants: product.variants, //TODO: SIMPLIFY THIS
+  			vendorOrders: product.vendorOrders //TODO: SIMPLIFY THIS
+  		};
+  	});
+		return objs;
+	}
 	componentWillMount() {
-  	const {shippedGroups, shippableGroups, unshippableGroups} = this.createShipmentGroups(this.props.data, this.props.data.orderProducts, this.props.data.orderShipments)
+  	const orderProducts = this.createProductObjects(this.props.data.orderProducts);
+  	const {shippedGroups, shippableGroups, unshippableGroups} = this.createShipmentGroups(this.props.data, orderProducts, this.props.data.orderShipments)
 		this.setState({
       order: this.props.data,
-      products: this.props.data.orderProducts,
+      products: orderProducts,
       shipments: this.props.data.orderShipments,
   		shippedGroups: shippedGroups,
   		shippableGroups: shippableGroups,
@@ -326,10 +362,11 @@ class OrderDetails extends Component {
 		});
 	}
 	componentWillReceiveProps(nextProps) {
-  	const {shippedGroups, shippableGroups, unshippableGroups} = this.createShipmentGroups(nextProps.data, nextProps.data.orderProducts, nextProps.data.orderShipments)
+  	const orderProducts = this.createProductObjects(nextProps.data.orderProducts);
+  	const {shippedGroups, shippableGroups, unshippableGroups} = this.createShipmentGroups(nextProps.data, orderProducts, nextProps.data.orderShipments)
     this.setState({
       order: nextProps.data,
-      products: nextProps.data.orderProducts,
+      products: orderProducts,
       shipments: nextProps.data.orderShipments,
   		shippedGroups: shippedGroups,
   		shippableGroups: shippableGroups,
@@ -344,7 +381,6 @@ class OrderDetails extends Component {
 		
 		if (orderProducts) {
   		orderProducts.map(function(orderProduct, i) {
-//     		console.log('\nop:' + orderProduct.orderProductId + ' oa:' + orderProduct.order_address_id);
     		
     		// Check if product is in a shipment
     		let isShipped = false;
@@ -372,16 +408,9 @@ class OrderDetails extends Component {
           shipment: shipment
         };
         let shipmentIndex = -1;
-        
-//         console.log('orderProduct.name:' + orderProduct.name);
-//         console.log('isShipped:' + isShipped);
-//         console.log('orderProduct.shippable:' + orderProduct.shippable);
-//         console.log('orderProduct.quantity_shipped:' + orderProduct.quantity_shipped);
-//         console.log('orderProduct.quantity:' + orderProduct.quantity);
     		
     		// Set whether product is added to shippable, shipped or unshippable groups
     		if (isShipped) {
-//       		console.log('product is shipped');
       		// Check whether product is being added to an existing shipment group
       		
       		shippedGroups.map(function(shippedGroup, j) {
@@ -389,15 +418,12 @@ class OrderDetails extends Component {
         		return shippedGroups;
       		});
           if (shipmentIndex < 0) {
-//             console.log('not in shippedGroups')
             shippedGroups.push(group);
           } else {
-//             console.log('found in shippedGroups')
             shippedGroups[shipmentIndex].orderProducts.push(orderProduct);
           }
       		
     		} else if ((orderProduct.shippable || orderProduct.partiallyShippable) && orderProduct.quantity_shipped < orderProduct.quantity) {
-//       		console.log('product is shippable');
       		
       		// Check whether product is being shipped to a unique address
       		shippableGroups.map(function(shippableGroup, j) {
@@ -405,25 +431,20 @@ class OrderDetails extends Component {
         		return shippableGroups;
       		});
           if (shipmentIndex < 0) {
-//             console.log('not in shippableGroups')
             shippableGroups.push(group);
           } else {
-//             console.log('found in shippableGroups')
             shippableGroups[shipmentIndex].orderProducts.push(orderProduct);
           }
       		
     		} else {
-//       		console.log('product is not shippable');
       		// Check whether product is being shipped to a unique address
       		unshippableGroups.map(function(unshippableGroup, j) {
         		if (orderProduct.order_address_id === unshippableGroup.orderAddressId) shipmentIndex = j;
         		return unshippableGroup;
       		});
           if (shipmentIndex < 0) {
-//             console.log('not in shippableGroups')
             unshippableGroups.push(group);
           } else {
-//             console.log('found in shippableGroups')
             unshippableGroups[shipmentIndex].orderProducts.push(orderProduct);
           }
       		

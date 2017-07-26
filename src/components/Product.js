@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Table, Checkbox, Button, Icon, Label } from 'semantic-ui-react';
 import numeral from 'numeral';
 import moment from 'moment';
 
-class Product extends Component {
+class Product extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -29,6 +29,7 @@ class Product extends Component {
 	}
 	render() {
   	const data = this.state.data;
+  	console.log(data)
   	const expanded = this.state.expanded;
   	const isReloading = this.state.isReloading;
   	
@@ -59,23 +60,23 @@ class Product extends Component {
 		const name = data.is_visible ? <a href={storeUrl} target="_blank">{data.name}</a> : data.name;
 		const bcManageUrl = 'https://www.loveaudryrose.com/manage/products/' + data.productId + '/edit';
 		const sku = <a href={bcManageUrl} className='hover-icon' target="_blank">{data.sku} <Icon link name='configure' /></a>;
-		const designer = data.designer ? <a href={'/designers/search?q=' + data.designer.designerId}>{data.designer.name}</a> : '';
+		const designer = data.designerId ? <a href={'/designers/search?q=' + data.designerId}>{data.designerName ? data.designerName : ''}</a> : '';
     return (
       <Table.Row>
         <Table.Cell>
           <Checkbox />
         </Table.Cell>
         <Table.Cell>
-          <span className='no-wrap'>{data.date_created ? moment(data.date_created.iso).format('M/D/YY h:mm a') : null}</span>
+          <span className='no-wrap'>{data.date_created ? moment(data.date_created).format('M/D/YY h:mm a') : null}</span>
         </Table.Cell>
         <Table.Cell>
-          <img src={data.primary_image && data.primary_image.tiny_url ? data.primary_image.tiny_url.replace(/^http:\/\//i, 'https://') : '/imgs/no-image.png'} width='40' alt={data.name} />
+          <img src={data.image ? data.image.replace(/^http:\/\//i, 'https://') : '/imgs/no-image.png'} width='40' alt={data.name} />
         </Table.Cell>
         <Table.Cell>{sku}</Table.Cell>
 				<Table.Cell>{name}</Table.Cell>
 				<Table.Cell>{designer}</Table.Cell>
 				<Table.Cell className='right aligned'>{numeral(data.price).format('$0,0.00')}</Table.Cell>
-				<Table.Cell>{data.classification ? data.classification.name : 'Unknown'}</Table.Cell>
+				<Table.Cell>{data.classificationName ? data.classificationName : 'Unknown'}</Table.Cell>
 				<Table.Cell>{data.sizeScale}</Table.Cell>
 				<Table.Cell>
   				<Checkbox 
