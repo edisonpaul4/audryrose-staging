@@ -83,10 +83,11 @@ class Order extends PureComponent {
 		const dateShipped = data.date_shipped ? moment(data.date_shipped).calendar() : '';
 		const dateShippedColumn = subpage === 'fulfilled' ? <Table.Cell verticalAlign='top' singleLine>{dateShipped}</Table.Cell> : null;
 		
-		const customerLink = 'https://www.loveaudryrose.com/manage/customers/' + data.customer_id + '/edit';
+		const customerLink = 'https://www.loveaudryrose.com/manage/customers?idFrom=' + data.customer_id + '&idTo=' + data.customer_id;
 		const customerName = <a href={customerLink} className='hover-icon' target='_blank'>{data.first_name} {data.last_name} <Icon link name='configure' /></a>
 		const orderLink = 'https://www.loveaudryrose.com/manage/orders/' + data.orderId;
 		const orderId = <a href={orderLink} className='hover-icon' target='_blank'>{data.orderId} <Icon link name='external' /></a>
+		const orderFraudWarning = data.fraudData && data.fraudData.isSuspicious ? <Popup trigger={<Icon color='yellow' name='warning sign' />} content={data.fraudData.message} size='tiny' position='top center' /> : null
 		const orderNote = data.customer_message ? <Popup trigger={<Icon name='sticky note outline' link />} on='click' content={data.customer_message} position='top center' /> : null;
 		
     return (
@@ -106,7 +107,7 @@ class Order extends PureComponent {
           />
         </Table.Cell>
         {dateShippedColumn}
-        <Table.Cell verticalAlign='middle'>{orderId}</Table.Cell>
+        <Table.Cell verticalAlign='middle'>{orderId} {orderFraudWarning}</Table.Cell>
 				<Table.Cell verticalAlign='middle'>{customerName}</Table.Cell>
 				<Table.Cell verticalAlign='middle'>{orderNote}</Table.Cell>
 				<Table.Cell className='right aligned' verticalAlign='middle'>{numeral(data.total_inc_tax).format('$0,0.00')}</Table.Cell>

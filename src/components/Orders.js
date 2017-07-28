@@ -298,6 +298,19 @@ class Orders extends Component {
 		this.props.saveOrderProduct(this.props.token, data);
 	}
 	
+	fraudCheck(order) {
+  	let isSuspicious = false;
+  	let message = '';
+  	if (order.billing_address && order.billing_address.country_iso2 && order.geoip_country_iso2 && order.billing_address.country_iso2 !== order.geoip_country_iso2) {
+    	isSuspicious = true;
+    	message = 'The billing country for this order (' + order.billing_address.country + ') does not match the country the order was placed in (' + order.geoip_country + ')';
+  	} else if (order.billing_address && order.billing_address.city === 'Miami') {
+    	isSuspicious = true;
+    	message = 'The order was placed in Miami';
+  	}
+  	return {isSuspicious: isSuspicious, message: message};
+	}
+	
 	componentWillReceiveProps(nextProps) {
   	let scope = this;
   	let nextPage = parseFloat(nextProps.location.query.page);
@@ -484,7 +497,8 @@ class Orders extends Component {
           orderId: order.orderId,
           customer_message: order.customer_message,
           total_inc_tax: order.total_inc_tax,
-          items_total: order.items_total
+          items_total: order.items_total,
+          fraudData: scope.fraudCheck(order)
 				};
 				orderRows.push(
 				  <Order 
