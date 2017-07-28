@@ -15,9 +15,25 @@ const designers = (state = initialState, action) => {
     case 'DESIGNERS_SUCCESS':
       let designers = [];
       if (action.res.designers) {
-      	designers = action.res.designers.map(function(designer, i) {
+      	designers = action.res.designers.map((designer) => {
         	return designer.toJSON();
       	});
+      	if (action.res.completedVendorOrders && action.res.completedVendorOrders.length > 0) {
+        	action.res.completedVendorOrders.map((completedVendorOrder) => {
+          	var completedVendorOrderJSON = completedVendorOrder.toJSON();
+          	designers.map((designer) => {
+            	if (designer.vendors) {
+              	designer.vendors.map((vendor) => {
+                	if (!vendor.completedVendorOrders) vendor.completedVendorOrders = [];
+                	if (vendor.objectId === completedVendorOrderJSON.vendor.objectId) vendor.completedVendorOrders.push(completedVendorOrderJSON);
+                	return vendor;
+              	});
+            	}
+            	return designer;
+          	});
+          	return completedVendorOrder;
+        	});
+      	}
       }
       return {
         ...state,

@@ -98,7 +98,7 @@ class ProductRow extends Component {
 		const received = (this.props.status === 'Sent') ? <Table.Cell><Input type='number' value={this.state.received ? this.state.received : 0} onChange={this.handleReceivedChange} min={0} disabled={this.props.isSaving} /></Table.Cell> : null;
 		const cancelClass = this.isEdited() ? '' : 'invisible';
 		
-		const orderNumber = vendorOrderVariant.orderProducts ? '#' + vendorOrderVariant.orderProducts[0].order_id : '';
+		const orderNumber = vendorOrderVariant.orderProducts && vendorOrderVariant.orderProducts.length > 0 ? '#' + vendorOrderVariant.orderProducts[0].order_id : '';
 
     return (
       <Table.Row>
@@ -208,7 +208,7 @@ class VendorOrder extends Component {
   }
 	componentWillMount() {
 		this.setState({
-      variantsData: this.getVariantsData(this.props.order.vendorOrderVariants),
+      variantsData: this.props.order.vendorOrderVariants ? this.getVariantsData(this.props.order.vendorOrderVariants) : null,
       message: this.props.order && this.props.order.message ? this.props.order.message : this.generateMessage(),
 		});
 	}
@@ -224,11 +224,11 @@ class VendorOrder extends Component {
 	render() {
   	const scope = this;
   	const { status, order, vendor } = this.props;
-  	
+
   	// Create Pending Order Table
 		let orderProductRows = [];
 		let totalReceived = 0;
-		if (order && order.vendorOrderVariants.length > 0) {
+		if (order && order.vendorOrderVariants && order.vendorOrderVariants.length > 0) {
 			order.vendorOrderVariants.map(function(vendorOrderVariant, i) {
   			totalReceived += vendorOrderVariant.received;
 				orderProductRows.push(<ProductRow status={scope.props.status} vendorOrderVariant={vendorOrderVariant} key={vendorOrderVariant.objectId} handleVariantEdited={scope.handleVariantEdited} isSaving={scope.props.isSaving} />);
@@ -268,9 +268,19 @@ class VendorOrder extends Component {
 		const averageWaitTime = vendor.waitTime ? vendor.waitTime : 21;
 		const expectedDate = order.dateOrdered ? moment(order.dateOrdered.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
 		const daysLeft = order.dateOrdered ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
-		const labelColor = status === 'Sent' ? daysLeft < 0 ? 'red' : 'olive' : 'yellow';
-		const labelText = status === 'Sent' ? daysLeft < 0 ? Math.abs(daysLeft) + ' days late' : daysLeft + ' days left' : averageWaitTime + ' days average wait time';
-		const labelDetail = order.dateOrdered ? <Label.Detail>{'Sent ' + moment(order.dateOrdered.iso).format('M-D-YY')}</Label.Detail> : null;
+		let labelColor = status === 'Sent' ? daysLeft < 0 ? 'red' : 'olive' : 'yellow';
+		if (order.receivedAll === true) labelColor = null;
+		let labelText = status === 'Sent' ? daysLeft < 0 ? Math.abs(daysLeft) + ' days late' : daysLeft + ' days left' : averageWaitTime + ' days average wait time';
+		if (order.receivedAll === true && order.dateReceived && order.dateOrdered) {
+  		labelText = moment(order.dateReceived.iso).diff(moment(order.dateOrdered.iso), 'days') + ' days wait time';
+		} else if (order.receivedAll === true && order.dateReceived) {
+  		labelText = 'Received ' +  moment(order.dateReceived.iso).format('M-D-YY');
+		} else {
+  		labelText = 'Received';
+		}
+		let labelDetailText = order.dateOrdered ? 'Sent ' + moment(order.dateOrdered.iso).format('M-D-YY') : '';
+		if (order.receivedAll === true && order.dateReceived) labelDetailText += ' | Received ' + moment(order.dateReceived.iso).format('M-D-YY');
+		const labelDetail = order.dateOrdered ? <Label.Detail>{labelDetailText}</Label.Detail> : null;
 		const label = <Label size='small' color={labelColor}>{labelText}{labelDetail}</Label>;    
 		
     return (
@@ -312,8 +322,7 @@ class DesignerDetails extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: this.props.data ? this.props.data : null,
-      vendorOrders: this.props.vendorOrders ? this.props.vendorOrders : []
+      data: this.props.data ? this.props.data : null
     };
     this.handleSaveVendorOrder = this.handleSaveVendorOrder.bind(this);
     this.handleSendVendorOrder = this.handleSendVendorOrder.bind(this);
@@ -328,20 +337,20 @@ class DesignerDetails extends Component {
   }
   componentWillReceiveProps(nextProps) {
     const data = nextProps.data ? nextProps.data : this.state.data;
-    const vendorOrders = nextProps.vendorOrders ? nextProps.vendorOrders : this.state.vendorOrders;
+//     const vendorOrders = nextProps.vendorOrders ? nextProps.vendorOrders : this.state.vendorOrders;
     this.setState({
-      data: data,
-      vendorOrders: vendorOrders
+      data: data
+//       vendorOrders: vendorOrders
     });
   }
 	render() {
   	const scope = this;
   	const show = this.props.expanded ? true : false;
-  	const vendorOrders = this.state.vendorOrders;
+  	const data = this.state.data;
   	let vendorOrderRows = [];
-		vendorOrders.map(function(vendorOrder, i) {
+		data.vendorOrders.map(function(vendorOrder, i) {
 			vendorOrderRows.push(<VendorOrder status={vendorOrder.status} order={vendorOrder.order} vendor={vendorOrder.vendor} isSaving={scope.props.isSaving} key={i} handleSaveVendorOrder={scope.handleSaveVendorOrder} handleSendVendorOrder={scope.handleSendVendorOrder} />);
-			return vendorOrders;
+			return vendorOrder;
 		});	
     
 		const rowClass = classNames(
