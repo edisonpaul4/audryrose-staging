@@ -4,6 +4,7 @@ const initialState = {
 };
 
 const orders = (state = initialState, action) => {
+  var ordersData;
   switch(action.type) {
 
     case 'ORDERS_REQUEST':
@@ -14,16 +15,16 @@ const orders = (state = initialState, action) => {
 
     case 'ORDERS_SUCCESS':
       if (action.res.timeout) return { ...state, timeout: action.res.timeout };
-      let orders = [];
+      ordersData = [];
       if (action.res.orders) {
-      	orders = action.res.orders.map(function(order, i) {
+      	ordersData = action.res.orders.map(function(order, i) {
         	return order.toJSON();
       	});
       }
       return {
         ...state,
         isLoadingOrders: false,
-        orders: orders,
+        orders: ordersData,
         totalPages: action.res.totalPages,
         totalOrders: action.res.totalOrders,
         tabCounts: action.res.tabCounts,
