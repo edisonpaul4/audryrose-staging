@@ -9,6 +9,7 @@ const initialState = {
 };
 
 const products = (state = initialState, action) => {
+  let productsData;
   switch(action.type) {
 
     case 'PRODUCTS_REQUEST':
@@ -18,9 +19,9 @@ const products = (state = initialState, action) => {
       }
 
     case 'PRODUCTS_SUCCESS':
-      let products = [];
+      productsData = [];
       if (action.res.products) {
-      	products = action.res.products.map(function(product, i) {
+      	productsData = action.res.products.map(function(product, i) {
         	return product.toJSON();
       	});
 //         console.log(products)
@@ -31,7 +32,7 @@ const products = (state = initialState, action) => {
         ...state,
         timeout: action.res.timeout ? action.res.timeout : undefined,
         isLoadingProducts: false,
-        products: products,
+        products: productsData,
         totalPages: action.res.totalPages,
         totalProducts: action.res.totalProducts,
         tabCounts: action.res.tabCounts
@@ -84,7 +85,7 @@ const products = (state = initialState, action) => {
 
     case 'PRODUCT_RELOAD_SUCCESS':
       if (state.products && action.res.updatedProduct) {
-      	products = state.products.map(function(product, i) {
+      	productsData = state.products.map(function(product, i) {
         	if (product.objectId === action.res.updatedProduct.id) {
           	console.log('updated product loaded ' + product.objectId);
           	product = action.res.updatedProduct.toJSON();
@@ -95,7 +96,7 @@ const products = (state = initialState, action) => {
       return {
         ...state,
         timeout: action.res.timeout ? action.res.timeout : undefined,
-        products: products ? products : undefined,
+        products: productsData ? productsData : undefined,
         updatedProducts: action.res.updatedProduct ? [action.res.updatedProduct] : undefined,
         tabCounts: action.res.tabCounts ? action.res.tabCounts : undefined
       };
@@ -112,7 +113,7 @@ const products = (state = initialState, action) => {
 
     case 'PRODUCT_SAVE_SUCCESS':
       if (state.products && action.res.updatedProduct) {
-      	products = state.products.map(function(product, i) {
+      	productsData = state.products.map(function(product, i) {
         	if (product.objectId === action.res.updatedProduct.id) {
           	console.log('updated product loaded ' + product.objectId);
           	product = action.res.updatedProduct.toJSON();
@@ -123,7 +124,7 @@ const products = (state = initialState, action) => {
       return {
         ...state,
         timeout: action.res.timeout ? action.res.timeout : undefined,
-        products: products ? products : undefined,
+        products: productsData ? productsData : undefined,
         updatedProducts: action.res.updatedProduct ? [action.res.updatedProduct] : undefined,
         tabCounts: action.res.tabCounts ? action.res.tabCounts : undefined
       };
@@ -140,7 +141,7 @@ const products = (state = initialState, action) => {
 
     case 'VARIANT_SAVE_SUCCESS':
       if (state.products && action.res.updatedProducts) {
-      	products = state.products.map(function(product, i) {
+      	productsData = state.products.map(function(product, i) {
         	action.res.updatedProducts.map(function(updatedProduct, j) {
           	if (product.objectId === updatedProduct.id) {
             	console.log('updated product loaded ' + product.objectId);
@@ -154,7 +155,7 @@ const products = (state = initialState, action) => {
       return {
         ...state,
         timeout: action.res.timeout ? action.res.timeout : undefined,
-        products: products ? products : undefined,
+        products: productsData ? productsData : undefined,
         updatedProducts: action.res.updatedProduct ? [action.res.updatedProduct] : undefined,
         updatedVariants: action.res.updatedVariants ? action.res.updatedVariants : undefined,
         tabCounts: action.res.tabCounts ? action.res.tabCounts : undefined
@@ -172,7 +173,7 @@ const products = (state = initialState, action) => {
 
     case 'VARIANTS_SAVE_SUCCESS':
       if (state.products && action.res.updatedProducts) {
-      	products = state.products.map(function(product, i) {
+      	productsData = state.products.map(function(product, i) {
         	action.res.updatedProducts.map(function(updatedProduct, j) {
           	if (product.objectId === updatedProduct.id) {
             	console.log('updated product loaded ' + product.objectId);
@@ -186,7 +187,7 @@ const products = (state = initialState, action) => {
       return {
         ...state,
         timeout: action.res.timeout ? action.res.timeout : undefined,
-        products: products ? products : undefined,
+        products: productsData ? productsData : undefined,
         updatedProducts: action.res.updatedProducts ? action.res.updatedProducts : undefined,
         updatedVariants: action.res.updatedVariants ? action.res.updatedVariants : undefined,
         tabCounts: action.res.tabCounts ? action.res.tabCounts : undefined
@@ -204,7 +205,7 @@ const products = (state = initialState, action) => {
 
     case 'ADD_TO_VENDOR_ORDER_SUCCESS':
       if (state.products && action.res.updatedProducts) {
-      	products = state.products.map(function(product, i) {
+      	productsData = state.products.map(function(product, i) {
         	action.res.updatedProducts.map(function(updatedProduct, j) {
           	if (product.objectId === updatedProduct.id) {
             	console.log('updated product loaded ' + product.objectId);
@@ -218,7 +219,7 @@ const products = (state = initialState, action) => {
       return {
         ...state,
         timeout: action.res.timeout ? action.res.timeout : undefined,
-        products: products ? products : undefined,
+        products: productsData ? productsData : undefined,
         updatedProducts: action.res.updatedProducts ? action.res.updatedProducts : undefined,
         updatedVariants: action.res.updatedVariants ? action.res.updatedVariants : undefined,
         tabCounts: action.res.tabCounts ? action.res.tabCounts : undefined,
@@ -237,7 +238,7 @@ const products = (state = initialState, action) => {
 
     case 'CREATE_PRODUCT_RESIZE_SUCCESS':
       if (state.products && action.res.updatedProducts) {
-      	products = state.products.map(function(product, i) {
+      	productsData = state.products.map(function(product, i) {
         	action.res.updatedProducts.map(function(updatedProduct, j) {
           	if (product.objectId === updatedProduct.id) {
             	console.log('updated product loaded ' + product.objectId);
@@ -251,7 +252,7 @@ const products = (state = initialState, action) => {
       return {
         ...state,
         timeout: action.res.timeout ? action.res.timeout : undefined,
-        products: products ? products : undefined,
+        products: productsData ? productsData : undefined,
         updatedProducts: action.res.updatedProducts ? action.res.updatedProducts : undefined,
         updatedVariants: action.res.updatedVariants ? action.res.updatedVariants : undefined,
         tabCounts: action.res.tabCounts ? action.res.tabCounts : undefined,
@@ -270,7 +271,7 @@ const products = (state = initialState, action) => {
 
     case 'SAVE_PRODUCT_RESIZE_SUCCESS':
       if (state.products && action.res.updatedProducts) {
-      	products = state.products.map(function(product, i) {
+      	productsData = state.products.map(function(product, i) {
         	action.res.updatedProducts.map(function(updatedProduct, j) {
           	if (product.objectId === updatedProduct.id) {
             	console.log('updated product loaded ' + product.objectId);
@@ -284,7 +285,7 @@ const products = (state = initialState, action) => {
       return {
         ...state,
         timeout: action.res.timeout ? action.res.timeout : undefined,
-        products: products ? products : undefined,
+        products: productsData ? productsData : undefined,
         updatedProducts: action.res.updatedProducts ? action.res.updatedProducts : undefined,
         updatedVariants: action.res.updatedVariants ? action.res.updatedVariants : undefined,
         tabCounts: action.res.tabCounts ? action.res.tabCounts : undefined,
@@ -320,7 +321,7 @@ const products = (state = initialState, action) => {
 
     case 'BUNDLE_SAVE_SUCCESS':
       if (state.products && action.res.updatedProducts) {
-      	products = state.products.map(function(product, i) {
+      	productsData = state.products.map(function(product, i) {
         	action.res.updatedProducts.map(function(updatedProduct, j) {
           	if (product.objectId === updatedProduct.id) {
             	console.log('updated product loaded ' + product.objectId);
@@ -334,7 +335,7 @@ const products = (state = initialState, action) => {
       return {
         ...state,
         timeout: action.res.timeout ? action.res.timeout : undefined,
-        products: products ? products : undefined,
+        products: productsData ? productsData : undefined,
         updatedProducts: action.res.updatedProducts ? action.res.updatedProducts : undefined,
         errors: action.res.errors ? action.res.errors : undefined
       };
