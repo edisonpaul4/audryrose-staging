@@ -271,11 +271,12 @@ class VendorOrder extends Component {
 		let labelColor = status === 'Sent' ? daysLeft < 0 ? 'red' : 'olive' : 'yellow';
 		if (order.receivedAll === true) labelColor = null;
 		let labelText = status === 'Sent' ? daysLeft < 0 ? Math.abs(daysLeft) + ' days late' : daysLeft + ' days left' : averageWaitTime + ' days average wait time';
+
 		if (order.receivedAll === true && order.dateReceived && order.dateOrdered) {
   		labelText = moment(order.dateReceived.iso).diff(moment(order.dateOrdered.iso), 'days') + ' days wait time';
 		} else if (order.receivedAll === true && order.dateReceived) {
   		labelText = 'Received ' +  moment(order.dateReceived.iso).format('M-D-YY');
-		} else {
+		} else if (order.receivedAll === true) {
   		labelText = 'Received';
 		}
 		let labelDetailText = order.dateOrdered ? 'Sent ' + moment(order.dateOrdered.iso).format('M-D-YY') : '';
@@ -346,10 +347,14 @@ class DesignerDetails extends Component {
 	render() {
   	const scope = this;
   	const show = this.props.expanded ? true : false;
+  	const subpage = this.props.subpage;
   	const data = this.state.data;
   	let vendorOrderRows = [];
-		data.vendorOrders.map(function(vendorOrder, i) {
-			vendorOrderRows.push(<VendorOrder status={vendorOrder.status} order={vendorOrder.order} vendor={vendorOrder.vendor} isSaving={scope.props.isSaving} key={i} handleSaveVendorOrder={scope.handleSaveVendorOrder} handleSendVendorOrder={scope.handleSendVendorOrder} />);
+		if (data.vendorOrders) data.vendorOrders.map(function(vendorOrder, i) {
+  		if (vendorOrder.status.toLowerCase() === subpage || subpage === 'search' || subpage === 'all') {
+    		if (subpage === 'all' && vendorOrder.status === 'Completed') return vendorOrder;
+    		vendorOrderRows.push(<VendorOrder status={vendorOrder.status} order={vendorOrder.order} vendor={vendorOrder.vendor} isSaving={scope.props.isSaving} key={i} handleSaveVendorOrder={scope.handleSaveVendorOrder} handleSendVendorOrder={scope.handleSendVendorOrder} />);
+  		}
 			return vendorOrder;
 		});	
     

@@ -28,9 +28,8 @@ class DesignersNav extends Component {
 					link>
 					Sent
 				</Menu.Item>	
-				<Menu.Item 
-					as={Link} 
-					to='/designers/completed' 
+				<Menu.Item  
+					href='/designers/completed' 
 					active={pathName === '/designers/completed'} 
 					link>
 					Completed

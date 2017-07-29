@@ -131,7 +131,7 @@ class Designers extends Component {
     let search = this.props.location.query.q;
     this.state = {
       subpage: this.props.router.params.subpage,
-			page: null,
+			page: this.props.location.query.page ? this.props.location.query.page : 1,
 			search: search,
 			designers: null,
 			products: null,
@@ -222,6 +222,7 @@ class Designers extends Component {
   	
   	let designers = nextProps.designers ? nextProps.designers : this.state.designers;
   	
+/*
   	if (designers) {
     	designers.map((designer) => {
 
@@ -230,16 +231,32 @@ class Designers extends Component {
         	designer.vendors.map(function(vendor, i) {
       			if (scope.state.subpage !== 'completed' && vendor.vendorOrders && vendor.vendorOrders.length > 0) {
         			vendor.vendorOrders.map(function(vendorOrder, j) {
+                const vendorData = {
+                  abbreviation: vendor.abbreviation,
+                  email: vendor.email,
+                  firstName: vendor.firstName,
+                  name: vendor.name,
+                  objectId: vendor.objectId,
+                  vendorOrderCount: vendor.vendorOrderCount
+                }
                 let status = vendorOrder.orderedAll && vendorOrder.receivedAll === false ? 'Sent' : 'Pending';
                 if (vendorOrder.orderedAll && vendorOrder.receivedAll === true) status = 'Completed';
-          			if ((status === 'Sent' && scope.state.subpage === 'sent') || (status === 'Pending' && scope.state.subpage === 'pending') || (status === 'Completed' && scope.state.subpage === 'completed') || scope.state.subpage === 'search' || scope.state.subpage === 'all' || scope.state.subpage === undefined) vendorOrders.push({status:status, order:vendorOrder, vendor:vendor});
+          			if ((status === 'Sent' && scope.state.subpage === 'sent') || (status === 'Pending' && scope.state.subpage === 'pending') || (status === 'Completed' && scope.state.subpage === 'completed') || scope.state.subpage === 'search' || scope.state.subpage === 'all' || scope.state.subpage === undefined) vendorOrders.push({status:status, order:vendorOrder, vendor:vendorData});
           			return vendorOrders;
           		});
       			}
       			if (vendor.completedVendorOrders && vendor.completedVendorOrders.length > 0) {
         			vendor.completedVendorOrders.map(function(vendorOrder, j) {
                 let status = 'Completed';
-          			vendorOrders.push({status:status, order:vendorOrder, vendor:vendor});
+                const vendorData = {
+                  abbreviation: vendor.abbreviation,
+                  email: vendor.email,
+                  firstName: vendor.firstName,
+                  name: vendor.name,
+                  objectId: vendor.objectId,
+                  vendorOrderCount: vendor.vendorOrderCount
+                }
+          			vendorOrders.push({status:status, order:vendorOrder, vendor:vendorData});
           			return vendorOrders;
           		});
       			}
@@ -251,12 +268,13 @@ class Designers extends Component {
       	return designer;
     	});
   	}
+*/
   	
     let isSavingDesigners = this.state.isSavingDesigners;
   	if (nextProps.updatedDesigner) {
-    	const updatedDesignerJSON = nextProps.updatedDesigner.toJSON();
+    	const updatedDesigner = nextProps.updatedDesigner;
     	if (isSavingDesigners.length) {
-      	const index = isSavingDesigners.indexOf(updatedDesignerJSON.objectId);
+      	const index = isSavingDesigners.indexOf(updatedDesigner.objectId);
         if (index >= 0) isSavingDesigners.splice(index, 1);
       }
     }
@@ -318,7 +336,7 @@ class Designers extends Component {
 			successMessages: successMessages,
 			errors: errors
 		});
-		
+
 		if (nextPage !== this.state.page || nextProps.router.params.subpage !== this.state.subpage) {
     	this.props.getDesigners(this.props.token, nextProps.router.params.subpage, nextPage, this.state.search);
   	}
@@ -328,18 +346,30 @@ class Designers extends Component {
   render() {
     const scope = this;
 		const { error, isLoadingDesigners, totalPages } = this.props;
-		const { designers } = this.state;
+		const { designers, subpage } = this.state;
 		let designerRows = [];
     
 		if (designers) {
 			designers.map(function(designer, i) {
   			let isSaving = scope.state.isSavingDesigners.indexOf(designer.objectId) >= 0 ? true : false;
   			let expanded = (scope.state.expanded.indexOf(designer.objectId) >= 0 || scope.state.search/*  || scope.state.subpage === 'pending' || scope.state.subpage === 'sent' */) ? true : false;
+        
+        const designerData = {
+          abbreviation: designer.abbreviation,
+          designerId: designer.designerId,
+          hasPendingVendorOrder: designer.hasPendingVendorOrder,
+          hasSentVendorOrder: designer.hasSentVendorOrder,
+          image_file: designer.image_file,
+          name: designer.name,
+          objectId: designer.objectId,
+          updatedAt: designer.updatedAt,
+          vendors: designer.vendors
+        }
 
 				designerRows.push(
 				  <Designer 
-				    data={designer} 
-				    totalVendorOrders={designer.vendorOrders.length} 
+				    data={designerData} 
+				    totalVendorOrders={designer.vendorOrders ? designer.vendorOrders.length : 0} 
 				    isSaving={isSaving} 
 				    expanded={expanded} 
 				    handleSaveVendor={scope.handleSaveVendor} 
@@ -347,10 +377,17 @@ class Designers extends Component {
 				    key={`${designer.designerId}-1`} 
 			    />
 		    );
+		    
 				if (expanded) {
+          const designerDetailsData = {
+            name: designer.name,
+            objectId: designer.objectId,
+            vendorOrders: designer.vendorOrders
+          }
   				designerRows.push(
   				  <DesignerDetails 
-  				    data={designer} 
+  				    data={designerDetailsData} 
+  				    subpage={subpage} 
   				    expanded={expanded} 
   				    key={`${designer.designerId}-2`} 
   				    isSaving={isSaving} 
