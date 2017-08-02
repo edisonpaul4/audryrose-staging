@@ -71,7 +71,7 @@ class ProductRow extends Component {
   	} else if (vendorOrderVariant.ordered && vendorOrderVariant.received > 0) {
   		labelText += ', ' + vendorOrderVariant.received + ' Received';
   	}
-  	labelText += ' #' + product.order_id;
+  	labelText += ' #' + vendorOrder.vendorOrderNumber;
   	const labelDetailText = vendorOrder.dateOrdered ? daysLeft < 0 ? moment(vendorOrder.dateOrdered.iso).format('M-D-YY') + ' (' + Math.abs(daysLeft) + ' days late)' : moment(vendorOrder.dateOrdered.iso).format('M-D-YY') + ' (' + daysLeft + ' days left)' : averageWaitTime + ' days wait';
   	const labelDetail = vendorOrderVariant.done === false ? <Label.Detail>{labelDetailText}</Label.Detail> : null;
   	const labelLink = vendorOrderVariant.done === false ? variant.designer ? '/designers/search?q=' + variant.designer.designerId : '/designers' : null;
@@ -92,7 +92,7 @@ class ProductRow extends Component {
     
 		let labelText = resize.units + ' Resize' + (resize.units > 1 ? 's' : '') + (resize.dateSent ? ' Sent' : ' Pending');
 		if (resize.received >= resize.units) labelText = resize.received + ' Resize Received';
-  	if (resize.orderProduct) labelText += ' #' + product.order_id;
+//   	if (resize.orderProduct) labelText += ' #' + product.order_id;
 		const labelDetailText = resize.dateSent ?  daysSinceSent + ' days ago' : '';
 		const labelDetail = resize.done === false ? <Label.Detail>{labelDetailText}</Label.Detail> : null;
 		let showLabel = false;
@@ -195,10 +195,12 @@ class ProductRow extends Component {
     }
     
 	  let awaitingInventoryQueue = [];
+// 	  console.log(product)
 		if (product && product.awaitingInventory && product.awaitingInventory.length > 0) {
   		let label;
   		product.awaitingInventory.map(function(inventoryItem, i) {
     		const isVendorOrder = inventoryItem.className === 'VendorOrderVariant' ? true : false;
+    		console.log('isVendorOrder', isVendorOrder)
     		if (isVendorOrder){
       		let vendorOrderMatch;
       		if (product.awaitingInventoryVendorOrders) {
@@ -214,9 +216,9 @@ class ProductRow extends Component {
           		return vendorOrder;
         		});
       		}
-      		label = scope.getVendorOrderLabel(product, variant, inventoryItem, vendorOrderMatch)
+      		label = scope.getVendorOrderLabel(product, variant, inventoryItem, vendorOrderMatch);
     		} else {
-      		label = scope.getResizeLabel(product, variant, inventoryItem)
+      		label = scope.getResizeLabel(product, variant, inventoryItem);
     		}
     		
     		if (label) awaitingInventoryQueue.push(label);
@@ -227,7 +229,8 @@ class ProductRow extends Component {
 		
 		let primaryButton;
 		let dropdownItems = [];
-		const allowEditing = vendorOrders.length < 1 && resizes.length < 1;
+// 		const allowEditing = vendorOrders.length < 1 && resizes.length < 1;
+		const allowEditing = true;
     if (shipment) {
   	  primaryButton = <Button icon='shipping' content='View' onClick={this.handleShipModalOpen} />;
     } else if (product.shippable || product.partiallyShippable) {
@@ -255,7 +258,7 @@ class ProductRow extends Component {
 				<Table.Cell>{alwaysResize}</Table.Cell>
 				<Table.Cell>{inventory}</Table.Cell>
 				<Table.Cell>{designerName}</Table.Cell>
-				<Table.Cell>{vendorOrders}{resizes}{awaitingInventoryQueue}</Table.Cell>
+				<Table.Cell>{/*{vendorOrders}{resizes}*/}{awaitingInventoryQueue}</Table.Cell>
 				<Table.Cell className='right aligned'>
           <Button.Group color='grey' size='mini' compact>
             {primaryButton}
@@ -326,6 +329,8 @@ class OrderDetails extends Component {
 	createProductObjects(products) {
   	const objs = products.map((product) => {
     	return {
+      	awaitingInventory: product.awaitingInventory,
+      	awaitingInventoryVendorOrders: product.awaitingInventoryVendorOrders,
   			edited: product.edited,
   			editedVariants: product.editedVariants,
   			isBundle: product.isBundle,

@@ -115,6 +115,7 @@ class VariantRow extends Component {
   	return showLabel ? <Label as={labelLink ? 'a' : null} href={labelLink} size='tiny' color={labelColor} key={'vendorOrder-'+vendorOrder.objectId+'-'+vendorOrderVariant.objectId}>{labelIcon}{labelText}{labelDetail}</Label> : null;
 	}
 	getResizeLabel(product, variant, resize, orderProductMatch) {
+  	console.log(resize)
 		const averageWaitTime = 7;
 // 		const expectedDate = resize.dateSent ? moment(resize.dateSent.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
 // 		const daysLeft = resize.dateSent ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;

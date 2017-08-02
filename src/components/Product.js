@@ -29,7 +29,6 @@ class Product extends PureComponent {
 	}
 	render() {
   	const data = this.state.data;
-  	console.log(data)
   	const expanded = this.state.expanded;
   	const isReloading = this.state.isReloading;
   	

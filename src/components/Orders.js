@@ -529,6 +529,7 @@ class Orders extends Component {
             orderShipments: order.orderShipments,
             status: order.status
   				};
+  				console.log(orderData)
   				orderRows.push(
   				  <OrderDetails 
     				  subpage={scope.state.subpage} 
