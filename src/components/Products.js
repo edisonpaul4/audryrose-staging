@@ -481,6 +481,7 @@ class Products extends Component {
     	state.search = this.props.location.query.q;
   	}
   	
+  	if (nextProps.router.params.subpage === 'search' && state.products && state.products.length === 1) state.expandedProducts = [state.products[0].productId];
   	//if (state.products && nextProps.router.params.subpage === 'being-resized') state.expandedProducts = state.products.map(function(product) { return product.productId });
   	
   	if (nextProps.router.params.subpage !== this.state.subpage) {

@@ -357,6 +357,7 @@ class Orders extends Component {
     // Reset on subpage navigation
   	const search = nextProps.router.params.subpage !== 'search' ? null : this.state.search;
   	expandedOrders = nextProps.router.params.subpage !== this.state.subpage ? [] : expandedOrders;
+  	if (nextProps.router.params.subpage === 'search' && orders && orders.length === 1) expandedOrders = [orders[0].orderId];
   	
 		// Display any errors
 		let newErrors = [];
