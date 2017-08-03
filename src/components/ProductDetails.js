@@ -97,7 +97,7 @@ class VariantRow extends Component {
   	}
   	if (vendorOrderVariant.orderProducts) {
     	vendorOrderVariant.orderProducts.map(function(orderProduct, i) {
-      	labelText += ' #' + orderProduct.order_id;
+      	labelText += ' #' + vendorOrder.vendorOrderNumber;
       	return orderProduct;
     	});
   	}
@@ -131,7 +131,7 @@ class VariantRow extends Component {
     
 		let labelText = resize.units + ' Resize' + (resize.units > 1 ? 's' : '') + (resize.dateSent ? ' Sent' : ' Pending');
 		if (resize.received >= resize.units) labelText = resize.received + ' Resize Received';
-  	if (resize.orderProduct) labelText += ' #' + resize.orderProduct.order_id;
+  	//if (resize.orderProduct) labelText += ' #' + resize.orderProduct.order_id;
 // 		const labelDetailText = daysLeft < 0 ? moment(resize.dateSent.iso).format('M-D-YY') + ' (' + Math.abs(daysLeft) + ' days late)' : moment(resize.dateSent.iso).format('M-D-YY') + ' (' + daysLeft + ' days left)';
 		const labelDetailText = resize.dateSent ?  daysSinceSent + ' days ago' : '';
 		const labelDetail = resize.done === false ? <Label.Detail>{labelDetailText}</Label.Detail> : null;
