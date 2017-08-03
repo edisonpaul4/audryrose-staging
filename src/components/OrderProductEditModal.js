@@ -425,7 +425,7 @@ class OrderProductEditModal extends Component {
             		if (colorCode.objectId === scope.state.selectedColor) colorCodeObject = colorCode;
             		return colorCode;
           		});
-          		if (variant.color_value === colorCodeObject.value) {
+          		if (colorCodeObject && variant.color_value === colorCodeObject.value) {
             		numOptionMatches++;
           		}
         		}
@@ -438,7 +438,7 @@ class OrderProductEditModal extends Component {
             		if (stoneCode.objectId === scope.state.selectedStone) stoneCodeObject = stoneCode;
             		return stoneCode;
           		});
-          		if (variant.stone_value === stoneCodeObject.value) {
+          		if (stoneCodeObject && variant.stone_value === stoneCodeObject.value) {
             		numOptionMatches++;
           		}
         		}
@@ -451,7 +451,7 @@ class OrderProductEditModal extends Component {
             		if (sizeCode.objectId === scope.state.selectedSize) sizeCodeObject = sizeCode;
             		return sizeCode;
           		});
-          		if (variant.size_value === sizeCodeObject.value) {
+          		if (sizeCodeObject && variant.size_value === sizeCodeObject.value) {
             		numOptionMatches++;
           		}
         		}
@@ -464,7 +464,7 @@ class OrderProductEditModal extends Component {
             		if (miscCode.objectId === scope.state.selectedMisc) miscCodeObject = miscCode;
             		return miscCode;
           		});
-          		if (variant.misc_value === miscCodeObject.value) {
+          		if (miscCodeObject && variant.misc_value === miscCodeObject.value) {
             		numOptionMatches++;
           		}
         		}
