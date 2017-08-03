@@ -412,7 +412,7 @@ class OrderProductEditModal extends Component {
 		let variantSuggestions = [];
 		if (this.state.selectedProduct !== '') {
   		scope.state.products.map(function(product, i) {
-    		if (product.productId === scope.state.selectedProduct) {
+    		if (product.variants && product.productId === scope.state.selectedProduct) {
       		product.variants.map(function(variant, j) {
             let numOptionsSelected = 0;
         		let numOptionMatches = 0;
