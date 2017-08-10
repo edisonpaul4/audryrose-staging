@@ -347,9 +347,19 @@ class DesignerDetails extends Component {
   	const data = this.state.data;
   	let vendorOrderRows = [];
 		if (data.vendorOrders) data.vendorOrders.map(function(vendorOrder, i) {
-  		if (vendorOrder.status.toLowerCase() === subpage || subpage === 'search' || subpage === 'all') {
+  		if (!subpage || subpage === 'all' || subpage === 'search' || vendorOrder.status.toLowerCase() === subpage) {
     		if (subpage === 'all' && vendorOrder.status === 'Completed') return vendorOrder;
-    		vendorOrderRows.push(<VendorOrder status={vendorOrder.status} order={vendorOrder.order} vendor={vendorOrder.vendor} isSaving={scope.props.isSaving} key={i} handleSaveVendorOrder={scope.handleSaveVendorOrder} handleSendVendorOrder={scope.handleSendVendorOrder} />);
+    		vendorOrderRows.push(
+          <VendorOrder
+            status={vendorOrder.status}
+            order={vendorOrder.order}
+            vendor={vendorOrder.vendor}
+            isSaving={scope.props.isSaving}
+            key={i}
+            handleSaveVendorOrder={scope.handleSaveVendorOrder}
+            handleSendVendorOrder={scope.handleSendVendorOrder}
+          />
+        );
   		}
 			return vendorOrder;
 		});

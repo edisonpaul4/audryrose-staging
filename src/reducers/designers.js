@@ -5,7 +5,7 @@ const initialState = {
 
 const designers = (state = initialState, action) => {
   let designersArray = [];
-  
+
   switch(action.type) {
 
     case 'DESIGNERS_REQUEST':
@@ -23,7 +23,7 @@ const designers = (state = initialState, action) => {
         	designer = designer.toJSON();
         	designer.vendorOrders = [];
           var vendorIds = [];
-          
+
           // Add pending and send vendor orders to designer
         	if (designer.vendors) {
           	designer.vendors.map((vendor) => {
@@ -60,11 +60,12 @@ const designers = (state = initialState, action) => {
             	}
           	}
         	}
-        	
+
         	designersArray.push(designer);
         	return designer;
       	});
       }
+      // console.log(designersArray)
 
       return {
         ...state,
@@ -79,7 +80,7 @@ const designers = (state = initialState, action) => {
         ...state,
         isLoadingDesigners: false
       }
-      
+
     case 'VENDOR_SAVE_REQUEST':
       return {
         ...state
@@ -98,12 +99,12 @@ const designers = (state = initialState, action) => {
       return {
         ...state
       }
-      
+
     case 'VENDOR_ORDER_SAVE_REQUEST':
       return {
         ...state
       }
-      
+
     case 'VENDOR_ORDER_SAVE_SUCCESS':
       console.log('completedVendorOrders', action.res.completedVendorOrders)
       designersArray = mergeUpdatedDesigner(state.designers, action.res.updatedDesigner, action.res.completedVendorOrders);
@@ -118,7 +119,7 @@ const designers = (state = initialState, action) => {
       return {
         ...state
       }
-      
+
     case 'VENDOR_ORDER_SEND_REQUEST':
       return {
         ...state
@@ -139,7 +140,7 @@ const designers = (state = initialState, action) => {
       return {
         ...state
       }
-			
+
     default:
       return state;
   }
@@ -192,7 +193,7 @@ const mergeUpdatedDesigner = function(designers, updatedDesigner, completedVendo
   	});
 	}
 	console.log(designers)
-	
+
 	return designers;
 }
 
