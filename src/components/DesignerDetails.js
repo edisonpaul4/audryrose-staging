@@ -17,7 +17,7 @@ class ProductRow extends Component {
     this.handleNotesChange = this.handleNotesChange.bind(this);
     this.handleReceivedChange = this.handleReceivedChange.bind(this);
     this.handleCancelVariantClick = this.handleCancelVariantClick.bind(this);
-  }  
+  }
   handleUnitsChange(e, {value}) {
     this.setState({
       units: parseFloat(value),
@@ -72,13 +72,13 @@ class ProductRow extends Component {
     	});
   	}
 	}
-	render() {  	
+	render() {
 		const vendorOrderVariant = this.props.vendorOrderVariant;
 		const variant = vendorOrderVariant.variant;
 		const productName = variant.designerProductName ? variant.designerProductName : variant.productName ? variant.productName : '';
 		const productUrl = '/products/search?q=' + variant.productId;
 		const productLink = <a href={productUrl}>{productName}</a>;
-		
+
 		// Create an array of other options values
 		let options = [];
 		if (variant) {
@@ -89,7 +89,7 @@ class ProductRow extends Component {
   		if (variant.font_value) options.push('FONT: ' + variant.font_value);
   		if (variant.letter_value) options.push('LETTER: ' + variant.letter_value);
   		if (variant.singlepair_value) options.push('SINGLE/PAIR: ' + variant.singlepair_value);
-  		
+
 		}
 		const inventory = variant.inventoryLevel ? variant.inventoryLevel : 0;
 		const units = (this.props.status === 'Pending') ? <Input type='number' value={this.state.units ? this.state.units : 0} onChange={this.handleUnitsChange} min={0} disabled={this.props.isSaving} /> : this.state.units;
@@ -97,8 +97,6 @@ class ProductRow extends Component {
 		const doneIconClass = vendorOrderVariant.done ? '' : 'invisible';
 		const received = (this.props.status === 'Sent') ? <Table.Cell><Input type='number' value={this.state.received ? this.state.received : 0} onChange={this.handleReceivedChange} min={0} disabled={this.props.isSaving} /></Table.Cell> : null;
 		const cancelClass = this.isEdited() ? '' : 'invisible';
-		
-		const orderNumber = vendorOrderVariant.orderProducts && vendorOrderVariant.orderProducts.length > 0 ? '#' + vendorOrderVariant.orderProducts[0].order_id : '';
 
     return (
       <Table.Row>
@@ -108,22 +106,21 @@ class ProductRow extends Component {
             return <span key={i}>{option}<br/></span>;
           })}
         </Table.Cell>
-        <Table.Cell>{orderNumber}</Table.Cell>
 				<Table.Cell>{inventory}</Table.Cell>
 				<Table.Cell>{units}</Table.Cell>
 				<Table.Cell>{notes}</Table.Cell>
 				{received}
 				<Table.Cell className='right aligned'>
           <Button.Group size='mini'>
-    		    <Button content='Cancel' 
-      		    className={cancelClass} 
-      		    secondary 
-      		    compact 
-      		    loading={this.props.isSaving} 
-      		    disabled={this.props.isSaving} 
-      		    onClick={this.handleCancelVariantClick} 
+    		    <Button content='Cancel'
+      		    className={cancelClass}
+      		    secondary
+      		    compact
+      		    loading={this.props.isSaving}
+      		    disabled={this.props.isSaving}
+      		    onClick={this.handleCancelVariantClick}
     		    />
-    	    </Button.Group> 
+    	    </Button.Group>
 				</Table.Cell>
 				<Table.Cell className='right aligned'>
   				<Icon name='checkmark' color='olive' size='large' className={doneIconClass} />
@@ -235,36 +232,36 @@ class VendorOrder extends Component {
 				return vendorOrderVariant;
 	    });
 		}
-		
+
 		const partiallyReceived = (order.orderedAll === true && order.receivedAll === false && totalReceived > 0) ? true : false;
 		const partiallyReceivedLabel = partiallyReceived ? <Label size='small' color='orange'>Partially Received</Label> : null;
-		
-		const saveChangesButton = this.state.variantsEdited || this.state.formEdited ? <Button 
-      primary 
-      circular 
-      compact 
-      size='small' 
-      icon='save' 
-      content='Save Changes' 
-      disabled={this.props.isSaving} 
-      onClick={this.handleSaveVendorOrderClick} 
+
+		const saveChangesButton = this.state.variantsEdited || this.state.formEdited ? <Button
+      primary
+      circular
+      compact
+      size='small'
+      icon='save'
+      content='Save Changes'
+      disabled={this.props.isSaving}
+      onClick={this.handleSaveVendorOrderClick}
     /> : null;
-    
-		const sendOrderButton = (status === 'Pending') ? <Button 
-      color='olive' 
-      compact 
-      size='small' 
-      icon='mail' 
-      content='Send Order' 
+
+		const sendOrderButton = (status === 'Pending') ? <Button
+      color='olive'
+      compact
+      size='small'
+      icon='mail'
+      content='Send Order'
       floated='right'
-      disabled={this.props.isSaving || this.state.variantsEdited || this.state.formEdited} 
-      onClick={this.handleSendVendorOrderClick} 
+      disabled={this.props.isSaving || this.state.variantsEdited || this.state.formEdited}
+      onClick={this.handleSendVendorOrderClick}
     /> : null;
-    
+
     const receivedHeader = (status === 'Sent') ? <Table.HeaderCell>Units Received</Table.HeaderCell> : null;
-    
+
     const emailMessage = (status === 'Pending') ? <Form><Divider /><TextArea disabled={status !== 'Pending' ? true : false} placeholder='Enter a personal message' autoHeight value={this.state.message ? this.state.message : ''} onChange={this.handleMessageChange} /><Divider /></Form> : null;
-    
+
 		const averageWaitTime = vendor.waitTime ? vendor.waitTime : 21;
 		const expectedDate = order.dateOrdered ? moment(order.dateOrdered.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
 		const daysLeft = order.dateOrdered ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
@@ -282,8 +279,8 @@ class VendorOrder extends Component {
 		let labelDetailText = order.dateOrdered ? 'Sent ' + moment(order.dateOrdered.iso).format('M-D-YY') : '';
 		if (order.receivedAll === true && order.dateReceived) labelDetailText += ' | Received ' + moment(order.dateReceived.iso).format('M-D-YY');
 		const labelDetail = order.dateOrdered ? <Label.Detail>{labelDetailText}</Label.Detail> : null;
-		const label = <Label size='small' color={labelColor}>{labelText}{labelDetail}</Label>;    
-		
+		const label = <Label size='small' color={labelColor}>{labelText}{labelDetail}</Label>;
+
     return (
       <Segment secondary key={order.objectId}>
         <Header>{status} Order {order.vendorOrderNumber} {label} {partiallyReceivedLabel}</Header>
@@ -292,7 +289,6 @@ class VendorOrder extends Component {
             <Table.Row>
               <Table.HeaderCell>Product</Table.HeaderCell>
               <Table.HeaderCell>Options</Table.HeaderCell>
-              <Table.HeaderCell>Customer Order</Table.HeaderCell>
               <Table.HeaderCell>ACH OH</Table.HeaderCell>
               <Table.HeaderCell>Units {status === 'Pending' ? 'To Order' : 'Ordered'}</Table.HeaderCell>
               <Table.HeaderCell>Notes</Table.HeaderCell>
@@ -356,15 +352,15 @@ class DesignerDetails extends Component {
     		vendorOrderRows.push(<VendorOrder status={vendorOrder.status} order={vendorOrder.order} vendor={vendorOrder.vendor} isSaving={scope.props.isSaving} key={i} handleSaveVendorOrder={scope.handleSaveVendorOrder} handleSendVendorOrder={scope.handleSendVendorOrder} />);
   		}
 			return vendorOrder;
-		});	
-    
+		});
+
 		const rowClass = classNames(
 			{
 				'': show,
 				'hidden': !show
 			}
 		);
-		
+
     return (
       <Table.Row className={rowClass}>
         <Table.Cell colSpan='10' className='order-product-row'>
