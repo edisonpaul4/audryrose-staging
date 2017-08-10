@@ -179,10 +179,8 @@ const mergeUpdatedDesigner = function(designers, updatedDesigner, completedVendo
         	}
         	if (updatedVendorOrder) {
           	vendorOrders.push(updatedVendorOrder);
-          	console.log('updatedVendorOrder', updatedVendorOrder)
         	} else {
           	vendorOrders.push(vendorOrder);
-          	console.log('existing VendorOrder', vendorOrder)
         	}
         	return vendorOrder;
       	});
@@ -192,7 +190,6 @@ const mergeUpdatedDesigner = function(designers, updatedDesigner, completedVendo
     	return designer;
   	});
 	}
-	console.log(designers)
 
 	return designers;
 }
