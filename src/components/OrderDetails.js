@@ -28,10 +28,10 @@ class ProductRow extends Component {
       if (i === 0 && variant.inventoryLevel) {
         inventoryLevel = variant.inventoryLevel;
       } else if (variant.inventoryLevel < inventoryLevel) {
-        inventoryLevel = variant.inventoryLevel; 
+        inventoryLevel = variant.inventoryLevel;
       }
       return variant;
-    }); 
+    });
     return inventoryLevel;
   }
 	handleShowOrderFormClick(e, {value}) {
@@ -50,7 +50,7 @@ class ProductRow extends Component {
 	}
 	getVendorOrderLabel(product, variant, vendorOrderVariant, vendorOrder, orderProductMatch) {
   	if (!vendorOrder) return <Label size='tiny' color='red' key={'product-'+product.objectId+'-'+vendorOrderVariant.objectId}>Error: Missing vendor order data</Label>;
-  	
+
   	const averageWaitTime = vendorOrder.vendor.waitTime ? vendorOrder.vendor.waitTime : 21;
   	const expectedDate = vendorOrder.dateOrdered ? moment(vendorOrder.dateOrdered.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
   	const daysLeft = vendorOrder.dateOrdered ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
@@ -65,7 +65,7 @@ class ProductRow extends Component {
   		labelColor = 'olive';
   	}
   	let labelText = vendorOrderVariant.ordered ? vendorOrderVariant.units + ' Sent' : vendorOrderVariant.units + ' Pending';
-  	
+
   	if (vendorOrderVariant.done === true) {
   		labelText = vendorOrderVariant.received + ' Received';
   	} else if (vendorOrderVariant.ordered && vendorOrderVariant.received > 0) {
@@ -89,10 +89,9 @@ class ProductRow extends Component {
   		labelColor = 'red';
 		}
 		const labelLink = resize.done === false && product && product.product_id ? '/products/search?q=' + product.product_id : null;
-    
+
 		let labelText = resize.units + ' Resize' + (resize.units > 1 ? 's' : '') + (resize.dateSent ? ' Sent' : ' Pending');
 		if (resize.received >= resize.units) labelText = resize.received + ' Resize Received';
-//   	if (resize.orderProduct) labelText += ' #' + product.order_id;
 		const labelDetailText = resize.dateSent ?  daysSinceSent + ' days ago' : '';
 		const labelDetail = resize.done === false ? <Label.Detail>{labelDetailText}</Label.Detail> : null;
 		let showLabel = false;
@@ -112,7 +111,7 @@ class ProductRow extends Component {
   	if (nextProps.variant) state.variant = nextProps.variant;
   	this.setState(state);
 	}
-	render() {  	
+	render() {
   	const scope = this;
 		const product = this.state.product;
 		const shipment = this.state.shipment;
@@ -128,7 +127,7 @@ class ProductRow extends Component {
   		if (variant.font_value) options.push('FONT: ' + variant.font_value);
   		if (variant.letter_value) options.push('LETTER: ' + variant.letter_value);
   		if (variant.singlepair_value) options.push('SINGLE/PAIR: ' + variant.singlepair_value);
-  		
+
 		} else if (product.product_options) {
 			product.product_options.map(function(option, i) {
 				options.push(option.display_name + ': ' + option.display_value);
@@ -138,23 +137,23 @@ class ProductRow extends Component {
 		options = options.map(function(option, i) {
   		return <span key={i}>{option}<br/></span>;
 		});
-		
+
 		const productName = product.name ? product.name : '';
 		const variantName = variant && variant.productName ? variant.productName : null;
 		const productUrl = product.product_id ? '/products/search?q=' + product.product_id : null;
 		const productLink = productUrl ? <a href={productUrl}>{productName + (product.isBundle ? ': ' + variantName : '')}</a> : productName;
-		
+
 		let productQuantity = product.quantity ? product.quantity : '';
 		if (product.quantity_shipped) productQuantity = `${productQuantity} (shipped ${product.quantity_shipped})`;
-		
+
 		const alwaysResize = variant ? variant.alwaysResize : '';
 		const inventory = variant ? variant.inventoryLevel : '';
 		const designerName = variant && variant.designer ? variant.designer.name : '';
-		const shippingLabel = shipment && shipment.labelWithPackingSlipUrl ? 
+		const shippingLabel = shipment && shipment.labelWithPackingSlipUrl ?
 		  <Button as={Link} href={shipment.labelWithPackingSlipUrl} target='_blank'>
 		    <Icon name='print' />Print
 	    </Button> : null;
-	    
+
 	  // Check if variant has been ordered
 	  let vendorOrders = [];
 	  if (product && product.vendorOrders) {
@@ -171,14 +170,14 @@ class ProductRow extends Component {
       	  }
       	  if (orderProductMatch && variant.objectId === vendorOrderVariant.variant.objectId) {
         	  var vendorOrderLabel = scope.getVendorOrderLabel(product, variant, vendorOrderVariant, vendorOrder, orderProductMatch);
-        	  if (vendorOrderLabel) vendorOrders.push(vendorOrderLabel);	  
+        	  if (vendorOrderLabel) vendorOrders.push(vendorOrderLabel);
       	  }
       	  return vendorOrderVariant;
     	  });
     	  return vendorOrder;
   	  });
 	  }
-    
+
 	  let resizes = [];
 		if (product && product.resizes && product.resizes.length > 0) {
   		product.resizes.map(function(resize, i) {
@@ -193,14 +192,12 @@ class ProductRow extends Component {
     		return resize;
   		});
     }
-    
+
 	  let awaitingInventoryQueue = [];
-// 	  console.log(product)
 		if (product && product.awaitingInventory && product.awaitingInventory.length > 0) {
   		let label;
   		product.awaitingInventory.map(function(inventoryItem, i) {
     		const isVendorOrder = inventoryItem.className === 'VendorOrderVariant' ? true : false;
-    		console.log('isVendorOrder', isVendorOrder)
     		if (isVendorOrder){
       		let vendorOrderMatch;
       		if (product.awaitingInventoryVendorOrders) {
@@ -220,16 +217,15 @@ class ProductRow extends Component {
     		} else {
       		label = scope.getResizeLabel(product, variant, inventoryItem);
     		}
-    		
+
     		if (label) awaitingInventoryQueue.push(label);
 
     		return inventoryItem;
   		});
     }
-		
+
 		let primaryButton;
 		let dropdownItems = [];
-// 		const allowEditing = vendorOrders.length < 1 && resizes.length < 1;
 		const allowEditing = true;
     if (shipment) {
   	  primaryButton = <Button icon='shipping' content='View' onClick={this.handleShipModalOpen} />;
@@ -244,7 +240,6 @@ class ProductRow extends Component {
   	  primaryButton = <Button icon='add to cart' content='Order' onClick={this.handleShowOrderFormClick} />;
   	  if (allowEditing) dropdownItems.push(<Dropdown.Item key='2' icon='edit' text='Edit Product' onClick={this.handleShowEditOrderProductFormClick} />);
 	  } else if (product.isCustom) {
-//   	  primaryButton = <Button icon='shipping' content='Custom Shipment' onClick={this.handleShipModalOpen} />;
   	  if (allowEditing) primaryButton = <Button icon='edit' content='Edit Product' onClick={this.handleShowEditOrderProductFormClick} />;
 	  }
 
@@ -314,7 +309,7 @@ class OrderDetails extends Component {
   }
 	handleToggleEditorClick() {
   	const showEditor = !this.state.showEditor;
-  	
+
   	this.setState({
     	showEditor: showEditor
   	});
@@ -348,8 +343,12 @@ class OrderDetails extends Component {
   			resizable: product.resizable,
   			shippable: product.shippable,
   			shippingAddress: product.shippingAddress,
+        total_ex_tax: product.total_ex_tax,
+        total_inc_tax: product.total_inc_tax,
+        total_tax: product.total_tax,
   			variants: product.variants, //TODO: SIMPLIFY THIS
-  			vendorOrders: product.vendorOrders //TODO: SIMPLIFY THIS
+  			vendorOrders: product.vendorOrders, //TODO: SIMPLIFY THIS
+        weight: product.weight
   		};
   	});
 		return objs;
@@ -383,10 +382,10 @@ class OrderDetails extends Component {
 		let shippedGroups = [];
 		let shippableGroups = [];
 		let unshippableGroups = [];
-		
+
 		if (orderProducts) {
   		orderProducts.map(function(orderProduct, i) {
-    		
+
     		// Check if product is in a shipment
     		let isShipped = false;
     		let shippedShipmentId;
@@ -405,19 +404,19 @@ class OrderDetails extends Component {
       		});
     		}
         const group = {
-          orderId: orderProduct.order_id, 
-          orderAddressId: orderProduct.order_address_id, 
+          orderId: orderProduct.order_id,
+          orderAddressId: orderProduct.order_address_id,
           orderBillingAddress: order.billing_address,
-          shippedShipmentId: shippedShipmentId, 
+          shippedShipmentId: shippedShipmentId,
           orderProducts: [orderProduct],
           shipment: shipment
         };
         let shipmentIndex = -1;
-    		
+
     		// Set whether product is added to shippable, shipped or unshippable groups
     		if (isShipped) {
       		// Check whether product is being added to an existing shipment group
-      		
+
       		shippedGroups.map(function(shippedGroup, j) {
         		if (shippedShipmentId === shippedGroup.shippedShipmentId) shipmentIndex = j;
         		return shippedGroups;
@@ -427,9 +426,9 @@ class OrderDetails extends Component {
           } else {
             shippedGroups[shipmentIndex].orderProducts.push(orderProduct);
           }
-      		
+
     		} else if ((orderProduct.shippable || orderProduct.partiallyShippable) && orderProduct.quantity_shipped < orderProduct.quantity) {
-      		
+
       		// Check whether product is being shipped to a unique address
       		shippableGroups.map(function(shippableGroup, j) {
         		if (orderProduct.order_address_id === shippableGroup.orderAddressId) shipmentIndex = j;
@@ -440,7 +439,7 @@ class OrderDetails extends Component {
           } else {
             shippableGroups[shipmentIndex].orderProducts.push(orderProduct);
           }
-      		
+
     		} else {
       		// Check whether product is being shipped to a unique address
       		unshippableGroups.map(function(unshippableGroup, j) {
@@ -452,13 +451,13 @@ class OrderDetails extends Component {
           } else {
             unshippableGroups[shipmentIndex].orderProducts.push(orderProduct);
           }
-      		
+
     		}
     		return orderProduct;
-    		
+
   		});
 		}
-    
+
     return {shippedGroups, shippableGroups, unshippableGroups};
 	}
 	render() {
@@ -472,14 +471,14 @@ class OrderDetails extends Component {
 				'hidden': !showProducts
 			}
 		);
-			
+
 		// Sort the data
 		if (products && products.length && products[0].orderProductId) {
       products.sort(function(a, b) {
         return parseFloat(a.orderProductId) - parseFloat(b.orderProductId);
       });
     }
-    
+
 		let productRows = [];
 		if (products) {
 			products.map(function(productRow, i) {
@@ -495,7 +494,7 @@ class OrderDetails extends Component {
     			});
   			}
   			let variants = productRow.editedVariants && productRow.editedVariants.length > 0 ? productRow.editedVariants : productRow.variants ? productRow.variants : null;
-  			
+
         if (variants) {
     			variants.map(function(variant, j) {
       			productRows.push(<ProductRow product={productRow} variant={variant} shipment={shipment} handleShipModalOpen={scope.handleShipModalOpen} key={i+'-'+j} handleShowOrderFormClick={scope.handleShowOrderFormClick} handleOrderProductEditClick={scope.handleOrderProductEditClick} />);
@@ -504,22 +503,22 @@ class OrderDetails extends Component {
   			} else if (productRow.isCustom) {
     			productRows.push(<ProductRow product={productRow} shipment={shipment} handleShipModalOpen={scope.handleShipModalOpen} key={i+'-Custom'} handleShowOrderFormClick={scope.handleShowOrderFormClick} handleOrderProductEditClick={scope.handleOrderProductEditClick} />);
   			}
-				
+
 				return productRow;
 	    });
 		}
-		
-		var shipAllButton = this.state.shippableGroups.length > 0 ? 
+
+		var shipAllButton = this.state.shippableGroups.length > 0 ?
       <Button circular compact size='tiny' primary
-        icon='shipping' 
-        content='Ship Order' 
+        icon='shipping'
+        content='Ship Order'
         floated='right'
-        disabled={this.props.isReloading} 
-        onClick={this.handleCreateShipments} 
+        disabled={this.props.isReloading}
+        onClick={this.handleCreateShipments}
       /> : null;
-      
+
     const detailsColSpan = this.props.subpage === 'fulfilled' ? '12' : '11';
-		
+
     return (
       <Table.Row className={rowClass}>
         <Table.Cell colSpan={detailsColSpan} className='order-product-row'>
@@ -527,11 +526,11 @@ class OrderDetails extends Component {
             <Dimmer active={this.props.isReloading} inverted>
               <Loader>Loading</Loader>
             </Dimmer>
-            <Button circular compact basic size='tiny' 
-              icon='refresh' 
-              content='Reload' 
-              disabled={this.props.isReloading} 
-              onClick={()=>this.handleReloadClick(this.props.data.orderId)} 
+            <Button circular compact basic size='tiny'
+              icon='refresh'
+              content='Reload'
+              disabled={this.props.isReloading}
+              onClick={()=>this.handleReloadClick(this.props.data.orderId)}
             />
             {shipAllButton}
             <Segment secondary>
@@ -553,13 +552,13 @@ class OrderDetails extends Component {
                 </Table.Body>
               </Table>
             </Segment>
-            <OrderShipModal 
-              open={this.state.shipModalOpen} 
-              handleShipModalClose={this.handleShipModalClose} 
-              handleCreateShipments={this.handleCreateShipments} 
-              shippedGroups={this.state.shippedGroups} 
-              shippableGroups={this.state.shippableGroups} 
-              unshippableGroups={this.state.unshippableGroups} 
+            <OrderShipModal
+              open={this.state.shipModalOpen}
+              handleShipModalClose={this.handleShipModalClose}
+              handleCreateShipments={this.handleCreateShipments}
+              shippedGroups={this.state.shippedGroups}
+              shippableGroups={this.state.shippableGroups}
+              unshippableGroups={this.state.unshippableGroups}
               isLoading={this.props.isReloading}
             />
           </Dimmer.Dimmable>

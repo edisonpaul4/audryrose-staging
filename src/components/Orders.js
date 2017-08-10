@@ -66,12 +66,12 @@ class Orders extends Component {
     this.handleOrderProductEditClose = this.handleOrderProductEditClose.bind(this);
     this.handleOrderProductSave = this.handleOrderProductSave.bind(this);
   }
-	
+
 	componentDidMount() {
   	this._notificationSystem = this.refs.notificationSystem;
 		this.props.getOrders(this.props.token, this.state.subpage, this.state.page, this.state.sort, this.state.search);
 	}
-	
+
 	handleToggleClick(orderId) {
 		let currentlyExpanded = this.state.expandedOrders;
 		var index = currentlyExpanded.indexOf(orderId);
@@ -84,7 +84,7 @@ class Orders extends Component {
 			expandedOrders: currentlyExpanded
 		});
 	}
-	
+
 	handleCheckboxClick(orderId) {
 		let selectedRows = this.state.selectedRows;
 		var index = selectedRows.indexOf(orderId);
@@ -97,7 +97,7 @@ class Orders extends Component {
 			selectedRows: selectedRows
 		});
 	}
-	
+
 	handleSelectAllClick() {
   	let selectedRows;
   	let selectAllRows = this.state.selectAllRows;
@@ -108,7 +108,7 @@ class Orders extends Component {
     	selectedRows = this.state.orders.map(function(order, i) {
 //       	let orderJSON = order.toJSON();
       	return order.orderId;
-    	});	
+    	});
     	selectAllRows = true;
   	}
   	this.setState({
@@ -116,37 +116,37 @@ class Orders extends Component {
     	selectAllRows: selectAllRows
   	});
 	}
-	
+
 	handleShipSelectedClick() {
   	// Add order ids to currently reloading array
   	let reloadingOrderIds = this.state.isReloading;
 		let currentlyReloading = reloadingOrderIds.concat(this.state.selectedRows);
 		currentlyReloading = currentlyReloading.filter(function(v,i) { return currentlyReloading.indexOf(v) === i; });
-		
+
   	this.setState({
     	isReloading: currentlyReloading
   	});
 		this.props.batchCreateShipments(this.props.token, this.state.selectedRows);
 	}
-	
+
 	handlePrintSelectedClick() {
 		this.props.batchPrintShipments(this.props.token, this.state.selectedRows);
 		this.setState({
   		isGeneratingFile: true
 		});
 	}
-	
+
 	handlePaginationClick(page) {
 		const router = this.props.router;
 		const queries = router.location.query;
 		queries.page = page;
-		
+
     router.replace({
       pathname: router.location.pathname,
       query: queries
     })
 	}
-	
+
 	handleReloadClick(orderId) {
 		let currentlyReloading = this.state.isReloading;
 		const index = currentlyReloading.indexOf(orderId);
@@ -158,14 +158,14 @@ class Orders extends Component {
   	});
 		this.props.reloadOrder(this.props.token, orderId);
 	}
-	
+
 	handleSortClick(sort) {
 		this.setState({
   		sort: sort,
   		page: 1,
   		expandedOrders: []
 		});
-		
+
 		const router = this.props.router;
 		const queries = router.location.query;
 		queries.sort = sort;
@@ -177,20 +177,20 @@ class Orders extends Component {
     });
     this.props.getOrders(this.props.token, this.state.subpage, 1,  sort, this.state.search);
 	}
-	
+
 	handleCreateShipments(shipmentGroups) {
   	// Add shipment group order ids to currently reloading array
   	var orderIds = shipmentGroups.map(function(obj) { return obj.orderProducts[0].order_id; });
     orderIds = orderIds.filter(function(v,i) { return orderIds.indexOf(v) === i; });
 		let currentlyReloading = orderIds.concat(this.state.isReloading);
 		currentlyReloading = currentlyReloading.filter(function(v,i) { return currentlyReloading.indexOf(v) === i; });
-		
+
   	this.setState({
     	isReloading: currentlyReloading
   	});
   	this.props.createShipments(this.props.token, shipmentGroups);
 	}
-	
+
 	handleAddToVendorOrder(orders, orderId, orderProductId) {
   	let currentlyReloading = this.state.isReloading;
     if (orderId) {
@@ -206,7 +206,7 @@ class Orders extends Component {
   	});
 		this.props.addOrderProductToVendorOrder(this.props.token, orders, orderId, orderProductId);
 	}
-	
+
 	handleCreateResize(resizes, orderId) {
   	let currentlyReloading = this.state.isReloading;
     if (orderId) {
@@ -222,7 +222,7 @@ class Orders extends Component {
   	});
 		this.props.createResize(this.props.token, resizes, orderId);
 	}
-	
+
 	handleDateNeededChange(data) {
   	let currentlyReloading = this.state.isReloading;
     if (data.orderId) {
@@ -236,7 +236,7 @@ class Orders extends Component {
   	});
 		this.props.saveOrder(this.props.token, data);
 	}
-	
+
 	handleShowOrderFormClick(data) {
   	let productOrderData = this.state.productOrderData;
   	if (data.variant) productOrderData.variant = data.variant.objectId;
@@ -249,14 +249,14 @@ class Orders extends Component {
       productOrderData: productOrderData
     });
 	}
-	
+
 	handleProductOrderModalClose(data) {
     this.setState({
       productOrderOpen: false,
       productOrderData: {}
     });
 	}
-	
+
 	handleOrderProductEditClick(data) {
   	let orderProductEditFormData = this.state.orderProductEditFormData;
     this.state.orders.map(function(order) {
@@ -275,7 +275,7 @@ class Orders extends Component {
     });
 		if (!orderProductEditFormData.products) this.props.getOrderProductFormData(this.props.token, data.orderProductId);
 	}
-	
+
 	handleOrderProductEditClose(data) {
   	let orderProductEditFormData = this.state.orderProductEditFormData;
   	orderProductEditFormData.orderProduct = null;
@@ -285,7 +285,7 @@ class Orders extends Component {
       orderProductEditFormIsLoading: false
     });
 	}
-	
+
 	handleOrderProductSave(data) {
 		let currentlyReloading = this.state.isReloading;
 		const index = currentlyReloading.indexOf(data.orderId);
@@ -297,7 +297,7 @@ class Orders extends Component {
   	});
 		this.props.saveOrderProduct(this.props.token, data);
 	}
-	
+
 	fraudCheck(order) {
   	let isSuspicious = false;
   	let message = '';
@@ -310,18 +310,18 @@ class Orders extends Component {
   	}
   	return {isSuspicious: isSuspicious, message: message};
 	}
-	
+
 	componentWillReceiveProps(nextProps) {
   	let scope = this;
   	let nextPage = parseFloat(nextProps.location.query.page);
   	if (!nextPage) nextPage = 1;
   	let expandedOrders = this.state.expandedOrders;
-  	
+
   	let currentOrders = this.state.orders;
   	if (nextProps.orders) currentOrders = nextProps.orders;
   	let orders = [];
   	let currentlyReloading = this.state.isReloading;
-  	
+
   	if (nextProps.updatedOrders) {
       currentOrders.map(function(order, i) {
         let addUpdatedOrder;
@@ -345,20 +345,20 @@ class Orders extends Component {
         }
         return order;
       });
-      
+
     } else {
       orders = currentOrders;
     }
     if (nextProps.timeout) currentlyReloading = [];
-    
+
   	// Update tab counts if available
   	const tabCounts = nextProps.tabCounts ? nextProps.tabCounts : this.state.tabCounts;
-    
+
     // Reset on subpage navigation
   	const search = nextProps.router.params.subpage !== 'search' ? null : this.state.search;
   	expandedOrders = nextProps.router.params.subpage !== this.state.subpage ? [] : expandedOrders;
   	if (nextProps.router.params.subpage === 'search' && orders && orders.length === 1) expandedOrders = [orders[0].orderId];
-  	
+
 		// Display any errors
 		let newErrors = [];
 		let errors = [];
@@ -383,7 +383,7 @@ class Orders extends Component {
   		});
       errors = newErrors.length > 0 ? newErrors : this.state.errors;
 		}
-		
+
 		// Display generated files with notification system
 		const generatedFile = nextProps.generatedFile ? nextProps.generatedFile : this.state.generatedFile;
 		let isGeneratingFile = this.state.isGeneratingFile;
@@ -402,7 +402,7 @@ class Orders extends Component {
       });
       isGeneratingFile = false;
 		}
-		
+
 		// Display files
   	let files = this.state.files ? this.state.files : [];
   	let newFiles = [];
@@ -424,14 +424,14 @@ class Orders extends Component {
       files = nextProps.files;
     }
     if (files) files.sort(function(a,b){ return new Date(b.createdAt) - new Date(a.createdAt); });
-    
+
     let product = this.state.product;
     let productOrderData = this.state.productOrderData;
     if (nextProps.product) {
       product = nextProps.product.toJSON();
       productOrderData.product = product;
     }
-    
+
   	let orderProductEditFormData = this.state.orderProductEditFormData;
   	let orderProductEditFormIsLoading = this.state.orderProductEditFormIsLoading;
   	if (orderProductEditFormData && nextProps.orderProductEditFormData) {
@@ -442,7 +442,7 @@ class Orders extends Component {
       orderProductEditFormData.miscCodes = nextProps.orderProductEditFormData.miscCodes;
       orderProductEditFormIsLoading = false;
   	}
-  	
+
 		this.setState({
   		subpage: nextProps.router.params.subpage,
 			page: nextPage,
@@ -462,26 +462,26 @@ class Orders extends Component {
 			productOrderData: productOrderData,
 			orderProductEditFormData: orderProductEditFormData,
 			orderProductEditFormIsLoading: orderProductEditFormIsLoading
-		});	
-		
+		});
+
   	if (nextPage !== this.state.page || nextProps.router.params.subpage !== this.state.subpage) {
     	this.props.getOrders(this.props.token, nextProps.router.params.subpage, nextPage, this.state.sort, search);
   	}
 	}
-	
+
   render() {
 		const { error, isLoadingOrders, totalPages, totalOrders } = this.props;
 		let scope = this;
 		let orderRows = [];
 		const tabCounts = this.state.tabCounts;
 		const files = this.state.files;
-    
+
 		if (this.state.orders) {
 			this.state.orders.map(function(order, i) {
   			let isReloading = (scope.state.isReloading.indexOf(order.orderId) >= 0) ? true : false;
 				let expanded = (scope.state.expandedOrders.indexOf(order.orderId) >= 0) ? true : false;
 				let selected = (scope.state.selectedRows.indexOf(order.orderId) >= 0) ? true : false;
-				
+
 				// Create Order rows with simpilified order data object
 				let orderData = {
           status: order.status,
@@ -502,19 +502,19 @@ class Orders extends Component {
           fraudData: scope.fraudCheck(order)
 				};
 				orderRows.push(
-				  <Order 
+				  <Order
 				    subpage={scope.state.subpage}
-				    data={orderData} 
-				    expanded={expanded} 
-				    key={`${orderData.orderId}-1`} 
-				    isReloading={isReloading} 
-				    handleToggleClick={scope.handleToggleClick} 
-				    handleCheckboxClick={scope.handleCheckboxClick} 
+				    data={orderData}
+				    expanded={expanded}
+				    key={`${orderData.orderId}-1`}
+				    isReloading={isReloading}
+				    handleToggleClick={scope.handleToggleClick}
+				    handleCheckboxClick={scope.handleCheckboxClick}
 				    handleDateNeededChange={scope.handleDateNeededChange}
 				    selected={selected}
 			    />
 		    );
-		    
+
 		    // Create OrderDetails rows
 				if (expanded) {
   				let orderData = {
@@ -530,20 +530,19 @@ class Orders extends Component {
             orderShipments: order.orderShipments,
             status: order.status
   				};
-  				console.log(orderData)
   				orderRows.push(
-  				  <OrderDetails 
-    				  subpage={scope.state.subpage} 
-  				    data={orderData} 
-  				    expanded={expanded} 
-  				    key={`${order.orderId}-2`} 
-  				    isReloading={isReloading} 
-  				    handleReloadClick={scope.handleReloadClick} 
+  				  <OrderDetails
+    				  subpage={scope.state.subpage}
+  				    data={orderData}
+  				    expanded={expanded}
+  				    key={`${order.orderId}-2`}
+  				    isReloading={isReloading}
+  				    handleReloadClick={scope.handleReloadClick}
   				    handleCreateShipments={scope.handleCreateShipments}
-  				    handleAddToVendorOrder={scope.handleAddToVendorOrder} 
-  				    handleCreateResize={scope.handleCreateResize} 
-  				    handleShowOrderFormClick={scope.handleShowOrderFormClick} 
-  				    handleProductOrderModalClose={scope.handleProductOrderModalClose} 
+  				    handleAddToVendorOrder={scope.handleAddToVendorOrder}
+  				    handleCreateResize={scope.handleCreateResize}
+  				    handleShowOrderFormClick={scope.handleShowOrderFormClick}
+  				    handleProductOrderModalClose={scope.handleProductOrderModalClose}
   				    handleOrderProductEditClick={scope.handleOrderProductEditClick}
   			    />
   		    );
@@ -551,14 +550,14 @@ class Orders extends Component {
 				return orderRows;
 	    });
 		}
-		
+
 		// Get sort column name without sort direction
 		let sortColumn = '';
 		sortColumn = (this.state.sort.includes('date-added')) ? 'date-added' : sortColumn;
 		sortColumn = (this.state.sort.includes('date-needed')) ? 'date-needed' : sortColumn;
 		sortColumn = (this.state.sort.includes('date-shipped')) ? 'date-shipped' : sortColumn;
 		sortColumn = (this.state.sort.includes('total')) ? 'total' : sortColumn;
-		
+
     const searchHeader = this.state.search ? <Header as='h2'>{totalOrders} results for "{this.props.location.query.q}"</Header> : null;
     const dateIcon = this.state.sort === 'date-added-desc' || this.state.sort === 'date-added-asc' ? null : <Icon disabled name='caret down' />;
     const dateNeededIcon = this.state.sort === 'date-needed-desc' || this.state.sort === 'date-needed-asc' ? null : <Icon disabled name='caret down' />;
@@ -566,37 +565,37 @@ class Orders extends Component {
     const totalIcon = this.state.sort === 'total-desc' || this.state.sort === 'total-asc' ? null : <Icon disabled name='caret down' />;
     const shipSelectedName = 'Create ' + this.state.selectedRows.length + ' Shipments';
     const printSelectedName = 'Print ' + this.state.selectedRows.length + ' Orders';
-    
+
     let batchShipEnabled = (this.state.subpage === 'fully-shippable' || this.state.subpage === 'partially-shippable' || this.state.subpage === 'search') && this.state.isReloading.length <= 0;
     const batchShipButton = this.state.subpage === 'fully-shippable' || this.state.subpage === 'partially-shippable' || this.state.subpage === 'search' ? <Button circular basic disabled={!batchShipEnabled} loading={!batchShipEnabled} color='olive' onClick={this.handleShipSelectedClick}><Icon name='shipping' /> {shipSelectedName}</Button> : null;
     const batchPrintButton = this.state.subpage === 'fulfilled' ? <Button circular basic disabled={this.state.isGeneratingFile} loading={this.state.isGeneratingFile} primary onClick={this.handlePrintSelectedClick}><Icon name='print' /> {printSelectedName}</Button> : null;
-    
-    const dateShippedColumn = this.state.subpage === 'fulfilled' ? 
-      <Table.HeaderCell 
-        sorted={sortColumn === 'date-shipped' ? (this.state.sort === 'date-shipped-asc' ? 'ascending' : 'descending') : null} 
+
+    const dateShippedColumn = this.state.subpage === 'fulfilled' ?
+      <Table.HeaderCell
+        sorted={sortColumn === 'date-shipped' ? (this.state.sort === 'date-shipped-asc' ? 'ascending' : 'descending') : null}
         onClick={this.state.sort === 'date-shipped-desc' ? ()=>this.handleSortClick('date-shipped-asc') : ()=>this.handleSortClick('date-shipped-desc')}>
         Date Shipped {dateShippedIcon}
       </Table.HeaderCell> : null;
-      
-    const productOrderModal = this.state.productOrderData ? <ProductOrderModal 
+
+    const productOrderModal = this.state.productOrderData ? <ProductOrderModal
         open={this.state.productOrderOpen}
-        handleAddToVendorOrder={this.handleAddToVendorOrder} 
-        handleCreateResize={this.handleCreateResize} 
-        handleProductOrderModalClose={this.handleProductOrderModalClose} 
-        handleProductOrder={this.handleProductOrder} 
-        productOrderData={this.state.productOrderData} 
+        handleAddToVendorOrder={this.handleAddToVendorOrder}
+        handleCreateResize={this.handleCreateResize}
+        handleProductOrderModalClose={this.handleProductOrderModalClose}
+        handleProductOrder={this.handleProductOrder}
+        productOrderData={this.state.productOrderData}
         isLoading={this.props.isReloading}
       /> : null;
-    
-    const orderProductEditModal = this.state.orderProductEditFormData && this.state.orderProductEditFormData.orderProduct && this.state.orderProductEditFormOpen === true ? <OrderProductEditModal 
+
+    const orderProductEditModal = this.state.orderProductEditFormData && this.state.orderProductEditFormData.orderProduct && this.state.orderProductEditFormOpen === true ? <OrderProductEditModal
         open={this.state.orderProductEditFormOpen}
-        handleOrderProductEditModalClose={this.handleOrderProductEditModalClose} 
-        handleOrderProductSave={this.handleOrderProductSave} 
-        handleOrderProductEditClose={this.handleOrderProductEditClose} 
-        orderProductEditFormData={this.state.orderProductEditFormData} 
+        handleOrderProductEditModalClose={this.handleOrderProductEditModalClose}
+        handleOrderProductSave={this.handleOrderProductSave}
+        handleOrderProductEditClose={this.handleOrderProductEditClose}
+        orderProductEditFormData={this.state.orderProductEditFormData}
         isLoading={this.state.orderProductEditFormIsLoading}
-      /> : null; 
-		
+      /> : null;
+
     return (
 			<Grid.Column width='16'>
   			<NotificationSystem ref="notificationSystem" />
@@ -620,13 +619,13 @@ class Orders extends Component {
                   <Table.HeaderCell>
                     <Checkbox checked={this.state.selectAllRows} onClick={() => this.handleSelectAllClick()} />
                   </Table.HeaderCell>
-                  <Table.HeaderCell 
-                    sorted={sortColumn === 'date-added' ? (this.state.sort === 'date-added-asc' ? 'ascending' : 'descending') : null} 
+                  <Table.HeaderCell
+                    sorted={sortColumn === 'date-added' ? (this.state.sort === 'date-added-asc' ? 'ascending' : 'descending') : null}
                     onClick={this.state.sort === 'date-added-desc' ? ()=>this.handleSortClick('date-added-asc') : ()=>this.handleSortClick('date-added-desc')}>
                     Date {dateIcon}
                   </Table.HeaderCell>
-                  <Table.HeaderCell 
-                    sorted={sortColumn === 'date-needed' ? (this.state.sort === 'date-needed-asc' ? 'ascending' : 'descending') : null} 
+                  <Table.HeaderCell
+                    sorted={sortColumn === 'date-needed' ? (this.state.sort === 'date-needed-asc' ? 'ascending' : 'descending') : null}
                     onClick={this.state.sort === 'date-needed-desc' ? ()=>this.handleSortClick('date-needed-asc') : ()=>this.handleSortClick('date-needed-desc')}>
                     Date Needed By {dateNeededIcon}
                   </Table.HeaderCell>
@@ -634,9 +633,9 @@ class Orders extends Component {
                   <Table.HeaderCell>Order #</Table.HeaderCell>
                   <Table.HeaderCell>Customer</Table.HeaderCell>
     							<Table.HeaderCell>Order Notes</Table.HeaderCell>
-                  <Table.HeaderCell 
+                  <Table.HeaderCell
                     className='right aligned'
-                    sorted={sortColumn === 'total' ? (this.state.sort === 'total-asc' ? 'ascending' : 'descending') : null} 
+                    sorted={sortColumn === 'total' ? (this.state.sort === 'total-asc' ? 'ascending' : 'descending') : null}
                     onClick={this.state.sort === 'total-desc' ? ()=>this.handleSortClick('total-asc') : ()=>this.handleSortClick('total-desc')}>
                     Total {totalIcon}
                   </Table.HeaderCell>
