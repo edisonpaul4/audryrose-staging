@@ -12,7 +12,7 @@ axios.defaults.headers.common['X-Parse-Application-Id'] = process.env.REACT_APP_
 axios.defaults.headers.common['X-Parse-Master-Key'] = process.env.REACT_APP_MASTER_KEY;
 
 const delay = function(t) {
-  return new Promise(function(resolve) { 
+  return new Promise(function(resolve) {
     setTimeout(resolve, t)
   });
 }
@@ -37,7 +37,7 @@ export const logout = (token) => Parse.User.logOut( token );
 
 export const loadSession = (token) => Parse.User.become( token );
 
-export const getOrders = (token, subpage, page, sort, search) => Parse.Cloud.run('getOrders', 
+export const getOrders = (token, subpage, page, sort, search) => Parse.Cloud.run('getOrders',
   {
     sessionToken: token,
     subpage,
@@ -76,7 +76,7 @@ export const reloadOrder = (token, orderId) => axios.post('/jobs/reloadOrder', {
   return error;
 });
 
-export const createShipments = (token, shipmentGroups) => Parse.Cloud.run('createShipments', 
+export const createShipments = (token, shipmentGroups) => Parse.Cloud.run('createShipments',
   {
     sessionToken: token,
     shipmentGroups
@@ -165,58 +165,58 @@ export const batchPrintShipments = (token, ordersToPrint) => axios.post('/jobs/b
   return error;
 });
 
-export const getProduct = (token, productId) => Parse.Cloud.run('getProduct', 
+export const getProduct = (token, productId) => Parse.Cloud.run('getProduct',
   {
     sessionToken: token,
     productId
   }
 );
 
-export const addOrderProductToVendorOrder = (token, orders, orderId) => Parse.Cloud.run('addOrderProductToVendorOrder', 
+export const addOrderProductToVendorOrder = (token, orders, orderId) => Parse.Cloud.run('addOrderProductToVendorOrder',
   {
     sessionToken: token,
-    orders, 
+    orders,
     orderId
   }
 );
 
-export const createResize = (token, resizes, orderId) => Parse.Cloud.run('createResize', 
+export const createResize = (token, resizes, orderId) => Parse.Cloud.run('createResize',
   {
     sessionToken: token,
-    resizes, 
+    resizes,
     orderId
   }
 );
 
-export const saveOrder = (token, data) => Parse.Cloud.run('saveOrder', 
+export const saveOrder = (token, data) => Parse.Cloud.run('saveOrder',
   {
     sessionToken: token,
     data
   }
 );
 
-export const saveOrderProduct = (token, data) => Parse.Cloud.run('saveOrderProduct', 
+export const saveOrderProduct = (token, data) => Parse.Cloud.run('saveOrderProduct',
   {
     sessionToken: token,
     data
   }
 );
 
-export const getOrderProductFormData = (token, orderProductId) => Parse.Cloud.run('getOrderProductFormData', 
+export const getOrderProductFormData = (token, orderProductId) => Parse.Cloud.run('getOrderProductFormData',
   {
     sessionToken: token,
     orderProductId
   }
 );
 
-export const saveResize = (token, data) => Parse.Cloud.run('saveResize', 
+export const saveResize = (token, data) => Parse.Cloud.run('saveResize',
   {
     sessionToken: token,
     data
   }
 );
 
-export const getProducts = (token, subpage, page, sort, search, filters) => Parse.Cloud.run('getProducts', 
+export const getProducts = (token, subpage, page, sort, search, filters) => Parse.Cloud.run('getProducts',
   {
     sessionToken: token,
     subpage,
@@ -227,98 +227,124 @@ export const getProducts = (token, subpage, page, sort, search, filters) => Pars
   }
 );
 
-export const getProductFilters = (token) => Parse.Cloud.run('getProductFilters', 
+export const getProductFilters = (token) => Parse.Cloud.run('getProductFilters',
   {
     sessionToken: token
   }
 );
 
-export const getProductOptions = (token) => Parse.Cloud.run('getProductOptions', 
+export const getProductOptions = (token) => Parse.Cloud.run('getProductOptions',
   {
     sessionToken: token
   }
 );
 
-export const reloadProduct = (token, productId) => Parse.Cloud.run('reloadProduct', 
+export const reloadProduct = (token, productId) => Parse.Cloud.run('reloadProduct',
   {
     sessionToken: token,
     productId
   }
 );
 
-export const saveProduct = (token, data) => Parse.Cloud.run('saveProduct', 
+export const saveProduct = (token, data) => Parse.Cloud.run('saveProduct',
   {
     sessionToken: token,
     data
   }
 );
 
-export const saveVariants = (token, variants) => Parse.Cloud.run('saveVariants', 
+export const saveVariants = (token, variants) => Parse.Cloud.run('saveVariants',
   {
     sessionToken: token,
     variants
   }
 );
 
-export const addToVendorOrder = (token, orders) => Parse.Cloud.run('addToVendorOrder', 
+export const addToVendorOrder = (token, orders) => Parse.Cloud.run('addToVendorOrder',
   {
     sessionToken: token,
     orders
   }
 );
 
-export const getBundleFormData = (token, productId) => Parse.Cloud.run('getBundleFormData', 
+export const getBundleFormData = (token, productId) => Parse.Cloud.run('getBundleFormData',
   {
     sessionToken: token,
     productId
   }
 );
 
-export const productBundleSave = (token, data) => Parse.Cloud.run('productBundleSave', 
+export const productBundleSave = (token, data) => Parse.Cloud.run('productBundleSave',
   {
     sessionToken: token,
     data
   }
 );
 
-export const getDesigners = (token, subpage, page, search) => Parse.Cloud.run('getDesigners', 
+export const getDesigners = (token, subpage, page, search) => Parse.Cloud.run('getDesigners',
   {
     sessionToken: token,
-    subpage, 
+    subpage,
     page,
     search
   }
 );
 
-export const saveVendor = (token, data) => Parse.Cloud.run('saveVendor', 
+export const saveVendor = (token, data) => Parse.Cloud.run('saveVendor',
   {
     sessionToken: token,
     data
   }
 );
 
-export const saveVendorOrder = (token, data) => Parse.Cloud.run('saveVendorOrder', 
+export const saveVendorOrder = (token, data) => axios.post('/jobs/saveVendorOrder', {
+  data: data
+}).then(function (response) {
+  const jobId = response.headers['x-parse-job-status-id'];
+  let updatedDesigner;
+  let completedVendorOrders;
+  if (jobId) {
+    return poll(() => Parse.Cloud.run('getJobStatus', {
+      sessionToken: token,
+      jobId: jobId
+    }).then(function(result) {
+      if(result.status !== 'succeeded') {
+        throw result;
+      } else {
+        return Parse.Cloud.run('getUpdatedDesigner', {
+          sessionToken: token,
+          data: data
+        });
+      }
+    }).then(function(result) {
+      updatedDesigner = result.updatedDesigner;
+      completedVendorOrders = result.completedVendorOrders;
+      return {updatedDesigner: updatedDesigner, completedVendorOrders: completedVendorOrders,};
+    })
+    , 120, 1000);
+  } else {
+    return;
+  }
+}).catch(function (error) {
+  console.log(error);
+  return error;
+});
+
+export const sendVendorOrder = (token, data) => Parse.Cloud.run('sendVendorOrder',
   {
     sessionToken: token,
     data
   }
 );
 
-export const sendVendorOrder = (token, data) => Parse.Cloud.run('sendVendorOrder', 
-  {
-    sessionToken: token,
-    data
-  }
-);
-
-export const getOptions = (token, subpage) => Parse.Cloud.run('getOptions', 
+export const getOptions = (token, subpage) => Parse.Cloud.run('getOptions',
   {
     sessionToken: token,
     subpage
   }
 );
 
-export const saveOption = (token, objectId, manualCode) => Parse.Cloud.run('saveOption', 
+export const saveOption = (token, objectId, manualCode) => Parse.Cloud.run('saveOption',
   {
     sessionToken: token,
     objectId,
@@ -326,30 +352,30 @@ export const saveOption = (token, objectId, manualCode) => Parse.Cloud.run('save
   }
 );
 
-export const getShipments = (token, page) => Parse.Cloud.run('getShipments', 
+export const getShipments = (token, page) => Parse.Cloud.run('getShipments',
   {
     sessionToken: token,
     page
   }
 );
 
-export const getWebhooks = (token) => Parse.Cloud.run('getWebhooks', 
+export const getWebhooks = (token) => Parse.Cloud.run('getWebhooks',
   {
     sessionToken: token
   }
 );
 
-export const createWebhook = (token, endpoint, destination) => Parse.Cloud.run('createWebhook', 
+export const createWebhook = (token, endpoint, destination) => Parse.Cloud.run('createWebhook',
   {
-    sessionToken: token, 
-    endpoint: endpoint, 
+    sessionToken: token,
+    endpoint: endpoint,
     destination: destination
   }
 );
 
-export const deleteWebhook = (token, id) => Parse.Cloud.run('deleteWebhook', 
+export const deleteWebhook = (token, id) => Parse.Cloud.run('deleteWebhook',
   {
-    sessionToken: token, 
+    sessionToken: token,
     id: id
   }
 );

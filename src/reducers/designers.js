@@ -3,6 +3,54 @@ const initialState = {
 	designers: null
 };
 
+const mergeUpdatedDesigner = function(designers, updatedDesigner, completedVendorOrders) {
+  if (designers && updatedDesigner) {
+    const updatedDesignerJSON = updatedDesigner.toJSON();
+  	designers = designers.map(function(designer, i) {
+    	if (designer.objectId === updatedDesigner.id) {
+      	const vendorOrders = [];
+      	if (designer.vendorOrders) designer.vendorOrders.map((vendorOrder) => {
+        	let updatedVendorOrder;
+        	if (updatedDesignerJSON.vendors) {
+          	updatedDesignerJSON.vendors.map((vendor) => {
+            	if (vendor.vendorOrders) vendor.vendorOrders.map((vendorVendorOrder) => {
+              	if (vendorOrder.order.objectId === vendorVendorOrder.objectId) {
+                  let status = vendorVendorOrder.orderedAll && vendorVendorOrder.receivedAll === false ? 'Sent' : 'Pending';
+                  if (vendorVendorOrder.orderedAll && vendorVendorOrder.receivedAll === true) status = 'Completed';
+                	if (vendorVendorOrder.updatedAt) updatedVendorOrder = {status:status, order:vendorVendorOrder, vendor:vendor};
+              	}
+              	return vendorOrder;
+            	});
+            	vendor.vendorOrders = null;
+            	return vendor;
+          	});
+        	}
+        	if (completedVendorOrders) {
+          	completedVendorOrders.map((completedVendorOrder) => {
+            	const completedVendorOrderJSON = completedVendorOrder.toJSON();
+            	if (vendorOrder.order.objectId === completedVendorOrderJSON.objectId) {
+              	if (completedVendorOrderJSON.updatedAt) updatedVendorOrder = {status:'Completed', order:completedVendorOrderJSON, vendor:vendorOrder.vendor};
+            	}
+            	return completedVendorOrder;
+          	});
+        	}
+        	if (updatedVendorOrder) {
+          	vendorOrders.push(updatedVendorOrder);
+        	} else {
+          	vendorOrders.push(vendorOrder);
+        	}
+        	return vendorOrder;
+      	});
+      	updatedDesignerJSON.vendorOrders = vendorOrders;
+      	designer = updatedDesignerJSON;
+    	}
+    	return designer;
+  	});
+	}
+
+	return designers;
+}
+
 const designers = (state = initialState, action) => {
   let designersArray = [];
 
@@ -65,7 +113,6 @@ const designers = (state = initialState, action) => {
         	return designer;
       	});
       }
-      // console.log(designersArray)
 
       return {
         ...state,
@@ -106,7 +153,6 @@ const designers = (state = initialState, action) => {
       }
 
     case 'VENDOR_ORDER_SAVE_SUCCESS':
-      console.log('completedVendorOrders', action.res.completedVendorOrders)
       designersArray = mergeUpdatedDesigner(state.designers, action.res.updatedDesigner, action.res.completedVendorOrders);
       return {
         ...state,
@@ -144,54 +190,6 @@ const designers = (state = initialState, action) => {
     default:
       return state;
   }
-}
-
-const mergeUpdatedDesigner = function(designers, updatedDesigner, completedVendorOrders) {
-  if (designers && updatedDesigner) {
-    const updatedDesignerJSON = updatedDesigner.toJSON();
-  	designers = designers.map(function(designer, i) {
-    	if (designer.objectId === updatedDesigner.id) {
-      	const vendorOrders = [];
-      	if (designer.vendorOrders) designer.vendorOrders.map((vendorOrder) => {
-        	let updatedVendorOrder;
-        	if (updatedDesignerJSON.vendors) {
-          	updatedDesignerJSON.vendors.map((vendor) => {
-            	if (vendor.vendorOrders) vendor.vendorOrders.map((vendorVendorOrder) => {
-              	if (vendorOrder.order.objectId === vendorVendorOrder.objectId) {
-                  let status = vendorVendorOrder.orderedAll && vendorVendorOrder.receivedAll === false ? 'Sent' : 'Pending';
-                  if (vendorVendorOrder.orderedAll && vendorVendorOrder.receivedAll === true) status = 'Completed';
-                	if (vendorVendorOrder.updatedAt) updatedVendorOrder = {status:status, order:vendorVendorOrder, vendor:vendor};
-              	}
-              	return vendorOrder;
-            	});
-            	vendor.vendorOrders = null;
-            	return vendor;
-          	});
-        	}
-        	if (completedVendorOrders) {
-          	completedVendorOrders.map((completedVendorOrder) => {
-            	const completedVendorOrderJSON = completedVendorOrder.toJSON();
-            	if (vendorOrder.order.objectId === completedVendorOrderJSON.objectId) {
-              	if (completedVendorOrderJSON.updatedAt) updatedVendorOrder = {status:'Completed', order:completedVendorOrderJSON, vendor:vendorOrder.vendor};
-            	}
-            	return completedVendorOrder;
-          	});
-        	}
-        	if (updatedVendorOrder) {
-          	vendorOrders.push(updatedVendorOrder);
-        	} else {
-          	vendorOrders.push(vendorOrder);
-        	}
-        	return vendorOrder;
-      	});
-      	updatedDesignerJSON.vendorOrders = vendorOrders;
-      	designer = updatedDesignerJSON;
-    	}
-    	return designer;
-  	});
-	}
-
-	return designers;
 }
 
 export default designers;
