@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Table, Checkbox, Button, Icon, Popup, Label } from 'semantic-ui-react';
+import { Table, Checkbox, Button, Icon, Popup, Label, Header } from 'semantic-ui-react';
 import { SingleDatePicker } from 'react-dates';
 import 'react-dates/lib/css/_datepicker.css';
 import numeral from 'numeral';
@@ -21,15 +21,15 @@ class Order extends PureComponent {
     this.handleCheckboxClick = this.handleCheckboxClick.bind(this);
     this.handleDateNeededChange = this.handleDateNeededChange.bind(this);
   }
-  
+
 	handleToggleClick(orderId) {
 		this.props.handleToggleClick(orderId);
 	}
-	
+
 	handleCheckboxClick(orderId) {
   	this.props.handleCheckboxClick(orderId);
 	}
-	
+
 	handleDateNeededChange(data) {
   	var date = data.date ? moment(data.date) : null;
   	this.setState({
@@ -37,7 +37,7 @@ class Order extends PureComponent {
   	});
   	this.props.handleDateNeededChange({dateNeeded: data.date ? moment.utc(data.date, 'ddd, DD MMM YYYY HH:mm:ss Z').toDate() : undefined, orderId: this.state.data.orderId});
 	}
-	
+
 	componentWillReceiveProps(nextProps) {
   	let state = {};
   	if (nextProps.data) {
@@ -50,14 +50,14 @@ class Order extends PureComponent {
   	if (nextProps.subpage) state.subpage = nextProps.subpage;
   	this.setState(state);
 	}
-	
+
 	render() {
   	const data = this.state.data;
   	const expanded = this.state.expanded;
   	const isReloading = this.state.isReloading;
   	const selected = this.state.selected;
   	const subpage = this.state.subpage;
-  	
+
   	let labels = [];
   	if (data.fullyShippable && data.status !== 'Shipped') {
     	labels.push(<Label key={1} basic horizontal circular size='mini' color='olive'>Fully Shippable</Label>);
@@ -77,19 +77,22 @@ class Order extends PureComponent {
   	if (data.status === 'Shipped') {
     	labels.push(<Label key={6} basic horizontal circular size='mini' color='olive'>Shipped</Label>);
   	}
-		    
+
 		let expandIcon = expanded ? 'minus' : 'plus';
-		
+
 		const dateShipped = data.date_shipped ? moment(data.date_shipped).calendar() : '';
 		const dateShippedColumn = subpage === 'fulfilled' ? <Table.Cell verticalAlign='top' singleLine>{dateShipped}</Table.Cell> : null;
-		
+
 		const customerLink = 'https://www.loveaudryrose.com/manage/customers?idFrom=' + data.customer_id + '&idTo=' + data.customer_id;
-		const customerName = <a href={customerLink} className='hover-icon' target='_blank'>{data.first_name} {data.last_name} <Icon link name='configure' /></a>
+    const customerColor = data.customer_id !== 0 && data.customerTotalOrders && data.customerTotalOrders > 1 ? 'olive' : data.customer_id !== 0 && data.customerTotalOrders ? 'blue' : 'grey';
+    const customerNameText = `${data.first_name} ${data.last_name}`;
+    const customerSubheader = data.customer_id !== 0 && data.customerTotalOrders ? `${data.customerTotalOrders} order${data.customerTotalOrders > 1 ? 's' : ''}, ${numeral(data.customerTotalSpend).format('$0,0.00')} spend` : data.customer_id === 0 ? 'Guest' : null;
+		const customerName = <Header as='a' href={customerLink} target='_blank' size='small' color={customerColor} subheader={customerSubheader} content={customerNameText}/>;
 		const orderLink = 'https://www.loveaudryrose.com/manage/orders/' + data.orderId;
 		const orderId = <a href={orderLink} className='hover-icon' target='_blank'>{data.orderId} <Icon link name='external' /></a>
 		const orderFraudWarning = data.fraudData && data.fraudData.isSuspicious ? <Popup trigger={<Icon color='yellow' name='warning sign' />} content={data.fraudData.message} size='tiny' position='top center' /> : null
 		const orderNote = data.customer_message ? <Popup trigger={<Icon name='sticky note outline' link />} on='click' content={data.customer_message} position='top center' /> : null;
-		
+
     return (
       <Table.Row warning={data.customer_message ? true : undefined} disabled={isReloading}>
         <Table.Cell verticalAlign='middle'><Checkbox checked={selected} onClick={() => this.handleCheckboxClick(data.orderId)} /></Table.Cell>
@@ -97,9 +100,9 @@ class Order extends PureComponent {
         <Table.Cell verticalAlign='middle' singleLine>
           <SingleDatePicker
             date={this.state.dateNeeded ? moment(this.state.dateNeeded) : null}
-            numberOfMonths={1} 
+            numberOfMonths={1}
             hideKeyboardShortcutsPanel={true}
-            showClearDate={true} 
+            showClearDate={true}
             onDateChange={date => this.handleDateNeededChange({ date })}
             focused={this.state.dateNeededFocused}
             onFocusChange={({ focused }) => this.setState({ dateNeededFocused: focused })}

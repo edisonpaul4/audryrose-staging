@@ -495,6 +495,8 @@ class Orders extends Component {
           customer_id: order.customer_id,
           first_name: order.billing_address ? order.billing_address.first_name : null,
           last_name: order.billing_address ? order.billing_address.last_name : null,
+					customerTotalOrders: order.customer ? order.customer.totalOrders : null,
+					customerTotalSpend: order.customer ? order.customer.totalSpend : null,
           orderId: order.orderId,
           customer_message: order.customer_message,
           total_inc_tax: order.total_inc_tax,

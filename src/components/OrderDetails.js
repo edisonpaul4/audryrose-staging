@@ -354,7 +354,7 @@ class OrderDetails extends Component {
 		return objs;
 	}
 	componentWillMount() {
-  	const orderProducts = this.createProductObjects(this.props.data.orderProducts);
+  	const orderProducts = this.props.data.orderProducts ? this.createProductObjects(this.props.data.orderProducts) : [];
   	const {shippedGroups, shippableGroups, unshippableGroups} = this.createShipmentGroups(this.props.data, orderProducts, this.props.data.orderShipments)
 		this.setState({
       order: this.props.data,
@@ -366,7 +366,7 @@ class OrderDetails extends Component {
 		});
 	}
 	componentWillReceiveProps(nextProps) {
-  	const orderProducts = this.createProductObjects(nextProps.data.orderProducts);
+  	const orderProducts = nextProps.data.orderProducts ? this.createProductObjects(nextProps.data.orderProducts) : [];
   	const {shippedGroups, shippableGroups, unshippableGroups} = this.createShipmentGroups(nextProps.data, orderProducts, nextProps.data.orderShipments)
     this.setState({
       order: nextProps.data,
