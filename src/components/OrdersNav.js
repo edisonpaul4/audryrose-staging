@@ -30,7 +30,6 @@ class OrdersNav extends Component {
 		}
 
 		const searchUrl = window.location.hostname === 'localhost' ? `${window.location.protocol}//${window.location.hostname}:${window.location.port}/orders/search` : `${window.location.protocol}//${window.location.hostname}/orders/search`;
-		console.log(tabCounts)
     return (
 	    <Menu pointing secondary>
 	      <Menu.Item
