@@ -74,7 +74,7 @@ class VariantRow extends Component {
 	}
 	getVendorOrderLabel(product, variant, vendorOrderVariant, vendorOrder, orderProductMatch) {
   	if (!vendorOrder) return <Label size='tiny' color='red' key={'vendorOrder-'+vendorOrder.objectId+'-'+vendorOrderVariant.objectId}>Error: Missing vendor order data</Label>;
-  	
+
   	const averageWaitTime = vendorOrder.vendor.waitTime ? vendorOrder.vendor.waitTime : 21;
   	const expectedDate = vendorOrder.dateOrdered ? moment(vendorOrder.dateOrdered.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
   	const daysLeft = vendorOrder.dateOrdered ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
@@ -89,12 +89,12 @@ class VariantRow extends Component {
   		labelColor = 'olive';
   	}
   	let labelText = vendorOrderVariant.ordered ? vendorOrderVariant.units + ' Sent' : vendorOrderVariant.units + ' Pending';
-  	
+
   	if (vendorOrderVariant.done === true) {
   		labelText = vendorOrderVariant.received + ' Received';
-  	} else if (vendorOrderVariant.ordered && vendorOrderVariant.received > 0) {
-  		labelText += ', ' + vendorOrderVariant.received + ' Received';
-  	}
+  	}// else if (vendorOrderVariant.ordered && vendorOrderVariant.received > 0) {
+  	// 	labelText += ', ' + vendorOrderVariant.received + ' Received';
+  	// }
   	if (vendorOrderVariant.orderProducts) {
     	vendorOrderVariant.orderProducts.map(function(orderProduct, i) {
       	labelText += ' #' + vendorOrder.vendorOrderNumber;
@@ -128,7 +128,7 @@ class VariantRow extends Component {
   		labelColor = 'red';
 		}
 		const labelLink = resize.done === false && product && product.product_id ? '/products/search?q=' + product.product_id : null;
-    
+
 		let labelText = resize.units + ' Resize' + (resize.units > 1 ? 's' : '') + (resize.dateSent ? ' Sent' : ' Pending');
 		if (resize.received >= resize.units) labelText = resize.received + ' Resize Received';
   	//if (resize.orderProduct) labelText += ' #' + resize.orderProduct.order_id;
@@ -157,7 +157,7 @@ class VariantRow extends Component {
     	state.applyAllData = nextProps.applyAllData;
     	if (nextProps.applyAllData.color) {
       	state.color = nextProps.applyAllData.color;
-      	this.props.handleVariantEdited({objectId: this.props.data.objectId, inventory: state.inventory, color: nextProps.applyAllData.color}, (state.inventory 
+      	this.props.handleVariantEdited({objectId: this.props.data.objectId, inventory: state.inventory, color: nextProps.applyAllData.color}, (state.inventory
       	!== state.startInventory || nextProps.applyAllData.color !== state.startColor));
     	}
     	this.props.handleClearApplyAllData();
@@ -171,7 +171,7 @@ class VariantRow extends Component {
     let variantEdited = (this.state.inventory !== this.state.startInventory || this.state.color !== this.state.startColor) ? true : false;
 //     if (!this.state.startInventory && this.state.inventory === 0) variantEdited = false;
 //     if (!this.state.startColor && this.state.color === '') variantEdited = false;
-    
+
 		// Create an array of other options values
 		let otherOptions = [];
 		if (data.gemstone_value) otherOptions.push(data.gemstone_value);
@@ -182,7 +182,7 @@ class VariantRow extends Component {
 
     const stoneColorCode = data.code ? '-' + data.code : null;
 		const saveCancelClass = variantEdited ? '' : 'invisible';
-		
+
 		let vendorOrderAndResizes = [];
 		if (data.vendorOrders) {
   		data.vendorOrders.map(function(vendorOrder, i) {
@@ -191,16 +191,16 @@ class VariantRow extends Component {
     		return vendorOrder;
   		});
     }
-    
+
 		if (data.resizes) {
   		data.resizes.map(function(resize, i) {
         var resizeLabel = scope.getResizeLabel(null, data, resize);
         if (resizeLabel) {
       		vendorOrderAndResizes.push(
-  		      <ProductResizeModal 
-  		        data={resize} 
-  		        label={resizeLabel} 
-  		        key={'resize-'+i} 
+  		      <ProductResizeModal
+  		        data={resize}
+  		        label={resizeLabel}
+  		        key={'resize-'+i}
   		        isReloading={scope.props.isReloading}
   		        handleSaveResize={scope.handleSaveResize}
   	        />
@@ -209,7 +209,7 @@ class VariantRow extends Component {
     		return resize;
   		});
     }
-    
+
     const colorOptions = [];
     if (optionsData && optionsData.colors) {
       optionsData.colors.map(function(color, i) {
@@ -217,12 +217,12 @@ class VariantRow extends Component {
         return color;
       });
     }
-    
+
     const totalAwaitingInventory = data.totalAwaitingInventory ? data.totalAwaitingInventory : '';
-    
+
     const dropdownItems = [];
     if (data.size_value) dropdownItems.push(<Dropdown.Item icon='exchange' text='Resize' disabled={this.props.isSaving || variantEdited} onClick={this.handleShowResizeFormClick} key={'dropdown-resize'} />);
-     
+
     return (
       <Table.Row warning={variantEdited ? true: false} positive={this.state.variantSaved && !variantEdited ? true: false} disabled={this.props.isSaving}>
         <Table.Cell>{data.styleNumber ? data.styleNumber : ''}{stoneColorCode}</Table.Cell>
@@ -246,27 +246,27 @@ class VariantRow extends Component {
 				<Table.Cell className='right aligned'>{numeral(data.adjustedPrice).format('$0,0.00')}</Table.Cell>
 				<Table.Cell className='right aligned' singleLine>
     		  <Button.Group size='mini'>
-    		    <Button 
-    		      content='Save' 
-    		      className={saveCancelClass} 
-    		      primary 
-    		      compact 
-    		      loading={this.props.isSaving} 
-    		      disabled={this.props.isSaving} 
-    		      onClick={this.handleSaveVariantClick} 
-    		      /> 
-    		    <Button content='Cancel' 
-      		    className={saveCancelClass} 
-      		    secondary 
-      		    compact 
-      		    loading={this.props.isSaving} 
-      		    disabled={this.props.isSaving} 
-      		    onClick={this.handleCancelVariantClick} 
+    		    <Button
+    		      content='Save'
+    		      className={saveCancelClass}
+    		      primary
+    		      compact
+    		      loading={this.props.isSaving}
+    		      disabled={this.props.isSaving}
+    		      onClick={this.handleSaveVariantClick}
+    		      />
+    		    <Button content='Cancel'
+      		    className={saveCancelClass}
+      		    secondary
+      		    compact
+      		    loading={this.props.isSaving}
+      		    disabled={this.props.isSaving}
+      		    onClick={this.handleCancelVariantClick}
     		    />
     	    </Button.Group>  <span>&nbsp;</span>
           <Button.Group color='grey' size='mini' compact>
             <Button content='Order' disabled={this.props.isSaving || variantEdited} onClick={this.handleShowOrderFormClick} />
-            {dropdownItems.length > 0 ? 
+            {dropdownItems.length > 0 ?
               <Dropdown floating button compact className='icon' disabled={this.props.isSaving || variantEdited}>
                 <Dropdown.Menu>
                   {dropdownItems}
@@ -314,14 +314,14 @@ class VariantsTable extends Component {
 		const designer = this.props.designer;
 // 		const resizes = this.props.resizes;
     const subpage = this.props.subpage;
-		
+
 		// Sort the data
 		if (variants.length && variants[0].size_value) {
       variants.sort(function(a, b) {
         return parseFloat(a.size_value) - parseFloat(b.size_value);
       });
     }
-    
+
 		let variantRows = [];
 		if (variants) {
 			variants.map(function(variantData, i) {
@@ -344,13 +344,13 @@ class VariantsTable extends Component {
           });
         }
         const isSaving = index < 0 ? false : true;
-        
+
         // Only show pending resize variants in /products/being-resized
         if (subpage === 'being-resized'){
           if (!variantData.resizes) return variantData;
           if (variantData.resizes && variantData.resizes.length < 1) return variantData;
         }
-        
+
         var vendorOrders = [];
         if (vendor && vendor.vendorOrders) {
       	  vendor.vendorOrders.map(function(vendorOrder, j) {
@@ -364,19 +364,19 @@ class VariantsTable extends Component {
       	  });
         }
         if (vendorOrders.length > 0) variantData.vendorOrders = vendorOrders;
-        
+
         if (designer) variantData.designer = designer;
 				variantRows.push(
-				  <VariantRow 
-				    data={variantData} 
-				    subpage={subpage} 
-				    optionsData={scope.props.optionsData} 
+				  <VariantRow
+				    data={variantData}
+				    subpage={subpage}
+				    optionsData={scope.props.optionsData}
 				    applyAllData={scope.props.applyAllData}
-				    key={i} 
+				    key={i}
 				    isReloading={scope.props.isReloading}
-				    handleSaveVariantClick={scope.handleSaveVariantClick} 
-				    handleVariantEdited={scope.handleVariantEdited} 
-				    isSaving={isSaving} 
+				    handleSaveVariantClick={scope.handleSaveVariantClick}
+				    handleVariantEdited={scope.handleVariantEdited}
+				    isSaving={isSaving}
 				    updatedVariant={updatedVariantMatch}
 				    handleShowOrderFormClick={scope.handleShowOrderFormClick}
 				    handleApplyToAll={scope.handleApplyToAll}
@@ -388,7 +388,7 @@ class VariantsTable extends Component {
 	    });
 		}
 		const tableTitle = (this.props.title) ? <h3>{this.props.title}</h3> : null;
-		
+
     return (
       <Segment secondary>
         {tableTitle}
@@ -416,9 +416,9 @@ class VariantsTable extends Component {
 }
 
 class BundleVariantRow extends Component {
-	render() {  	
+	render() {
 		const variant = this.props.variant;
-		
+
 		let variantOptionsText = '';
 		if (variant.color_value) variantOptionsText += ' ' + variant.color_value;
 		if (variant.gemstone_value) variantOptionsText += ' ' + variant.gemstone_value;
@@ -427,10 +427,10 @@ class BundleVariantRow extends Component {
 		if (variant.singlepair_value) variantOptionsText += ' ' + variant.singlepair_value;
 		variantOptionsText = variantOptionsText.trim();
 		if (variantOptionsText === '') variantOptionsText = 'No options';
-		
+
 		const productUrl = variant.productId ? '/products/search?q=' + variant.productId : '';
 		const productLink = variant.productName ? <a href={productUrl}>{variant.productName}</a> : '';
-	    
+
     return (
       <Table.Row>
         <Table.Cell>{productLink}</Table.Cell>
@@ -443,24 +443,24 @@ class BundleVariantRow extends Component {
 }
 
 class BundleVariantsTable extends Component {
-	render() {  	
+	render() {
 		const bundleVariants = this.props.bundleVariants;
 		const subpage = this.props.subpage;
-    
+
 		let variantRows = [];
 		if (bundleVariants) {
 			bundleVariants.map(function(variantData, i) {
 				variantRows.push(
-				  <BundleVariantRow 
-				    variant={variantData} 
+				  <BundleVariantRow
+				    variant={variantData}
 				    subpage={subpage}
-				    key={i} 
+				    key={i}
 			    />
 		    );
 				return variantRows;
 	    });
 		}
-		
+
     return (
       <Segment secondary>
         <Table className='variants-table' basic='very' compact size='small' columns={7}>
@@ -522,16 +522,16 @@ class ProductEditor extends Component {
 	isFormEdited() {
   	let edited = false;
   	if (
-    	  (this.props.vendor && this.state.vendor !== this.props.vendor.objectId) 
+    	  (this.props.vendor && this.state.vendor !== this.props.vendor.objectId)
     	  || (!this.props.vendor && this.state.vendor !== '')
       ) edited = true;
   	if (
-    	  (this.props.isBundle === undefined && this.state.isBundle !== '') 
-    	  || (this.props.isBundle !== undefined && this.state.isBundle === 'true' && this.props.isBundle === false) 
+    	  (this.props.isBundle === undefined && this.state.isBundle !== '')
+    	  || (this.props.isBundle !== undefined && this.state.isBundle === 'true' && this.props.isBundle === false)
     	  || (this.props.isBundle !== undefined && this.state.isBundle === 'false' && this.props.isBundle === true)
   	  ) edited = true;
   	if (
-    	  (this.props.designerProductName && this.state.designerProductName !== this.props.designerProductName) 
+    	  (this.props.designerProductName && this.state.designerProductName !== this.props.designerProductName)
     	  || (!this.props.designerProductName && this.state.designerProductName !== '')
       ) edited = true;
   	return edited;
@@ -542,14 +542,14 @@ class ProductEditor extends Component {
   		{ key: 1, value: 'true', text: 'Bundle Product' }
 		];
   	const productTypeSelect = <Form.Select label='Product Type' placeholder='Select product type' value={this.state.isBundle} options={productTypeOptions} onChange={this.handleProductTypeChange} />
-  	
+
 		const vendorOptions = this.props.designer && this.props.designer.vendors ? this.props.designer.vendors.map(function(vendor, i) {
   		return { key: i, value: vendor.objectId, text: vendor.name };
 		}) : null;
 		const vendorSelect = this.state.isBundle === 'false' || this.state.isBundle === '' ? <Form.Select label='Vendor' size='small' placeholder='Select a vendor' value={this.state.vendor} options={vendorOptions} onChange={this.handleVendorChange} /> : null;
-		
+
 		const designerProductName = this.state.isBundle === 'false' || this.state.isBundle === '' ? <Form.Input label='Designer Product Name' size='medium' placeholder='Enter name' value={this.state.designerProductName} onChange={this.handleDesignerProductName} /> : null;
-    
+
     return (
       <Segment hidden={this.props.hidden} color={this.isFormEdited() ? 'blue' : null} >
         <Form>
@@ -623,11 +623,11 @@ class ProductDetails extends Component {
   }
 	handleToggleEditorClick() {
   	const showEditor = !this.state.showEditor;
-  	
+
   	this.setState({
     	showEditor: showEditor
   	});
-	}	
+	}
 	handleApplyToAll(data) {
   	this.setState({
     	applyAllData: data
@@ -638,19 +638,19 @@ class ProductDetails extends Component {
     	applyAllData: null
   	});
 	}
-	
+
 	handleShowOrderFormClick(data) {
   	this.props.handleShowOrderFormClick(data);
 	}
 	handleSaveResize(data) {
   	data.productId = this.props.data.productId;
 		this.props.handleSaveResize(data);
-	}	
-	
+	}
+
 	handleEditBundleClick(productId) {
 		this.props.handleEditBundleClick(productId);
 	}
-	
+
 	componentWillReceiveProps(nextProps) {
     let variantsEdited = this.state.variantsEdited;
     if (nextProps.updatedVariants) {
@@ -659,12 +659,12 @@ class ProductDetails extends Component {
         variantsEdited.map(function(editedVariant, j) {
           if (editedVariant.objectId === updatedVariant.id) index = j;
           return variantsEdited;
-        }); 
+        });
         if (index >= 0) {
           variantsEdited.splice(index, 1);
         }
         return updatedVariant;
-      }); 
+      });
     }
   	this.setState({
     	variantsEdited: variantsEdited
@@ -687,13 +687,13 @@ class ProductDetails extends Component {
 				'hidden': !showVariants
 			}
 		);
-			
+
 		var variantsTables = [];
 		if (variants && !isBundle) {
   		let variantGroupings = [];
   		// Determine variant groupings
 			variants = variants.map(function(variantItem, i) {
-  			
+
   			// Copy resizes to the variant if any exist
   			var variantResizes = [];
   			if (resizes && resizes.length > 0) {
@@ -705,14 +705,14 @@ class ProductDetails extends Component {
     			});
   			}
   			variantItem.resizes = variantResizes;
-  			
+
   			const color = (variantItem.color_value) ? variantItem.color_value : null;
   			if (color && variantGroupings.indexOf(color) < 0) {
     			variantGroupings.push(color);
   			}
 				return variantItem;
 	    });
-	    
+
 	    if (variantGroupings.length > 0) {
   	    // If there are groupings, create a VariantsTable for each group
   	    variantGroupings.map(function(variantGroup, i) {
@@ -722,19 +722,19 @@ class ProductDetails extends Component {
       	    return variantItem;
     	    });
     	    variantsTables.push(
-    	      <VariantsTable 
-    	        variants={variantsInGroup} 
+    	      <VariantsTable
+    	        variants={variantsInGroup}
     	        vendor={vendor}
     	        designer={designer}
-    	        title={variantGroup} 
+    	        title={variantGroup}
     	        subpage={subpage}
-    	        optionsData={optionsData} 
+    	        optionsData={optionsData}
     	        applyAllData={applyAllData}
-    	        key={i} 
+    	        key={i}
     	        isReloading={scope.props.isReloading}
-    	        handleSaveVariantClick={scope.handleSaveVariantClick} 
+    	        handleSaveVariantClick={scope.handleSaveVariantClick}
     	        handleVariantsEdited={scope.handleVariantsEdited}
-    	        savingVariants={scope.props.savingVariants} 
+    	        savingVariants={scope.props.savingVariants}
     	        updatedVariants={scope.props.updatedVariants}
     	        handleShowOrderFormClick={scope.handleShowOrderFormClick}
     	        handleSaveResize={scope.handleSaveResize}
@@ -747,18 +747,18 @@ class ProductDetails extends Component {
 	    } else {
   	    // If no groupings, create one VariantsTable
   	    variantsTables.push(
-  	      <VariantsTable 
-  	        variants={variants} 
+  	      <VariantsTable
+  	        variants={variants}
   	        vendor={vendor}
   	        designer={designer}
-  	        subpage={subpage} 
-  	        optionsData={optionsData} 
+  	        subpage={subpage}
+  	        optionsData={optionsData}
   	        applyAllData={applyAllData}
-  	        key={1} 
+  	        key={1}
   	        isReloading={scope.props.isReloading}
-  	        handleSaveVariantClick={scope.handleSaveVariantClick} 
+  	        handleSaveVariantClick={scope.handleSaveVariantClick}
   	        handleVariantsEdited={scope.handleVariantsEdited}
-  	        savingVariants={scope.props.savingVariants} 
+  	        savingVariants={scope.props.savingVariants}
   	        updatedVariants={scope.props.updatedVariants}
   	        handleShowOrderFormClick={scope.handleShowOrderFormClick}
   	        handleSaveResize={scope.handleSaveResize}
@@ -770,28 +770,28 @@ class ProductDetails extends Component {
     } else if (isBundle) {
 	    // Display table of bundle products
 	    variantsTables.push(
-	      <BundleVariantsTable 
-	        bundleVariants={this.props.data.bundleVariants} 
-	        bundleVariantsProducts={this.props.bundleVariantsProducts} 
+	      <BundleVariantsTable
+	        bundleVariants={this.props.data.bundleVariants}
+	        bundleVariantsProducts={this.props.bundleVariantsProducts}
 	        subpage={subpage}
-	        key={1} 
+	        key={1}
         />
       );
     }
-		
-		const editBundleButton = isBundle ? 
-		  <Form.Field><Form.Button compact basic circular 
-        size='small' 
+
+		const editBundleButton = isBundle ?
+		  <Form.Field><Form.Button compact basic circular
+        size='small'
 		    type='button'
-        icon='list layout' 
-        content='Edit Bundle Products' 
-        disabled={this.props.isReloading} 
-        onClick={()=>this.handleEditBundleClick(this.props.data.productId)} 
+        icon='list layout'
+        content='Edit Bundle Products'
+        disabled={this.props.isReloading}
+        onClick={()=>this.handleEditBundleClick(this.props.data.productId)}
       /></Form.Field> : null;
-		
+
 		const saveAllButton = this.state.variantsEdited.length > 0 ? <Button primary circular compact size='small' icon='save' content='Save All' disabled={this.props.isReloading} onClick={this.handleSaveAllVariantsClick} /> : null;
 		const productEditor = this.state.showEditor ? <ProductEditor productId={this.props.data.productId} designer={designer} vendor={vendor} isBundle={isBundle} designerProductName={this.props.data.designerProductName} handleProductSave={this.handleProductSave}/> : null;
-		
+
     return (
       <Table.Row className={rowClass}>
         <Table.Cell colSpan='13' className='variant-row'>
@@ -805,18 +805,18 @@ class ProductDetails extends Component {
                 <Form size='mini'>
                   <Form.Group inline>
                     <Form.Field>
-                      <Form.Button circular compact basic size='small' type='button' icon='refresh' 
-                        content='Reload' 
-                        disabled={this.props.isReloading || this.state.showEditor} 
-                        onClick={()=>this.handleReloadClick(this.props.data.productId)} 
+                      <Form.Button circular compact basic size='small' type='button' icon='refresh'
+                        content='Reload'
+                        disabled={this.props.isReloading || this.state.showEditor}
+                        onClick={()=>this.handleReloadClick(this.props.data.productId)}
                       />
                     </Form.Field>
                     <Form.Field>
-                      <Form.Button circular compact basic size='small' type='button' 
-                        icon={this.state.showEditor ? 'close' : 'edit'} 
-                        color={this.state.showEditor ? 'black' : null} 
-                        content={this.state.showEditor ? 'Close' : 'Edit Details'} 
-                        onClick={this.handleToggleEditorClick} 
+                      <Form.Button circular compact basic size='small' type='button'
+                        icon={this.state.showEditor ? 'close' : 'edit'}
+                        color={this.state.showEditor ? 'black' : null}
+                        content={this.state.showEditor ? 'Close' : 'Edit Details'}
+                        onClick={this.handleToggleEditorClick}
                       />
                     </Form.Field>
                     {editBundleButton}
