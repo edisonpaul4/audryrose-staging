@@ -68,9 +68,9 @@ class ProductRow extends Component {
 
   	if (vendorOrderVariant.done === true) {
   		labelText = vendorOrderVariant.received + ' Received';
-  	} else if (vendorOrderVariant.ordered && vendorOrderVariant.received > 0) {
-  		labelText += ', ' + vendorOrderVariant.received + ' Received';
-  	}
+  	}// else if (vendorOrderVariant.ordered && vendorOrderVariant.received > 0) {
+  	// 	labelText += ', ' + vendorOrderVariant.received + ' Received';
+  	// }
   	labelText += ' #' + vendorOrder.vendorOrderNumber;
   	const labelDetailText = vendorOrder.dateOrdered ? daysLeft < 0 ? moment(vendorOrder.dateOrdered.iso).format('M-D-YY') + ' (' + Math.abs(daysLeft) + ' days late)' : moment(vendorOrder.dateOrdered.iso).format('M-D-YY') + ' (' + daysLeft + ' days left)' : averageWaitTime + ' days wait';
   	const labelDetail = vendorOrderVariant.done === false ? <Label.Detail>{labelDetailText}</Label.Detail> : null;
