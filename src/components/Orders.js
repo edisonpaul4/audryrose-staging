@@ -56,6 +56,7 @@ class Orders extends Component {
     this.handleCreateShipments = this.handleCreateShipments.bind(this);
     this.handleShipSelectedClick = this.handleShipSelectedClick.bind(this);
     this.handlePrintSelectedClick = this.handlePrintSelectedClick.bind(this);
+		this.handlePickSheetPrintSelectedClick = this.handlePickSheetPrintSelectedClick.bind(this);
     this.handlePaginationClick = this.handlePaginationClick.bind(this);
     this.handleAddToVendorOrder = this.handleAddToVendorOrder.bind(this);
     this.handleCreateResize = this.handleCreateResize.bind(this);
@@ -135,6 +136,13 @@ class Orders extends Component {
   		isGeneratingFile: true
 		});
 	}
+
+  handlePickSheetPrintSelectedClick() {
+    // this.props.printPickSheet(this.props.token, this.state.selectedRows);
+		this.setState({
+  		isGeneratingFile: true
+		});
+  }
 
 	handlePaginationClick(page) {
 		const router = this.props.router;
@@ -569,8 +577,45 @@ class Orders extends Component {
     const printSelectedName = 'Print ' + this.state.selectedRows.length + ' Orders';
 
     let batchShipEnabled = (this.state.subpage === 'fully-shippable' || this.state.subpage === 'partially-shippable' || this.state.subpage === 'search') && this.state.isReloading.length <= 0;
-    const batchShipButton = this.state.subpage === 'fully-shippable' || this.state.subpage === 'partially-shippable' || this.state.subpage === 'search' ? <Button circular basic disabled={!batchShipEnabled} loading={!batchShipEnabled} color='olive' onClick={this.handleShipSelectedClick}><Icon name='shipping' /> {shipSelectedName}</Button> : null;
-    const batchPrintButton = this.state.subpage === 'fulfilled' ? <Button circular basic disabled={this.state.isGeneratingFile} loading={this.state.isGeneratingFile} primary onClick={this.handlePrintSelectedClick}><Icon name='print' /> {printSelectedName}</Button> : null;
+    const batchShipButton = this.state.subpage === 'fully-shippable' || this.state.subpage === 'partially-shippable' || this.state.subpage === 'search' ?
+      <Button
+        circular
+        basic
+        disabled={!batchShipEnabled}
+        loading={!batchShipEnabled}
+        color='olive'
+        onClick={this.handleShipSelectedClick}
+      >
+        <Icon name='shipping' />
+        {shipSelectedName}
+      </Button>
+    : null;
+    const batchPrintButton = this.state.subpage === 'fulfilled' ?
+      <Button
+        circular
+        basic
+        disabled={this.state.isGeneratingFile}
+        loading={this.state.isGeneratingFile}
+        primary
+        onClick={this.handlePrintSelectedClick}
+      >
+        <Icon name='print' />
+        {printSelectedName}
+      </Button>
+    : null;
+    const pickSheetPrintButton = this.state.subpage === 'fulfilled' ?
+      <Button
+        circular
+        basic
+        disabled={this.state.isGeneratingFile}
+        loading={this.state.isGeneratingFile}
+        primary
+        onClick={this.handlePickSheetPrintSelectedClick}
+      >
+        <Icon name='print' />
+        Print Pick Sheet
+      </Button>
+    : null;
 
     const dateShippedColumn = this.state.subpage === 'fulfilled' ?
       <Table.HeaderCell
@@ -612,6 +657,7 @@ class Orders extends Component {
             <Menu.Item>
               {batchShipButton}
               {batchPrintButton}
+              {pickSheetPrintButton}
             </Menu.Item>
           </Sidebar>
           <Sidebar.Pusher>
