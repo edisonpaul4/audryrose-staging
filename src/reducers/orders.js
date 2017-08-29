@@ -36,7 +36,7 @@ const orders = (state = initialState, action) => {
         ...state,
         isLoadingOrders: false
       };
-      
+
     case 'ORDER_RELOAD_REQUEST':
       return {
         ...state
@@ -54,7 +54,7 @@ const orders = (state = initialState, action) => {
       return {
         ...state
       };
-      
+
     case 'CREATE_SHIPMENTS_REQUEST':
       return {
         ...state
@@ -74,7 +74,7 @@ const orders = (state = initialState, action) => {
       return {
         ...state
       };
-      
+
     case 'BATCH_CREATE_SHIPMENTS_REQUEST':
       return {
         ...state
@@ -95,7 +95,7 @@ const orders = (state = initialState, action) => {
       return {
         ...state
       };
-      
+
     case 'BATCH_PRINT_SHIPMENTS_REQUEST':
       return {
         ...state
@@ -114,7 +114,26 @@ const orders = (state = initialState, action) => {
       return {
         ...state
       };
-      
+
+    case 'PRINT_PICK_SHEET_REQUEST':
+      return {
+        ...state
+      };
+
+    case 'PRINT_PICK_SHEET_SUCCESS':
+      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
+      return {
+        ...state,
+        errors: action.res.errors,
+        generatedFile: action.res.generatedFile,
+        newFiles: action.res.newFiles
+      };
+
+    case 'PRINT_PICK_SHEET_FAILURE':
+      return {
+        ...state
+      };
+
     case 'GET_PRODUCT_REQUEST':
       return {
         ...state
@@ -131,7 +150,7 @@ const orders = (state = initialState, action) => {
       return {
         ...state
       };
-      
+
     case 'ADD_ORDER_PRODUCT_TO_VENDOR_ORDER_REQUEST':
       return {
         ...state
@@ -149,7 +168,7 @@ const orders = (state = initialState, action) => {
       return {
         ...state
       }
-      
+
     case 'CREATE_ORDER_RESIZE_REQUEST':
       return {
         ...state
@@ -168,7 +187,7 @@ const orders = (state = initialState, action) => {
       return {
         ...state
       }
-      
+
     case 'ORDER_SAVE_REQUEST':
       return {
         ...state
@@ -185,7 +204,7 @@ const orders = (state = initialState, action) => {
       return {
         ...state
       }
-      
+
     case 'ORDER_PRODUCT_SAVE_REQUEST':
       return {
         ...state
@@ -202,7 +221,7 @@ const orders = (state = initialState, action) => {
       return {
         ...state
       }
-      
+
     case 'GET_ORDER_PRODUCT_FORM_REQUEST':
       return {
         ...state
@@ -219,7 +238,7 @@ const orders = (state = initialState, action) => {
       return {
         ...state
       }
-			
+
     default:
       return state;
   }

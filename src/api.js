@@ -165,6 +165,38 @@ export const batchPrintShipments = (token, ordersToPrint) => axios.post('/jobs/b
   return error;
 });
 
+export const printPickSheet = (token, ordersToPrint) => axios.post('/jobs/printPickSheet', {
+  ordersToPrint: ordersToPrint
+}).then(function (response) {
+  const jobId = response.headers['x-parse-job-status-id'];
+  let generatedFile;
+  let newFiles;
+  if (jobId) {
+    return poll(() => Parse.Cloud.run('getJobStatus', {
+      sessionToken: token,
+      jobId: jobId
+    }).then(function(result) {
+      if(result.status !== 'succeeded') {
+        throw result;
+      } else {
+        if (result.message) generatedFile = result.message;
+        return Parse.Cloud.run('getRecentBatchPdfs', {
+          sessionToken: token
+        });
+      }
+    }).then(function(result) {
+      newFiles = result.newFiles;
+      return {generatedFile: generatedFile, newFiles: newFiles};
+    })
+    , 120, 1000);
+  } else {
+    return;
+  }
+}).catch(function (error) {
+  console.log(error);
+  return error;
+});
+
 export const getProduct = (token, productId) => Parse.Cloud.run('getProduct',
   {
     sessionToken: token,
@@ -390,6 +422,7 @@ export default {
 	createShipments,
 	batchCreateShipments,
 	batchPrintShipments,
+  printPickSheet,
 	getProduct,
 	addOrderProductToVendorOrder,
 	createResize,

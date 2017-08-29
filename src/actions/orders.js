@@ -35,6 +35,13 @@ export function batchPrintShipments(token, ordersToPrint) {
   }
 }
 
+export function printPickSheet(token, ordersToPrint) {
+  return {
+    types: ['PRINT_PICK_SHEET_REQUEST', 'PRINT_PICK_SHEET_SUCCESS', 'PRINT_PICK_SHEET_FAILURE'],
+    promise: api.printPickSheet(token, ordersToPrint)
+  }
+}
+
 export function getProduct(token, productId) {
   return {
     types: ['GET_PRODUCT_REQUEST', 'GET_PRODUCT_SUCCESS', 'GET_PRODUCT_FAILURE'],

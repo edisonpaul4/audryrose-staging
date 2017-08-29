@@ -138,7 +138,7 @@ class Orders extends Component {
 	}
 
   handlePickSheetPrintSelectedClick() {
-    // this.props.printPickSheet(this.props.token, this.state.selectedRows);
+    this.props.printPickSheet(this.props.token, this.state.selectedRows);
 		this.setState({
   		isGeneratingFile: true
 		});
