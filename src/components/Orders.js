@@ -603,7 +603,7 @@ class Orders extends Component {
         {printSelectedName}
       </Button>
     : null;
-    const pickSheetPrintButton = this.state.subpage === 'fulfilled' ?
+    const pickSheetPrintButton = this.state.subpage === 'fully-shippable' || this.state.subpage === 'partially-shippable' ?
       <Button
         circular
         basic
@@ -654,7 +654,7 @@ class Orders extends Component {
 	      </Dimmer>
   			<Sidebar.Pushable>
           <Sidebar as={Menu} borderless size='small' animation='push' direction='top' visible={this.state.selectedRows.length > 0}>
-            <Menu.Item>
+            <Menu.Item className='row-actions'>
               {batchShipButton}
               {batchPrintButton}
               {pickSheetPrintButton}
