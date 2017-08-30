@@ -117,8 +117,8 @@ class VariantRow extends Component {
 	getResizeLabel(product, variant, resize, orderProductMatch) {
   	console.log(resize)
 		const averageWaitTime = 7;
-// 		const expectedDate = resize.dateSent ? moment(resize.dateSent.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
-// 		const daysLeft = resize.dateSent ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
+		// const expectedDate = resize.dateSent ? moment(resize.dateSent.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
+		// const daysLeft = resize.dateSent ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
 		const daysSinceSent = resize.dateSent ? moment.utc().diff(resize.dateSent.iso, 'days') : null;
 		let labelColor = 'olive';
 		let labelIcon;
@@ -132,7 +132,7 @@ class VariantRow extends Component {
 		let labelText = resize.units + ' Resize' + (resize.units > 1 ? 's' : '') + (resize.dateSent ? ' Sent' : ' Pending');
 		if (resize.received >= resize.units) labelText = resize.received + ' Resize Received';
   	//if (resize.orderProduct) labelText += ' #' + resize.orderProduct.order_id;
-// 		const labelDetailText = daysLeft < 0 ? moment(resize.dateSent.iso).format('M-D-YY') + ' (' + Math.abs(daysLeft) + ' days late)' : moment(resize.dateSent.iso).format('M-D-YY') + ' (' + daysLeft + ' days left)';
+		// const labelDetailText = daysLeft < 0 ? moment(resize.dateSent.iso).format('M-D-YY') + ' (' + Math.abs(daysLeft) + ' days late)' : moment(resize.dateSent.iso).format('M-D-YY') + ' (' + daysLeft + ' days left)';
 		const labelDetailText = resize.dateSent ?  daysSinceSent + ' days ago' : '';
 		const labelDetail = resize.done === false ? <Label.Detail>{labelDetailText}</Label.Detail> : null;
 		let showLabel = false;
@@ -169,8 +169,8 @@ class VariantRow extends Component {
 		const data = this.props.data;
 		const optionsData = this.props.optionsData;
     let variantEdited = (this.state.inventory !== this.state.startInventory || this.state.color !== this.state.startColor) ? true : false;
-//     if (!this.state.startInventory && this.state.inventory === 0) variantEdited = false;
-//     if (!this.state.startColor && this.state.color === '') variantEdited = false;
+    // if (!this.state.startInventory && this.state.inventory === 0) variantEdited = false;
+    // if (!this.state.startColor && this.state.color === '') variantEdited = false;
 
 		// Create an array of other options values
 		let otherOptions = [];
@@ -312,7 +312,7 @@ class VariantsTable extends Component {
 		const variants = this.props.variants;
 		const vendor = this.props.vendor;
 		const designer = this.props.designer;
-// 		const resizes = this.props.resizes;
+		// const resizes = this.props.resizes;
     const subpage = this.props.subpage;
 
 		// Sort the data
@@ -581,8 +581,8 @@ class ProductDetails extends Component {
     this.handleSaveAllVariantsClick = this.handleSaveAllVariantsClick.bind(this);
     this.handleVariantsEdited = this.handleVariantsEdited.bind(this);
     this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
-//     this.handleVendorChange = this.handleVendorChange.bind(this);
-//     this.handleProductTypeChange = this.handleProductTypeChange.bind(this);
+    // this.handleVendorChange = this.handleVendorChange.bind(this);
+    // this.handleProductTypeChange = this.handleProductTypeChange.bind(this);
     this.handleEditBundleClick = this.handleEditBundleClick.bind(this);
     this.handleToggleEditorClick = this.handleToggleEditorClick.bind(this);
     this.handleApplyToAll = this.handleApplyToAll.bind(this);
@@ -706,27 +706,41 @@ class ProductDetails extends Component {
   			}
   			variantItem.resizes = variantResizes;
 
-  			const color = (variantItem.color_value) ? variantItem.color_value : null;
-  			if (color && variantGroupings.indexOf(color) < 0) {
-    			variantGroupings.push(color);
+        const colorStone = {
+          color: variantItem.color_value ? variantItem.color_value : null,
+          gemstone: variantItem.gemstone_value ? variantItem.gemstone_value : null
+        };
+
+        function containsObject(obj, list) {
+          var match = false;
+          list.map(function(g) {
+            if (obj.color === g.color && obj.gemstone === g.gemstone) match = true;
+            return g;
+          });
+          return match;
+        }
+
+  			if (!containsObject(colorStone, variantGroupings)) {
+    			variantGroupings.push(colorStone);
   			}
 				return variantItem;
 	    });
 
-	    if (variantGroupings.length > 0) {
+	    if (variantGroupings.length > 1) {
   	    // If there are groupings, create a VariantsTable for each group
   	    variantGroupings.map(function(variantGroup, i) {
     	    var variantsInGroup = [];
     	    variants.map(function(variantItem, j) {
-      	    if (variantItem.color_value === variantGroup) variantsInGroup.push(variantItem);
+      	    if (variantItem.color_value === variantGroup.color && variantItem.gemstone_value === variantGroup.gemstone) variantsInGroup.push(variantItem);
       	    return variantItem;
     	    });
+          var title = `${variantGroup.color}${variantGroup.color && variantGroup.gemstone ? ' / ' : ''}${variantGroup.gemstone}`;
     	    variantsTables.push(
     	      <VariantsTable
     	        variants={variantsInGroup}
     	        vendor={vendor}
     	        designer={designer}
-    	        title={variantGroup}
+    	        title={title}
     	        subpage={subpage}
     	        optionsData={optionsData}
     	        applyAllData={applyAllData}
