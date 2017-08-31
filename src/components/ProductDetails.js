@@ -12,12 +12,15 @@ class VariantRow extends Component {
       variantData: this.props.data,
       inventory: this.props.data.inventoryLevel ? parseFloat(this.props.data.inventoryLevel) : 0,
       startInventory: this.props.data.inventoryLevel ? parseFloat(this.props.data.inventoryLevel) : 0,
+      wholesalePrice: this.props.data.customWholesalePrice ? parseFloat(this.props.data.customWholesalePrice) : this.props.data.adjustedWholesalePrice ? parseFloat(this.props.data.adjustedWholesalePrice) : 0,
+      startWholesalePrice: this.props.data.customWholesalePrice ? parseFloat(this.props.data.customWholesalePrice) : this.props.data.adjustedWholesalePrice ? parseFloat(this.props.data.adjustedWholesalePrice) : 0,
       color: this.props.data.color_value ? this.props.data.color_value : '',
       startColor: this.props.data.color_value ? this.props.data.color_value : '',
       variantEdited: false,
       variantSaved: false
     };
     this.handleInventoryChange = this.handleInventoryChange.bind(this);
+    this.handleWholesalePriceChange = this.handleWholesalePriceChange.bind(this);
     this.handleColorChange = this.handleColorChange.bind(this);
     this.handleSaveVariantClick = this.handleSaveVariantClick.bind(this);
     this.handleCancelVariantClick = this.handleCancelVariantClick.bind(this);
@@ -29,32 +32,46 @@ class VariantRow extends Component {
   handleInventoryChange(e, {value}) {
     let edited = (parseFloat(value) !== parseFloat(this.state.startInventory)) ? true : false;
     if (!this.state.startInventory && parseFloat(value) === 0) edited = false;
+    if (this.state.wholesalePrice !== this.state.startWholesalePrice) edited = true;
     if (this.state.color !== this.state.startColor) edited = true;
     this.setState({
       inventory: parseFloat(value),
       variantEdited: edited,
       variantSaved: false
     });
-    this.props.handleVariantEdited({objectId: this.props.data.objectId, inventory: parseFloat(value), color: this.state.color}, edited);
+    this.props.handleVariantEdited({objectId: this.props.data.objectId, inventory: parseFloat(value), color: this.state.color, wholesalePrice: this.state.wholesalePrice}, edited);
+  }
+  handleWholesalePriceChange(e, {value}) {
+    let edited = (parseFloat(value) !== parseFloat(this.state.startWholesalePrice)) ? true : false;
+    if (this.state.inventory !== this.state.startInventory) edited = true;
+    if (this.state.color !== this.state.startColor) edited = true;
+    this.setState({
+      wholesalePrice: parseFloat(value),
+      variantEdited: edited,
+      variantSaved: false
+    });
+    this.props.handleVariantEdited({objectId: this.props.data.objectId, inventory: this.state.inventory, color: this.state.color, wholesalePrice: parseFloat(value)}, edited);
   }
   handleColorChange(e, {value}) {
     let edited = (value !== this.state.startColor) ? true : false;
     if (!this.state.startColor && value === '') edited = false;
     if (this.state.inventory !== this.state.startInventory) edited = true;
+    if (this.state.wholesalePrice !== this.state.startWholesalePrice) edited = true;
     this.setState({
       color: value,
       variantEdited: edited,
       variantSaved: false
     });
-    this.props.handleVariantEdited({objectId: this.props.data.objectId, inventory: this.state.inventory, color: value}, edited);
+    this.props.handleVariantEdited({objectId: this.props.data.objectId, inventory: this.state.inventory, color: value, wholesalePrice: this.state.wholesalePrice}, edited);
   }
 	handleSaveVariantClick(e, {value}) {
-		this.props.handleSaveVariantClick({objectId: this.props.data.objectId, inventory: this.state.inventory, color: this.state.color});
+		this.props.handleSaveVariantClick({objectId: this.props.data.objectId, inventory: this.state.inventory, color: this.state.color, wholesalePrice: this.state.wholesalePrice});
 	}
 	handleCancelVariantClick(e, {value}) {
     this.setState({
       inventory: this.state.startInventory,
       color: this.state.startColor,
+      wholesalePrice: this.state.startWholesalePrice,
       variantEdited: false,
       variantSaved: false
     });
@@ -115,10 +132,9 @@ class VariantRow extends Component {
   	return showLabel ? <Label as={labelLink ? 'a' : null} href={labelLink} size='tiny' color={labelColor} key={'vendorOrder-'+vendorOrder.objectId+'-'+vendorOrderVariant.objectId}>{labelIcon}{labelText}{labelDetail}</Label> : null;
 	}
 	getResizeLabel(product, variant, resize, orderProductMatch) {
-  	console.log(resize)
 		const averageWaitTime = 7;
-// 		const expectedDate = resize.dateSent ? moment(resize.dateSent.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
-// 		const daysLeft = resize.dateSent ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
+		// const expectedDate = resize.dateSent ? moment(resize.dateSent.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
+		// const daysLeft = resize.dateSent ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
 		const daysSinceSent = resize.dateSent ? moment.utc().diff(resize.dateSent.iso, 'days') : null;
 		let labelColor = 'olive';
 		let labelIcon;
@@ -132,7 +148,7 @@ class VariantRow extends Component {
 		let labelText = resize.units + ' Resize' + (resize.units > 1 ? 's' : '') + (resize.dateSent ? ' Sent' : ' Pending');
 		if (resize.received >= resize.units) labelText = resize.received + ' Resize Received';
   	//if (resize.orderProduct) labelText += ' #' + resize.orderProduct.order_id;
-// 		const labelDetailText = daysLeft < 0 ? moment(resize.dateSent.iso).format('M-D-YY') + ' (' + Math.abs(daysLeft) + ' days late)' : moment(resize.dateSent.iso).format('M-D-YY') + ' (' + daysLeft + ' days left)';
+		// const labelDetailText = daysLeft < 0 ? moment(resize.dateSent.iso).format('M-D-YY') + ' (' + Math.abs(daysLeft) + ' days late)' : moment(resize.dateSent.iso).format('M-D-YY') + ' (' + daysLeft + ' days left)';
 		const labelDetailText = resize.dateSent ?  daysSinceSent + ' days ago' : '';
 		const labelDetail = resize.done === false ? <Label.Detail>{labelDetailText}</Label.Detail> : null;
 		let showLabel = false;
@@ -151,6 +167,7 @@ class VariantRow extends Component {
     	state.variantData = this.props.isSaving ? nextProps.data : this.state.variantData;
     	state.startInventory = nextProps.updatedVariant.inventoryLevel;
     	state.startColor = nextProps.updatedVariant.color_value;
+      state.startWholesalePrice = nextProps.updatedVariant.customWholesalePrice ? parseFloat(nextProps.updatedVariant.customWholesalePrice) : nextProps.updatedVariant.adjustedWholesalePrice ? parseFloat(nextProps.updatedVariant.adjustedWholesalePrice) : 0;
       state.variantSaved = true;
   	}
   	if (nextProps.applyAllData) {
@@ -158,7 +175,7 @@ class VariantRow extends Component {
     	if (nextProps.applyAllData.color) {
       	state.color = nextProps.applyAllData.color;
       	this.props.handleVariantEdited({objectId: this.props.data.objectId, inventory: state.inventory, color: nextProps.applyAllData.color}, (state.inventory
-      	!== state.startInventory || nextProps.applyAllData.color !== state.startColor));
+      	!== state.startInventory || nextProps.applyAllData.color !== state.startColor || nextProps.wholesalePrice !== state.startWholesalePrice));
     	}
     	this.props.handleClearApplyAllData();
   	}
@@ -168,9 +185,9 @@ class VariantRow extends Component {
   	const scope = this;
 		const data = this.props.data;
 		const optionsData = this.props.optionsData;
-    let variantEdited = (this.state.inventory !== this.state.startInventory || this.state.color !== this.state.startColor) ? true : false;
-//     if (!this.state.startInventory && this.state.inventory === 0) variantEdited = false;
-//     if (!this.state.startColor && this.state.color === '') variantEdited = false;
+    let variantEdited = (this.state.inventory !== this.state.startInventory || this.state.color !== this.state.startColor || this.state.wholesalePrice !== this.state.startWholesalePrice) ? true : false;
+    // if (!this.state.startInventory && this.state.inventory === 0) variantEdited = false;
+    // if (!this.state.startColor && this.state.color === '') variantEdited = false;
 
 		// Create an array of other options values
 		let otherOptions = [];
@@ -240,11 +257,12 @@ class VariantRow extends Component {
         </Table.Cell>
         <Table.Cell>{data.size_value ? data.size_value : 'OS'}</Table.Cell>
         <Table.Cell>{otherOptions ? otherOptions.join(', ') : null}</Table.Cell>
-				<Table.Cell><Input type='number' value={this.state.inventory ? this.state.inventory : 0} onChange={this.handleInventoryChange} min={0} disabled={this.props.isSaving} /></Table.Cell>
+				<Table.Cell><Input fluid type='number' value={this.state.inventory ? this.state.inventory : 0} onChange={this.handleInventoryChange} min={0} disabled={this.props.isSaving} /></Table.Cell>
 				<Table.Cell>{totalAwaitingInventory}</Table.Cell>
 				<Table.Cell>{vendorOrderAndResizes}</Table.Cell>
-				<Table.Cell className='right aligned'>{numeral(data.adjustedPrice).format('$0,0.00')}</Table.Cell>
-				<Table.Cell className='right aligned' singleLine>
+				<Table.Cell>{numeral(data.adjustedPrice).format('$0,0.00')}</Table.Cell>
+        <Table.Cell><Input type='number' value={this.state.wholesalePrice ? numeral(this.state.wholesalePrice).format('0.00') : 0} onChange={this.handleWholesalePriceChange} min={0} disabled={this.props.isSaving} /></Table.Cell>
+				<Table.Cell singleLine>
     		  <Button.Group size='mini'>
     		    <Button
     		      content='Save'
@@ -312,7 +330,7 @@ class VariantsTable extends Component {
 		const variants = this.props.variants;
 		const vendor = this.props.vendor;
 		const designer = this.props.designer;
-// 		const resizes = this.props.resizes;
+		// const resizes = this.props.resizes;
     const subpage = this.props.subpage;
 
 		// Sort the data
@@ -402,7 +420,8 @@ class VariantsTable extends Component {
               <Table.HeaderCell>ACT OH</Table.HeaderCell>
               <Table.HeaderCell>Total Awaiting</Table.HeaderCell>
               <Table.HeaderCell>Ordered/Resizing</Table.HeaderCell>
-              <Table.HeaderCell className='right aligned'>RETAIL $</Table.HeaderCell>
+              <Table.HeaderCell>RETAIL $</Table.HeaderCell>
+              <Table.HeaderCell>WHLS $</Table.HeaderCell>
               <Table.HeaderCell className='right aligned'>Actions</Table.HeaderCell>
             </Table.Row>
           </Table.Header>
@@ -581,8 +600,8 @@ class ProductDetails extends Component {
     this.handleSaveAllVariantsClick = this.handleSaveAllVariantsClick.bind(this);
     this.handleVariantsEdited = this.handleVariantsEdited.bind(this);
     this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
-//     this.handleVendorChange = this.handleVendorChange.bind(this);
-//     this.handleProductTypeChange = this.handleProductTypeChange.bind(this);
+    // this.handleVendorChange = this.handleVendorChange.bind(this);
+    // this.handleProductTypeChange = this.handleProductTypeChange.bind(this);
     this.handleEditBundleClick = this.handleEditBundleClick.bind(this);
     this.handleToggleEditorClick = this.handleToggleEditorClick.bind(this);
     this.handleApplyToAll = this.handleApplyToAll.bind(this);
@@ -687,7 +706,6 @@ class ProductDetails extends Component {
 				'hidden': !showVariants
 			}
 		);
-
 		var variantsTables = [];
 		if (variants && !isBundle) {
   		let variantGroupings = [];
@@ -706,27 +724,48 @@ class ProductDetails extends Component {
   			}
   			variantItem.resizes = variantResizes;
 
-  			const color = (variantItem.color_value) ? variantItem.color_value : null;
-  			if (color && variantGroupings.indexOf(color) < 0) {
-    			variantGroupings.push(color);
+        const colorStone = {
+          color: variantItem.color_value ? variantItem.color_value : null,
+          gemstone: variantItem.gemstone_value ? variantItem.gemstone_value : null
+        };
+
+        function containsObject(obj, list) {
+          var match = false;
+          list.map(function(g) {
+            if (obj.color === g.color && obj.gemstone === g.gemstone) match = true;
+            return g;
+          });
+          return match;
+        }
+
+  			if (!containsObject(colorStone, variantGroupings)) {
+    			variantGroupings.push(colorStone);
   			}
 				return variantItem;
 	    });
 
-	    if (variantGroupings.length > 0) {
+	    if (variantGroupings.length > 1) {
   	    // If there are groupings, create a VariantsTable for each group
   	    variantGroupings.map(function(variantGroup, i) {
     	    var variantsInGroup = [];
     	    variants.map(function(variantItem, j) {
-      	    if (variantItem.color_value === variantGroup) variantsInGroup.push(variantItem);
+            var matches = true;
+      	    if (variantItem.color_value) {
+              if (variantItem.color_value !== variantGroup.color) matches = false;
+            }
+            if (variantItem.gemstone_value) {
+              if (variantItem.gemstone_value !== variantGroup.gemstone) matches = false;
+            }
+            if (matches) variantsInGroup.push(variantItem);
       	    return variantItem;
     	    });
+          var title = `${variantGroup.color ? variantGroup.color : ''}${variantGroup.color && variantGroup.gemstone ? ' / ' : ''}${variantGroup.gemstone ? variantGroup.gemstone : ''}`;
     	    variantsTables.push(
     	      <VariantsTable
     	        variants={variantsInGroup}
     	        vendor={vendor}
     	        designer={designer}
-    	        title={variantGroup}
+    	        title={title}
     	        subpage={subpage}
     	        optionsData={optionsData}
     	        applyAllData={applyAllData}
