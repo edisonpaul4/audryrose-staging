@@ -167,6 +167,7 @@ class VariantRow extends Component {
     	state.variantData = this.props.isSaving ? nextProps.data : this.state.variantData;
     	state.startInventory = nextProps.updatedVariant.inventoryLevel;
     	state.startColor = nextProps.updatedVariant.color_value;
+      state.startWholesalePrice = nextProps.updatedVariant.customWholesalePrice ? parseFloat(nextProps.updatedVariant.customWholesalePrice) : nextProps.updatedVariant.adjustedWholesalePrice ? parseFloat(nextProps.updatedVariant.adjustedWholesalePrice) : 0;
       state.variantSaved = true;
   	}
   	if (nextProps.applyAllData) {
