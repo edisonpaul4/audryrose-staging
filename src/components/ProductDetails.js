@@ -12,12 +12,15 @@ class VariantRow extends Component {
       variantData: this.props.data,
       inventory: this.props.data.inventoryLevel ? parseFloat(this.props.data.inventoryLevel) : 0,
       startInventory: this.props.data.inventoryLevel ? parseFloat(this.props.data.inventoryLevel) : 0,
+      wholesalePrice: this.props.data.customWholesalePrice ? parseFloat(this.props.data.customWholesalePrice) : this.props.data.adjustedWholesalePrice ? parseFloat(this.props.data.adjustedWholesalePrice) : 0,
+      startWholesalePrice: this.props.data.customWholesalePrice ? parseFloat(this.props.data.customWholesalePrice) : this.props.data.adjustedWholesalePrice ? parseFloat(this.props.data.adjustedWholesalePrice) : 0,
       color: this.props.data.color_value ? this.props.data.color_value : '',
       startColor: this.props.data.color_value ? this.props.data.color_value : '',
       variantEdited: false,
       variantSaved: false
     };
     this.handleInventoryChange = this.handleInventoryChange.bind(this);
+    this.handleWholesalePriceChange = this.handleWholesalePriceChange.bind(this);
     this.handleColorChange = this.handleColorChange.bind(this);
     this.handleSaveVariantClick = this.handleSaveVariantClick.bind(this);
     this.handleCancelVariantClick = this.handleCancelVariantClick.bind(this);
@@ -29,32 +32,46 @@ class VariantRow extends Component {
   handleInventoryChange(e, {value}) {
     let edited = (parseFloat(value) !== parseFloat(this.state.startInventory)) ? true : false;
     if (!this.state.startInventory && parseFloat(value) === 0) edited = false;
+    if (this.state.wholesalePrice !== this.state.startWholesalePrice) edited = true;
     if (this.state.color !== this.state.startColor) edited = true;
     this.setState({
       inventory: parseFloat(value),
       variantEdited: edited,
       variantSaved: false
     });
-    this.props.handleVariantEdited({objectId: this.props.data.objectId, inventory: parseFloat(value), color: this.state.color}, edited);
+    this.props.handleVariantEdited({objectId: this.props.data.objectId, inventory: parseFloat(value), color: this.state.color, wholesalePrice: this.state.wholesalePrice}, edited);
+  }
+  handleWholesalePriceChange(e, {value}) {
+    let edited = (parseFloat(value) !== parseFloat(this.state.startWholesalePrice)) ? true : false;
+    if (this.state.inventory !== this.state.startInventory) edited = true;
+    if (this.state.color !== this.state.startColor) edited = true;
+    this.setState({
+      wholesalePrice: parseFloat(value),
+      variantEdited: edited,
+      variantSaved: false
+    });
+    this.props.handleVariantEdited({objectId: this.props.data.objectId, inventory: this.state.inventory, color: this.state.color, wholesalePrice: parseFloat(value)}, edited);
   }
   handleColorChange(e, {value}) {
     let edited = (value !== this.state.startColor) ? true : false;
     if (!this.state.startColor && value === '') edited = false;
     if (this.state.inventory !== this.state.startInventory) edited = true;
+    if (this.state.wholesalePrice !== this.state.startWholesalePrice) edited = true;
     this.setState({
       color: value,
       variantEdited: edited,
       variantSaved: false
     });
-    this.props.handleVariantEdited({objectId: this.props.data.objectId, inventory: this.state.inventory, color: value}, edited);
+    this.props.handleVariantEdited({objectId: this.props.data.objectId, inventory: this.state.inventory, color: value, wholesalePrice: this.state.wholesalePrice}, edited);
   }
 	handleSaveVariantClick(e, {value}) {
-		this.props.handleSaveVariantClick({objectId: this.props.data.objectId, inventory: this.state.inventory, color: this.state.color});
+		this.props.handleSaveVariantClick({objectId: this.props.data.objectId, inventory: this.state.inventory, color: this.state.color, wholesalePrice: this.state.wholesalePrice});
 	}
 	handleCancelVariantClick(e, {value}) {
     this.setState({
       inventory: this.state.startInventory,
       color: this.state.startColor,
+      wholesalePrice: this.state.startWholesalePrice,
       variantEdited: false,
       variantSaved: false
     });
@@ -115,7 +132,6 @@ class VariantRow extends Component {
   	return showLabel ? <Label as={labelLink ? 'a' : null} href={labelLink} size='tiny' color={labelColor} key={'vendorOrder-'+vendorOrder.objectId+'-'+vendorOrderVariant.objectId}>{labelIcon}{labelText}{labelDetail}</Label> : null;
 	}
 	getResizeLabel(product, variant, resize, orderProductMatch) {
-  	console.log(resize)
 		const averageWaitTime = 7;
 		// const expectedDate = resize.dateSent ? moment(resize.dateSent.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
 		// const daysLeft = resize.dateSent ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
@@ -158,7 +174,7 @@ class VariantRow extends Component {
     	if (nextProps.applyAllData.color) {
       	state.color = nextProps.applyAllData.color;
       	this.props.handleVariantEdited({objectId: this.props.data.objectId, inventory: state.inventory, color: nextProps.applyAllData.color}, (state.inventory
-      	!== state.startInventory || nextProps.applyAllData.color !== state.startColor));
+      	!== state.startInventory || nextProps.applyAllData.color !== state.startColor || nextProps.wholesalePrice !== state.startWholesalePrice));
     	}
     	this.props.handleClearApplyAllData();
   	}
@@ -168,7 +184,7 @@ class VariantRow extends Component {
   	const scope = this;
 		const data = this.props.data;
 		const optionsData = this.props.optionsData;
-    let variantEdited = (this.state.inventory !== this.state.startInventory || this.state.color !== this.state.startColor) ? true : false;
+    let variantEdited = (this.state.inventory !== this.state.startInventory || this.state.color !== this.state.startColor || this.state.wholesalePrice !== this.state.startWholesalePrice) ? true : false;
     // if (!this.state.startInventory && this.state.inventory === 0) variantEdited = false;
     // if (!this.state.startColor && this.state.color === '') variantEdited = false;
 
@@ -240,11 +256,12 @@ class VariantRow extends Component {
         </Table.Cell>
         <Table.Cell>{data.size_value ? data.size_value : 'OS'}</Table.Cell>
         <Table.Cell>{otherOptions ? otherOptions.join(', ') : null}</Table.Cell>
-				<Table.Cell><Input type='number' value={this.state.inventory ? this.state.inventory : 0} onChange={this.handleInventoryChange} min={0} disabled={this.props.isSaving} /></Table.Cell>
+				<Table.Cell><Input fluid type='number' value={this.state.inventory ? this.state.inventory : 0} onChange={this.handleInventoryChange} min={0} disabled={this.props.isSaving} /></Table.Cell>
 				<Table.Cell>{totalAwaitingInventory}</Table.Cell>
 				<Table.Cell>{vendorOrderAndResizes}</Table.Cell>
-				<Table.Cell className='right aligned'>{numeral(data.adjustedPrice).format('$0,0.00')}</Table.Cell>
-				<Table.Cell className='right aligned' singleLine>
+				<Table.Cell>{numeral(data.adjustedPrice).format('$0,0.00')}</Table.Cell>
+        <Table.Cell><Input type='number' value={this.state.wholesalePrice ? numeral(this.state.wholesalePrice).format('0.00') : 0} onChange={this.handleWholesalePriceChange} min={0} disabled={this.props.isSaving} /></Table.Cell>
+				<Table.Cell singleLine>
     		  <Button.Group size='mini'>
     		    <Button
     		      content='Save'
@@ -402,7 +419,8 @@ class VariantsTable extends Component {
               <Table.HeaderCell>ACT OH</Table.HeaderCell>
               <Table.HeaderCell>Total Awaiting</Table.HeaderCell>
               <Table.HeaderCell>Ordered/Resizing</Table.HeaderCell>
-              <Table.HeaderCell className='right aligned'>RETAIL $</Table.HeaderCell>
+              <Table.HeaderCell>RETAIL $</Table.HeaderCell>
+              <Table.HeaderCell>WHLS $</Table.HeaderCell>
               <Table.HeaderCell className='right aligned'>Actions</Table.HeaderCell>
             </Table.Row>
           </Table.Header>
@@ -687,7 +705,6 @@ class ProductDetails extends Component {
 				'hidden': !showVariants
 			}
 		);
-
 		var variantsTables = [];
 		if (variants && !isBundle) {
   		let variantGroupings = [];
@@ -731,10 +748,17 @@ class ProductDetails extends Component {
   	    variantGroupings.map(function(variantGroup, i) {
     	    var variantsInGroup = [];
     	    variants.map(function(variantItem, j) {
-      	    if (variantItem.color_value === variantGroup.color && variantItem.gemstone_value === variantGroup.gemstone) variantsInGroup.push(variantItem);
+            var matches = true;
+      	    if (variantItem.color_value) {
+              if (variantItem.color_value !== variantGroup.color) matches = false;
+            }
+            if (variantItem.gemstone_value) {
+              if (variantItem.gemstone_value !== variantGroup.gemstone) matches = false;
+            }
+            if (matches) variantsInGroup.push(variantItem);
       	    return variantItem;
     	    });
-          var title = `${variantGroup.color}${variantGroup.color && variantGroup.gemstone ? ' / ' : ''}${variantGroup.gemstone}`;
+          var title = `${variantGroup.color ? variantGroup.color : ''}${variantGroup.color && variantGroup.gemstone ? ' / ' : ''}${variantGroup.gemstone ? variantGroup.gemstone : ''}`;
     	    variantsTables.push(
     	      <VariantsTable
     	        variants={variantsInGroup}
