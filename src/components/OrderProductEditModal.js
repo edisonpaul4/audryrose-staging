@@ -30,10 +30,11 @@ class OrderProductEditModal extends Component {
     this.handleMiscChange = this.handleMiscChange.bind(this);
     this.handleInventoryChange = this.handleInventoryChange.bind(this);
     this.handleAdd = this.handleAdd.bind(this);
+    this.handleCopy = this.handleCopy.bind(this);
     this.handleRemove = this.handleRemove.bind(this);
     this.handleClose = this.handleClose.bind(this);
   }
-  
+
   componentWillMount() {
     let productVariants = [];
     productVariants = this.getProductVariants(productVariants, this.props.orderProductEditFormData);
@@ -41,7 +42,7 @@ class OrderProductEditModal extends Component {
     	productVariants: productVariants
   	});
   }
-  
+
 	handleSave() {
     var data = {
       orderId: this.state.productData.order_id,
@@ -52,7 +53,7 @@ class OrderProductEditModal extends Component {
 		this.props.handleOrderProductSave(data);
 		this.props.handleOrderProductEditClose();
 	}
-	
+
   handleClose() {
     this.setState({
       formComplete: false,
@@ -72,7 +73,7 @@ class OrderProductEditModal extends Component {
     });
     this.props.handleOrderProductEditClose();
   }
-  
+
   isFormComplete() {
     let formComplete = false;
     let totalSelected = 0;
@@ -84,7 +85,7 @@ class OrderProductEditModal extends Component {
     if (totalSelected > 0) formComplete = true;
     return formComplete;
   }
-  
+
 	handleProductChange(e, {value}) {
   	if (value !== this.state.selectedProduct) {
     	this.setState({
@@ -92,7 +93,7 @@ class OrderProductEditModal extends Component {
     	});
   	}
 	}
-	
+
 	handleColorChange(e, {value}) {
   	if (value !== this.state.selectedColor) {
     	this.setState({
@@ -100,7 +101,7 @@ class OrderProductEditModal extends Component {
     	});
   	}
 	}
-	
+
 	handleStoneChange(e, {value}) {
   	if (value !== this.state.selectedStone) {
     	this.setState({
@@ -108,7 +109,7 @@ class OrderProductEditModal extends Component {
     	});
   	}
 	}
-	
+
   handleSizeAddition(e, { value }) {
     const sizeCodeAddition = { key: 'sizeCodeAddition', value: value, text: value };
     this.setState({
@@ -116,7 +117,7 @@ class OrderProductEditModal extends Component {
       selectedSize: value
     });
   }
-	
+
 	handleSizeChange(e, {value}) {
   	if (value !== this.state.selectedSize) {
     	this.setState({
@@ -124,7 +125,7 @@ class OrderProductEditModal extends Component {
     	});
   	}
 	}
-  
+
 	handleMiscChange(e, {value}) {
   	if (value !== this.state.selectedMisc) {
     	this.setState({
@@ -132,7 +133,7 @@ class OrderProductEditModal extends Component {
     	});
   	}
 	}
-	
+
   handleInventoryChange(e) {
     const productVariants = this.state.productVariants.map(function(productVariant) {
       if (productVariant.id === e.target.name) productVariant.inventoryLevel = e.target.value;
@@ -142,7 +143,7 @@ class OrderProductEditModal extends Component {
     	productVariants: productVariants
   	});
   }
-	
+
 	handleAdd(objectId) {
   	let productVariants = this.state.productVariants;
   	let variantData = {id: objectId, isCustom: false};
@@ -162,11 +163,11 @@ class OrderProductEditModal extends Component {
       selectedStone: '',
       selectedSize: '',
       sizeCodeAddition: null,
-      selectedMisc: '', 	
+      selectedMisc: '',
     	productVariants: productVariants
   	});
 	}
-	
+
 	handleRemove(objectId) {
   	let productVariants = this.state.productVariants;
   	let index = -1;
@@ -175,16 +176,42 @@ class OrderProductEditModal extends Component {
     	return productVariant;
   	})
     if (index >= 0) productVariants.splice(index, 1);
-  	this.setState({	
+  	this.setState({
     	productVariants: productVariants
   	});
 	}
-	
+
+  handleCopy(objectId) {
+    let products = this.state.products;
+    const state = {};
+    products.map(function(product, i) {
+      if (product.variants) {
+        product.variants.map(function(variant, j) {
+          if (variant.objectId === objectId) {
+            console.log('matched ' + objectId, variant);
+            state.selectedProduct = product.productId;
+            state.selectedColor = variant.colorCode ? variant.colorCode.objectId : '';
+            console.log('state.selectedColor', state.selectedColor);
+            state.selectedStone = variant.stoneCode ? variant.stoneCode.objectId : '';
+            console.log('state.selectedStone', state.selectedStone);
+            state.selectedSize = variant.sizeCode ? variant.sizeCode.objectId : '';
+            console.log('state.selectedSize', state.selectedSize);
+            state.selectedMisc = variant.miscCode ? variant.miscCode.objectId : '';
+            console.log('state.selectedMisc', state.selectedMisc);
+          }
+          return variant;
+        });
+      }
+      return product;
+    });
+    this.setState(state);
+  }
+
 	getProductVariants(productVariants, orderProductEditFormData) {
     if (orderProductEditFormData.orderProduct && orderProductEditFormData.orderProduct.editedVariants) {
-      productVariants = orderProductEditFormData.orderProduct.editedVariants.map(function(productVariant, i) { 
+      productVariants = orderProductEditFormData.orderProduct.editedVariants.map(function(productVariant, i) {
         let variantData = {
-          id: productVariant.objectId ? productVariant.objectId : 'Custom-'+i, 
+          id: productVariant.objectId ? productVariant.objectId : 'Custom-'+i,
           isCustom: productVariant.isCustom !== undefined ? productVariant.isCustom : false,
         }
         if (variantData.isCustom) {
@@ -195,16 +222,16 @@ class OrderProductEditModal extends Component {
           variantData.selectedMisc = productVariant.miscCode ? productVariant.miscCode.objectId : variantData.selectedMisc;
           variantData.inventoryLevel = productVariant.inventoryLevel ? productVariant.inventoryLevel : '';
         }
-        return variantData; 
+        return variantData;
       });
     } else if (orderProductEditFormData.orderProduct && orderProductEditFormData.orderProduct.variants) {
-      productVariants = orderProductEditFormData.orderProduct.variants.map(function(productVariant) { 
-        return {id: productVariant.objectId, isCustom: false}; 
+      productVariants = orderProductEditFormData.orderProduct.variants.map(function(productVariant) {
+        return {id: productVariant.objectId, isCustom: false};
       });
     }
   	return productVariants;
 	}
-	
+
 	componentWillReceiveProps(nextProps) {
   	if (nextProps.orderProductEditFormData) {
     	let productVariants = this.state.productVariants;
@@ -221,7 +248,7 @@ class OrderProductEditModal extends Component {
     	});
   	}
 	}
-	
+
 	getVariantText(variant) {
 		let variantText = '';
 		if (variant.color_value) variantText += ' ' + variant.color_value;
@@ -232,21 +259,21 @@ class OrderProductEditModal extends Component {
 		if (variant.singlepair_value) variantText += ' ' + variant.singlepair_value;
 		variantText = variantText.trim();
 		if (variantText === '') variantText = 'No options';
-		
+
   	return variantText;
 	}
-  
+
 	render() {
   	const scope = this;
   	const { productData, products, productVariants, colorCodes, stoneCodes, sizeCodes, miscCodes } = this.state;
-  	
+
   	// Create add product dropdown options
   	let productsOptions = [];
 		products.map(function(product, i) {
   		productsOptions.push({ key: i, value: product.productId, text: product.productId + ' - ' + product.name });
   		return product;
 		});
-		
+
 		// Create product variant rows
 		let productVariantRows = [];
 		if (productVariants && productVariants.length > 0) {
@@ -262,7 +289,7 @@ class OrderProductEditModal extends Component {
         		}
         		return product;
       		});
-      		
+
       		let colorCodeText = '';
           scope.state.colorCodes.map(function(colorCode, j) {
             if (productVariant.selectedColor && productVariant.selectedColor === colorCode.objectId) {
@@ -270,7 +297,7 @@ class OrderProductEditModal extends Component {
             }
             return colorCode;
           });
-          
+
           let stoneCodeText = '';
           scope.state.stoneCodes.map(function(stoneCode, j) {
             if (productVariant.selectedStone && productVariant.selectedStone === stoneCode.objectId) {
@@ -278,7 +305,7 @@ class OrderProductEditModal extends Component {
             }
             return stoneCode;
           });
-          
+
           let sizeCodeText = '';
           scope.state.sizeCodes.map(function(sizeCode, j) {
             if (productVariant.selectedSize && productVariant.selectedSize === sizeCode.objectId) {
@@ -289,7 +316,7 @@ class OrderProductEditModal extends Component {
             return sizeCode;
           });
           if (sizeCodeText === '' && productVariant.selectedSize) sizeCodeText = productVariant.selectedSize;
-          
+
           let miscCodeText = '';
           scope.state.miscCodes.map(function(miscCode, j) {
             if (productVariant.selectedMisc && productVariant.selectedMisc === miscCode.objectId) {
@@ -299,17 +326,17 @@ class OrderProductEditModal extends Component {
           });
           productVariantRow = {
             id: productVariant.id ? productVariant.id : 'Custom-' + i,
-            rowId: 'Custom-' + i, 
-            productId: productId, 
-            name: productName, 
-            colorCodeText: colorCodeText, 
-            stoneCodeText: stoneCodeText, 
-            sizeCodeText: sizeCodeText, 
+            rowId: 'Custom-' + i,
+            productId: productId,
+            name: productName,
+            colorCodeText: colorCodeText,
+            stoneCodeText: stoneCodeText,
+            sizeCodeText: sizeCodeText,
             miscCodeText: miscCodeText,
             isCustom: true,
             inventoryLevel: productVariant.inventoryLevel
           };
-    		  
+
     		} else {
       		scope.state.products.map(function(product, j) {
         		if (product.variants) {
@@ -320,15 +347,15 @@ class OrderProductEditModal extends Component {
                   const stoneCodeText = variant.stone_value ? variant.stone_value : null;
                   const sizeCodeText = variant.size_value ? variant.size_value : null;
                   const miscCodeText = variant.misc_value ? variant.misc_value : null;
-                  
+
                   productVariantRow = {
                     id: productVariant.id ? productVariant.id : rowId,
-                    rowId: rowId, 
-                    productId: product.productId, 
-                    name: product.name, 
-                    colorCodeText: colorCodeText, 
-                    stoneCodeText: stoneCodeText, 
-                    sizeCodeText: sizeCodeText, 
+                    rowId: rowId,
+                    productId: product.productId,
+                    name: product.name,
+                    colorCodeText: colorCodeText,
+                    stoneCodeText: stoneCodeText,
+                    sizeCodeText: sizeCodeText,
                     miscCodeText: miscCodeText,
                     isCustom: false,
                     inventoryLevel: variant.inventoryLevel
@@ -353,14 +380,23 @@ class OrderProductEditModal extends Component {
               <Table.Cell>{productVariantRow.isCustom ? 'Yes' : 'No'}</Table.Cell>
               <Table.Cell>{inventoryInput}</Table.Cell>
               <Table.Cell className='right aligned'>
-                <Button 
-                  type='button' 
-                  basic 
-                  content='Remove' 
-                  disabled={scope.props.isLoading} 
-                  color='red' 
+                <Button
+                  type='button'
+                  basic
+                  icon='copy'
+                  disabled={scope.props.isLoading}
+                  color='blue'
                   size='tiny'
-                  onClick={()=>scope.handleRemove(productVariant.id)} 
+                  onClick={()=>scope.handleCopy(productVariant.id)}
+                />
+                <Button
+                  type='button'
+                  basic
+                  content='Remove'
+                  disabled={scope.props.isLoading}
+                  color='red'
+                  size='tiny'
+                  onClick={()=>scope.handleRemove(productVariant.id)}
                 />
               </Table.Cell>
             </Table.Row>
@@ -369,27 +405,27 @@ class OrderProductEditModal extends Component {
     		return productVariant;
   		});
 		}
-		
+
 		// Create product select
 		productsOptions.unshift({ key: 'product-none', value: '', text: 'None' });
 		const productsSelect = this.state.products ? <Form.Select search selection width='16' placeholder='Select a product' value={this.state.selectedProduct} options={productsOptions} onChange={this.handleProductChange} /> : null;
-		
+
 		// Create color select
-		const colorOptions = colorCodes.map(function(colorCode, i) { 
+		const colorOptions = colorCodes.map(function(colorCode, i) {
   		return { key: 'colorCode-'+i, value: colorCode.objectId, text: colorCode.display_name + ' - ' + colorCode.label };
 		});
 		colorOptions.unshift({ key: 'colorCode-none', value: '', text: 'None' });
 		const colorSelect = colorOptions.length > 0 ? <Form.Select search selection placeholder='Select color' value={this.state.selectedColor} options={colorOptions} onChange={this.handleColorChange} /> : null;
-		
+
 		// Create stone select
-		const stoneOptions = stoneCodes.map(function(stoneCode, i) { 
+		const stoneOptions = stoneCodes.map(function(stoneCode, i) {
   		return { key: 'stoneCode-'+i, value: stoneCode.objectId, text: stoneCode.display_name + ' - ' + stoneCode.label };
 		});
 		stoneOptions.unshift({ key: 'stoneCode-none', value: '', text: 'None' });
 		const stoneSelect = stoneOptions.length > 0 ? <Form.Select search selection placeholder='Select stone' value={this.state.selectedStone} options={stoneOptions} onChange={this.handleStoneChange} /> : null;
-		
+
 		// Create size select
-		const sizeOptions = sizeCodes.map(function(sizeCode, i) { 
+		const sizeOptions = sizeCodes.map(function(sizeCode, i) {
   		return { key: 'sizeCode-'+i, value: sizeCode.objectId, text: sizeCode.display_name + ' - ' + sizeCode.label };
 		});
 		sizeOptions.unshift({ key: 'sizeCode-none', value: '', text: 'None' });
@@ -397,18 +433,18 @@ class OrderProductEditModal extends Component {
   		sizeOptions.unshift(this.state.sizeCodeAddition);
 		}
 		const sizeSelect = sizeOptions.length > 0 ? <Form.Select search selection allowAdditions additionLabel='Enter manual value: ' placeholder='Select size' value={this.state.selectedSize} options={sizeOptions} onAddItem={this.handleSizeAddition} onChange={this.handleSizeChange} /> : null;
-		
+
 		// Create misc select
-		const miscOptions = miscCodes.map(function(miscCode, i) { 
+		const miscOptions = miscCodes.map(function(miscCode, i) {
   		return { key: 'miscCode-'+i, value: miscCode.objectId, text: miscCode.display_name + ' - ' + miscCode.label };
 		});
 		miscOptions.unshift({ key: 'miscCode-none', value: '', text: 'None' });
 		const miscSelect = miscOptions.length > 0 ? <Form.Select search selection placeholder='Select other option' value={this.state.selectedMisc} options={miscOptions} onChange={this.handleMiscChange} /> : null;
-  	
-//   	const variantsSelect = variantsOptions.length > 0 ? <Form.Select placeholder='Select options' value={this.state.selectedVariant} options={variantsOptions} onChange={this.handleVariantChange} /> : null;
-  	
+
+  	// const variantsSelect = variantsOptions.length > 0 ? <Form.Select placeholder='Select options' value={this.state.selectedVariant} options={variantsOptions} onChange={this.handleVariantChange} /> : null;
+
 		const saveButton = <Button disabled={this.props.isLoading} color='olive' onClick={this.handleSave}>Save Order Product</Button>;
-		
+
 		let variantSuggestions = [];
 		if (this.state.selectedProduct !== '') {
   		scope.state.products.map(function(product, i) {
@@ -416,7 +452,7 @@ class OrderProductEditModal extends Component {
       		product.variants.map(function(variant, j) {
             let numOptionsSelected = 0;
         		let numOptionMatches = 0;
-        		
+
         		// Check for color code match
         		if (scope.state.selectedColor !== '') {
           		numOptionsSelected++;
@@ -429,7 +465,7 @@ class OrderProductEditModal extends Component {
             		numOptionMatches++;
           		}
         		}
-        		
+
         		// Check for stone code match
         		if (scope.state.selectedStone !== '') {
           		numOptionsSelected++;
@@ -442,7 +478,7 @@ class OrderProductEditModal extends Component {
             		numOptionMatches++;
           		}
         		}
-        		
+
         		// Check for size match
         		if (scope.state.selectedSize !== '') {
           		numOptionsSelected++;
@@ -455,7 +491,7 @@ class OrderProductEditModal extends Component {
             		numOptionMatches++;
           		}
         		}
-        		
+
         		// Check for misc match
         		if (scope.state.selectedMisc !== '') {
           		numOptionsSelected++;
@@ -468,7 +504,7 @@ class OrderProductEditModal extends Component {
             		numOptionMatches++;
           		}
         		}
-        		
+
         		if (numOptionMatches === numOptionsSelected) {
           		let buttonLabel = 'Add ' + product.name +  ' - ' + scope.getVariantText(variant);
           		variantSuggestions.push(<Button key={'variantSuggestion-'+i+'-'+j} type='button' basic icon='plus' content={buttonLabel} color='olive' onClick={()=>scope.handleAdd(variant.objectId)} />);
@@ -479,9 +515,9 @@ class OrderProductEditModal extends Component {
         return product;
   		});
     }
-		
+
 		const addButton = <Button type='button' basic icon='plus' content='Add Custom Product' disabled={this.props.isLoading || !this.isFormComplete()} color='olive' onClick={()=>this.handleAdd('Custom-' + productVariants.length)} />;
-    
+
     return (
 	    <Modal open={this.props.open} onClose={this.handleClose} size='large' closeIcon='close'>
         <Modal.Content>
@@ -511,7 +547,7 @@ class OrderProductEditModal extends Component {
                 </Table.Body>
               </Table>
             </Segment>
-              
+
             <Segment>
               <Form>
                 <Header>Add a product with custom options</Header>
