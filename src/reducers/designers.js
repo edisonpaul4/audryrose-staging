@@ -119,6 +119,7 @@ const designers = (state = initialState, action) => {
         timeout: action.res.timeout ? action.res.timeout : undefined,
         isLoadingDesigners: false,
         designers: designersArray,
+        updateProducts: null,
         totalPages: action.res.totalPages
       };
 
@@ -139,7 +140,7 @@ const designers = (state = initialState, action) => {
         ...state,
         timeout: action.res.timeout ? action.res.timeout : undefined,
         designers: designersArray ? designersArray : undefined,
-        updatedDesigner: action.res.updatedDesigner ? action.res.updatedDesigner : undefined
+        updatedDesigner: action.res.updatedDesigner ? action.res.updatedDesigner.toJSON() : undefined
       };
 
     case 'VENDOR_SAVE_FAILURE':
@@ -183,6 +184,45 @@ const designers = (state = initialState, action) => {
       };
 
     case 'VENDOR_ORDER_SEND_FAILURE':
+      return {
+        ...state
+      }
+
+    case 'GET_DESIGNER_PRODUCTS_REQUEST':
+      return {
+        ...state,
+        designerOrderFormIsLoading: true
+      }
+
+    case 'GET_DESIGNER_PRODUCTS_SUCCESS':
+      if (action.res.timeout) return { ...state, timeout: action.res.timeout };
+      return {
+        ...state,
+        designerOrderFormIsLoading: false,
+        designerOrderData: action.res
+      };
+
+    case 'GET_DESIGNER_PRODUCTS_FAILURE':
+      return {
+        ...state,
+        designerOrderFormIsLoading: false
+      }
+
+    case 'ADD_DESIGNER_PRODUCT_TO_VENDOR_ORDER_REQUEST':
+      return {
+        ...state
+      }
+
+    case 'ADD_DESIGNER_PRODUCT_TO_VENDOR_ORDER_SUCCESS':
+      designersArray = mergeUpdatedDesigner(state.designers, action.res.updatedDesigner);
+      return {
+        ...state,
+        timeout: action.res.timeout ? action.res.timeout : undefined,
+        designers: designersArray ? designersArray : undefined,
+        updatedDesigner: action.res.updatedDesigner ? action.res.updatedDesigner.toJSON() : undefined
+      };
+
+    case 'ADD_DESIGNER_PRODUCT_TO_VENDOR_ORDER_FAILURE':
       return {
         ...state
       }

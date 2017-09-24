@@ -24,9 +24,6 @@ const products = (state = initialState, action) => {
       	productsData = action.res.products.map(function(product, i) {
         	return product.toJSON();
       	});
-//         console.log(products)
-//       	const normalizedProducts = normalize(products, schema.productListSchema);
-//       	products = normalizedProducts;
       }
       return {
         ...state,
@@ -43,7 +40,7 @@ const products = (state = initialState, action) => {
         ...state,
         isLoadingProducts: false
       }
-      
+
     case 'PRODUCT_FILTERS_REQUEST':
       return {
         ...state
@@ -60,7 +57,7 @@ const products = (state = initialState, action) => {
       return {
         ...state
       }
-      
+
     case 'PRODUCT_OPTIONS_REQUEST':
       return {
         ...state
@@ -77,7 +74,7 @@ const products = (state = initialState, action) => {
       return {
         ...state
       }
-      
+
     case 'PRODUCT_RELOAD_REQUEST':
       return {
         ...state
@@ -87,7 +84,6 @@ const products = (state = initialState, action) => {
       if (state.products && action.res.updatedProduct) {
       	productsData = state.products.map(function(product, i) {
         	if (product.objectId === action.res.updatedProduct.id) {
-          	console.log('updated product loaded ' + product.objectId);
           	product = action.res.updatedProduct.toJSON();
         	}
         	return product;
@@ -105,7 +101,7 @@ const products = (state = initialState, action) => {
       return {
         ...state
       }
-      
+
     case 'PRODUCT_SAVE_REQUEST':
       return {
         ...state
@@ -115,7 +111,6 @@ const products = (state = initialState, action) => {
       if (state.products && action.res.updatedProduct) {
       	productsData = state.products.map(function(product, i) {
         	if (product.objectId === action.res.updatedProduct.id) {
-          	console.log('updated product loaded ' + product.objectId);
           	product = action.res.updatedProduct.toJSON();
         	}
         	return product;
@@ -133,7 +128,7 @@ const products = (state = initialState, action) => {
       return {
         ...state
       }
-      
+
     case 'VARIANT_SAVE_REQUEST':
       return {
         ...state
@@ -144,7 +139,6 @@ const products = (state = initialState, action) => {
       	productsData = state.products.map(function(product, i) {
         	action.res.updatedProducts.map(function(updatedProduct, j) {
           	if (product.objectId === updatedProduct.id) {
-            	console.log('updated product loaded ' + product.objectId);
             	product = updatedProduct.toJSON();
           	}
           	return updatedProduct;
@@ -165,7 +159,7 @@ const products = (state = initialState, action) => {
       return {
         ...state
       }
-    
+
     case 'VARIANTS_SAVE_REQUEST':
       return {
         ...state
@@ -176,7 +170,6 @@ const products = (state = initialState, action) => {
       	productsData = state.products.map(function(product, i) {
         	action.res.updatedProducts.map(function(updatedProduct, j) {
           	if (product.objectId === updatedProduct.id) {
-            	console.log('updated product loaded ' + product.objectId);
             	product = updatedProduct.toJSON();
           	}
           	return updatedProduct;
@@ -197,7 +190,7 @@ const products = (state = initialState, action) => {
       return {
         ...state
       }
-      
+
     case 'ADD_TO_VENDOR_ORDER_REQUEST':
       return {
         ...state
@@ -208,7 +201,6 @@ const products = (state = initialState, action) => {
       	productsData = state.products.map(function(product, i) {
         	action.res.updatedProducts.map(function(updatedProduct, j) {
           	if (product.objectId === updatedProduct.id) {
-            	console.log('updated product loaded ' + product.objectId);
             	product = updatedProduct.toJSON();
           	}
           	return updatedProduct;
@@ -222,6 +214,7 @@ const products = (state = initialState, action) => {
         products: productsData ? productsData : undefined,
         updatedProducts: action.res.updatedProducts ? action.res.updatedProducts : undefined,
         updatedVariants: action.res.updatedVariants ? action.res.updatedVariants : undefined,
+        updatedDesigners: action.res.updatedDesigners ? action.res.updatedDesigners : undefined,
         tabCounts: action.res.tabCounts ? action.res.tabCounts : undefined,
         errors: action.res.errors ? action.res.errors : undefined
       };
@@ -230,7 +223,7 @@ const products = (state = initialState, action) => {
       return {
         ...state
       }
-      
+
     case 'CREATE_PRODUCT_RESIZE_REQUEST':
       return {
         ...state
@@ -241,7 +234,6 @@ const products = (state = initialState, action) => {
       	productsData = state.products.map(function(product, i) {
         	action.res.updatedProducts.map(function(updatedProduct, j) {
           	if (product.objectId === updatedProduct.id) {
-            	console.log('updated product loaded ' + product.objectId);
             	product = updatedProduct.toJSON();
           	}
           	return updatedProduct;
@@ -263,7 +255,7 @@ const products = (state = initialState, action) => {
       return {
         ...state
       }
-      
+
     case 'SAVE_PRODUCT_RESIZE_REQUEST':
       return {
         ...state
@@ -274,7 +266,6 @@ const products = (state = initialState, action) => {
       	productsData = state.products.map(function(product, i) {
         	action.res.updatedProducts.map(function(updatedProduct, j) {
           	if (product.objectId === updatedProduct.id) {
-            	console.log('updated product loaded ' + product.objectId);
             	product = updatedProduct.toJSON();
           	}
           	return updatedProduct;
@@ -296,7 +287,7 @@ const products = (state = initialState, action) => {
       return {
         ...state
       }
-      
+
     case 'GET_BUNDLE_FORM_REQUEST':
       return {
         ...state
@@ -313,7 +304,7 @@ const products = (state = initialState, action) => {
       return {
         ...state
       }
-      
+
     case 'BUNDLE_SAVE_REQUEST':
       return {
         ...state
@@ -324,7 +315,6 @@ const products = (state = initialState, action) => {
       	productsData = state.products.map(function(product, i) {
         	action.res.updatedProducts.map(function(updatedProduct, j) {
           	if (product.objectId === updatedProduct.id) {
-            	console.log('updated product loaded ' + product.objectId);
             	product = updatedProduct.toJSON();
           	}
           	return updatedProduct;
@@ -344,7 +334,7 @@ const products = (state = initialState, action) => {
       return {
         ...state
       }
-			
+
     default:
       return state;
   }
