@@ -6,6 +6,7 @@ import Pagination from './Pagination.js';
 import DesignersNav from './DesignersNav.js';
 import VendorEditModal from './VendorEditModal.js';
 import DesignerDetails from './DesignerDetails.js';
+import DesignerOrderModal from './DesignerOrderModal.js';
 
 class Designer extends Component {
   constructor(props) {
@@ -23,16 +24,17 @@ class Designer extends Component {
     this.handleShowVendorCreateFormClick = this.handleShowVendorCreateFormClick.bind(this);
     this.handleVendorEditModalClose = this.handleVendorEditModalClose.bind(this);
     this.handleSaveVendor = this.handleSaveVendor.bind(this);
+    this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
   }
-  
+
 	handleToggleClick(designerId) {
 		this.props.handleToggleClick(designerId);
 	}
-  
+
 	handleSaveVendor(data) {
 		this.props.handleSaveVendor(data);
 	}
-	
+
   handleShowVendorEditFormClick(objectId) {
     const data = this.state.designerData;
     let selectedVendorData;
@@ -46,7 +48,7 @@ class Designer extends Component {
       vendorEditModalMode: 'edit'
     });
   }
-  
+
   handleShowVendorCreateFormClick(objectId) {
     this.setState({
       selectedVendorData: null,
@@ -54,14 +56,18 @@ class Designer extends Component {
       vendorEditModalMode: 'create'
     });
   }
-  
+
 	handleVendorEditModalClose() {
     this.setState({
       selectedVendorData: null,
       vendorEditModalOpen: false
     });
 	}
-  
+
+  handleShowOrderFormClick(designerId) {
+    this.props.handleShowOrderFormClick(designerId);
+  }
+
 	componentWillReceiveProps(nextProps) {
   	if (nextProps.updatedDesigner) {
     	if (this.state.designerData.objectId === nextProps.updatedDesigner.objectId) {
@@ -79,26 +85,26 @@ class Designer extends Component {
 		const totalVendorOrders = this.props.totalVendorOrders;
 		const bcManageUrl = 'https://www.loveaudryrose.com/manage/products/brands/' + data.designerId + '/edit';
 		const name = <a href={bcManageUrl} target="_blank" className='hover-icon'>{data.name} <Icon link name='configure' /></a>;
-		
-    const vendorEditModal = 
-      <VendorEditModal 
-        open={this.state.vendorEditModalOpen} 
-        designerData={data} 
-        handleSaveVendor={this.handleSaveVendor} 
-        handleVendorEditModalClose={this.handleVendorEditModalClose} 
-        vendorData={this.state.selectedVendorData} 
-        isLoading={this.props.isReloading} 
+
+    const vendorEditModal =
+      <VendorEditModal
+        open={this.state.vendorEditModalOpen}
+        designerData={data}
+        handleSaveVendor={this.handleSaveVendor}
+        handleVendorEditModalClose={this.handleVendorEditModalClose}
+        vendorData={this.state.selectedVendorData}
+        isLoading={this.props.isReloading}
         mode={this.state.vendorEditModalMode}
       />;
-      
+
     const modalButtons = data.vendors ? data.vendors.map(function(vendor, i) {
       var buttonContent = 'Edit ' + vendor.name;
       return <Button size='mini' circular content={buttonContent} compact onClick={()=>scope.handleShowVendorEditFormClick(vendor.objectId)} key={i} />;
     }) : null;
-    
+
     let expandIcon = this.props.expanded ? 'minus' : 'plus';
     const expandButton = totalVendorOrders > 0 ? <Button circular icon={expandIcon} basic size='mini' onClick={()=>this.handleToggleClick(data.objectId)} /> : null;
-    
+
     return (
       <Table.Row disabled={this.props.isSaving} positive={this.state.saved && !this.state.edited ? true : false} >
         <Table.Cell verticalAlign='top' singleLine>
@@ -108,17 +114,20 @@ class Designer extends Component {
 				<Table.Cell verticalAlign='top'>{data.abbreviation}</Table.Cell>
         <Table.Cell singleLine className='right aligned'>
       	    {modalButtons}
-      	    <Button 
+      	    <Button
       	      size='mini'
-      	      icon='plus' 
-      	      content='Add Vendor' 
-      	      basic 
-      	      compact 
-      	      circular 
-      	      onClick={()=>scope.handleShowVendorCreateFormClick(data.objectId)} 
+      	      icon='plus'
+      	      content='Add Vendor'
+      	      basic
+      	      compact
+      	      circular
+      	      onClick={()=>scope.handleShowVendorCreateFormClick(data.objectId)}
     	      />
     	    {vendorEditModal}
   	    </Table.Cell>
+        <Table.Cell>
+          <Button content='Order' size='mini' primary compact onClick={()=>this.handleShowOrderFormClick(data.objectId)} />
+        </Table.Cell>
 				<Table.Cell className='right aligned'>{expandButton}</Table.Cell>
       </Table.Row>
     );
@@ -136,6 +145,9 @@ class Designers extends Component {
 			designers: null,
 			products: null,
       expanded: [],
+      designerOrderOpen: false,
+      designerOrderData: {},
+      designerOrderFormIsLoading: false,
       isReloading: [],
 			isSavingDesigners: [],
 			successMessages: [],
@@ -146,14 +158,17 @@ class Designers extends Component {
     this.handleSaveVendorOrder = this.handleSaveVendorOrder.bind(this);
     this.handleSendVendorOrder = this.handleSendVendorOrder.bind(this);
     this.handleToggleClick = this.handleToggleClick.bind(this);
+    this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
+    this.handleAddToVendorOrder = this.handleAddToVendorOrder.bind(this);
+    this.handleDesignerOrderModalClose = this.handleDesignerOrderModalClose.bind(this);
     this._notificationSystem = null;
   }
-	
+
 	componentDidMount() {
   	this._notificationSystem = this.refs.notificationSystem;
 		this.props.getDesigners(this.props.token, this.state.subpage, this.state.page, this.state.search);
 	}
-	
+
 	handleToggleClick(designerId) {
 		let currentlyExpanded = this.state.expanded;
 		var index = currentlyExpanded.indexOf(designerId);
@@ -166,18 +181,18 @@ class Designers extends Component {
 			expanded: currentlyExpanded
 		});
 	}
-	
+
 	handlePaginationClick(page) {
 		const router = this.props.router;
 		const queries = router.location.query;
 		queries.page = page;
-		
+
     router.replace({
       pathname: router.location.pathname,
       query: queries
     })
 	}
-	
+
 	handleSaveVendor(data) {
 		let currentlySaving = this.state.isSavingDesigners;
 		const index = currentlySaving.indexOf(data.designerId);
@@ -189,7 +204,7 @@ class Designers extends Component {
   	});
 		this.props.saveVendor(this.props.token, data);
 	}
-	
+
 	handleSaveVendorOrder(data) {
 		let currentlySaving = this.state.isSavingDesigners;
 		const index = currentlySaving.indexOf(data.designerId);
@@ -201,7 +216,7 @@ class Designers extends Component {
   	});
 		this.props.saveVendorOrder(this.props.token, data);
 	}
-	
+
 	handleSendVendorOrder(data) {
 		let currentlySaving = this.state.isSavingDesigners;
 		const index = currentlySaving.indexOf(data.designerId);
@@ -213,63 +228,47 @@ class Designers extends Component {
   	});
 		this.props.sendVendorOrder(this.props.token, data);
 	}
-	
+
+  handleShowOrderFormClick(designerId) {
+    let designerOrderData = {};
+    this.setState({
+      designerOrderOpen: true,
+      designerOrderData: designerOrderData,
+      designerOrderFormIsLoading: true
+    });
+    this.props.getDesignerProducts(this.props.token, designerId);
+  }
+
+  handleAddToVendorOrder(orders, designerId) {
+    let currentlySaving = this.state.isSavingDesigners;
+    const index = currentlySaving.indexOf(designerId);
+    if (index < 0) {
+      currentlySaving.push(designerId);
+    }
+    this.setState({
+      isSavingDesigners: currentlySaving
+    });
+    this.props.addDesignerProductToVendorOrder(this.props.token, orders, designerId);
+  }
+
+  handleDesignerOrderModalClose(data) {
+    this.setState({
+      designerOrderOpen: false,
+      designerOrderData: {},
+      designerOrderFormIsLoading: false
+    });
+  }
+
 	componentWillReceiveProps(nextProps) {
   	const scope = this;
   	let nextPage = parseFloat(nextProps.location.query.page);
   	if (!nextPage) nextPage = 1;
   	let expanded = this.state.expanded;
-  	
-  	let designers = nextProps.designers ? nextProps.designers : this.state.designers;
-  	
-/*
-  	if (designers) {
-    	designers.map((designer) => {
 
-        let vendorOrders = [];
-        if (designer.vendors) {
-        	designer.vendors.map(function(vendor, i) {
-      			if (scope.state.subpage !== 'completed' && vendor.vendorOrders && vendor.vendorOrders.length > 0) {
-        			vendor.vendorOrders.map(function(vendorOrder, j) {
-                const vendorData = {
-                  abbreviation: vendor.abbreviation,
-                  email: vendor.email,
-                  firstName: vendor.firstName,
-                  name: vendor.name,
-                  objectId: vendor.objectId,
-                  vendorOrderCount: vendor.vendorOrderCount
-                }
-                let status = vendorOrder.orderedAll && vendorOrder.receivedAll === false ? 'Sent' : 'Pending';
-                if (vendorOrder.orderedAll && vendorOrder.receivedAll === true) status = 'Completed';
-          			if ((status === 'Sent' && scope.state.subpage === 'sent') || (status === 'Pending' && scope.state.subpage === 'pending') || (status === 'Completed' && scope.state.subpage === 'completed') || scope.state.subpage === 'search' || scope.state.subpage === 'all' || scope.state.subpage === undefined) vendorOrders.push({status:status, order:vendorOrder, vendor:vendorData});
-          			return vendorOrders;
-          		});
-      			}
-      			if (vendor.completedVendorOrders && vendor.completedVendorOrders.length > 0) {
-        			vendor.completedVendorOrders.map(function(vendorOrder, j) {
-                let status = 'Completed';
-                const vendorData = {
-                  abbreviation: vendor.abbreviation,
-                  email: vendor.email,
-                  firstName: vendor.firstName,
-                  name: vendor.name,
-                  objectId: vendor.objectId,
-                  vendorOrderCount: vendor.vendorOrderCount
-                }
-          			vendorOrders.push({status:status, order:vendorOrder, vendor:vendorData});
-          			return vendorOrders;
-          		});
-      			}
-      			return vendor;
-        	});
-      	}
-      	designer.vendorOrders = vendorOrders;
-        	
-      	return designer;
-    	});
-  	}
-*/
-  	
+  	let designers = nextProps.designers ? nextProps.designers : this.state.designers;
+
+    let designerOrderData = nextProps.designerOrderData ? nextProps.designerOrderData : this.state.designerOrderData;
+
     let isSavingDesigners = this.state.isSavingDesigners;
   	if (nextProps.updatedDesigner) {
     	const updatedDesigner = nextProps.updatedDesigner;
@@ -278,7 +277,7 @@ class Designers extends Component {
         if (index >= 0) isSavingDesigners.splice(index, 1);
       }
     }
-    
+
  		// Display any success messages
 		let successMessages = this.state.successMessages;
 		if (nextProps.successMessage) {
@@ -297,7 +296,7 @@ class Designers extends Component {
         successMessages.push(nextProps.successMessage);
       }
 		}
-    
+
 		// Display any errors
 		let errors = [];
 		if (nextProps.errors) {
@@ -321,17 +320,19 @@ class Designers extends Component {
 		} else {
   		errors = this.state.errors;
 		}
-		
+
   	// Reset on subpage navigation
   	const search = nextProps.router.params.subpage !== 'search' ? null : this.state.search;
   	expanded = nextProps.router.params.subpage !== this.state.subpage ? [] : expanded;
-  	
+
 		this.setState({
 			subpage: nextProps.router.params.subpage,
 			designers: designers,
 			page: nextPage,
 			search: search,
 			expanded: expanded,
+      designerOrderData: designerOrderData,
+      designerOrderFormIsLoading: nextProps.designerOrderFormIsLoading,
 			isSavingDesigners: isSavingDesigners,
 			successMessages: successMessages,
 			errors: errors
@@ -340,20 +341,20 @@ class Designers extends Component {
 		if (nextPage !== this.state.page || nextProps.router.params.subpage !== this.state.subpage) {
     	this.props.getDesigners(this.props.token, nextProps.router.params.subpage, nextPage, this.state.search);
   	}
-  	
+
 	}
-	
+
   render() {
     const scope = this;
 		const { error, isLoadingDesigners, totalPages } = this.props;
 		const { designers, subpage } = this.state;
 		let designerRows = [];
-    
+
 		if (designers) {
 			designers.map(function(designer, i) {
   			let isSaving = scope.state.isSavingDesigners.indexOf(designer.objectId) >= 0 ? true : false;
   			let expanded = (scope.state.expanded.indexOf(designer.objectId) >= 0 || scope.state.search/*  || scope.state.subpage === 'pending' || scope.state.subpage === 'sent' */) ? true : false;
-        
+
         const designerData = {
           abbreviation: designer.abbreviation,
           designerId: designer.designerId,
@@ -367,17 +368,18 @@ class Designers extends Component {
         }
 
 				designerRows.push(
-				  <Designer 
-				    data={designerData} 
-				    totalVendorOrders={designer.vendorOrders ? designer.vendorOrders.length : 0} 
-				    isSaving={isSaving} 
-				    expanded={expanded} 
-				    handleSaveVendor={scope.handleSaveVendor} 
-				    handleToggleClick={scope.handleToggleClick} 
-				    key={`${designer.designerId}-1`} 
+				  <Designer
+				    data={designerData}
+				    totalVendorOrders={designer.vendorOrders ? designer.vendorOrders.length : 0}
+				    isSaving={isSaving}
+				    expanded={expanded}
+				    handleSaveVendor={scope.handleSaveVendor}
+				    handleToggleClick={scope.handleToggleClick}
+            handleShowOrderFormClick={scope.handleShowOrderFormClick}
+				    key={`${designer.designerId}-1`}
 			    />
 		    );
-		    
+
 				if (expanded) {
           const designerDetailsData = {
             name: designer.name,
@@ -385,12 +387,12 @@ class Designers extends Component {
             vendorOrders: designer.vendorOrders
           }
   				designerRows.push(
-  				  <DesignerDetails 
-  				    data={designerDetailsData} 
-  				    subpage={subpage} 
-  				    expanded={expanded} 
-  				    key={`${designer.designerId}-2`} 
-  				    isSaving={isSaving} 
+  				  <DesignerDetails
+  				    data={designerDetailsData}
+  				    subpage={subpage}
+  				    expanded={expanded}
+  				    key={`${designer.designerId}-2`}
+  				    isSaving={isSaving}
   				    handleSaveVendorOrder={scope.handleSaveVendorOrder}
   				    handleSendVendorOrder={scope.handleSendVendorOrder}
 				    />
@@ -399,9 +401,17 @@ class Designers extends Component {
 				return designer;
 	    });
 		}
-		
+
 		const searchHeader = this.state.search ? <Header as='h2'>{designers ? designers.length : 0} results for "{this.state.search}"</Header> : null;
-		
+
+    const designerOrderModal = this.state.designerOrderData && this.state.designerOrderOpen === true ? <DesignerOrderModal
+        open={this.state.designerOrderOpen}
+        handleAddToVendorOrder={this.handleAddToVendorOrder}
+        handleDesignerOrderModalClose={this.handleDesignerOrderModalClose}
+        designerOrderData={this.state.designerOrderData}
+        isLoading={this.state.designerOrderFormIsLoading}
+      /> : null;
+
     return (
 			<Grid.Column width='16'>
   			<NotificationSystem ref="notificationSystem" />
@@ -418,6 +428,7 @@ class Designers extends Component {
               <Table.HeaderCell>Name</Table.HeaderCell>
 							<Table.HeaderCell>Abbreviation</Table.HeaderCell>
 							<Table.HeaderCell className='right aligned'>Vendors</Table.HeaderCell>
+              <Table.HeaderCell className='right aligned'>&nbsp;</Table.HeaderCell>
 							<Table.HeaderCell className='right aligned'>&nbsp;</Table.HeaderCell>
 		        </Table.Row>
 		      </Table.Header>
@@ -432,6 +443,7 @@ class Designers extends Component {
 						</Table.Row>
 					</Table.Footer>
 		    </Table>
+        {designerOrderModal}
 			</Grid.Column>
     );
   }

@@ -27,3 +27,17 @@ export function sendVendorOrder(token, data) {
     promise: api.sendVendorOrder(token, data)
   }
 }
+
+export function getDesignerProducts(token, designerId) {
+  return {
+    types: ['GET_DESIGNER_PRODUCTS_REQUEST', 'GET_DESIGNER_PRODUCTS_SUCCESS', 'GET_DESIGNER_PRODUCTS_FAILURE'],
+    promise: api.getDesignerProducts(token, designerId)
+  }
+}
+
+export function addDesignerProductToVendorOrder(token, orders, designerId) {
+  return {
+    types: ['ADD_DESIGNER_PRODUCT_TO_VENDOR_ORDER_REQUEST', 'ADD_DESIGNER_PRODUCT_TO_VENDOR_ORDER_SUCCESS', 'ADD_DESIGNER_PRODUCT_TO_VENDOR_ORDER_FAILURE'],
+    promise: api.addDesignerProductToVendorOrder(token, orders, designerId)
+  }
+}

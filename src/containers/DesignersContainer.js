@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { getDesigners, saveVendor, saveVendorOrder, sendVendorOrder } from '../actions/designers';
+import { getDesigners, saveVendor, saveVendorOrder, sendVendorOrder, getDesignerProducts, addDesignerProductToVendorOrder } from '../actions/designers';
 import Designers from '../components/Designers';
 
 const select = state => ({
@@ -8,6 +8,8 @@ const select = state => ({
 	designers: state.designers.designers,
 	products: state.designers.products,
 	updatedDesigner: state.designers.updatedDesigner,
+  designerOrderFormIsLoading: state.designers.designerOrderFormIsLoading,
+  designerOrderData: state.designers.designerOrderData,
 	successMessage: state.designers.successMessage,
 	totalPages: state.designers.totalPages,
 	error: state.error,
@@ -19,7 +21,9 @@ const actions = {
   getDesigners,
   saveVendor,
   saveVendorOrder,
-  sendVendorOrder
+  sendVendorOrder,
+	getDesignerProducts,
+  addDesignerProductToVendorOrder
 };
 
 export default connect(select, actions)(Designers);
