@@ -83,8 +83,8 @@ class VariantRow extends Component {
 	handleShowResizeFormClick(e, {value}) {
 		this.props.handleShowOrderFormClick({productId: this.props.data.productId, variant: this.props.data.objectId, resize: true});
 	}
-	handleApplyToAllClick(e, {value}) {
-  	this.props.handleApplyToAll({color: this.state.color});
+	handleApplyToAllClick(value) {
+  	this.props.handleApplyToAll(value);
 	}
 	handleSaveResize(data) {
 		this.props.handleSaveResize(data);
@@ -176,7 +176,20 @@ class VariantRow extends Component {
       	state.color = nextProps.applyAllData.color;
       	this.props.handleVariantEdited({objectId: this.props.data.objectId, inventory: state.inventory, color: nextProps.applyAllData.color}, (state.inventory
       	!== state.startInventory || nextProps.applyAllData.color !== state.startColor || nextProps.wholesalePrice !== state.startWholesalePrice));
-    	}
+			}
+			
+			if(nextProps.applyAllData.wholesalePrice){
+				state.wholesalePrice = nextProps.applyAllData.wholesalePrice;
+				this.props.handleVariantEdited({ 
+					objectId: this.props.data.objectId, 
+					inventory: state.inventory, 
+					wholesalePrice: nextProps.applyAllData.wholesalePrice }, 
+					(state.inventory !== state.startInventory || 
+						nextProps.applyAllData.color !== state.startColor || 
+						nextProps.wholesalePrice !== state.startWholesalePrice)
+				);
+			}
+
     	this.props.handleClearApplyAllData();
   	}
   	if (nextProps.updatedVariant || nextProps.applyAllData) this.setState(state);
@@ -245,14 +258,20 @@ class VariantRow extends Component {
         <Table.Cell>{data.styleNumber ? data.styleNumber : ''}{stoneColorCode}</Table.Cell>
         <Table.Cell className='no-wrap hover-icon'>
           <Select placeholder='Select a color' options={colorOptions} value={this.state.color} disabled={this.props.isSaving} onChange={this.handleColorChange} />
-          {this.state.color !== '' ? <Popup
-            trigger={<Icon name='angle double down' />}
-            position='right center'
-            size='tiny'
-            on='click'
-          >
-            <Button content={`Apply ${this.state.color} to all`} primary compact size='tiny' onClick={this.handleApplyToAllClick} />
-          </Popup> : null}
+          {this.state.color !== '' ? (
+						<Popup
+							trigger={<Icon name='angle double down' />}
+							position='right center'
+							size='tiny'
+							on='click'>
+            	<Button 
+								content={`Apply ${this.state.color} to all`} 
+								primary 
+								compact 
+								size='tiny' 
+								onClick={() => this.handleApplyToAllClick({color: this.state.color})} />
+          	</Popup>
+					) : null}
           {/*resize vertical*/}
         </Table.Cell>
         <Table.Cell>{data.size_value ? data.size_value : 'OS'}</Table.Cell>
@@ -261,7 +280,30 @@ class VariantRow extends Component {
 				<Table.Cell>{totalAwaitingInventory}</Table.Cell>
 				<Table.Cell>{vendorOrderAndResizes}</Table.Cell>
 				<Table.Cell>{numeral(data.adjustedPrice).format('$0,0.00')}</Table.Cell>
-        <Table.Cell><Input type='number' value={this.state.wholesalePrice ? numeral(this.state.wholesalePrice).format('0.00') : 0} onChange={this.handleWholesalePriceChange} min={0} disabled={this.props.isSaving} /></Table.Cell>
+				
+				<Table.Cell className='no-wrap hover-icon'>
+					<Input 
+						type='number' 
+						value={this.state.wholesalePrice ? numeral(this.state.wholesalePrice).format('0.00') : 0} 
+						onChange={this.handleWholesalePriceChange} 
+						min={0} 
+						disabled={this.props.isSaving} />
+					{this.state.wholesalePrice ? (
+						<Popup
+							trigger={<Icon name='angle double down' />}
+							position='right center'
+							size='tiny'
+							on='click'>
+							<Button 
+								content={`Apply ${this.state.wholesalePrice} to all`} 
+								primary 
+								compact 
+								size='tiny' 
+								onClick={() => this.handleApplyToAllClick({ wholesalePrice: this.state.wholesalePrice })} />
+						</Popup>
+					) : null}
+				</Table.Cell>
+
 				<Table.Cell singleLine>
     		  <Button.Group size='mini'>
     		    <Button
