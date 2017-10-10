@@ -90,7 +90,9 @@ class ProductRow extends Component {
   		if (variant.letter_value) options.push('LETTER: ' + variant.letter_value);
   		if (variant.singlepair_value) options.push('SINGLE/PAIR: ' + variant.singlepair_value);
 
-		}
+    }
+    
+    const { totalAwaitingInventory } = this.props.vendorOrderVariant.variant;
 		const inventory = variant.inventoryLevel ? variant.inventoryLevel : 0;
 		const units = (this.props.status === 'Pending') ? <Input type='number' value={this.state.units ? this.state.units : 0} onChange={this.handleUnitsChange} min={0} disabled={this.props.isSaving} /> : this.state.units;
 		const notes = (this.props.status === 'Pending') ? <Input type='text' value={this.state.notes ? this.state.notes : ''} onChange={this.handleNotesChange} min={0} disabled={this.props.isSaving} /> : this.state.notes;
@@ -107,6 +109,7 @@ class ProductRow extends Component {
           })}
         </Table.Cell>
 				<Table.Cell>{inventory}</Table.Cell>
+        <Table.Cell>{totalAwaitingInventory !== 0 ? totalAwaitingInventory : ''}</Table.Cell>
 				<Table.Cell>{units}</Table.Cell>
 				<Table.Cell>{notes}</Table.Cell>
 				{received}
@@ -290,6 +293,7 @@ class VendorOrder extends Component {
               <Table.HeaderCell>Product</Table.HeaderCell>
               <Table.HeaderCell>Options</Table.HeaderCell>
               <Table.HeaderCell>ACH OH</Table.HeaderCell>
+              <Table.HeaderCell>Total Awaiting</Table.HeaderCell>
               <Table.HeaderCell>Units {status === 'Pending' ? 'To Order' : 'Ordered'}</Table.HeaderCell>
               <Table.HeaderCell>Notes</Table.HeaderCell>
               {receivedHeader}
@@ -334,10 +338,10 @@ class DesignerDetails extends Component {
   }
   componentWillReceiveProps(nextProps) {
     const data = nextProps.data ? nextProps.data : this.state.data;
-//     const vendorOrders = nextProps.vendorOrders ? nextProps.vendorOrders : this.state.vendorOrders;
+ //     const vendorOrders = nextProps.vendorOrders ? nextProps.vendorOrders : this.state.vendorOrders;
     this.setState({
       data: data
-//       vendorOrders: vendorOrders
+ //       vendorOrders: vendorOrders
     });
   }
 	render() {
