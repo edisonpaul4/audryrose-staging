@@ -107,6 +107,7 @@ class ProductRow extends Component {
           })}
         </Table.Cell>
 				<Table.Cell>{inventory}</Table.Cell>
+        <Table.Cell>{this.props.vendorOrderVariant.variant.totalAwaitingInventory}</Table.Cell>
 				<Table.Cell>{units}</Table.Cell>
 				<Table.Cell>{notes}</Table.Cell>
 				{received}
@@ -290,6 +291,7 @@ class VendorOrder extends Component {
               <Table.HeaderCell>Product</Table.HeaderCell>
               <Table.HeaderCell>Options</Table.HeaderCell>
               <Table.HeaderCell>ACH OH</Table.HeaderCell>
+              <Table.HeaderCell>Total Awaiting</Table.HeaderCell>
               <Table.HeaderCell>Units {status === 'Pending' ? 'To Order' : 'Ordered'}</Table.HeaderCell>
               <Table.HeaderCell>Notes</Table.HeaderCell>
               {receivedHeader}
@@ -334,10 +336,10 @@ class DesignerDetails extends Component {
   }
   componentWillReceiveProps(nextProps) {
     const data = nextProps.data ? nextProps.data : this.state.data;
-//     const vendorOrders = nextProps.vendorOrders ? nextProps.vendorOrders : this.state.vendorOrders;
+ //     const vendorOrders = nextProps.vendorOrders ? nextProps.vendorOrders : this.state.vendorOrders;
     this.setState({
       data: data
-//       vendorOrders: vendorOrders
+ //       vendorOrders: vendorOrders
     });
   }
 	render() {
