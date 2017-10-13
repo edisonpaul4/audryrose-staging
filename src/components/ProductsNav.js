@@ -1,8 +1,28 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router';
-import { Menu, Label, Grid, Form } from 'semantic-ui-react';
+import { Menu, Label, Grid, Form, Button } from 'semantic-ui-react';
+import axios from 'axios';
 
 class ProductsNav extends Component {
+	constructor(props){
+		super(props)
+		this.state = {
+			csvRequest: false,
+		}
+	}
+
+	requestProducstAsCSV(text) {
+		this.setState({ csvRequest: true });
+		axios.defaults.baseURL = process.env.REACT_APP_SERVER_URL;
+		axios.defaults.headers.common['X-Parse-Application-Id'] = process.env.REACT_APP_APP_ID;
+		axios.defaults.headers.common['X-Parse-Master-Key'] = process.env.REACT_APP_MASTER_KEY;
+		axios.post('/functions/getProductsAsCSV')
+			.then(response => {
+				window.location.href = response.data.result.url;
+				this.setState({ csvRequest: false });
+			});
+	}
+	
 	render() {
 		const pathName = this.props.pathname;
     const query = this.props.query;
@@ -61,6 +81,13 @@ class ProductsNav extends Component {
                     />
                   </Form>
                 </Menu.Item>
+								<Menu.Item>
+									<Button 
+										className={this.state.csvRequest ? 'loading' : ''}
+										onClick={() => this.requestProducstAsCSV('Enrique')}>
+										Export as CSV
+									</Button>
+								</Menu.Item>
               </Menu.Menu>
       	    </Menu>
     	    </Grid.Column>
