@@ -8,6 +8,7 @@ const SHIPPING_PARCELS = [
   { value: 'USPS_MediumFlatRateBox2', text: 'Medium Flat Rate Box 2', length: '14.00', width: '12.00', height: '3.50', weight: '3'},
   { value: 'USPS_LargeFlatRateBox', text: 'Large Flat Rate Box', length: '12.25', width: '12.25', height: '6.00', weight: '3'},
   { value: 'USPS_APOFlatRateBox', text: 'APO/FPO/DPO Large Flat Rate Box', length: '12.25', width: '12.25', height: '6.00', weight: '3'},
+  { value: 'FedEx_Envelope', text: 'Fedex Envelope', length: '12.50', width: '9.50', height: '0.80', weight: '2'},
   { value: 'FedEx_Box_Small_1', text: 'Box Small (1)', length: '12.38', width: '10.88', height: '1.50', weight: '3'},
   { value: 'FedEx_Box_Small_2', text: 'Box Small (2)', length: '11.25', width: '8.75', height: '4.38', weight: '3'},
   { value: 'FedEx_Box_Medium_1', text: 'Box Medium (1)', length: '13.25', width: '11.50', height: '2.38', weight: '3'},
@@ -260,6 +261,7 @@ class OrderShipModal extends Component {
         break;
       case 'fedex':
         shippingParcelOptions = [
+          { value: 'FedEx_Envelope', text: 'Fedex Envelope' },
           { value: 'FedEx_Box_Small_1', text: 'Box Small (1)'},
           { value: 'FedEx_Box_Small_2', text: 'Box Small (2)'},
           { value: 'FedEx_Box_Medium_1', text: 'Box Medium (1)'},
