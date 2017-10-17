@@ -563,7 +563,8 @@ class Products extends Component {
           productId: product.productId,
           sizeScale: product.sizeScale,
           sku: product.sku,
-          total_stock: product.total_stock
+					total_stock: product.total_stock,
+					needToOrder: product.needToOrder
   			}
 				productRows.push(
 				  <Product
@@ -599,7 +600,8 @@ class Products extends Component {
             resizes: product.resizes,
             department: product.department,
             vendor: product.vendor,
-            bundleVariants: product.bundleVariants
+						bundleVariants: product.bundleVariants,
+						needToOrder: product.needToOrder
     			}
   				productRows.push(
   				  <ProductDetails
@@ -631,6 +633,7 @@ class Products extends Component {
 		sortColumn = (this.state.sort.includes('date-added')) ? 'date-added' : sortColumn;
 		sortColumn = (this.state.sort.includes('price')) ? 'price' : sortColumn;
 		sortColumn = (this.state.sort.includes('stock')) ? 'stock' : sortColumn;
+		sortColumn = (this.state.sort.includes('needToOrder')) ? 'needToOrder' : sortColumn;
 
 		// Populate filter selects from state
 		let filterDesigners = [{ key: 0, value: 'all', text: 'All' }];
@@ -682,6 +685,7 @@ class Products extends Component {
     const dateIcon = this.state.sort === 'date-added-desc' || this.state.sort === 'date-added-asc' ? null : <Icon disabled name='caret down' />;
     const priceIcon = this.state.sort === 'price-desc' || this.state.sort === 'price-asc' ? null : <Icon disabled name='caret down' />;
     const stockIcon = this.state.sort === 'stock-desc' || this.state.sort === 'stock-asc' ? null : <Icon disabled name='caret down' />;
+    const needToOrderIcon = this.state.sort === 'needToOrder-desc' || this.state.sort === 'needToOrder-asc' ? null : <Icon disabled name='caret down' />;
 
     const productOrderModal = this.state.productOrderData && this.state.productOrderOpen === true ? <ProductOrderModal
         open={this.state.productOrderOpen}
@@ -764,6 +768,14 @@ class Products extends Component {
                 onClick={this.state.sort === 'stock-desc' ? ()=>this.handleSortClick('stock-asc') : ()=>this.handleSortClick('stock-desc')}>
                 Stock {stockIcon}
               </Table.HeaderCell>
+
+							<Table.HeaderCell 
+								className='right aligned'
+								sorted={sortColumn === 'needToOrder' ? (this.state.sort === 'needToOrder-asc' ? 'ascending' : 'descending') : null}
+								onClick={this.state.sort === 'needToOrder-desc' ? () => this.handleSortClick('needToOrder-asc') : () => this.handleSortClick('needToOrder-desc')}>
+								Need to order {needToOrderIcon}
+							</Table.HeaderCell>
+
 							<Table.HeaderCell className='right aligned'>&nbsp;</Table.HeaderCell>
 		        </Table.Row>
 		      </Table.Header>
