@@ -89,6 +89,9 @@ class Product extends PureComponent {
 		    </Table.Cell>
 				<Table.Cell>{labels}</Table.Cell>
 				<Table.Cell className='right aligned'>{data.isBundle ? 'N/A' : data.total_stock}</Table.Cell>
+
+				<Table.Cell className='right aligned'>{data.needToOrder ? data.needToOrder : 0}</Table.Cell>
+
 				<Table.Cell className='right aligned'>
 				  <Button circular icon={expandIcon} basic size='mini' onClick={()=>this.handleToggleClick(data.productId)} />
 			  </Table.Cell>
