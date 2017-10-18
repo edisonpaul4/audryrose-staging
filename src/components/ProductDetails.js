@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router';
 import { Table, Input, Button, Dropdown, Dimmer, Segment, Loader, Label, Form, Icon, Select, Popup } from 'semantic-ui-react';
 import classNames from 'classnames';
 import numeral from 'numeral';
@@ -490,7 +491,7 @@ class BundleVariantRow extends Component {
 		if (variantOptionsText === '') variantOptionsText = 'No options';
 
 		const productUrl = variant.productId ? '/products/search?q=' + variant.productId : '';
-		const productLink = variant.productName ? <a href={productUrl}>{variant.productName}</a> : '';
+		const productLink = variant.productName ? <Link to={productUrl}>{variant.productName}</Link> : '';
 
     return (
       <Table.Row>
