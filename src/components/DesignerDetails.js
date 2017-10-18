@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router';
 import { Table, Button, Dimmer, Segment, Loader, Header, Form,Input, TextArea, Divider, Label, Icon } from 'semantic-ui-react';
 import classNames from 'classnames';
 import moment from 'moment';
@@ -77,7 +78,7 @@ class ProductRow extends Component {
 		const variant = vendorOrderVariant.variant;
 		const productName = variant.designerProductName ? variant.designerProductName : variant.productName ? variant.productName : '';
 		const productUrl = '/products/search?q=' + variant.productId;
-		const productLink = <a href={productUrl}>{productName}</a>;
+		const productLink = <Link to={productUrl}>{productName}</Link>;
 
 		// Create an array of other options values
 		let options = [];
