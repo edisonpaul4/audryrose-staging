@@ -20,6 +20,14 @@ const SHIPPING_PARCELS = [
   { value: 'custom', text: 'Custom', length: '', width: '', height: '' , weight: ''}
 ];
 
+const SHIPPING_SIGNATURES = [
+  { value: 'STANDARD', text: 'Standard', carrierAvailable: 'all' },
+  { value: 'ADULT', text: 'Adult signature', carrierAvailable: 'all' },
+  { value: 'CERTIFIED', text: 'Certified Mail', carrierAvailable: 'usps' },
+  { value: 'INDIRECT', text: 'Indirect signature', carrierAvailable: 'fedex' },
+];
+
+
 class ShipmentGroup extends Component {
   render() {
     const shipmentGroup = this.props.data;
@@ -90,7 +98,8 @@ class OrderShipModal extends Component {
       width: '8.69',
       height: '1.75',
       weight: '3',
-      formComplete: true
+      formComplete: true,
+      signature: ''
     };
     this.handleCreateShipments = this.handleCreateShipments.bind(this);
     this.handleShippingProviderChange = this.handleShippingProviderChange.bind(this);
@@ -114,7 +123,8 @@ class OrderShipModal extends Component {
         length: scope.state.length,
         width: scope.state.width,
         height: scope.state.height,
-        weight: scope.state.weight
+        weight: scope.state.weight,
+        signature: scope.state.signature
     	}
     	return group;
   	});
@@ -130,7 +140,8 @@ class OrderShipModal extends Component {
       length: '',
       width: '',
       height: '',
-      weight: ''
+      weight: '',
+      signature: '',
   	});
 	}
 	
@@ -207,6 +218,8 @@ class OrderShipModal extends Component {
     
     return formComplete;
   }
+
+
   
 	render() {
 		const scope = this;
@@ -358,7 +371,16 @@ class OrderShipModal extends Component {
                 {shippingProviderSelect}
                 {shippingParcelSelect}
                 {shippingServiceLevelSelect}
+
+                {shippableGroups.length > 0 ? (
+                  <Form.Select
+                    label='Signature options'
+                    value={this.state.signature}
+                    options={SHIPPING_SIGNATURES.filter(ss => ss.carrierAvailable === 'all' || ss.carrierAvailable === this.state.shippingProvider)}
+                    onChange={(e, {value}) => this.setState({ signature: value })} />
+                ) : null}
               </Form.Group>
+
               <Form.Group widths='equal'>
                 {lengthInput}
                 {widthInput}
