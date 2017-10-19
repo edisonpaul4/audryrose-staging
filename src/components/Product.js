@@ -1,5 +1,4 @@
 import React, { PureComponent } from 'react';
-import { Link } from 'react-router';
 import { Table, Checkbox, Button, Icon, Label } from 'semantic-ui-react';
 import numeral from 'numeral';
 import moment from 'moment';
@@ -60,7 +59,7 @@ class Product extends PureComponent {
 		const name = data.is_visible ? <a href={storeUrl} target="_blank">{data.name}</a> : data.name;
 		const bcManageUrl = 'https://www.loveaudryrose.com/manage/products/' + data.productId + '/edit';
 		const sku = <a href={bcManageUrl} className='hover-icon' target="_blank">{data.sku} <Icon link name='configure' /></a>;
-		const designer = data.designerId ? <Link to={'/designers/search?q=' + data.designerId}>{data.designerName ? data.designerName : ''}</Link> : '';
+		const designer = data.designerId ? <a href={'/designers/search?q=' + data.designerId}>{data.designerName ? data.designerName : ''}</a> : '';
     return (
       <Table.Row>
         <Table.Cell>
