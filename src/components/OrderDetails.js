@@ -141,7 +141,7 @@ class ProductRow extends Component {
 		const productName = product.name ? product.name : '';
 		const variantName = variant && variant.productName ? variant.productName : null;
 		const productUrl = product.product_id ? '/products/search?q=' + product.product_id : null;
-		const productLink = productUrl ? <Link to={productUrl}>{productName + (product.isBundle ? ': ' + variantName : '')}</Link> : productName;
+		const productLink = productUrl ? <a href={productUrl}>{productName + (product.isBundle ? ': ' + variantName : '')}</a> : productName;
 
 		let productQuantity = product.quantity ? product.quantity : '';
 		if (product.quantity_shipped) productQuantity = `${productQuantity} (shipped ${product.quantity_shipped})`;
