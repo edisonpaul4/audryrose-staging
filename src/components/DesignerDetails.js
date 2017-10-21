@@ -92,7 +92,7 @@ class ProductRow extends Component {
 
     }
     
-    const { totalAwaitingInventory } = this.props.vendorOrderVariant.variant;
+    const totalAwaitingInventory = Math.abs(this.state.units - this.state.received);
 		const inventory = variant.inventoryLevel ? variant.inventoryLevel : 0;
 		const units = (this.props.status === 'Pending') ? <Input type='number' value={this.state.units ? this.state.units : 0} onChange={this.handleUnitsChange} min={0} disabled={this.props.isSaving} /> : this.state.units;
 		const notes = (this.props.status === 'Pending') ? <Input type='text' value={this.state.notes ? this.state.notes : ''} onChange={this.handleNotesChange} min={0} disabled={this.props.isSaving} /> : this.state.notes;
@@ -109,7 +109,7 @@ class ProductRow extends Component {
           })}
         </Table.Cell>
 				<Table.Cell>{inventory}</Table.Cell>
-        <Table.Cell>{totalAwaitingInventory !== 0 ? totalAwaitingInventory : ''}</Table.Cell>
+        <Table.Cell>{totalAwaitingInventory}</Table.Cell>
 				<Table.Cell>{units}</Table.Cell>
 				<Table.Cell>{notes}</Table.Cell>
 				{received}
