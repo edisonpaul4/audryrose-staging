@@ -41,3 +41,10 @@ export function addDesignerProductToVendorOrder(token, orders, designerId) {
     promise: api.addDesignerProductToVendorOrder(token, orders, designerId)
   }
 }
+
+export function completeVendorOrder(token, vendorOrderNumber) {
+  return {
+    types: ['COMPLETE_VENDOR_ORDER_REQUEST', 'COMPLETE_VENDOR_ORDER_SUCCESS', 'COMPLETE_VENDOR_ORDER_FAILURE'],
+    promise: api.completeVendorOrder(token, vendorOrderNumber)
+  }
+}

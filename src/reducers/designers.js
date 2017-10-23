@@ -5,7 +5,7 @@ const initialState = {
 
 const mergeUpdatedDesigner = function(designers, updatedDesigner, completedVendorOrders) {
   if (designers && updatedDesigner) {
-    const updatedDesignerJSON = updatedDesigner.toJSON();
+    const updatedDesignerJSON = updatedDesigner.hasOwnProperty('toJSON') ? updatedDesigner.toJSON() : updatedDesigner;
   	designers = designers.map(function(designer, i) {
     	if (designer.objectId === updatedDesigner.id) {
       	const vendorOrders = [];
@@ -226,6 +226,21 @@ const designers = (state = initialState, action) => {
       return {
         ...state
       }
+    
+    case 'COMPLETE_VENDOR_ORDER_SUCCESS':
+      let designerIndex = state.designers.findIndex(d => d.designerId === action.res.updatedDesigner.designerId);
+      let designer = state.designers[designerIndex];
+      let vendorOrderIndex = designer.vendorOrders.findIndex(vo => vo.order.vendorOrderNumber === action.res.vendorOrder.vendorOrderNumber);
+      designer.hasSentVendorOrder = action.res.updatedDesigner.hasSentVendorOrder;
+      designer.vendorOrders[vendorOrderIndex].status = "Completed";
+      return {
+        ...state,
+        designers: [
+          ...state.designers.slice(0, designerIndex),
+          designer,
+          ...state.designers.slice(designerIndex + 1)
+        ]
+      };
 
     default:
       return state;

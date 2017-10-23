@@ -427,6 +427,11 @@ export const deleteWebhook = (token, id) => Parse.Cloud.run('deleteWebhook',
   }
 );
 
+const completeVendorOrder = (token, vendorOrderNumber) => Parse.Cloud.run('completeVendorOrder', {
+  sessionToken: token,
+  vendorOrderNumber
+})
+
 export default {
   signup,
   login,
@@ -465,5 +470,6 @@ export default {
 	getShipments,
 	getWebhooks,
 	createWebhook,
-	deleteWebhook
+  deleteWebhook,
+  completeVendorOrder
 }
