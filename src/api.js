@@ -432,6 +432,12 @@ const completeVendorOrder = (token, vendorOrderNumber) => Parse.Cloud.run('compl
   vendorOrderNumber
 })
 
+const deleteProductFromVendorOrder = (token, productObjectId, vendorOrderNumber) => Parse.Cloud.run('deleteProductFromVendorOrder', {
+  sessionToken: token,
+  productObjectId, 
+  vendorOrderNumber
+})
+
 export default {
   signup,
   login,
@@ -471,5 +477,6 @@ export default {
 	getWebhooks,
 	createWebhook,
   deleteWebhook,
-  completeVendorOrder
+  completeVendorOrder,
+  deleteProductFromVendorOrder
 }

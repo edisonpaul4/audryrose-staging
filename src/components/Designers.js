@@ -256,6 +256,11 @@ class Designers extends Component {
 		this.props.completeVendorOrder(this.props.token, vendorOrderNumber);
 	}
 
+	handleDeleteProductFromVendorOrder(productObjectId, vendorOrderNumber, objectId){
+		console.log(`Designers::handleDeleteProductFromOrder => Call action with productObjectId: ${productObjectId}, vendorOrderNumber: ${vendorOrderNumber} and designer objectId ${objectId}`);
+		this.props.deleteProductFromVendorOrder(this.props.token, productObjectId, vendorOrderNumber, objectId);
+	}
+
   handleDesignerOrderModalClose(data) {
     this.setState({
       designerOrderOpen: false,
@@ -402,6 +407,7 @@ class Designers extends Component {
   				    handleSaveVendorOrder={scope.handleSaveVendorOrder}
   				    handleSendVendorOrder={scope.handleSendVendorOrder}
 							handleCompleteVendorOrder={scope.handleCompleteVendorOrder.bind(scope)}
+							handleDeleteProductFromVendorOrder={scope.handleDeleteProductFromVendorOrder.bind(scope)}
 				    />
 			    );
 				}

@@ -12,7 +12,8 @@ class ProductRow extends Component {
       received: this.props.vendorOrderVariant.received ? parseFloat(this.props.vendorOrderVariant.received) : 0,
       variantSaved: false,
       isSaving: false,
-      hoverRow: false
+      hoverRow: false,
+      deleteProductConfirm: false,
     };
     this.handleUnitsChange = this.handleUnitsChange.bind(this);
     this.handleNotesChange = this.handleNotesChange.bind(this);
@@ -52,11 +53,7 @@ class ProductRow extends Component {
     });
     this.props.handleVariantEdited({objectId: this.props.vendorOrderVariant.objectId, units: units, notes: notes, received: received});
   }
-  
-  handleDeleteProductFromOrder(orderId) {
-    console.log(`ProductRow::handleDeleteProductFromOrder => Deleting order ${orderId}`)
-
-  } 
+   
 
   isEdited() {
     let edited = false;
@@ -79,6 +76,13 @@ class ProductRow extends Component {
     	});
   	}
   }
+
+  handleDeleteProductFromVendorOrder(productObjectId) {
+    console.log(`ProductRow::handleDeleteProductFromVendorOrder => OrderNumber ${productObjectId}`);
+    this.setState({ deleteProductConfirm: false });
+    this.props.handleDeleteProductFromVendorOrder(productObjectId)
+  }
+
 	render() {
 		const vendorOrderVariant = this.props.vendorOrderVariant;
 		const variant = vendorOrderVariant.variant;
@@ -140,8 +144,13 @@ class ProductRow extends Component {
             color='black'
             size='large' 
             className={this.state.hoverRow && this.props.status === 'Sent' ? '' : 'invisible'} 
-            onClick={() => this.handleDeleteProductFromOrder(this.props.vendorOrderVariant.objectId)}
-            />
+            onClick={() => this.setState({ deleteProductConfirm: true })} />
+          <Confirm 
+            open={this.state.deleteProductConfirm}
+            content="Are you sure you want to delete this incoming product?"
+            onConfirm={() => this.handleDeleteProductFromVendorOrder(this.props.vendorOrderVariant.objectId)}
+            onCancel={() => this.setState({ deleteProductConfirm: false })} />
+            
 				</Table.Cell>
 				<Table.Cell className='right aligned'>
   				<Icon name='checkmark' color='olive' size='large' className={doneIconClass} />
@@ -247,6 +256,11 @@ class VendorOrder extends Component {
     this.props.handleCompleteVendorOrder(vendorOrderNumber);
   }
 
+  handleDeleteProductFromVendorOrder(productObjectId){
+    console.log(`VendorOrder::productObjectId => remove product ${productObjectId} from order ${this.props.order.vendorOrderNumber}`);
+    this.props.handleDeleteProductFromVendorOrder(productObjectId, this.props.order.vendorOrderNumber);
+  }
+
 	render() {
   	const scope = this;
   	const { status, order, vendor } = this.props;
@@ -263,7 +277,8 @@ class VendorOrder extends Component {
             vendorOrderVariant={vendorOrderVariant} 
             key={vendorOrderVariant.objectId} 
             handleVariantEdited={scope.handleVariantEdited} 
-            isSaving={scope.props.isSaving} />
+            isSaving={scope.props.isSaving}
+            handleDeleteProductFromVendorOrder={productObjectId => scope.handleDeleteProductFromVendorOrder(productObjectId)} />
         );
 				return vendorOrderVariant;
 	    });
@@ -395,6 +410,10 @@ class DesignerDetails extends Component {
       // vendorOrders: vendorOrders
     });
   }
+  handleDeleteProductFromVendorOrder(productObjectId, vendorOrderNumber){
+    console.log(`DesignerDetails::handleDeleteProductFromVendorOrder => remove product ${productObjectId} from order ${vendorOrderNumber} with designer objectId ${this.props.data.objectId}`);
+    this.props.handleDeleteProductFromVendorOrder(productObjectId, vendorOrderNumber, this.props.data.objectId);
+  }
 	render() {
   	const show = this.props.expanded ? true : false;
   	const subpage = this.props.subpage;
@@ -413,6 +432,7 @@ class DesignerDetails extends Component {
             handleSaveVendorOrder={this.handleSaveVendorOrder}
             handleSendVendorOrder={this.handleSendVendorOrder}
             handleCompleteVendorOrder={this.props.handleCompleteVendorOrder}
+            handleDeleteProductFromVendorOrder={this.handleDeleteProductFromVendorOrder.bind(this)}
           />
         );
   		}

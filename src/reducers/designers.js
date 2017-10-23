@@ -228,9 +228,9 @@ const designers = (state = initialState, action) => {
       }
     
     case 'COMPLETE_VENDOR_ORDER_SUCCESS':
-      let designerIndex = state.designers.findIndex(d => d.designerId === action.res.updatedDesigner.designerId);
-      let designer = state.designers[designerIndex];
-      let vendorOrderIndex = designer.vendorOrders.findIndex(vo => vo.order.vendorOrderNumber === action.res.vendorOrder.vendorOrderNumber);
+      var designerIndex = state.designers.findIndex(d => d.designerId === action.res.updatedDesigner.designerId);
+      var designer = state.designers[designerIndex];
+      var vendorOrderIndex = designer.vendorOrders.findIndex(vo => vo.order.vendorOrderNumber === action.res.vendorOrder.vendorOrderNumber);
       designer.hasSentVendorOrder = action.res.updatedDesigner.hasSentVendorOrder;
       designer.vendorOrders[vendorOrderIndex].status = "Completed";
       return {
@@ -241,6 +241,22 @@ const designers = (state = initialState, action) => {
           ...state.designers.slice(designerIndex + 1)
         ]
       };
+    
+    case 'DELETE_PRODUCT_VENDOR_ORDER_SUCCESS':
+      // this is an example of a bad designed resux store, the need of go deep into an object for just one change
+      var designerIndex = state.designers.findIndex(d => d.objectId === action.res.objectId);
+      var designer = state.designers[designerIndex];
+      var vendorOrderIndex = designer.vendorOrders.findIndex(vo => vo.order.vendorOrderNumber === action.res.vendorOrder.vendorOrderNumber);
+      designer.vendorOrders[vendorOrderIndex].order.vendorOrderVariants = designer.vendorOrders[vendorOrderIndex].order.vendorOrderVariants
+        .filter(vov => vov.objectId !== action.res.vendorOrderVariant.objectId);
+      return {
+        ...state,
+        designers: [
+          ...state.designers.slice(0, designerIndex),
+          designer,
+          ...state.designers.slice(designerIndex + 1)
+        ]
+      }
 
     default:
       return state;

@@ -48,3 +48,10 @@ export function completeVendorOrder(token, vendorOrderNumber) {
     promise: api.completeVendorOrder(token, vendorOrderNumber)
   }
 }
+
+export function deleteProductFromVendorOrder(token, productObjectId, vendorOrderNumber, objectId) {
+  return {
+    types: ['DELETE_PRODUCT_VENDOR_ORDER_REQUEST', 'DELETE_PRODUCT_VENDOR_ORDER_SUCCESS', 'DELETE_PRODUCT_VENDOR_ORDER_FAILURE'],
+    promise: api.deleteProductFromVendorOrder(token, productObjectId, vendorOrderNumber).then(r => ({ ...r, objectId})),
+  }
+}
