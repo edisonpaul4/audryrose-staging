@@ -18,7 +18,7 @@ class Designer extends Component {
       vendorEditModalMode: null,
       email: this.props.data.email ? this.props.data.email : '',
       edited: false,
-      saved: false
+			saved: false
     };
     this.handleShowVendorEditFormClick = this.handleShowVendorEditFormClick.bind(this);
     this.handleShowVendorCreateFormClick = this.handleShowVendorCreateFormClick.bind(this);
@@ -249,7 +249,17 @@ class Designers extends Component {
       isSavingDesigners: currentlySaving
     });
     this.props.addDesignerProductToVendorOrder(this.props.token, orders, designerId);
-  }
+	}
+	
+	handleCompleteVendorOrder(vendorOrderNumber){
+		console.log(`Designers::handleCompleteVendorOrder => Call action with vendorOrderNumber: ${vendorOrderNumber}`);
+		this.props.completeVendorOrder(this.props.token, vendorOrderNumber);
+	}
+
+	handleDeleteProductFromVendorOrder(productObjectId, vendorOrderNumber, objectId){
+		console.log(`Designers::handleDeleteProductFromOrder => Call action with productObjectId: ${productObjectId}, vendorOrderNumber: ${vendorOrderNumber} and designer objectId ${objectId}`);
+		this.props.deleteProductFromVendorOrder(this.props.token, productObjectId, vendorOrderNumber, objectId);
+	}
 
   handleDesignerOrderModalClose(data) {
     this.setState({
@@ -377,6 +387,7 @@ class Designers extends Component {
 				    handleToggleClick={scope.handleToggleClick}
             handleShowOrderFormClick={scope.handleShowOrderFormClick}
 				    key={`${designer.designerId}-1`}
+						activeSubpage={scope.state.subpage}
 			    />
 		    );
 
@@ -395,6 +406,8 @@ class Designers extends Component {
   				    isSaving={isSaving}
   				    handleSaveVendorOrder={scope.handleSaveVendorOrder}
   				    handleSendVendorOrder={scope.handleSendVendorOrder}
+							handleCompleteVendorOrder={scope.handleCompleteVendorOrder.bind(scope)}
+							handleDeleteProductFromVendorOrder={scope.handleDeleteProductFromVendorOrder.bind(scope)}
 				    />
 			    );
 				}

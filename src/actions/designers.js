@@ -41,3 +41,17 @@ export function addDesignerProductToVendorOrder(token, orders, designerId) {
     promise: api.addDesignerProductToVendorOrder(token, orders, designerId)
   }
 }
+
+export function completeVendorOrder(token, vendorOrderNumber) {
+  return {
+    types: ['COMPLETE_VENDOR_ORDER_REQUEST', 'COMPLETE_VENDOR_ORDER_SUCCESS', 'COMPLETE_VENDOR_ORDER_FAILURE'],
+    promise: api.completeVendorOrder(token, vendorOrderNumber)
+  }
+}
+
+export function deleteProductFromVendorOrder(token, productObjectId, vendorOrderNumber, objectId) {
+  return {
+    types: ['DELETE_PRODUCT_VENDOR_ORDER_REQUEST', 'DELETE_PRODUCT_VENDOR_ORDER_SUCCESS', 'DELETE_PRODUCT_VENDOR_ORDER_FAILURE'],
+    promise: api.deleteProductFromVendorOrder(token, productObjectId, vendorOrderNumber).then(r => ({ ...r, objectId})),
+  }
+}

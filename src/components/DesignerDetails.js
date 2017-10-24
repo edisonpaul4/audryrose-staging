@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Button, Dimmer, Segment, Loader, Header, Form,Input, TextArea, Divider, Label, Icon } from 'semantic-ui-react';
+import { Table, Button, Dimmer, Segment, Loader, Header, Form,Input, TextArea, Divider, Label, Icon, Confirm } from 'semantic-ui-react';
 import classNames from 'classnames';
 import moment from 'moment';
 
@@ -11,7 +11,9 @@ class ProductRow extends Component {
       notes: this.props.vendorOrderVariant.notes ? this.props.vendorOrderVariant.notes : '',
       received: this.props.vendorOrderVariant.received ? parseFloat(this.props.vendorOrderVariant.received) : 0,
       variantSaved: false,
-      isSaving: false
+      isSaving: false,
+      hoverRow: false,
+      deleteProductConfirm: false,
     };
     this.handleUnitsChange = this.handleUnitsChange.bind(this);
     this.handleNotesChange = this.handleNotesChange.bind(this);
@@ -50,7 +52,9 @@ class ProductRow extends Component {
       variantSaved: false
     });
     this.props.handleVariantEdited({objectId: this.props.vendorOrderVariant.objectId, units: units, notes: notes, received: received});
-	}
+  }
+   
+
   isEdited() {
     let edited = false;
     if (parseFloat(this.props.vendorOrderVariant.units) !== parseFloat(this.state.units)) edited = true;
@@ -71,7 +75,14 @@ class ProductRow extends Component {
         isSaving: true
     	});
   	}
-	}
+  }
+
+  handleDeleteProductFromVendorOrder(productObjectId) {
+    console.log(`ProductRow::handleDeleteProductFromVendorOrder => OrderNumber ${productObjectId}`);
+    this.setState({ deleteProductConfirm: false });
+    this.props.handleDeleteProductFromVendorOrder(productObjectId)
+  }
+
 	render() {
 		const vendorOrderVariant = this.props.vendorOrderVariant;
 		const variant = vendorOrderVariant.variant;
@@ -101,12 +112,13 @@ class ProductRow extends Component {
 		const cancelClass = this.isEdited() ? '' : 'invisible';
 
     return (
-      <Table.Row>
+      <Table.Row 
+        onMouseEnter={() => this.setState({ hoverRow: true })}
+        onMouseLeave={() => this.setState({ hoverRow: false })}>
+        
         <Table.Cell>{productLink}</Table.Cell>
         <Table.Cell>
-          {options.map(function(option, i) {
-            return <span key={i}>{option}<br/></span>;
-          })}
+          {options.map((option, i) => <span key={i}>{option}<br/></span>)}
         </Table.Cell>
 				<Table.Cell>{inventory}</Table.Cell>
         <Table.Cell>{totalAwaitingInventory}</Table.Cell>
@@ -126,6 +138,21 @@ class ProductRow extends Component {
     	    </Button.Group>
 				</Table.Cell>
 				<Table.Cell className='right aligned'>
+  				<Icon 
+            style={{ cursor: 'pointer' }}
+            name='remove' 
+            color='black'
+            size='large' 
+            className={this.state.hoverRow && this.props.status === 'Sent' ? '' : 'invisible'} 
+            onClick={() => this.setState({ deleteProductConfirm: true })} />
+          <Confirm 
+            open={this.state.deleteProductConfirm}
+            content="Are you sure you want to delete this incoming product?"
+            onConfirm={() => this.handleDeleteProductFromVendorOrder(this.props.vendorOrderVariant.objectId)}
+            onCancel={() => this.setState({ deleteProductConfirm: false })} />
+            
+				</Table.Cell>
+				<Table.Cell className='right aligned'>
   				<Icon name='checkmark' color='olive' size='large' className={doneIconClass} />
 				</Table.Cell>
       </Table.Row>
@@ -140,7 +167,8 @@ class VendorOrder extends Component {
       formEdited: false,
       variantsEdited: false,
       message: this.props.order && this.props.order.message ? this.props.order.message : this.generateMessage(),
-      variantsData: null
+      variantsData: null,
+      completeOrderConfirm: false
     };
     this.handleSaveVendorOrderClick = this.handleSaveVendorOrderClick.bind(this);
     this.handleSendVendorOrderClick = this.handleSendVendorOrderClick.bind(this);
@@ -220,7 +248,19 @@ class VendorOrder extends Component {
         variantsEdited: false
     	});
   	}
-	}
+  }
+  
+  handleCompleteVendorOrder(vendorOrderNumber){
+    console.log(`VendorOrder::handleCompleteVendorOrder => Start finishing order ${vendorOrderNumber}`);
+    this.setState({ completeOrderConfirm: false });
+    this.props.handleCompleteVendorOrder(vendorOrderNumber);
+  }
+
+  handleDeleteProductFromVendorOrder(productObjectId){
+    console.log(`VendorOrder::productObjectId => remove product ${productObjectId} from order ${this.props.order.vendorOrderNumber}`);
+    this.props.handleDeleteProductFromVendorOrder(productObjectId, this.props.order.vendorOrderNumber);
+  }
+
 	render() {
   	const scope = this;
   	const { status, order, vendor } = this.props;
@@ -231,7 +271,15 @@ class VendorOrder extends Component {
 		if (order && order.vendorOrderVariants && order.vendorOrderVariants.length > 0) {
 			order.vendorOrderVariants.map(function(vendorOrderVariant, i) {
   			totalReceived += vendorOrderVariant.received;
-				orderProductRows.push(<ProductRow status={scope.props.status} vendorOrderVariant={vendorOrderVariant} key={vendorOrderVariant.objectId} handleVariantEdited={scope.handleVariantEdited} isSaving={scope.props.isSaving} />);
+				orderProductRows.push(
+          <ProductRow 
+            status={scope.props.status} 
+            vendorOrderVariant={vendorOrderVariant} 
+            key={vendorOrderVariant.objectId} 
+            handleVariantEdited={scope.handleVariantEdited} 
+            isSaving={scope.props.isSaving}
+            handleDeleteProductFromVendorOrder={productObjectId => scope.handleDeleteProductFromVendorOrder(productObjectId)} />
+        );
 				return vendorOrderVariant;
 	    });
 		}
@@ -286,7 +334,25 @@ class VendorOrder extends Component {
 
     return (
       <Segment secondary key={order.objectId}>
-        <Header>{status} Order {order.vendorOrderNumber} {label} {partiallyReceivedLabel}</Header>
+        <Header>
+          {status} Order {order.vendorOrderNumber} 
+          {label}
+          {partiallyReceivedLabel}
+          {(this.props.status === 'Sent' ? (
+            <Button 
+              onClick={() => this.setState({ completeOrderConfirm: true })}
+              style={{ cursor: 'pointer', float: 'right' }}
+              size='mini' 
+              color='green'>
+              Clear entire order
+            </Button>
+          ) : null)}
+          <Confirm 
+            open={this.state.completeOrderConfirm}
+            content="Are you sure you want to delete this incoming order?"
+            onConfirm={() => this.handleCompleteVendorOrder(this.props.order.vendorOrderNumber)}
+            onCancel={() => this.setState({ completeOrderConfirm: false })}/>
+        </Header>
         <Table className='order-products-table' basic='very' compact size='small' columns={6}>
           <Table.Header>
             <Table.Row>
@@ -336,21 +402,24 @@ class DesignerDetails extends Component {
     vendorOrderData.designerId = this.state.data.objectId;
     this.props.handleSendVendorOrder(vendorOrderData);
   }
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps) {  
     const data = nextProps.data ? nextProps.data : this.state.data;
- //     const vendorOrders = nextProps.vendorOrders ? nextProps.vendorOrders : this.state.vendorOrders;
+    // const vendorOrders = nextProps.vendorOrders ? nextProps.vendorOrders : this.state.vendorOrders;
     this.setState({
       data: data
- //       vendorOrders: vendorOrders
+      // vendorOrders: vendorOrders
     });
   }
+  handleDeleteProductFromVendorOrder(productObjectId, vendorOrderNumber){
+    console.log(`DesignerDetails::handleDeleteProductFromVendorOrder => remove product ${productObjectId} from order ${vendorOrderNumber} with designer objectId ${this.props.data.objectId}`);
+    this.props.handleDeleteProductFromVendorOrder(productObjectId, vendorOrderNumber, this.props.data.objectId);
+  }
 	render() {
-  	const scope = this;
   	const show = this.props.expanded ? true : false;
   	const subpage = this.props.subpage;
   	const data = this.state.data;
   	let vendorOrderRows = [];
-		if (data.vendorOrders) data.vendorOrders.map(function(vendorOrder, i) {
+		if (data.vendorOrders) data.vendorOrders.map((vendorOrder, i) => {
   		if (!subpage || subpage === 'all' || subpage === 'search' || vendorOrder.status.toLowerCase() === subpage) {
     		if (subpage === 'all' && vendorOrder.status === 'Completed') return vendorOrder;
     		vendorOrderRows.push(
@@ -358,10 +427,12 @@ class DesignerDetails extends Component {
             status={vendorOrder.status}
             order={vendorOrder.order}
             vendor={vendorOrder.vendor}
-            isSaving={scope.props.isSaving}
+            isSaving={this.props.isSaving}
             key={i}
-            handleSaveVendorOrder={scope.handleSaveVendorOrder}
-            handleSendVendorOrder={scope.handleSendVendorOrder}
+            handleSaveVendorOrder={this.handleSaveVendorOrder}
+            handleSendVendorOrder={this.handleSendVendorOrder}
+            handleCompleteVendorOrder={this.props.handleCompleteVendorOrder}
+            handleDeleteProductFromVendorOrder={this.handleDeleteProductFromVendorOrder.bind(this)}
           />
         );
   		}

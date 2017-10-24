@@ -28,12 +28,12 @@ const configureStore = () => {
     promise,
 		session
   ];
-
+	console.log(process.env)
   const store = createStore(
     rootReducer,
     compose(
       applyMiddleware(...middleware),
-      window.devToolsExtension ? window.devToolsExtension() : f => f
+			window.devToolsExtension && process.env.NODE_ENV === "development" ? window.devToolsExtension() : f => f
     ));
 
   return store;
