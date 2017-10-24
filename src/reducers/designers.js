@@ -5,7 +5,7 @@ const initialState = {
 
 const mergeUpdatedDesigner = function(designers, updatedDesigner, completedVendorOrders) {
   if (designers && updatedDesigner) {
-    const updatedDesignerJSON = updatedDesigner.toJSON();
+    const updatedDesignerJSON = updatedDesigner.hasOwnProperty('toJSON') ? updatedDesigner.toJSON() : updatedDesigner;
   	designers = designers.map(function(designer, i) {
     	if (designer.objectId === updatedDesigner.id) {
       	const vendorOrders = [];
@@ -225,6 +225,37 @@ const designers = (state = initialState, action) => {
     case 'ADD_DESIGNER_PRODUCT_TO_VENDOR_ORDER_FAILURE':
       return {
         ...state
+      }
+    
+    case 'COMPLETE_VENDOR_ORDER_SUCCESS':
+      var designerIndex = state.designers.findIndex(d => d.designerId === action.res.updatedDesigner.designerId);
+      var designer = state.designers[designerIndex];
+      var vendorOrderIndex = designer.vendorOrders.findIndex(vo => vo.order.vendorOrderNumber === action.res.vendorOrder.vendorOrderNumber);
+      designer.hasSentVendorOrder = action.res.updatedDesigner.hasSentVendorOrder;
+      designer.vendorOrders[vendorOrderIndex].status = "Completed";
+      return {
+        ...state,
+        designers: [
+          ...state.designers.slice(0, designerIndex),
+          designer,
+          ...state.designers.slice(designerIndex + 1)
+        ]
+      };
+    
+    case 'DELETE_PRODUCT_VENDOR_ORDER_SUCCESS':
+      // this is an example of a bad designed resux store, the need of go deep into an object for just one change
+      var designerIndex = state.designers.findIndex(d => d.objectId === action.res.objectId);
+      var designer = state.designers[designerIndex];
+      var vendorOrderIndex = designer.vendorOrders.findIndex(vo => vo.order.vendorOrderNumber === action.res.vendorOrder.vendorOrderNumber);
+      designer.vendorOrders[vendorOrderIndex].order.vendorOrderVariants = designer.vendorOrders[vendorOrderIndex].order.vendorOrderVariants
+        .filter(vov => vov.objectId !== action.res.vendorOrderVariant.objectId);
+      return {
+        ...state,
+        designers: [
+          ...state.designers.slice(0, designerIndex),
+          designer,
+          ...state.designers.slice(designerIndex + 1)
+        ]
       }
 
     default:
