@@ -108,7 +108,7 @@ class ProductRow extends Component {
 		const units = (this.props.status === 'Pending') ? <Input type='number' value={this.state.units ? this.state.units : 0} onChange={this.handleUnitsChange} min={0} disabled={this.props.isSaving} /> : this.state.units;
 		const notes = (this.props.status === 'Pending') ? <Input type='text' value={this.state.notes ? this.state.notes : ''} onChange={this.handleNotesChange} min={0} disabled={this.props.isSaving} /> : this.state.notes;
 		const doneIconClass = vendorOrderVariant.done ? '' : 'invisible';
-		const received = (this.props.status === 'Sent') ? <Table.Cell><Input type='number' value={this.state.received ? this.state.received : 0} onChange={this.handleReceivedChange} min={0} disabled={this.props.isSaving} /></Table.Cell> : null;
+		// const received = (this.props.status === 'Sent') ? <Table.Cell><Input type='number' value={this.state.received ? this.state.received : 0} onChange={this.handleReceivedChange} min={0} disabled={this.props.isSaving} /></Table.Cell> : null;
 		const cancelClass = this.isEdited() ? '' : 'invisible';
 
     return (
@@ -120,11 +120,27 @@ class ProductRow extends Component {
         <Table.Cell>
           {options.map((option, i) => <span key={i}>{option}<br/></span>)}
         </Table.Cell>
-				<Table.Cell>{inventory}</Table.Cell>
-        <Table.Cell>{totalAwaitingInventory}</Table.Cell>
+
+        {this.props.status !== 'Completed' ? <Table.Cell>{inventory}</Table.Cell> : null}
+
+        {this.props.status !== 'Completed' ? <Table.Cell>{totalAwaitingInventory}</Table.Cell> : null}
+
 				<Table.Cell>{units}</Table.Cell>
 				<Table.Cell>{notes}</Table.Cell>
-				{received}
+
+        {this.props.status === 'Sent' || this.props.status === 'Completed' ? (
+          <Table.Cell>
+            {this.props.status === 'Sent' ? (
+              <Input
+                type='number'
+                value={this.state.received ? this.state.received : 0}
+                onChange={this.handleReceivedChange}
+                min={0}
+                disabled={this.props.isSaving} />
+            ) : this.state.received ? this.state.received : 0}
+          </Table.Cell>
+        ) : null}
+
 				<Table.Cell className='right aligned'>
           <Button.Group size='mini'>
     		    <Button content='Cancel'
@@ -309,7 +325,7 @@ class VendorOrder extends Component {
       onClick={this.handleSendVendorOrderClick}
     /> : null;
 
-    const receivedHeader = (status === 'Sent') ? <Table.HeaderCell>Units Received</Table.HeaderCell> : null;
+    // const receivedHeader = (status === 'Sent') ? <Table.HeaderCell>Units Received</Table.HeaderCell> : null;
 
     const emailMessage = (status === 'Pending') ? <Form><Divider /><TextArea disabled={status !== 'Pending' ? true : false} placeholder='Enter a personal message' autoHeight value={this.state.message ? this.state.message : ''} onChange={this.handleMessageChange} /><Divider /></Form> : null;
 
@@ -358,11 +374,16 @@ class VendorOrder extends Component {
             <Table.Row>
               <Table.HeaderCell>Product</Table.HeaderCell>
               <Table.HeaderCell>Options</Table.HeaderCell>
-              <Table.HeaderCell>ACH OH</Table.HeaderCell>
-              <Table.HeaderCell>Total Awaiting</Table.HeaderCell>
+
+              {this.props.status !== 'Completed' ? <Table.HeaderCell>ACH OH</Table.HeaderCell> : null}
+
+              {this.props.status !== 'Completed' ? <Table.HeaderCell>Total Awaiting</Table.HeaderCell> : null}
+
               <Table.HeaderCell>Units {status === 'Pending' ? 'To Order' : 'Ordered'}</Table.HeaderCell>
               <Table.HeaderCell>Notes</Table.HeaderCell>
-              {receivedHeader}
+
+              {this.props.status === 'Sent' || this.props.status === 'Completed' ? <Table.HeaderCell>Units Received</Table.HeaderCell> : null}
+
               <Table.HeaderCell className='right aligned'></Table.HeaderCell>
               <Table.HeaderCell></Table.HeaderCell>
             </Table.Row>
