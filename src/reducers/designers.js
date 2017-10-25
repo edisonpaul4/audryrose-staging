@@ -4,51 +4,55 @@ const initialState = {
 };
 
 const mergeUpdatedDesigner = function(designers, updatedDesigner, completedVendorOrders) {
-  if (designers && updatedDesigner) {
-    const updatedDesignerJSON = updatedDesigner.hasOwnProperty('toJSON') ? updatedDesigner.toJSON() : updatedDesigner;
-  	designers = designers.map(function(designer, i) {
-    	if (designer.objectId === updatedDesigner.id) {
-      	const vendorOrders = [];
-      	if (designer.vendorOrders) designer.vendorOrders.map((vendorOrder) => {
-        	let updatedVendorOrder;
-        	if (updatedDesignerJSON.vendors) {
-          	updatedDesignerJSON.vendors.map((vendor) => {
-            	if (vendor.vendorOrders) vendor.vendorOrders.map((vendorVendorOrder) => {
-              	if (vendorOrder.order.objectId === vendorVendorOrder.objectId) {
-                  let status = vendorVendorOrder.orderedAll && vendorVendorOrder.receivedAll === false ? 'Sent' : 'Pending';
-                  if (vendorVendorOrder.orderedAll && vendorVendorOrder.receivedAll === true) status = 'Completed';
-                	if (vendorVendorOrder.updatedAt) updatedVendorOrder = {status:status, order:vendorVendorOrder, vendor:vendor};
-              	}
-              	return vendorOrder;
-            	});
-            	vendor.vendorOrders = null;
-            	return vendor;
-          	});
-        	}
-        	if (completedVendorOrders) {
-          	completedVendorOrders.map((completedVendorOrder) => {
-            	const completedVendorOrderJSON = completedVendorOrder.toJSON();
-            	if (vendorOrder.order.objectId === completedVendorOrderJSON.objectId) {
-              	if (completedVendorOrderJSON.updatedAt) updatedVendorOrder = {status:'Completed', order:completedVendorOrderJSON, vendor:vendorOrder.vendor};
-            	}
-            	return completedVendorOrder;
-          	});
-        	}
-        	if (updatedVendorOrder) {
-          	vendorOrders.push(updatedVendorOrder);
-        	} else {
-          	vendorOrders.push(vendorOrder);
-        	}
-        	return vendorOrder;
-      	});
-      	updatedDesignerJSON.vendorOrders = vendorOrders;
-      	designer = updatedDesignerJSON;
-    	}
-    	return designer;
-  	});
-	}
+  if(!updatedDesigner)
+    return designers;
 
-	return designers;
+  const designerIndex = designers.findIndex(designer => designer.objectId === updatedDesigner.id);
+  const updatedDesignerJSON = updatedDesigner.hasOwnProperty('toJSON') ? updatedDesigner.toJSON() : updatedDesigner;
+  
+  const formatUpdatedDesigner = designer => {
+    const vendorOrders = [];
+    if (designer.vendorOrders) designer.vendorOrders.map((vendorOrder) => {
+      let updatedVendorOrder;
+      if (updatedDesignerJSON.vendors) {
+        updatedDesignerJSON.vendors.map((vendor) => {
+          if (vendor.vendorOrders) vendor.vendorOrders.map((vendorVendorOrder) => {
+            if (vendorOrder.order.objectId === vendorVendorOrder.objectId) {
+              let status = vendorVendorOrder.orderedAll && vendorVendorOrder.receivedAll === false ? 'Sent' : 'Pending';
+              if (vendorVendorOrder.orderedAll && vendorVendorOrder.receivedAll === true) status = 'Completed';
+              if (vendorVendorOrder.updatedAt) updatedVendorOrder = { status: status, order: vendorVendorOrder, vendor: vendor };
+            }
+            return vendorOrder;
+          });
+          vendor.vendorOrders = null;
+          return vendor;
+        });
+      }
+      if (completedVendorOrders) {
+        completedVendorOrders.forEach((completedVendorOrder) => {
+          const completedVendorOrderJSON = completedVendorOrder.toJSON();
+          if (vendorOrder.order.objectId === completedVendorOrderJSON.objectId)
+            if (completedVendorOrderJSON.updatedAt) 
+              updatedVendorOrder = { status: 'Completed', order: completedVendorOrderJSON, vendor: vendorOrder.vendor };
+          return completedVendorOrder;
+        });
+      }
+      if (updatedVendorOrder) {
+        vendorOrders.push(updatedVendorOrder);
+      } else {
+        vendorOrders.push(vendorOrder);
+      }
+      return vendorOrder;
+    });
+    updatedDesignerJSON.vendorOrders = vendorOrders;
+    return updatedDesignerJSON;
+  }
+
+  return {
+    ...designers.slice(0, designerIndex),
+    ...formatUpdatedDesigner(designers[designerIndex]),
+    ...designers.slice(designerIndex + 1)
+  }
 }
 
 const designers = (state = initialState, action) => {
@@ -66,9 +70,7 @@ const designers = (state = initialState, action) => {
     case 'DESIGNERS_SUCCESS':
       if (action.res.designers) {
         var completedVendorOrders = action.res.completedVendorOrders ? action.res.completedVendorOrders.slice(0).reverse() : null;
-        designersArray = [];
-      	action.res.designers.map((designer) => {
-        	// designer = designer.toJSON();
+      	designersArray = action.res.designers.map((designer) => {
         	designer.vendorOrders = [];
           var vendorIds = [];
 
@@ -91,25 +93,24 @@ const designers = (state = initialState, action) => {
         	if (completedVendorOrders && completedVendorOrders.length > 0) {
           	var i = completedVendorOrders.length;
           	while (i--) {
-            	var completedVendorOrderJSON = completedVendorOrders[i];
-            	if (vendorIds.indexOf(completedVendorOrderJSON.vendor.objectId) >= 0) {
-                let status = completedVendorOrderJSON.orderedAll && completedVendorOrderJSON.receivedAll === false ? 'Sent' : 'Pending';
-                if (completedVendorOrderJSON.orderedAll && completedVendorOrderJSON.receivedAll === true) status = 'Completed';
+            	var completedVendorOrder = completedVendorOrders[i];
+            	if (vendorIds.indexOf(completedVendorOrder.vendor.objectId) >= 0) {
+                let status = completedVendorOrder.orderedAll && completedVendorOrder.receivedAll === false ? 'Sent' : 'Pending';
+                if (completedVendorOrder.orderedAll && completedVendorOrder.receivedAll === true) status = 'Completed';
                 const vendorData = {
-                  abbreviation: completedVendorOrderJSON.vendor.abbreviation,
-                  email: completedVendorOrderJSON.vendor.email,
-                  firstName: completedVendorOrderJSON.vendor.firstName,
-                  name: completedVendorOrderJSON.vendor.name,
-                  objectId: completedVendorOrderJSON.vendor.objectId,
-                  vendorOrderCount: completedVendorOrderJSON.vendor.vendorOrderCount
+                  abbreviation: completedVendorOrder.vendor.abbreviation,
+                  email: completedVendorOrder.vendor.email,
+                  firstName: completedVendorOrder.vendor.firstName,
+                  name: completedVendorOrder.vendor.name,
+                  objectId: completedVendorOrder.vendor.objectId,
+                  vendorOrderCount: completedVendorOrder.vendor.vendorOrderCount
                 }
-          			designer.vendorOrders.push({status:status, order:completedVendorOrderJSON, vendor:vendorData});
+          			designer.vendorOrders.push({status:status, order:completedVendorOrder, vendor:vendorData});
               	completedVendorOrders.splice(i, 1);
             	}
           	}
         	}
 
-        	designersArray.push(designer);
         	return designer;
       	});
       }
@@ -243,7 +244,6 @@ const designers = (state = initialState, action) => {
       };
     
     case 'DELETE_PRODUCT_VENDOR_ORDER_SUCCESS':
-      // this is an example of a bad designed resux store, the need of go deep into an object for just one change
       var designerIndex = state.designers.findIndex(d => d.objectId === action.res.objectId);
       var designer = state.designers[designerIndex];
       var vendorOrderIndex = designer.vendorOrders.findIndex(vo => vo.order.vendorOrderNumber === action.res.vendorOrder.vendorOrderNumber);
