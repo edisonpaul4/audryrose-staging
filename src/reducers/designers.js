@@ -68,7 +68,7 @@ const designers = (state = initialState, action) => {
         var completedVendorOrders = action.res.completedVendorOrders ? action.res.completedVendorOrders.slice(0).reverse() : null;
         designersArray = [];
       	action.res.designers.map((designer) => {
-        	designer = designer.toJSON();
+        	// designer = designer.toJSON();
         	designer.vendorOrders = [];
           var vendorIds = [];
 
@@ -91,7 +91,7 @@ const designers = (state = initialState, action) => {
         	if (completedVendorOrders && completedVendorOrders.length > 0) {
           	var i = completedVendorOrders.length;
           	while (i--) {
-            	var completedVendorOrderJSON = completedVendorOrders[i].toJSON();
+            	var completedVendorOrderJSON = completedVendorOrders[i];
             	if (vendorIds.indexOf(completedVendorOrderJSON.vendor.objectId) >= 0) {
                 let status = completedVendorOrderJSON.orderedAll && completedVendorOrderJSON.receivedAll === false ? 'Sent' : 'Pending';
                 if (completedVendorOrderJSON.orderedAll && completedVendorOrderJSON.receivedAll === true) status = 'Completed';
