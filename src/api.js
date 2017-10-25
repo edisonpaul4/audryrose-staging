@@ -313,7 +313,7 @@ export const productBundleSave = (token, data) => Parse.Cloud.run('productBundle
   }
 );
 
-export const getDesigners = (token, subpage, page, search) => Parse.Cloud.run('getDesigners',
+export const getDesigners = (token, subpage, page, search) => axios.post('/functions/getDesigners',
   {
     sessionToken: token,
     subpage,
