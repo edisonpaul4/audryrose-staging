@@ -21,6 +21,7 @@ const SHIPPING_PARCELS = [
 ];
 
 const SHIPPING_SIGNATURES = [
+  { value: 'NOT_REQUIRED', text: 'Not required', carrierAvailable: 'all' },
   { value: 'STANDARD', text: 'Standard', carrierAvailable: 'all' },
   { value: 'ADULT', text: 'Adult signature', carrierAvailable: 'all' },
   { value: 'CERTIFIED', text: 'Certified Mail', carrierAvailable: 'usps' },
@@ -99,7 +100,7 @@ class OrderShipModal extends Component {
       height: '1.75',
       weight: '3',
       formComplete: true,
-      signature: ''
+      signature: 'NOT_REQUIRED'
     };
     this.handleCreateShipments = this.handleCreateShipments.bind(this);
     this.handleShippingProviderChange = this.handleShippingProviderChange.bind(this);
@@ -141,7 +142,7 @@ class OrderShipModal extends Component {
       width: '',
       height: '',
       weight: '',
-      signature: '',
+      signature: 'NOT_REQUIRED',
   	});
 	}
 	
