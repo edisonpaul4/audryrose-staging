@@ -21,7 +21,7 @@ const SHIPPING_PARCELS = [
 ];
 
 const SHIPPING_SIGNATURES = [
-  { value: 'NOT_REQUIRED', text: 'Not required', carrierAvailable: 'all' },
+  { value: 'NOT_REQUIRED', text: 'No Signature Required', carrierAvailable: 'all' },
   { value: 'STANDARD', text: 'Standard', carrierAvailable: 'all' },
   { value: 'ADULT', text: 'Adult signature', carrierAvailable: 'all' },
   { value: 'CERTIFIED', text: 'Certified Mail', carrierAvailable: 'usps' },
