@@ -103,7 +103,12 @@ class ProductRow extends Component {
 
     }
     
-    const totalAwaitingInventory = Math.abs(this.state.units - this.state.received);
+    let totalAwaitingInventory = 0;
+    if(this.props.status === 'Pending')
+      totalAwaitingInventory = this.props.vendorOrderVariant.variant.totalAwaitingInventory;
+    else if (this.props.status === 'Sent')
+      totalAwaitingInventory = this.state.units - this.state.received > 0 ? this.state.units - this.state.received : 0;
+
 		const inventory = variant.inventoryLevel ? variant.inventoryLevel : 0;
 		const units = (this.props.status === 'Pending') ? <Input type='number' value={this.state.units ? this.state.units : 0} onChange={this.handleUnitsChange} min={0} disabled={this.props.isSaving} /> : this.state.units;
 		const notes = (this.props.status === 'Pending') ? <Input type='text' value={this.state.notes ? this.state.notes : ''} onChange={this.handleNotesChange} min={0} disabled={this.props.isSaving} /> : this.state.notes;
@@ -123,7 +128,9 @@ class ProductRow extends Component {
 
         {this.props.status !== 'Completed' ? <Table.Cell>{inventory}</Table.Cell> : null}
 
-        {this.props.status !== 'Completed' ? <Table.Cell>{totalAwaitingInventory}</Table.Cell> : null}
+        {this.props.status === 'Sent' || this.props.status === 'Pending' ? (
+          <Table.Cell>{totalAwaitingInventory}</Table.Cell>
+        ) : null}
 
 				<Table.Cell>{units}</Table.Cell>
 				<Table.Cell>{notes}</Table.Cell>
@@ -377,7 +384,9 @@ class VendorOrder extends Component {
 
               {this.props.status !== 'Completed' ? <Table.HeaderCell>ACH OH</Table.HeaderCell> : null}
 
-              {this.props.status !== 'Completed' ? <Table.HeaderCell>Total Awaiting</Table.HeaderCell> : null}
+              {this.props.status === 'Sent' || this.props.status === 'Pending' ? (
+                <Table.HeaderCell>Total Awaiting</Table.HeaderCell>
+              ) : null}
 
               <Table.HeaderCell>Units {status === 'Pending' ? 'To Order' : 'Ordered'}</Table.HeaderCell>
               <Table.HeaderCell>Notes</Table.HeaderCell>
