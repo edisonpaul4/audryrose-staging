@@ -248,7 +248,7 @@ class VariantRow extends Component {
       });
     }
 
-    const totalAwaitingInventory = data.totalAwaitingInventory ? data.totalAwaitingInventory : '';
+    const totalAwaitingInventory = data.totalAwaitingInventory ? data.totalAwaitingInventory : 0;
 
     const dropdownItems = [];
     if (data.size_value) dropdownItems.push(<Dropdown.Item icon='exchange' text='Resize' disabled={this.props.isSaving || variantEdited} onClick={this.handleShowResizeFormClick} key={'dropdown-resize'} />);
