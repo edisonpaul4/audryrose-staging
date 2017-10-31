@@ -83,3 +83,10 @@ export function getOrderProductFormData(token, orderProductId) {
     promise: api.getOrderProductFormData(token, orderProductId)
   }
 }
+
+export function updateOrderNotes(token, orderId, orderNotes) {
+  return {
+    types: ['UPDATE_ORDER_NOTES_REQUEST', 'UPDATE_ORDER_NOTES_SUCCESS', 'UPDATE_ORDER_NOTES_FAILURE'],
+    promise: api.updateOrderNotes(token, orderId, orderNotes).then(r => r.data.result)
+  }
+}

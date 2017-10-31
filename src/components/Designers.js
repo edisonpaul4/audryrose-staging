@@ -7,6 +7,7 @@ import DesignersNav from './DesignersNav.js';
 import VendorEditModal from './VendorEditModal.js';
 import DesignerDetails from './DesignerDetails.js';
 import DesignerOrderModal from './DesignerOrderModal.js';
+import DesignerNotesModal from './DesignerNotesModal';
 
 class Designer extends Component {
   constructor(props) {
@@ -112,6 +113,11 @@ class Designer extends Component {
         </Table.Cell>
         <Table.Cell verticalAlign='top'>{name}</Table.Cell>
 				<Table.Cell verticalAlign='top'>{data.abbreviation}</Table.Cell>
+
+				<Table.Cell>
+					{this.props.data.orderHasNotes ? 'D' : ''}
+				</Table.Cell>
+
         <Table.Cell singleLine className='right aligned'>
       	    {modalButtons}
       	    <Button
@@ -363,8 +369,12 @@ class Designers extends Component {
 		if (designers) {
 			designers.map(function(designer, i) {
   			let isSaving = scope.state.isSavingDesigners.indexOf(designer.objectId) >= 0 ? true : false;
-  			let expanded = (scope.state.expanded.indexOf(designer.objectId) >= 0 || scope.state.search/*  || scope.state.subpage === 'pending' || scope.state.subpage === 'sent' */) ? true : false;
+				let expanded = (scope.state.expanded.indexOf(designer.objectId) >= 0 || scope.state.search/*  || scope.state.subpage === 'pending' || scope.state.subpage === 'sent' */) ? true : false;
 
+				let orderHasNotes = false;
+				if (designer.vendorOrders.length > 0)
+					orderHasNotes = designer.vendorOrders.every(vo => !vo.order.vendorOrderVariants.every(vov => vov.notes === ''));
+					
         const designerData = {
           abbreviation: designer.abbreviation,
           designerId: designer.designerId,
@@ -374,7 +384,8 @@ class Designers extends Component {
           name: designer.name,
           objectId: designer.objectId,
           updatedAt: designer.updatedAt,
-          vendors: designer.vendors
+					vendors: designer.vendors,
+					orderHasNotes
         }
 
 				designerRows.push(
@@ -440,6 +451,7 @@ class Designers extends Component {
               <Table.HeaderCell>Image</Table.HeaderCell>
               <Table.HeaderCell>Name</Table.HeaderCell>
 							<Table.HeaderCell>Abbreviation</Table.HeaderCell>
+							<Table.HeaderCell>Notes</Table.HeaderCell>
 							<Table.HeaderCell className='right aligned'>Vendors</Table.HeaderCell>
               <Table.HeaderCell className='right aligned'>&nbsp;</Table.HeaderCell>
 							<Table.HeaderCell className='right aligned'>&nbsp;</Table.HeaderCell>

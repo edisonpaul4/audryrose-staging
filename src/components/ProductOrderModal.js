@@ -3,7 +3,7 @@ import { Modal, Button, Header, Form } from 'semantic-ui-react';
 
 class ProductOrderModal extends Component {
   constructor(props) {
-    super(props);
+		super(props);
     this.state = {
       formComplete: false,
       product: this.props.productOrderData && this.props.productOrderData.product ? this.props.productOrderData.product : null, 
@@ -13,7 +13,7 @@ class ProductOrderModal extends Component {
       resizeVariant: '',
       resize: this.props.productOrderData.resize ? this.props.productOrderData.resize : false,
       units: 1,
-      notes: ''
+			notes: ''
     };
     this.handleAddToVendorOrder = this.handleAddToVendorOrder.bind(this);
     this.handleCreateResize = this.handleCreateResize.bind(this);
@@ -145,7 +145,7 @@ class ProductOrderModal extends Component {
     	resize: resize,
     	product: product,
     	resizeVariant: resizeVariant,
-    	vendor: vendor
+    	vendor: vendor,
   	});
 	}
 	
@@ -161,7 +161,8 @@ class ProductOrderModal extends Component {
     	resize: resize,
     	product: product,
     	resizeVariant: this.getRecommendedResize(variant, product),
-    	vendor: vendor
+			vendor: vendor,
+			notes: nextProps.productOrderData.notes || ''
   	});
 	}
   

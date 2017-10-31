@@ -239,6 +239,36 @@ const orders = (state = initialState, action) => {
         ...state
       }
 
+    case 'UPDATE_ORDER_NOTES_REQUEST':
+      return {
+        ...state,
+        isLoadingOrders: true
+      };
+
+    case 'UPDATE_ORDER_NOTES_SUCCESS':
+      var orderIndex = state.orders.findIndex(o => o.orderId === action.res.order.orderId);
+      var newOrder = {
+        ...state.orders[orderIndex],
+        staff_notes: action.res.order.staff_notes,
+        designerNotes: action.res.order.designerNotes
+      };
+      
+      return {
+        ...state,
+        orders: [
+          ...state.orders.slice(0, orderIndex),
+          newOrder,
+          ...state.orders.slice(orderIndex + 1)
+        ],
+        isLoadingOrders: false
+      };
+
+    case 'UPDATE_ORDER_NOTES_FAILURE':
+      return {
+        ...state,
+        isLoadingOrders: false
+      };
+
     default:
       return state;
   }

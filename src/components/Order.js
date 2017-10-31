@@ -1,9 +1,10 @@
 import React, { PureComponent } from 'react';
-import { Table, Checkbox, Button, Icon, Popup, Label, Header } from 'semantic-ui-react';
+import { Table, Form, Checkbox, Button, Icon, Popup, Label, Header, Modal } from 'semantic-ui-react';
 import { SingleDatePicker } from 'react-dates';
 import 'react-dates/lib/css/_datepicker.css';
 import numeral from 'numeral';
 import moment from 'moment';
+import OrderNotesModal from './OrderNotesModal';
 
 class Order extends PureComponent {
   constructor(props) {
@@ -15,7 +16,8 @@ class Order extends PureComponent {
       selected: this.props.selected ? this.props.selected : false,
       subpage: this.props.subpage ? this.props.subpage : '',
       dateNeeded: this.props.data && this.props.data.dateNeeded ? this.props.data.dateNeeded : null,
-      dateNeededFocused: false
+			dateNeededFocused: false,
+			notesFormOpen: false
     };
     this.handleToggleClick = this.handleToggleClick.bind(this);
     this.handleCheckboxClick = this.handleCheckboxClick.bind(this);
@@ -91,7 +93,7 @@ class Order extends PureComponent {
 		const orderLink = 'https://www.loveaudryrose.com/manage/orders/' + data.orderId;
 		const orderId = <a href={orderLink} className='hover-icon' target='_blank'>{data.orderId} <Icon link name='external' /></a>
 		const orderFraudWarning = data.fraudData && data.fraudData.isSuspicious ? <Popup trigger={<Icon color='yellow' name='warning sign' />} content={data.fraudData.message} size='tiny' position='top center' /> : null
-		const orderNote = data.customer_message ? <Popup trigger={<Icon name='sticky note outline' link />} on='click' content={data.customer_message} position='top center' /> : null;
+		// const orderNote = data.customer_message ? <Popup trigger={<Icon name='sticky note outline' link />} on='click' content={data.customer_message} position='top center' /> : null;
 
     return (
       <Table.Row warning={data.customer_message ? true : undefined} disabled={isReloading}>
@@ -112,7 +114,17 @@ class Order extends PureComponent {
         {dateShippedColumn}
         <Table.Cell verticalAlign='middle'>{orderId} {orderFraudWarning}</Table.Cell>
 				<Table.Cell verticalAlign='middle'>{customerName}</Table.Cell>
-				<Table.Cell verticalAlign='middle'>{orderNote}</Table.Cell>
+
+				<Table.Cell verticalAlign='middle'>
+					<OrderNotesModal 
+						orderId={this.props.data.orderId}
+						staffNote={this.props.data.staff_notes}
+						customerMessage={this.props.data.customer_message}
+						designersNote={this.props.data.designerNotes}
+						submitHandler={this.props.handleUpdateOrderNotes.bind(this)}
+						/>
+				</Table.Cell>
+
 				<Table.Cell className='right aligned' verticalAlign='middle'>{numeral(data.total_inc_tax).format('$0,0.00')}</Table.Cell>
 				<Table.Cell verticalAlign='middle'><em>{data.status}</em></Table.Cell>
 				<Table.Cell verticalAlign='middle'>{labels}</Table.Cell>
