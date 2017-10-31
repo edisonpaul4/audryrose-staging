@@ -1,6 +1,6 @@
 {
   "name": "loveaudryrose-ims",
-  "version": "0.2.41",
+  "version": "0.2.42",
   "private": true,
   "devDependencies": {
     "nodemon": "^1.10.2",
@@ -20,7 +20,7 @@
     "numeral": "^2.0.6",
     "parse": "latest",
     "path": "^0.12.7",
-    "prop-types": "^15.5.9",
+    "prop-types": "^15.6.0",
     "react": "^15.6.1",
     "react-addons-css-transition-group": "^15.6.0",
     "react-addons-shallow-compare": "^15.6.0",
@@ -49,6 +49,6 @@
     "extends": "react-app"
   },
   "engines": {
-    "node": ">=6.0.0"
+    "node": "8.3.x"
   }
 }
