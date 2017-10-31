@@ -1,6 +1,6 @@
 {
   "name": "loveaudryrose-ims",
-  "version": "0.2.41",
+  "version": "0.2.42",
   "private": true,
   "devDependencies": {
     "nodemon": "^1.10.2",
@@ -49,6 +49,6 @@
     "extends": "react-app"
   },
   "engines": {
-    "node": ">=6.0.0"
+    "node": "8.3.x"
   }
 }
