@@ -438,6 +438,12 @@ const deleteProductFromVendorOrder = (token, productObjectId, vendorOrderNumber)
   vendorOrderNumber
 })
 
+const updateOrderNotes = (token, orderId, orderNotes) => axios.post('/functions/updateOrderNotes', {
+  sessionToken: token,
+  orderId,
+  orderNotes
+});
+
 export default {
   signup,
   login,
@@ -478,5 +484,6 @@ export default {
 	createWebhook,
   deleteWebhook,
   completeVendorOrder,
-  deleteProductFromVendorOrder
+  deleteProductFromVendorOrder,
+  updateOrderNotes
 }

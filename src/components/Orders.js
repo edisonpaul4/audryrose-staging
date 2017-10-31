@@ -250,11 +250,12 @@ class Orders extends Component {
   	if (data.variant) productOrderData.variant = data.variant.objectId;
   	if (data.orderId) productOrderData.orderId = data.orderId;
   	if (data.orderProductId) productOrderData.orderProductId = data.orderProductId;
-  	if (data.resize !== undefined) productOrderData.resize = data.resize;
+		if (data.resize !== undefined) productOrderData.resize = data.resize;
+		productOrderData.notes = data.designerNotes || '';
   	this.props.getProduct(this.props.token, data.productId);
     this.setState({
+      productOrderData: productOrderData,
       productOrderOpen: true,
-      productOrderData: productOrderData
     });
 	}
 
@@ -477,6 +478,10 @@ class Orders extends Component {
   	}
 	}
 
+	handleUpdateOrderNotes(orderId, orderNotes) {
+		this.props.updateOrderNotes(this.props.token, orderId, orderNotes);
+	}
+
   render() {
 		const { error, isLoadingOrders, totalPages, totalOrders } = this.props;
 		let scope = this;
@@ -509,7 +514,10 @@ class Orders extends Component {
           customer_message: order.customer_message,
           total_inc_tax: order.total_inc_tax,
           items_total: order.items_total,
-          fraudData: scope.fraudCheck(order)
+					fraudData: scope.fraudCheck(order),
+					staff_notes: order.staff_notes,
+					customer_message: order.customer_message,
+					designerNotes: order.designerNotes
 				};
 				orderRows.push(
 				  <Order
@@ -522,6 +530,7 @@ class Orders extends Component {
 				    handleCheckboxClick={scope.handleCheckboxClick}
 				    handleDateNeededChange={scope.handleDateNeededChange}
 				    selected={selected}
+						handleUpdateOrderNotes={scope.handleUpdateOrderNotes.bind(scope)}
 			    />
 		    );
 
@@ -538,7 +547,8 @@ class Orders extends Component {
             orderId: order.orderId,
             orderProducts: order.orderProducts, //TODO: SIMPLIFY THIS OBJECT
             orderShipments: order.orderShipments,
-            status: order.status
+						status: order.status,
+						designerNotes: order.designerNotes
   				};
   				orderRows.push(
   				  <OrderDetails
@@ -680,7 +690,7 @@ class Orders extends Component {
                   {dateShippedColumn}
                   <Table.HeaderCell>Order #</Table.HeaderCell>
                   <Table.HeaderCell>Customer</Table.HeaderCell>
-    							<Table.HeaderCell>Order Notes</Table.HeaderCell>
+    							<Table.HeaderCell>Notes</Table.HeaderCell>
                   <Table.HeaderCell
                     className='right aligned'
                     sorted={sortColumn === 'total' ? (this.state.sort === 'total-asc' ? 'ascending' : 'descending') : null}

@@ -20,7 +20,7 @@
     "numeral": "^2.0.6",
     "parse": "latest",
     "path": "^0.12.7",
-    "prop-types": "^15.5.9",
+    "prop-types": "^15.6.0",
     "react": "^15.6.1",
     "react-addons-css-transition-group": "^15.6.0",
     "react-addons-shallow-compare": "^15.6.0",
