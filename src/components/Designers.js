@@ -370,10 +370,8 @@ class Designers extends Component {
 			designers.map(function(designer, i) {
   			let isSaving = scope.state.isSavingDesigners.indexOf(designer.objectId) >= 0 ? true : false;
 				let expanded = (scope.state.expanded.indexOf(designer.objectId) >= 0 || scope.state.search/*  || scope.state.subpage === 'pending' || scope.state.subpage === 'sent' */) ? true : false;
-
-				let orderHasNotes = false;
-				if (designer.vendorOrders.length > 0)
-					orderHasNotes = designer.vendorOrders.every(vo => !vo.order.vendorOrderVariants.every(vov => vov.notes === ''));
+				
+				let orderHasNotes = !designer.vendorOrders.filter(vo => vo.status.toLowerCase() === subpage || subpage === 'all').every(vo => vo.order.vendorOrderVariants.every(vov => vov.notes.length < 5))
 					
         const designerData = {
           abbreviation: designer.abbreviation,
