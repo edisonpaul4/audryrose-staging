@@ -517,7 +517,8 @@ class Orders extends Component {
 					fraudData: scope.fraudCheck(order),
 					staff_notes: order.staff_notes,
 					customer_message: order.customer_message,
-					designerNotes: order.designerNotes
+					designerNotes: order.designerNotes,
+					internalNotes: order.internalNotes
 				};
 				orderRows.push(
 				  <Order
@@ -548,7 +549,7 @@ class Orders extends Component {
             orderProducts: order.orderProducts, //TODO: SIMPLIFY THIS OBJECT
             orderShipments: order.orderShipments,
 						status: order.status,
-						designerNotes: order.designerNotes
+						designerNotes: order.designerNotes,
   				};
   				orderRows.push(
   				  <OrderDetails
