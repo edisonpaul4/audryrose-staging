@@ -9,8 +9,9 @@ export default class OrderNotesModal extends React.Component {
       modalOpen: false,
       orderId: this.props.orderId,
       customersNote: this.props.customerMessage || '',
-      designersNote: this.props.designersNote || '',
+      designerNotes: this.props.designerNotes || '',
       staffNote: this.props.staffNote || '',
+      internalNotes: this.props.internalNotes || '',
     }
   }
 
@@ -18,16 +19,16 @@ export default class OrderNotesModal extends React.Component {
     console.log('OrderNotesModal::onSubmit');
     this.setState({ modalOpen: false });
     this.props.submitHandler(this.state.orderId, {
-      designerNote: this.state.designersNote,
-      staffNote: this.state.staffNote
+      designerNotes: this.state.designerNotes,
+      internalNotes: this.state.internalNotes
     });
   }
 
   render() {
     const words = [
-      this.state.customersNote !== '' ? 'C' : null,
-      this.state.designersNote !== '' ? 'D' : null,
-      this.state.staffNote !== '' ? 'S' : null,
+      (this.state.customersNote !== '' || this.state.staffNote !== '') ? 'C' : null,
+      this.state.designerNotes !== '' ? 'D' : null,
+      this.state.internalNotes !== '' ? 'I' : null,
     ].filter(w => w !== null).join(' - ');
 
     return (
@@ -48,13 +49,17 @@ export default class OrderNotesModal extends React.Component {
                 value={this.state.customersNote} 
                 style={{ pointerEvents: 'none' }} />
               <Form.TextArea
-                label="Designer's note" 
-                value={this.state.designersNote}
-                onInput={e => this.setState({ designersNote: e.target.value })} />
-              <Form.TextArea
                 label="Staff's note" 
                 value={this.state.staffNote}
-                onInput={e => this.setState({ staffNote: e.target.value })} />
+                style={{ pointerEvents: 'none' }} />
+              <Form.TextArea
+                label="Internal's note" 
+                value={this.state.internalNotes}
+                onInput={e => this.setState({ internalNotes: e.target.value })} />
+              <Form.TextArea
+                label="Designer's note" 
+                value={this.state.designerNotes}
+                onInput={e => this.setState({ designerNotes: e.target.value })} />
             </Form>
           </Modal.Content>
 
@@ -80,7 +85,7 @@ const Styles = {
 OrderNotesModal.propTypes = {
   orderId: PropTypes.number.isRequired,
   customerMessage: PropTypes.string,
-  designersNote: PropTypes.string,
+  designerNotes: PropTypes.string,
   staffNote: PropTypes.string,
   submitHandler: PropTypes.func.isRequired
 }

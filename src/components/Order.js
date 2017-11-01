@@ -120,7 +120,8 @@ class Order extends PureComponent {
 						orderId={this.props.data.orderId}
 						staffNote={this.props.data.staff_notes}
 						customerMessage={this.props.data.customer_message}
-						designersNote={this.props.data.designerNotes}
+						internalNotes={this.props.data.internalNotes}
+						designerNotes={this.props.data.designerNotes}
 						submitHandler={this.props.handleUpdateOrderNotes.bind(this)}
 						/>
 				</Table.Cell>
