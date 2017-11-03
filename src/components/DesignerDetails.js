@@ -14,6 +14,7 @@ class ProductRow extends Component {
       isSaving: false,
       hoverRow: false,
       deleteProductConfirm: false,
+      internalNotes: this.props.vendorOrderVariant.internalNotes ? this.props.vendorOrderVariant.internalNotes : ''
     };
     this.handleUnitsChange = this.handleUnitsChange.bind(this);
     this.handleNotesChange = this.handleNotesChange.bind(this);
@@ -25,7 +26,7 @@ class ProductRow extends Component {
       units: parseFloat(value),
       variantSaved: false
     });
-    this.props.handleVariantEdited({objectId: this.props.vendorOrderVariant.objectId, units: parseFloat(value), notes: this.state.notes, received: this.state.received});
+    this.props.handleVariantEdited({objectId: this.props.vendorOrderVariant.objectId, units: parseFloat(value), notes: this.state.notes, received: this.state.received, internalNotes: this.state.internalNotes});
   }
   handleNotesChange(e, {value}) {
     this.setState({
@@ -49,7 +50,8 @@ class ProductRow extends Component {
       units: units,
       notes: notes,
       received: received,
-      variantSaved: false
+      variantSaved: false,
+      internalNotes: this.props.vendorOrderVariant.internalNotes ? this.props.vendorOrderVariant.internalNotes : ''
     });
     this.props.handleVariantEdited({objectId: this.props.vendorOrderVariant.objectId, units: units, notes: notes, received: received});
   }
@@ -60,6 +62,7 @@ class ProductRow extends Component {
     if (parseFloat(this.props.vendorOrderVariant.units) !== parseFloat(this.state.units)) edited = true;
     if (this.props.vendorOrderVariant.notes !== this.state.notes) edited = true;
     if (parseFloat(this.props.vendorOrderVariant.received) !== parseFloat(this.state.received)) edited = true;
+    if(this.props.vendorOrderVariant.internalNotes !== this.state.internalNotes) edited = true
     return edited;
   }
 	componentWillReceiveProps(nextProps) {
@@ -68,7 +71,8 @@ class ProductRow extends Component {
         units: nextProps.vendorOrderVariant.units ? parseFloat(nextProps.vendorOrderVariant.units) : 0,
         notes: nextProps.vendorOrderVariant.notes ? nextProps.vendorOrderVariant.notes : '',
         received: nextProps.vendorOrderVariant.received ? parseFloat(nextProps.vendorOrderVariant.received) : 0,
-        isSaving: false
+        isSaving: false,
+        internalNotes: nextProps.vendorOrderVariant.internalNotes ? nextProps.vendorOrderVariant.internalNotes : '',
     	});
   	} else if (!this.state.isSaving && nextProps.isSaving) {
     	this.setState({
@@ -81,6 +85,20 @@ class ProductRow extends Component {
     console.log(`ProductRow::handleDeleteProductFromVendorOrder => OrderNumber ${productObjectId}`);
     this.setState({ deleteProductConfirm: false });
     this.props.handleDeleteProductFromVendorOrder(productObjectId)
+  }
+
+  handleInternalNotesChange(text) {
+    this.setState({
+      internalNotes: text,
+      variantSaved: false
+    });
+    this.props.handleVariantEdited({ 
+      objectId: this.props.vendorOrderVariant.objectId, 
+      units: this.state.units, 
+      notes: this.state.notes, 
+      received: this.state.received, 
+      internalNotes: text
+    });
   }
 
 	render() {
@@ -134,6 +152,17 @@ class ProductRow extends Component {
 
 				<Table.Cell>{units}</Table.Cell>
 				<Table.Cell>{notes}</Table.Cell>
+
+        {this.props.status === 'Sent' || this.props.status === 'Pending' ? (
+				  <Table.Cell>
+            <Input 
+              type='text' 
+              value={this.state.internalNotes}
+              onChange={(e) => this.handleInternalNotesChange(e.target.value)} 
+              min={0} 
+              disabled={this.props.isSaving} />
+          </Table.Cell>
+        ) : null}
 
         {this.props.status === 'Sent' || this.props.status === 'Completed' ? (
           <Table.Cell>
@@ -214,6 +243,7 @@ class VendorOrder extends Component {
           if (vendorOrderVariant.units !== variant.units) variantsEdited = true;
           if (vendorOrderVariant.notes !== variant.notes) variantsEdited = true;
           if (vendorOrderVariant.received !== variant.received) variantsEdited = true;
+          if (vendorOrderVariant.internalNotes !== variant.internalNotes) variantsEdited = true;
         }
         return vendorOrderVariant;
     	});
@@ -254,7 +284,7 @@ class VendorOrder extends Component {
   }
   getVariantsData(vendorOrderVariants) {
   	return vendorOrderVariants.map(function(vendorOrderVariant, i) {
-    	return {objectId: vendorOrderVariant.objectId, units: vendorOrderVariant.units, notes: vendorOrderVariant.notes};
+      return { objectId: vendorOrderVariant.objectId, units: vendorOrderVariant.units, notes: vendorOrderVariant.notes, internalNotes: vendorOrderVariant.internalNotes};
   	});
   }
 	componentWillMount() {
@@ -391,7 +421,12 @@ class VendorOrder extends Component {
               <Table.HeaderCell>Units {status === 'Pending' ? 'To Order' : 'Ordered'}</Table.HeaderCell>
               <Table.HeaderCell>Notes</Table.HeaderCell>
 
-              {this.props.status === 'Sent' || this.props.status === 'Completed' ? <Table.HeaderCell>Units Received</Table.HeaderCell> : null}
+              {this.props.status === 'Sent' || this.props.status === 'Pending' ? (
+                <Table.HeaderCell>Internal notes</Table.HeaderCell>
+              ) : null}
+              {this.props.status === 'Sent' || this.props.status === 'Completed' ? (
+                <Table.HeaderCell>Units Received</Table.HeaderCell>
+              ) : null}
 
               <Table.HeaderCell className='right aligned'></Table.HeaderCell>
               <Table.HeaderCell></Table.HeaderCell>
