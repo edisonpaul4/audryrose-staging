@@ -62,7 +62,7 @@ class ProductRow extends Component {
     if (parseFloat(this.props.vendorOrderVariant.units) !== parseFloat(this.state.units)) edited = true;
     if (this.props.vendorOrderVariant.notes !== this.state.notes) edited = true;
     if (parseFloat(this.props.vendorOrderVariant.received) !== parseFloat(this.state.received)) edited = true;
-    if(this.props.vendorOrderVariant.internalNotes !== this.state.internalNotes) edited = true
+    if(this.props.vendorOrderVariant.internalNotes && this.props.vendorOrderVariant.internalNotes !== this.state.internalNotes) edited = true
     return edited;
   }
 	componentWillReceiveProps(nextProps) {
