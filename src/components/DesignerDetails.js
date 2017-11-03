@@ -129,7 +129,7 @@ class ProductRow extends Component {
 
 		const inventory = variant.inventoryLevel ? variant.inventoryLevel : 0;
 		const units = (this.props.status === 'Pending') ? <Input type='number' value={this.state.units ? this.state.units : 0} onChange={this.handleUnitsChange} min={0} disabled={this.props.isSaving} /> : this.state.units;
-		const notes = (this.props.status === 'Pending') ? <Input type='text' value={this.state.notes ? this.state.notes : ''} onChange={this.handleNotesChange} min={0} disabled={this.props.isSaving} /> : this.state.notes;
+    const notes = (this.props.status === 'Pending') ? <Input type='text' value={this.state.notes ? this.state.notes : ''} onChange={this.handleNotesChange} min={0} disabled={this.props.isSaving} /> : <p dangerouslySetInnerHTML={{ __html: this.state.notes }} />;
 		const doneIconClass = vendorOrderVariant.done ? '' : 'invisible';
 		// const received = (this.props.status === 'Sent') ? <Table.Cell><Input type='number' value={this.state.received ? this.state.received : 0} onChange={this.handleReceivedChange} min={0} disabled={this.props.isSaving} /></Table.Cell> : null;
 		const cancelClass = this.isEdited() ? '' : 'invisible';
@@ -153,16 +153,16 @@ class ProductRow extends Component {
 				<Table.Cell>{units}</Table.Cell>
 				<Table.Cell>{notes}</Table.Cell>
 
-        {this.props.status === 'Sent' || this.props.status === 'Pending' ? (
-				  <Table.Cell>
-            <Input 
-              type='text' 
+        <Table.Cell>
+          {this.props.status === 'Pending' ? (
+            <Input
+              type='text'
               value={this.state.internalNotes}
-              onChange={(e) => this.handleInternalNotesChange(e.target.value)} 
-              min={0} 
+              onChange={(e) => this.handleInternalNotesChange(e.target.value)}
+              min={0}
               disabled={this.props.isSaving} />
-          </Table.Cell>
-        ) : null}
+          ) : <p dangerouslySetInnerHTML={{ __html: this.state.internalNotes}} /> }
+        </Table.Cell>
 
         {this.props.status === 'Sent' || this.props.status === 'Completed' ? (
           <Table.Cell>
@@ -421,9 +421,8 @@ class VendorOrder extends Component {
               <Table.HeaderCell>Units {status === 'Pending' ? 'To Order' : 'Ordered'}</Table.HeaderCell>
               <Table.HeaderCell>Notes</Table.HeaderCell>
 
-              {this.props.status === 'Sent' || this.props.status === 'Pending' ? (
-                <Table.HeaderCell>Internal notes</Table.HeaderCell>
-              ) : null}
+              <Table.HeaderCell style={{ minWidth: '10rem' }}>Internal notes</Table.HeaderCell>
+                
               {this.props.status === 'Sent' || this.props.status === 'Completed' ? (
                 <Table.HeaderCell>Units Received</Table.HeaderCell>
               ) : null}

@@ -316,6 +316,7 @@ class OrderDetails extends Component {
 	}
 	handleShowOrderFormClick(data) {
 		data.designerNotes = this.props.data.designerNotes
+		data.internalNotes = this.props.data.internalNotes
   	data.orderId = this.state.order.orderId;
   	this.props.handleShowOrderFormClick(data);
 	}
