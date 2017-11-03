@@ -249,8 +249,8 @@ const orders = (state = initialState, action) => {
       var orderIndex = state.orders.findIndex(o => o.orderId === action.res.order.orderId);
       var newOrder = {
         ...state.orders[orderIndex],
-        staff_notes: action.res.order.staff_notes,
-        designerNotes: action.res.order.designerNotes
+        internalNotes: action.res.order.internalNotes,
+        designerNotes: action.res.order.designerNotes,
       };
       
       return {

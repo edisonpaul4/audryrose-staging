@@ -13,7 +13,8 @@ class ProductOrderModal extends Component {
       resizeVariant: '',
       resize: this.props.productOrderData.resize ? this.props.productOrderData.resize : false,
       units: 1,
-			notes: ''
+			notes: '',
+			internalNotes: ''
     };
     this.handleAddToVendorOrder = this.handleAddToVendorOrder.bind(this);
     this.handleCreateResize = this.handleCreateResize.bind(this);
@@ -31,7 +32,8 @@ class ProductOrderModal extends Component {
       vendor: this.state.vendor,
       variant: this.state.variant,
       units: this.state.units,
-      notes: this.state.notes
+      notes: this.state.notes,
+      internalNotes: this.state.internalNotes
     }];
     const orderId = this.props.productOrderData.orderId ? this.props.productOrderData.orderId : null;
 		this.props.handleAddToVendorOrder(orders, orderId);
@@ -46,7 +48,8 @@ class ProductOrderModal extends Component {
       variant: this.state.variant,
       resizeVariant: this.state.resizeVariant,
       units: this.state.units,
-      notes: this.state.notes
+      notes: this.state.notes,
+      internalNotes: this.state.internalNotes
     }];
     const orderId = this.props.productOrderData.orderId ? this.props.productOrderData.orderId : null;
 		this.props.handleCreateResize(resizes, orderId);
@@ -61,7 +64,8 @@ class ProductOrderModal extends Component {
       resizeVariant: '',
       resize: null,
       units: 1,
-      notes: ''
+      notes: '',
+      internalNotes: ''
     });
     this.props.handleProductOrderModalClose();
   }
@@ -162,7 +166,8 @@ class ProductOrderModal extends Component {
     	product: product,
     	resizeVariant: this.getRecommendedResize(variant, product),
 			vendor: vendor,
-			notes: nextProps.productOrderData.notes || ''
+			notes: nextProps.productOrderData.notes || '',
+			internalNotes: nextProps.productOrderData.internalNotes || ''
   	});
 	}
   
@@ -278,6 +283,13 @@ class ProductOrderModal extends Component {
                 label='Notes' 
                 value={this.state.notes}
                 onChange={this.handleNotesChange} 
+              />
+            </Form.Group>
+            <Form.Group widths='equal'>
+              <Form.TextArea 
+                label='Internal notes' 
+                value={this.state.internalNotes}
+                onChange={(e) => this.setState({ internalNotes: e.target.value })} 
               />
             </Form.Group>
           </Form>
