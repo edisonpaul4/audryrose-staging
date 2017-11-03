@@ -252,6 +252,7 @@ class Orders extends Component {
   	if (data.orderProductId) productOrderData.orderProductId = data.orderProductId;
 		if (data.resize !== undefined) productOrderData.resize = data.resize;
 		productOrderData.notes = data.designerNotes || '';
+		productOrderData.internalNotes = data.internalNotes || '';
   	this.props.getProduct(this.props.token, data.productId);
     this.setState({
       productOrderData: productOrderData,
@@ -550,6 +551,7 @@ class Orders extends Component {
             orderShipments: order.orderShipments,
 						status: order.status,
 						designerNotes: order.designerNotes,
+						internalNotes: order.internalNotes,
   				};
   				orderRows.push(
   				  <OrderDetails
