@@ -444,6 +444,22 @@ const updateOrderNotes = (token, orderId, orderNotes) => axios.post('/functions/
   orderNotes
 });
 
+const getOrdersToSendEmails = (token, offset) => axios.post('/functions/getOrdersToSendEmails', {
+  sessionToken: token,
+  offset
+});
+
+const sendOrderEmail = (orderId, emailMsg, token) => axios.post('/functions/sendOrderEmail', {
+  sessionToken: token,
+  emailMsg,
+  orderId
+});
+
+const deleteOrderEmail = (orderId, token) => axios.post('/functions/deleteOrderEmail', {
+  sessionToken: token,
+  orderId
+});
+
 export default {
   signup,
   login,
@@ -485,5 +501,8 @@ export default {
   deleteWebhook,
   completeVendorOrder,
   deleteProductFromVendorOrder,
-  updateOrderNotes
+  updateOrderNotes,
+  getOrdersToSendEmails,
+  sendOrderEmail,
+  deleteOrderEmail
 }
