@@ -37,7 +37,10 @@ export class EmailSectionContainer extends React.Component {
     if (newPage < 0 
       || newPage >= (this.props.emailOrders.orders.length / this.state.totalOrdersPerPage))
       return;
-    this.setState({ activeOrderPage: newPage });
+    this.setState({ 
+      activeOrderPage: newPage,
+      orderActiveIndex: -1
+    });
   }
 
   componentWillMount() {
