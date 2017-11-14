@@ -19,42 +19,44 @@ export default class EmailListItemContent extends React.Component {
       return (dayToReceive - today) > 0 ? `${dayToReceive - today} days` : 'UNSHIPPED';
     } else {
       switch (true) {
-        case product.quantity_shipped === product.quantity:
+        case product.isActive && product.totalInventory !== 0:
           return 'SHIPPED';
 
-        case product.quantity_shipped !== product.quantity:
-          return 'PARTIALLY SHIPPED';
+        case !product.isActive:
+          return 'ONE WEEK';
 
-        case product.quantity_shipped === 0:
-          return 'UNSHIPPED';
+        case product.isActive && product.totalInventory === 0:
+          return 'THREE WEEK';
       }
     }
   }
 
   prepareMessageTemplate(customer, products, user) {
     const msgHeader = `Hi ${customer.firstName},\n\n`;
-    const shippedProducts = products
-      .filter(product => product.quantity_shipped === product.quantity)
+    const firstRule = products
+      .filter(product => product.isActive && product.totalInventory !== 0)
       .map(product => product.name)
       .join(', ');
-    const unShippedProducts = products
-      .filter(product => product.quantity_shipped === 0)
+    const secondRule = products
+      .filter(product => !product.isActive)
       .map(product => product.name)
       .join(', ');
-    const partiallyShippedProducts = products
-      .filter(product => product.quantity_shipped !== product.quantity)
+    const thirdRule = products
+      .filter(product => product.isActive && product.totalInventory === 0)
       .map(product => product.name)
       .join(', ');
     
-    let msgContent = `Thank you for your order!\n\n`;
-    if (shippedProducts && shippedProducts.length > 0) {
-      msgContent = msgContent + `Your ${shippedProducts} shipped today, hope you love it!\n\n`;
-    }
-    if (unShippedProducts && unShippedProducts.length > 0) {
-      msgContent = msgContent + `Your ${unShippedProducts} will take approximately three to four weeks to ship as it is being handmade for you.\n\n`;
-    }
+    let msgContent = `Thank you for your order!`;
+    if (firstRule && firstRule.length > 0) 
+      msgContent = msgContent + ` Your ${firstRule} shipped today, hope you love it!`;
 
-    const msgFooter = 'If you need this order by a certain date, please let us know so we can do our best to accommodate you.\n\nPlease let me know if you have any question or concerns.\n\nThanks again!\n\n';
+    if (secondRule && secondRule.length > 0)
+      msgContent = msgContent + `\n\nYour ${secondRule} will take approximately one week to ship!.`;
+
+    if (thirdRule && thirdRule.length > 0)
+      msgContent = msgContent + `\n\nYour ${thirdRule} will take approximately three weeks to ship, as they are being handmade for you!.`;
+
+    const msgFooter = '\n\nIf you need this order by a certain date, please let us know so we can do our best to accommodate you.\n\nPlease let me know if you have any question or concerns.\n\nThanks again!\n\n';
     const msgBrand = `${user.firstName} ${user.lastName}\nwww.loveaudryrose.com\n424.387.8000`;
     return msgHeader + msgContent + msgFooter + msgBrand;
   }
