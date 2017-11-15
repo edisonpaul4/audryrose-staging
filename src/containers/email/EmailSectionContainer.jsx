@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Grid, Segment } from 'semantic-ui-react';
 
 import { getOrdersToSendEmails, sendOrderEmail, deleteOrderEmail } from '../../actions/emailOrders';
-import { EmailList, EmailListItem, EmailListItemContent } from '../../components/email/';
+import { EmailList, EmailListItem, EmailListItemContent, EmailLastLineUpdater } from '../../components/email/';
 
 export class EmailSectionContainer extends React.Component {
   constructor(props) {
@@ -11,7 +11,8 @@ export class EmailSectionContainer extends React.Component {
     this.state = {
       orderActiveIndex: -1,
       activeOrderPage: 0,
-      totalOrdersPerPage: 20
+      totalOrdersPerPage: 20,
+      lastLineText: 'Thanks again!',
     };
   }
 
@@ -40,6 +41,12 @@ export class EmailSectionContainer extends React.Component {
     this.setState({ 
       activeOrderPage: newPage,
       orderActiveIndex: -1
+    });
+  }
+
+  handleUpdateLastLine(text) {
+    this.setState({
+      lastLineText: text
     });
   }
 
@@ -76,6 +83,7 @@ export class EmailSectionContainer extends React.Component {
               orderId={current.orderId}
               products={current.orderProducts}
               customer={current.customer}
+              lastLineText={this.state.lastLineText}
               handleSendOrder={this.handleSendOrder.bind(this)}
               handleDeleteOrder={this.handleDeleteOrder.bind(this)} />
           );
@@ -85,6 +93,9 @@ export class EmailSectionContainer extends React.Component {
 
     return (
       <Grid.Column width="16">
+        <EmailLastLineUpdater
+          handleUpdateAll={this.handleUpdateLastLine.bind(this)}/>
+
         <Segment loading={this.props.emailOrders.isLoading} basic style={{ padding: 0 }}>
           <EmailList
             activePage={activeOrderPage}

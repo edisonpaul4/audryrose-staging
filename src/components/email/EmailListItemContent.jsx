@@ -31,7 +31,7 @@ export default class EmailListItemContent extends React.Component {
     }
   }
 
-  prepareMessageTemplate(customer, products, user) {
+  prepareMessageTemplate(customer, products, user, lastLineText) {
     const msgHeader = `Hi ${customer.firstName},\n\n`;
     const firstRule = products
       .filter(product => product.isActive && product.totalInventory !== 0)
@@ -56,15 +56,28 @@ export default class EmailListItemContent extends React.Component {
     if (thirdRule && thirdRule.length > 0)
       msgContent = msgContent + `\n\nYour ${thirdRule} will take approximately three weeks to ship, as they are being handmade for you!.`;
 
-    const msgFooter = '\n\nIf you need this order by a certain date, please let us know so we can do our best to accommodate you.\n\nPlease let me know if you have any question or concerns.\n\nThanks again!\n\n';
+      
+    const msgFooter = '\n\nIf you need this order by a certain date, please let us know so we can do our best to accommodate you.\n\nPlease let me know if you have any question or concerns.\n\n';
+      
+    const lastLine = lastLineText + '\n\n';
+
     const msgBrand = `${user.firstName} ${user.lastName}\nwww.loveaudryrose.com\n424.387.8000`;
-    return msgHeader + msgContent + msgFooter + msgBrand;
+    return msgHeader + msgContent + msgFooter + lastLine + msgBrand;
   }
 
   componentWillMount(){
+    const { customer, products, user, lastLineText } = this.props;
     this.setState({
-      emailMessage: this.prepareMessageTemplate(this.props.customer, this.props.products, this.props.user)
+      emailMessage: this.prepareMessageTemplate(customer, products, user, lastLineText)
     });
+  }
+
+  componentWillReceiveProps(newProps) {
+    const { customer, products, user, lastLineText } = newProps;
+    if (lastLineText !== this.props.lastLineText)
+      this.setState({
+        emailMessage: this.prepareMessageTemplate(customer, products, user, lastLineText)
+      });
   }
 
   render() {
@@ -144,5 +157,6 @@ EmailListItemContent.propTypes = {
     totalSpend: PropTypes.number.isRequired,
   }).isRequired,
   handleSendOrder: PropTypes.func.isRequired,
-  handleDeleteOrder: PropTypes.func.isRequired
+  handleDeleteOrder: PropTypes.func.isRequired,
+  lastLineText: PropTypes.string.isRequired,
 }
