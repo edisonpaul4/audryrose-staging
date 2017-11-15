@@ -16,8 +16,11 @@ export default class EmailListItemContent extends React.Component {
     if (product.awaitingInventoryExpectedDate && product.quantity_shipped === 0 && product.totalInventory === 0 && product.isActive) {
       const dayToReceive = parseInt(new moment(product.awaitingInventoryExpectedDate).format('DD'), 10);
       const today = parseInt(new moment().format('D'), 10);
-      const weeks = ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN'][Math.floor((dayToReceive - today) / 7)];
-      return weeks + ' ' + (weeks === 'ONE' ? 'WEEK' : 'WEEKS');
+      let weeks = ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN'][Math.floor((dayToReceive - today) / 7)];
+      if(typeof weeks === 'undefined')
+        return 'ONE WEEK';
+      else 
+        return weeks + ' ' + (weeks === 'ONE' ? 'WEEK' : 'WEEKS');
     } else {
       switch (true) {
         case product.isActive && (product.totalInventory !== 0 || product.quantity_shipped > 0):
