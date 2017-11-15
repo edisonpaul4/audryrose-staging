@@ -13,40 +13,40 @@ export default class EmailListItemContent extends React.Component {
   }
 
   defineWaitTime(product) {
-    if (product.awaitingInventoryExpectedDate) {
-      const dayToReceive = parseInt(new moment(product.awaitingInventoryExpectedDate.iso).format('DD'), 10);
+    if (product.awaitingInventoryExpectedDate && product.quantity_shipped === 0 && product.totalInventory === 0 && product.isActive) {
+      const dayToReceive = parseInt(new moment(product.awaitingInventoryExpectedDate).format('DD'), 10);
       const today = parseInt(new moment().format('D'), 10);
-      return (dayToReceive - today) > 0 ? `${dayToReceive - today} days` : 'UNSHIPPED';
+      const weeks = ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN'][Math.floor((dayToReceive - today) / 7)];
+      return weeks + ' ' + (weeks === 'ONE' ? 'WEEK' : 'WEEKS');
     } else {
       switch (true) {
-        case product.isActive && product.totalInventory !== 0:
+        case product.isActive && (product.totalInventory !== 0 || product.quantity_shipped > 0):
           return 'SHIPPED';
 
         case !product.isActive:
           return 'ONE WEEK';
 
-        case product.isActive && product.totalInventory === 0:
-          return 'THREE WEEK';
+        case product.isActive && product.totalInventory === 0 && product.quantity_shipped === 0:
+          return 'THREE WEEKS';
       }
     }
   }
 
-  prepareMessageTemplate(customer, products, user) {
-    const msgHeader = `Hi ${customer.firstName},\n\n`;
+  prepareMessageTemplate(customer, products, user, lastLineText) {
     const firstRule = products
-      .filter(product => product.isActive && product.totalInventory !== 0)
+      .filter(product => product.isActive && (product.totalInventory !== 0 || product.quantity_shipped > 0))
       .map(product => product.name)
       .join(', ');
-    const secondRule = products
-      .filter(product => !product.isActive)
-      .map(product => product.name)
-      .join(', ');
-    const thirdRule = products
-      .filter(product => product.isActive && product.totalInventory === 0)
-      .map(product => product.name)
-      .join(', ');
-    
+    const secondRule = products.filter(product => !product.isActive).map(product => product.name).join(', ')
+    const thirdRule = products.filter(product => product.isActive && product.totalInventory === 0 && product.quantity_shipped === 0)
+
+    const msgHeader = `Hi ${customer.firstName},\n\n`;
     let msgContent = `Thank you for your order!`;
+    const footerMessages = {
+      first: products.length === 1 ? 'this' : 'these',
+      second: products.length === 1 ? 'product' : 'pieces',
+    }
+
     if (firstRule && firstRule.length > 0) 
       msgContent = msgContent + ` Your ${firstRule} shipped today, hope you love it!`;
 
@@ -54,17 +54,29 @@ export default class EmailListItemContent extends React.Component {
       msgContent = msgContent + `\n\nYour ${secondRule} will take approximately one week to ship!.`;
 
     if (thirdRule && thirdRule.length > 0)
-      msgContent = msgContent + `\n\nYour ${thirdRule} will take approximately three weeks to ship, as they are being handmade for you!.`;
+      msgContent = msgContent + thirdRule.map(product => {
+        return `\n\nYour ${product.name} will take approximately ${this.defineWaitTime(product).toLowerCase()} to ship, as they are being handmade for you!.`
+      }).join('');
 
-    const msgFooter = '\n\nIf you need this order by a certain date, please let us know so we can do our best to accommodate you.\n\nPlease let me know if you have any question or concerns.\n\nThanks again!\n\n';
-    const msgBrand = `${user.firstName} ${user.lastName}\nwww.loveaudryrose.com\n424.387.8000`;
-    return msgHeader + msgContent + msgFooter + msgBrand;
+    const msgFooter = `\n\nIf you need ${footerMessages.first} ${footerMessages.second} by a certain date, please let us know so we can do our best to accommodate you.\n\nPlease let me know if you have any question or concerns.\n\n`;
+    const lastLine = lastLineText + '\n\n';
+    const msgBrand = `Tracy Inoue\nwww.loveaudryrose.com\n424.387.8000`;
+    return msgHeader + msgContent + msgFooter + lastLine + msgBrand;
   }
 
   componentWillMount(){
+    const { customer, products, user, lastLineText } = this.props;
     this.setState({
-      emailMessage: this.prepareMessageTemplate(this.props.customer, this.props.products, this.props.user)
+      emailMessage: this.prepareMessageTemplate(customer, products, user, lastLineText)
     });
+  }
+
+  componentWillReceiveProps(newProps) {
+    const { customer, products, user, lastLineText } = newProps;
+    if (lastLineText !== this.props.lastLineText)
+      this.setState({
+        emailMessage: this.prepareMessageTemplate(customer, products, user, lastLineText)
+      });
   }
 
   render() {
@@ -134,6 +146,15 @@ EmailListItemContent.propTypes = {
   products: PropTypes.arrayOf(PropTypes.shape({
     objectId: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
+    isActive: PropTypes.bool.isRequired,
+    totalInventory: PropTypes.number.isRequired,
+    quantity: PropTypes.number.isRequired,
+    quantity_shipped: PropTypes.number.isRequired,
+    awaitingInventoryExpectedDate: PropTypes.string,
+    product_options: PropTypes.arrayOf(PropTypes.shape({
+      display_name: PropTypes.string.isRequired,
+      display_value: PropTypes.string.isRequired,
+    }))
   })).isRequired,
   customer: PropTypes.shape({
     objectId: PropTypes.string.isRequired,
@@ -144,5 +165,6 @@ EmailListItemContent.propTypes = {
     totalSpend: PropTypes.number.isRequired,
   }).isRequired,
   handleSendOrder: PropTypes.func.isRequired,
-  handleDeleteOrder: PropTypes.func.isRequired
+  handleDeleteOrder: PropTypes.func.isRequired,
+  lastLineText: PropTypes.string.isRequired,
 }
