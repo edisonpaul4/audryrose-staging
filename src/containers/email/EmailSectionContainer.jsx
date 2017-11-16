@@ -30,12 +30,12 @@ export class EmailSectionContainer extends React.Component {
   }
 
   handleSendOrder(orderId, emailMsg) {
-    this.setState({ activeOrdersIndexes: -1 });
+    // this.setState({ activeOrdersIndexes: -1 });
     this.props.sendOrderEmail(orderId, emailMsg, this.props.token);
   }
 
   handleDeleteOrder(orderId) {
-    this.setState({ activeOrdersIndexes: -1 });
+    // this.setState({ activeOrdersIndexes: -1 });
     this.props.deleteOrderEmail(orderId, this.props.token);
   }
 
@@ -45,7 +45,7 @@ export class EmailSectionContainer extends React.Component {
       return;
     this.setState({ 
       activeOrderPage: newPage,
-      activeOrdersIndexes: -1
+      // activeOrdersIndexes: -1
     });
   }
 
