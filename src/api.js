@@ -449,10 +449,10 @@ const getOrdersToSendEmails = (token, offset) => axios.post('/functions/getOrder
   offset
 });
 
-const sendOrderEmail = (orderId, emailMsg, token) => axios.post('/functions/sendOrderEmail', {
+const sendOrderEmail = (orderId, emailParams, token) => axios.post('/functions/sendOrderEmail', {
   sessionToken: token,
-  emailMsg,
-  orderId
+  orderId,
+  emailParams
 });
 
 const deleteOrderEmail = (orderId, token) => axios.post('/functions/deleteOrderEmail', {

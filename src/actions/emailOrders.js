@@ -8,11 +8,11 @@ export function getOrdersToSendEmails(offset, token) {
   }
 }
 
-export function sendOrderEmail(orderId, emailMsg, token) {
+export function sendOrderEmail(objectId, emailParams, token) {
   console.log('action sendOrderEmail');
   return {
     types: ['SEND_ORDER_EMAIL_REQUEST', 'SEND_ORDER_EMAIL_SUCCESS', 'SEND_ORDER_EMAIL_FAILURE'],
-    promise: api.sendOrderEmail(orderId, emailMsg, token).then(r => r.data.result)
+    promise: api.sendOrderEmail(objectId, emailParams, token).then(r => r.data.result)
   }
 }
 
