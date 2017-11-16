@@ -29,13 +29,11 @@ export class EmailSectionContainer extends React.Component {
       });
   }
 
-  handleSendOrder(orderId, emailMsg) {
-    // this.setState({ activeOrdersIndexes: -1 });
-    this.props.sendOrderEmail(orderId, emailMsg, this.props.token);
+  handleSendOrder(objectId, emailParams) {
+    this.props.sendOrderEmail(objectId, emailParams, this.props.token);
   }
 
   handleDeleteOrder(orderId) {
-    // this.setState({ activeOrdersIndexes: -1 });
     this.props.deleteOrderEmail(orderId, this.props.token);
   }
 
@@ -43,16 +41,11 @@ export class EmailSectionContainer extends React.Component {
     if (newPage < 0 
       || newPage >= (this.props.emailOrders.orders.length / this.state.totalOrdersPerPage))
       return;
-    this.setState({ 
-      activeOrderPage: newPage,
-      // activeOrdersIndexes: -1
-    });
+    this.setState({ activeOrderPage: newPage });
   }
 
   handleUpdateLastLine(text) {
-    this.setState({
-      lastLineText: text
-    });
+    this.setState({ lastLineText: text });
   }
 
   componentWillMount() {
