@@ -76,10 +76,9 @@ export default class EmailListItemContent extends React.Component {
 
   componentWillReceiveProps(newProps) {
     const { customer, products, user, lastLineText } = newProps;
-    if (lastLineText !== this.props.lastLineText)
-      this.setState({
-        emailMessage: this.prepareMessageTemplate(customer, products, user, lastLineText)
-      });
+    this.setState({
+      emailMessage: this.prepareMessageTemplate(customer, products, user, lastLineText)
+    });
   }
 
   render() {
