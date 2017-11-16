@@ -47,7 +47,7 @@ export default class EmailListItemContent extends React.Component {
     let msgContent = `Thank you for your order!`;
     const footerMessages = {
       first: products.length === 1 ? 'this' : 'these',
-      second: products.length === 1 ? 'product' : 'pieces',
+      second: products.length === 1 ? products[0].classificationName.toLowerCase() : 'pieces',
     }
 
     if (firstRule && firstRule.length > 0) 

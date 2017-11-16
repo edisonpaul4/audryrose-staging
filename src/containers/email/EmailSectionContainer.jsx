@@ -9,28 +9,33 @@ export class EmailSectionContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      orderActiveIndex: -1,
+      activeOrdersIndexes: [...Array(20)].map((u,i) => i),
       activeOrderPage: 0,
       totalOrdersPerPage: 20,
       lastLineText: 'Thanks again!',
     };
   }
 
-  handleClickOnOrder(index) {
-    this.setState({
-      orderActiveIndex: this.state.orderActiveIndex === index ? -1 : index
-    });
+  handleClickOnOrder(orderIndex) {
+    const { activeOrdersIndexes } = this.state;
+    const index = activeOrdersIndexes.indexOf(orderIndex);
+    if (index === -1)
+      this.setState({
+        activeOrdersIndexes: [...activeOrdersIndexes, orderIndex]
+      });
+    else
+      this.setState({
+        activeOrdersIndexes: [...activeOrdersIndexes.slice(0, index), ...activeOrdersIndexes.slice(index + 1)]
+      });
   }
 
   handleSendOrder(orderId, emailMsg) {
-    console.log('EmailSectionContainer::handleSendOrder');
-    this.setState({ orderActiveIndex: -1 });
+    this.setState({ activeOrdersIndexes: -1 });
     this.props.sendOrderEmail(orderId, emailMsg, this.props.token);
   }
 
   handleDeleteOrder(orderId) {
-    console.log('EmailSectionContainer::handleDeleteOrder');
-    this.setState({ orderActiveIndex: -1 });
+    this.setState({ activeOrdersIndexes: -1 });
     this.props.deleteOrderEmail(orderId, this.props.token);
   }
 
@@ -40,7 +45,7 @@ export class EmailSectionContainer extends React.Component {
       return;
     this.setState({ 
       activeOrderPage: newPage,
-      orderActiveIndex: -1
+      activeOrdersIndexes: -1
     });
   }
 
@@ -55,7 +60,7 @@ export class EmailSectionContainer extends React.Component {
   }
 
   render() {
-    const { orderActiveIndex, activeOrderPage, totalOrdersPerPage } = this.state;
+    const { activeOrdersIndexes, activeOrderPage, totalOrdersPerPage } = this.state;
 
     const emailListContent = this.props.emailOrders.orders
       .slice(activeOrderPage * totalOrdersPerPage, (activeOrderPage * totalOrdersPerPage) + totalOrdersPerPage)
@@ -65,7 +70,7 @@ export class EmailSectionContainer extends React.Component {
         temp.push(
           <EmailListItem
             key={'ELI' + index}
-            active={orderActiveIndex === index}
+            active={activeOrdersIndexes.indexOf(index) !== -1}
             customerId={current.customer.customerId}
             name={`${current.customer.firstName} ${current.customer.lastName}`}
             orderNumber={current.orderId}
@@ -74,12 +79,12 @@ export class EmailSectionContainer extends React.Component {
             lifetimeOrders={current.customer.totalOrders} />
         );
 
-        if(orderActiveIndex === index)
+        if(activeOrdersIndexes.indexOf(index) !== -1)
           temp.push(
             <EmailListItemContent
               key={'ELIC' + index}
               user={this.props.user}
-              active={orderActiveIndex === current}
+              active={activeOrdersIndexes === current}
               orderId={current.orderId}
               products={current.orderProducts}
               customer={current.customer}
