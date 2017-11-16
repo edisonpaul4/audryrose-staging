@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Table, Segment, Input, Form, TextArea, Divider, Button } from "semantic-ui-react";
+import { Table, Segment, Form, Divider, Button } from "semantic-ui-react";
 import * as moment from 'moment';
 
 export default class EmailListItemContent extends React.Component {
@@ -8,7 +8,7 @@ export default class EmailListItemContent extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      emailSubject: `Audry Rose Order {ID}`,
+      emailSubject: this.props.emailSubject,
       emailMessage: '',
       segmentLoading: false,
     };
@@ -37,7 +37,7 @@ export default class EmailListItemContent extends React.Component {
     }
   }
 
-  prepareMessageTemplate(customer, products, user, lastLineText) {
+  prepareMessageTemplate(customer, products, user, emailLastLine) {
     const firstRule = products
       .filter(product => product.isActive && (product.totalInventory !== 0 || product.quantity_shipped > 0))
       .map(product => product.name)
@@ -64,7 +64,7 @@ export default class EmailListItemContent extends React.Component {
       }).join('');
 
     const msgFooter = `\n\nIf you need ${footerMessages.first} ${footerMessages.second} by a certain date, please let us know so we can do our best to accommodate you.\n\nPlease let me know if you have any question or concerns.\n\n`;
-    const lastLine = lastLineText + '\n\n';
+    const lastLine = emailLastLine + '\n\n';
     const msgBrand = `Tracy Inoue\nwww.loveaudryrose.com\n424.387.8000`;
     return msgHeader + msgContent + msgFooter + lastLine + msgBrand;
   }
@@ -86,17 +86,23 @@ export default class EmailListItemContent extends React.Component {
   }
 
   componentWillMount(){
-    const { customer, products, user, lastLineText } = this.props;
+    const { customer, products, user, emailLastLine } = this.props;
     this.setState({
-      emailMessage: this.prepareMessageTemplate(customer, products, user, lastLineText)
+      emailMessage: this.prepareMessageTemplate(customer, products, user, emailLastLine)
     });
   }
 
   componentWillReceiveProps(newProps) {
-    const { customer, products, user, lastLineText } = newProps;
-    this.setState({
-      emailMessage: this.prepareMessageTemplate(customer, products, user, lastLineText)
-    });
+    const { customer, products, user, emailLastLine, emailSubject } = newProps;
+
+    if(emailSubject !== this.props.emailSubject)
+      this.setState({ emailSubject: emailSubject });
+    
+    if(this.state.segmentLoading || emailLastLine !== this.props.emailLastLine)
+      this.setState({
+        segmentLoading: false,
+        emailMessage: this.prepareMessageTemplate(customer, products, user, emailLastLine)
+      });
   }
 
   render() {
@@ -197,5 +203,6 @@ EmailListItemContent.propTypes = {
   }).isRequired,
   handleSendOrder: PropTypes.func.isRequired,
   handleDeleteOrder: PropTypes.func.isRequired,
-  lastLineText: PropTypes.string.isRequired,
+  emailLastLine: PropTypes.string.isRequired,
+  emailSubject: PropTypes.string.isRequired,
 }
