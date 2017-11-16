@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Grid, Segment } from 'semantic-ui-react';
 
 import { getOrdersToSendEmails, sendOrderEmail, deleteOrderEmail } from '../../actions/emailOrders';
-import { EmailList, EmailListItem, EmailListItemContent, EmailLastLineUpdater } from '../../components/email/';
+import { EmailList, EmailListItem, EmailListItemContent, EmailsFieldUpdater } from '../../components/email/';
 
 export class EmailSectionContainer extends React.Component {
   constructor(props) {
@@ -12,7 +12,8 @@ export class EmailSectionContainer extends React.Component {
       activeOrdersIndexes: [...Array(20)].map((u,i) => i),
       activeOrderPage: 0,
       totalOrdersPerPage: 20,
-      lastLineText: 'Thanks again!',
+      emailsLastLine: 'Thanks again!',
+      emailsSubject: 'Audry Rose Order {ID}'
     };
   }
 
@@ -29,13 +30,11 @@ export class EmailSectionContainer extends React.Component {
       });
   }
 
-  handleSendOrder(orderId, emailMsg) {
-    // this.setState({ activeOrdersIndexes: -1 });
-    this.props.sendOrderEmail(orderId, emailMsg, this.props.token);
+  handleSendOrder(objectId, emailParams) {
+    this.props.sendOrderEmail(objectId, emailParams, this.props.token);
   }
 
   handleDeleteOrder(orderId) {
-    // this.setState({ activeOrdersIndexes: -1 });
     this.props.deleteOrderEmail(orderId, this.props.token);
   }
 
@@ -43,16 +42,15 @@ export class EmailSectionContainer extends React.Component {
     if (newPage < 0 
       || newPage >= (this.props.emailOrders.orders.length / this.state.totalOrdersPerPage))
       return;
-    this.setState({ 
-      activeOrderPage: newPage,
-      // activeOrdersIndexes: -1
-    });
+    this.setState({ activeOrderPage: newPage });
   }
 
   handleUpdateLastLine(text) {
-    this.setState({
-      lastLineText: text
-    });
+    this.setState({ emailsLastLine: text });
+  }
+
+  handleUpdateSubject(text) {
+    this.setState({ emailsSubject: text });
   }
 
   componentWillMount() {
@@ -60,7 +58,7 @@ export class EmailSectionContainer extends React.Component {
   }
 
   render() {
-    const { activeOrdersIndexes, activeOrderPage, totalOrdersPerPage } = this.state;
+    const { activeOrdersIndexes, activeOrderPage, totalOrdersPerPage, emailsLastLine, emailsSubject } = this.state;
 
     const emailListContent = this.props.emailOrders.orders
       .slice(activeOrderPage * totalOrdersPerPage, (activeOrderPage * totalOrdersPerPage) + totalOrdersPerPage)
@@ -88,7 +86,8 @@ export class EmailSectionContainer extends React.Component {
               orderId={current.orderId}
               products={current.orderProducts}
               customer={current.customer}
-              lastLineText={this.state.lastLineText}
+              emailLastLine={emailsLastLine}
+              emailSubject={emailsSubject}
               handleSendOrder={this.handleSendOrder.bind(this)}
               handleDeleteOrder={this.handleDeleteOrder.bind(this)} />
           );
@@ -98,8 +97,19 @@ export class EmailSectionContainer extends React.Component {
 
     return (
       <Grid.Column width="16">
-        <EmailLastLineUpdater
-          handleUpdateAll={this.handleUpdateLastLine.bind(this)}/>
+        <EmailsFieldUpdater
+          button="Update emails' Last line"
+          header="Update all emails"
+          label="Emails' Last line"
+          value={emailsLastLine}
+          handleUpdateAll={this.handleUpdateLastLine.bind(this)} />
+
+        <EmailsFieldUpdater
+          button="Update email's subject"
+          header="Update all emails"
+          label="Write {ID} where the order's id should be placed"
+          value={emailsSubject}
+          handleUpdateAll={this.handleUpdateSubject.bind(this)} />
 
         <Segment loading={this.props.emailOrders.isLoading} basic style={{ padding: 0 }}>
           <EmailList

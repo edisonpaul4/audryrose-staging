@@ -1,13 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button, Modal, Form} from 'semantic-ui-react';
+import { Button, Modal, Form } from 'semantic-ui-react';
 
-export default class EmailLastLineUpdater extends React.Component {
+export default class EmailsFieldUpdater extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       modalOpen: false,
-      formText: '',
+      fieldValue: this.props.value ? this.props.value : '',
     }
   }
 
@@ -19,20 +19,23 @@ export default class EmailLastLineUpdater extends React.Component {
   }
   
   render() {
+    const { fieldValue, modalOpen } = this.state;
+    const { button, header, label } = this.props;
+
     return (
       <Button onClick={() => this.setState({ modalOpen: true })}>
-        Update emails' Last Line
+        {button}
 
-        <Modal dimmer={true} size="tiny" open={this.state.modalOpen} onClose={() => this.setState({ modalOpen: false })}>
+        <Modal dimmer={true} size="tiny" open={modalOpen} onClose={() => this.setState({ modalOpen: false })}>
           <Modal.Header
-            content="Emails' last line" />
+            content={header} />
 
           <Modal.Content>
             <Form>
               <Form.TextArea
-                label="Emails' last line text"
-                value={this.state.formText}
-                onInput={e => this.setState({ formText: e.target.value })} />
+                label={label}
+                value={fieldValue}
+                onInput={e => this.setState({ fieldValue: e.target.value })} />
             </Form>
           </Modal.Content>
 
@@ -45,7 +48,7 @@ export default class EmailLastLineUpdater extends React.Component {
             <Button 
               positive 
               content='Update all' 
-              onClick={this.onUpdateAll.bind(this, this.state.formText)} />
+              onClick={this.onUpdateAll.bind(this, this.state.fieldValue)} />
           </Modal.Actions>
         </Modal>
       </Button>
@@ -53,6 +56,10 @@ export default class EmailLastLineUpdater extends React.Component {
   }
 };
 
-EmailLastLineUpdater.propTypes = {
+EmailsFieldUpdater.propTypes = {
+  button: PropTypes.string.isRequired,
+  header: PropTypes.string.isRequired,
+  label: PropTypes.string,
+  value: PropTypes.string,
   handleUpdateAll: PropTypes.func.isRequired,
 }

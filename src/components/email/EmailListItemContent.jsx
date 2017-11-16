@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Table, Segment, Input, Form, TextArea, Divider, Button } from "semantic-ui-react";
+import { Table, Segment, Form, Divider, Button } from "semantic-ui-react";
 import * as moment from 'moment';
 
 export default class EmailListItemContent extends React.Component {
@@ -8,7 +8,9 @@ export default class EmailListItemContent extends React.Component {
   constructor(props){
     super(props);
     this.state = {
+      emailSubject: this.props.emailSubject,
       emailMessage: '',
+      segmentLoading: false,
     };
   }
 
@@ -35,7 +37,7 @@ export default class EmailListItemContent extends React.Component {
     }
   }
 
-  prepareMessageTemplate(customer, products, user, lastLineText) {
+  prepareMessageTemplate(customer, products, user, emailLastLine) {
     const firstRule = products
       .filter(product => product.isActive && (product.totalInventory !== 0 || product.quantity_shipped > 0))
       .map(product => product.name)
@@ -62,31 +64,53 @@ export default class EmailListItemContent extends React.Component {
       }).join('');
 
     const msgFooter = `\n\nIf you need ${footerMessages.first} ${footerMessages.second} by a certain date, please let us know so we can do our best to accommodate you.\n\nPlease let me know if you have any question or concerns.\n\n`;
-    const lastLine = lastLineText + '\n\n';
+    const lastLine = emailLastLine + '\n\n';
     const msgBrand = `Tracy Inoue\nwww.loveaudryrose.com\n424.387.8000`;
     return msgHeader + msgContent + msgFooter + lastLine + msgBrand;
   }
 
+  onDelete() {
+    const { orderId } = this.props;
+    this.setState({ segmentLoading: true });
+    this.props.handleDeleteOrder(orderId);
+  }
+
+  onSend() {
+    const { orderId, handleSendOrder } = this.props;
+    const { emailMessage, emailSubject } = this.state;
+    this.setState({ segmentLoading: true })
+    handleSendOrder(orderId, {
+      emailMessage,
+      emailSubject: emailSubject.replace('{ID}', `#${orderId}`)
+    });
+  }
+
   componentWillMount(){
-    const { customer, products, user, lastLineText } = this.props;
+    const { customer, products, user, emailLastLine } = this.props;
     this.setState({
-      emailMessage: this.prepareMessageTemplate(customer, products, user, lastLineText)
+      emailMessage: this.prepareMessageTemplate(customer, products, user, emailLastLine)
     });
   }
 
   componentWillReceiveProps(newProps) {
-    const { customer, products, user, lastLineText } = newProps;
-    this.setState({
-      emailMessage: this.prepareMessageTemplate(customer, products, user, lastLineText)
-    });
+    const { customer, products, user, emailLastLine, emailSubject } = newProps;
+
+    if(emailSubject !== this.props.emailSubject)
+      this.setState({ emailSubject: emailSubject });
+    
+    if(this.state.segmentLoading || emailLastLine !== this.props.emailLastLine)
+      this.setState({
+        segmentLoading: false,
+        emailMessage: this.prepareMessageTemplate(customer, products, user, emailLastLine)
+      });
   }
 
   render() {
-    const { emailMessage } = this.state;
+    const { emailMessage, emailSubject, segmentLoading } = this.state;
     const { products, customer } = this.props;
     return (
       <Table.Row colSpan="12" as="td">
-        <Segment loading={false} secondary={true}>
+        <Segment loading={segmentLoading} secondary={true}>
           <Table width={16} basic="very">
             <Table.Header>
               <Table.HeaderCell width={4}>Product</Table.HeaderCell>
@@ -113,11 +137,22 @@ export default class EmailListItemContent extends React.Component {
               ))}
 
               <Table.Row colSpan="12" as="td" style={{ paddingLeft: '0em' }}>
+                <Divider style={{ marginTop: 0 }}/>
                 <Form>
-                  <TextArea
-                    autoHeight={true}
-                    onChange={e => this.setState({ emailMessage: e.target.value })}
-                    value={emailMessage} />
+                  <Form.Group>
+                    <Form.Input
+                      label="Subject (write {ID} where the order's id should be placed)"
+                      value={emailSubject}
+                      onInput={e => this.setState({ emailSubject: e.target.value })} />
+                  </Form.Group>
+
+                  <Form.Group widths='equal'>
+                    <Form.TextArea
+                      label="Message"
+                      autoHeight={true}
+                      onChange={e => this.setState({ emailMessage: e.target.value })}
+                      value={emailMessage} />
+                  </Form.Group>
                 </Form>
               </Table.Row>
 
@@ -128,11 +163,11 @@ export default class EmailListItemContent extends React.Component {
                   <Button 
                     color="red" 
                     content="Delete"
-                    onClick={e => this.props.handleDeleteOrder(this.props.orderId)} />
+                    onClick={this.onDelete.bind(this)} />
                   <Button 
                     color="green" 
                     content="Send"
-                    onClick={e => this.props.handleSendOrder(this.props.orderId, this.state.emailMessage)} />
+                    onClick={this.onSend.bind(this)} />
                 </Table.Cell>
               </Table.Row>
             </Table.Body>
@@ -168,5 +203,6 @@ EmailListItemContent.propTypes = {
   }).isRequired,
   handleSendOrder: PropTypes.func.isRequired,
   handleDeleteOrder: PropTypes.func.isRequired,
-  lastLineText: PropTypes.string.isRequired,
+  emailLastLine: PropTypes.string.isRequired,
+  emailSubject: PropTypes.string.isRequired,
 }
