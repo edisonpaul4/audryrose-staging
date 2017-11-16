@@ -42,25 +42,41 @@ export default class EmailListItemContent extends React.Component {
       .filter(product => product.isActive && (product.totalInventory !== 0 || product.quantity_shipped > 0))
       .map(product => product.name)
       .join(', ');
-    const secondRule = products.filter(product => !product.isActive).map(product => product.name).join(', ')
-    const thirdRule = products.filter(product => product.isActive && product.totalInventory === 0 && product.quantity_shipped === 0)
+
+    const secondRule = products
+      .filter(product => !product.isActive)
+      .map(product => product.name)
+      .join(', ');
+
+    const thirdRule = products
+      .filter(product => product.isActive && product.totalInventory === 0 && product.quantity_shipped === 0);
 
     const msgHeader = `Hi ${customer.firstName},\n\n`;
     let msgContent = `Thank you for your order!`;
+
+    const getClassificationName = product => {
+      if (product.classificationName !== 'Earrings')
+        return product.classificationName.toLowerCase().slice(0, -1);
+      else
+        return product.classificationName.toLowerCase();
+    }
+
     const footerMessages = {
       first: products.length === 1 ? 'this' : 'these',
-      second: products.length === 1 ? products[0].classificationName.toLowerCase() : 'pieces',
+      second: products.length === 1 ? getClassificationName(products[0]) : 'pieces',
     }
 
     if (firstRule && firstRule.length > 0) 
       msgContent = msgContent + ` Your ${firstRule} shipped today, hope you love it!`;
 
     if (secondRule && secondRule.length > 0)
-      msgContent = msgContent + `\n\nYour ${secondRule} will take approximately one week to ship!.`;
+      msgContent = msgContent + `\n\nYour ${secondRule} will take approximately one week to ship!`;
 
-    if (thirdRule && thirdRule.length > 0)
+    if (thirdRule && thirdRule.length > 0) 
       msgContent = msgContent + thirdRule.map(product => {
-        return `\n\nYour ${product.name} will take approximately ${this.defineWaitTime(product).toLowerCase()} to ship, as they are being handmade for you!.`
+        const isEarrings = product.classificationName === 'Earrings';
+        const handmadeMessage = `as ${isEarrings ? 'they are': 'it is'} being handmade for you!`
+        return `\n\nYour ${product.name} will take approximately ${this.defineWaitTime(product).toLowerCase()} to ship, ${handmadeMessage}`;
       }).join('');
 
     const msgFooter = `\n\nIf you need ${footerMessages.first} ${footerMessages.second} by a certain date, please let us know so we can do our best to accommodate you.\n\nPlease let me know if you have any question or concerns.\n\n`;
