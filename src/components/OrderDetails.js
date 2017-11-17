@@ -56,23 +56,25 @@ class ProductRow extends Component {
   	const daysLeft = vendorOrder.dateOrdered ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
   	let labelColor = 'yellow';
   	let labelIcon;
-  	if (vendorOrderVariant.done === true) {
+		if (vendorOrderVariant.done === true && !vendorOrderVariant.deleted) {
   		labelColor = 'olive';
   		labelIcon = <Icon name='checkmark' />;
-  	} else if (vendorOrderVariant.ordered && daysLeft < 0) {
+  	} else if (vendorOrderVariant.ordered && daysLeft < 0 || vendorOrderVariant.deleted) {
   		labelColor = 'red';
-  	} else if (vendorOrderVariant.ordered) {
+		} else if (vendorOrderVariant.ordered) {
   		labelColor = 'olive';
   	}
   	let labelText = vendorOrderVariant.ordered ? vendorOrderVariant.units + ' Sent' : vendorOrderVariant.units + ' Pending';
 
-  	if (vendorOrderVariant.done === true) {
+		if (vendorOrderVariant.done === true && !vendorOrderVariant.deleted) {
   		labelText = vendorOrderVariant.received + ' Received';
-  	}// else if (vendorOrderVariant.ordered && vendorOrderVariant.received > 0) {
+		} else if (vendorOrderVariant.deleted) {
+			labelText = vendorOrderVariant.received + ' Received before being deleted';
+		}// else if (vendorOrderVariant.ordered && vendorOrderVariant.received > 0) {
   	// 	labelText += ', ' + vendorOrderVariant.received + ' Received';
   	// }
   	labelText += ' #' + vendorOrder.vendorOrderNumber;
-  	const labelDetailText = vendorOrder.dateOrdered ? daysLeft < 0 ? moment(vendorOrder.dateOrdered.iso).format('M-D-YY') + ' (' + Math.abs(daysLeft) + ' days late)' : moment(vendorOrder.dateOrdered.iso).format('M-D-YY') + ' (' + daysLeft + ' days left)' : averageWaitTime + ' days wait';
+		const labelDetailText = vendorOrder.dateOrdered && !vendorOrderVariant.deleted ? daysLeft < 0 ? moment(vendorOrder.dateOrdered.iso).format('M-D-YY') + ' (' + Math.abs(daysLeft) + ' days late)' : moment(vendorOrder.dateOrdered.iso).format('M-D-YY') + ' (' + daysLeft + ' days left)' : (!vendorOrderVariant.deleted ? averageWaitTime + ' days wait' : '');
   	const labelDetail = vendorOrderVariant.done === false ? <Label.Detail>{labelDetailText}</Label.Detail> : null;
   	const labelLink = vendorOrderVariant.done === false ? variant.designer ? '/designers/search?q=' + variant.designer.designerId : '/designers' : null;
   	let showLabel = true;

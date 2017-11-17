@@ -323,6 +323,8 @@ class VendorOrder extends Component {
 		let totalReceived = 0;
 		if (order && order.vendorOrderVariants && order.vendorOrderVariants.length > 0) {
 			order.vendorOrderVariants.map(function(vendorOrderVariant, i) {
+        if(vendorOrderVariant.deleted)
+          return null;
   			totalReceived += vendorOrderVariant.received;
 				orderProductRows.push(
           <ProductRow 
