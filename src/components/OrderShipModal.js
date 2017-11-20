@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
-import { Modal, Button, List, Segment, Icon, Header, Form } from 'semantic-ui-react';
+import { Modal, Button, List, Segment, Icon, Header, Form, Divider } from 'semantic-ui-react';
 import moment from 'moment';
+import axios from 'axios';
+
+import { OrderShipmentRates } from '../containers/orders/';
 
 const SHIPPING_PARCELS = [
   { value: 'USPS_SmallFlatRateBox', text: 'Small Flat Rate Box', length: '8.69', width: '5.44', height: '1.75', weight: '3'},
@@ -220,7 +223,7 @@ class OrderShipModal extends Component {
     return formComplete;
   }
 
-
+  
   
 	render() {
 		const scope = this;
@@ -389,9 +392,16 @@ class OrderShipModal extends Component {
                 {weightInput}
               </Form.Group>
             </Form>
-          </Modal.Description>
+        </Modal.Description>
         </Modal.Content>
         <Modal.Actions>
+          <OrderShipmentRates
+            orderId={this.props.orderId}
+            length={this.state.length}
+            width={this.state.width}
+            height={this.state.height}
+            weight={this.state.weight} />
+
           <Button basic disabled={this.props.isLoading} color='grey' content='Close' onClick={this.handleClose} />
           {shipButton}
         </Modal.Actions>
