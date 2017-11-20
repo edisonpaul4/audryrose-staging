@@ -90,3 +90,10 @@ export function updateOrderNotes(token, orderId, orderNotes) {
     promise: api.updateOrderNotes(token, orderId, orderNotes).then(r => r.data.result)
   }
 }
+
+export function getRatesForShipment(parcelParams, orderId, token) {
+  return {
+    types: ['SHIPMENTRATES::GET_RATES_REQUEST', 'SHIPMENTRATES::GET_RATES_SUCCESS', 'SHIPMENTRATES::GET_RATES_FAILURE'],
+    promise: api.getRatesForShipment(parcelParams, orderId, token).then(r => r.data.result)
+  }
+}
