@@ -557,6 +557,7 @@ class OrderDetails extends Component {
               </Table>
             </Segment>
             <OrderShipModal
+							orderId={this.props.data.orderId}
               open={this.state.shipModalOpen}
               handleShipModalClose={this.handleShipModalClose}
               handleCreateShipments={this.handleCreateShipments}

@@ -460,6 +460,12 @@ const deleteOrderEmail = (orderId, token) => axios.post('/functions/deleteOrderE
   orderId
 });
 
+const getRatesForShipment = (parcelParams, orderId, token) => axios.post('/functions/getRatesForOrderShipment', {
+  sessionToken: token,
+  parcelParams,
+  orderId
+});
+
 export default {
   signup,
   login,
@@ -504,5 +510,6 @@ export default {
   updateOrderNotes,
   getOrdersToSendEmails,
   sendOrderEmail,
-  deleteOrderEmail
+  deleteOrderEmail,
+  getRatesForShipment
 }
