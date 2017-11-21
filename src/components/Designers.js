@@ -371,7 +371,9 @@ class Designers extends Component {
   			let isSaving = scope.state.isSavingDesigners.indexOf(designer.objectId) >= 0 ? true : false;
 				let expanded = (scope.state.expanded.indexOf(designer.objectId) >= 0 || scope.state.search/*  || scope.state.subpage === 'pending' || scope.state.subpage === 'sent' */) ? true : false;
 				
-				let orderHasNotes = !designer.vendorOrders.filter(vo => vo.status.toLowerCase() === subpage || subpage === 'all').every(vo => vo.order.vendorOrderVariants.every(vov => vov.notes.length < 5))
+				let orderHasNotes = !designer.vendorOrders
+					.filter(vo => vo.status.toLowerCase() === subpage || subpage === 'all')
+					.every(vo => vo.order.vendorOrderVariants.every(vov => vov.notes.length < 5))
 					
         const designerData = {
           abbreviation: designer.abbreviation,
@@ -461,7 +463,10 @@ class Designers extends Component {
 					<Table.Footer fullWidth>
 						<Table.Row>
 							<Table.HeaderCell colSpan='11'>
-					      <Pagination page={this.state.page} onPaginationClick={this.handlePaginationClick} totalPages={totalPages} />
+					      <Pagination 
+									page={this.state.page} 
+									onPaginationClick={this.handlePaginationClick} 
+									totalPages={totalPages} />
 							</Table.HeaderCell>
 						</Table.Row>
 					</Table.Footer>
