@@ -94,8 +94,8 @@ const VendorOrderList = props => {
 
 VendorOrderList.propTypes = {
   sort: PropTypes.shape({
-    key: PropTypes.string.isRequired,
-    direction: PropTypes.string.isRequired
+    key: PropTypes.string,
+    direction: PropTypes.string
   }),
   activePage: PropTypes.number.isRequired,
   totalPages: PropTypes.number.isRequired,

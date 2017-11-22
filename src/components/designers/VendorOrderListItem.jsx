@@ -1,19 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Table, Icon, Dropdown } from 'semantic-ui-react';
+import moment from 'moment';
 
 const VendorOrderListItem = props => (
   <Table.Row>
-    <Table.Cell content={props.dateAdded} />
+    <Table.Cell content={moment(props.dateAdded.iso).format("MM/DD/YYYY")} />
 
     <Table.Cell content={props.designerName} />
 
     <Table.Cell content={props.productName} />
 
-    <Table.Cell content={`$${props.retailPrice.toFixed(2)}`} />
+    <Table.Cell content={props.retailPrice ? `$${props.retailPrice}` : null} />
     
-    <Table.Cell content={props.productOptions.map(({ displayName, displayValue }) => (
-      <div>{`${displayName}: ${displayValue}`}</div>
+    <Table.Cell content={props.productOptions.map(({ displayName, displayValue }, i) => (
+      <div key={i}>{`${displayName}: ${displayValue}`}</div>
     ))} />
 
     <Table.Cell content={props.totalInventory} />
@@ -29,19 +30,22 @@ const VendorOrderListItem = props => (
 );
 
 VendorOrderListItem.propTypes = {
-  dateAdded: PropTypes.number.isRequired,
-  designerName: PropTypes.string.isRequired,
-  productName: PropTypes.string.isRequired,
-  retailPrice: PropTypes.number.isRequired,
+  dateAdded: PropTypes.shape({
+    __type: PropTypes.string,
+    iso: PropTypes.string
+  }),
+  designerName: PropTypes.string,
+  productName: PropTypes.string,
+  retailPrice: PropTypes.number,
   productOptions: PropTypes.arrayOf(PropTypes.shape({
-    displayName: PropTypes.string.isRequired,
-    displayValue: PropTypes.string.isRequired,
+    displayName: PropTypes.string,
+    displayValue: PropTypes.string,
   })),
-  totalInventory: PropTypes.number.isRequired,
-  totalAwaiting: PropTypes.number.isRequired,
-  unitsToOrder: PropTypes.number.isRequired,
-  note: PropTypes.string.isRequired,
-  internalNote: PropTypes.string.isRequired,
+  totalInventory: PropTypes.number,
+  totalAwaiting: PropTypes.number,
+  unitsToOrder: PropTypes.number,
+  note: PropTypes.string,
+  internalNote: PropTypes.string,
 };
 
 export default VendorOrderListItem;

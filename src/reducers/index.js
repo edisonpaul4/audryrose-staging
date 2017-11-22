@@ -10,6 +10,7 @@ import shipments from './shipments';
 import webhooks from './webhooks';
 import emailOrders from './emailOrders';
 import shipmentRates from './shipmentRates';
+import vendorOrders from './vendorOrders';
 import error from './error';
 
 const rootReducer = combineReducers({
@@ -22,6 +23,7 @@ const rootReducer = combineReducers({
 	webhooks,
 	emailOrders,
 	shipmentRates,
+	vendorOrders,
   error,
   routing: routerReducer
 });

@@ -3,11 +3,23 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Grid, Segment } from 'semantic-ui-react';
 
+import { getAllPendingVendorOrders } from '../../actions/designers';
 import { VendorOrdersList, VendorOrderListItem } from '../../components/designers/';
 
 class VendorOrdersContainer extends React.Component {
   constructor(props) { 
     super(props);
+    this.state = {
+      activeOrderPage: 0,
+      totalOrdersPerPage: 20,
+    }
+  }
+
+  handlePageChange(newPage) {
+    if (newPage < 0
+      || newPage >= (this.props.vendorOrders.length / this.state.totalOrdersPerPage))
+      return;
+    this.setState({ activeOrderPage: newPage });
   }
 
   changeSortValue(sortBy) {
@@ -29,75 +41,43 @@ class VendorOrdersContainer extends React.Component {
     });
   }
 
+  componentWillMount() {
+    this.props.getAllPendingVendorOrders();
+  }
+
   render() {
+    const { activeOrderPage, totalOrdersPerPage } = this.state;
+    const { vendorOrders, requestingVendorOrders, location } = this.props;
     return (
       <Grid.Column width="16">
-        <Segment loading={false} basic style={{ padding: 0 }}>
+        <Segment loading={requestingVendorOrders} basic style={{ padding: 0 }}>
           <VendorOrdersList
             sort={{
-              key: this.props.location.query.sort_by,
-              direction: this.props.location.query.sort_direction
+              key: location.query.sort_by,
+              direction: location.query.sort_direction
             }}
+            handleOnPageChange={this.handlePageChange.bind(this)}
             handleOnSortChange={this.changeSortValue.bind(this)}
-            activePage={0}  
-            totalPages={5}>
-            <VendorOrderListItem
-              dateAdded={1514088000000}
-              designerName={"AILI JEWELRY"}
-              productName={"Postcard Sun Necklace 388NYS"}
-              retailPrice={420.00}
-              productOptions={[
-                {
-                  displayName: "COLOR",
-                  displayValue: "Yellow Gold"
-                }, {
-                  displayName: "COLOR",
-                  displayValue: "Rose Gold"
-                }
-              ]}
-              totalInventory={5}
-              totalAwaiting={3}
-              needToOrder={1}
-              note={"Product's note"}
-              internalNote={"Internal's note"} />
-            <VendorOrderListItem
-              dateAdded={1513742400000}
-              designerName={"AILI JEWELRY"}
-              productName={"Postcard Sun Necklace 388NYS"}
-              retailPrice={420.00}
-              productOptions={[
-                {
-                  displayName: "COLOR",
-                  displayValue: "Yellow Gold"
-                }, {
-                  displayName: "COLOR",
-                  displayValue: "Rose Gold"
-                }
-              ]}
-              totalInventory={5}
-              totalAwaiting={3}
-              needToOrder={1}
-              note={"Product's note"}
-              internalNote={"Internal's note"} />
-            <VendorOrderListItem
-              dateAdded={1512100800000}
-              designerName={"AILI JEWELRY"}
-              productName={"Postcard Sun Necklace 388NYS"}
-              retailPrice={420.00}
-              productOptions={[
-                {
-                  displayName: "COLOR",
-                  displayValue: "Yellow Gold"
-                }, {
-                  displayName: "COLOR",
-                  displayValue: "Rose Gold"
-                }
-              ]}
-              totalInventory={5}
-              totalAwaiting={3}
-              needToOrder={1}
-              note={"Product's note"}
-              internalNote={"Internal's note"} />
+            activePage={activeOrderPage}
+            totalPages={Math.round(vendorOrders.length / totalOrdersPerPage)}>
+
+            {vendorOrders
+              .slice(activeOrderPage * totalOrdersPerPage, (activeOrderPage * totalOrdersPerPage) + totalOrdersPerPage)
+              .map((vendorOrder, i) => (
+                <VendorOrderListItem
+                  key={i}
+                  dateAdded={vendorOrder.dateAdded}
+                  designerName={vendorOrder.designerName}
+                  productName={vendorOrder.productName}
+                  retailPrice={vendorOrder.retailPrice}
+                  productOptions={vendorOrder.productOptions}
+                  totalInventory={vendorOrder.totalInventory}
+                  totalAwaiting={vendorOrder.totalAwaiting}
+                  needToOrder={vendorOrder.needToOrder}
+                  note={vendorOrder.note}
+                  internalNote={vendorOrder.internalNote} />
+            ))}
+
           </VendorOrdersList>
         </Segment>
       </Grid.Column>
@@ -110,11 +90,12 @@ VendorOrdersContainer.propTypes = {
 }
 
 const state = state => ({
-
+  vendorOrders: state.vendorOrders.vendorOrders,
+  requestingVendorOrders: state.vendorOrders.requestingForVendorOrders
 });
 
 const actions = {
-
+  getAllPendingVendorOrders: getAllPendingVendorOrders
 };
 
 export default connect(state, actions)(VendorOrdersContainer);
