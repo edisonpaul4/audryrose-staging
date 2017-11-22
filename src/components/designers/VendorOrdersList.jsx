@@ -3,46 +3,56 @@ import PropTypes from 'prop-types';
 import { Table, Menu, Icon } from "semantic-ui-react";
 
 const VendorOrderList = props => {
-  const { sort, activePage, totalPages } = props;
-  let direction = null;
-  if (typeof sort === 'object')
-    direction = sort.direction === 'ASC' ? 'ascending' : (sort.direction === 'DESC' ? 'descending' : null);
+  const { sort, activePage, totalPages, handleOnSortChange } = props;
+  const caretIcon = typeof sort === 'object' ? <Icon disabled name={`caret ${sort.direction === 'ASC' ? 'up' : 'down'}`} /> : null;
     
   return (
     <Table>
       <Table.Header>
         <Table.HeaderCell 
-          sorted={direction}>
-          Date Added
-          {typeof sort !== undefined && sort.key === 'date_added' ? <Icon disabled name={`caret ${sort.key === 'ascending' ? 'up' : 'down'}`} /> : null}
-        </Table.HeaderCell>
-        <Table.HeaderCell>
-          Designer
-        </Table.HeaderCell>
-        <Table.HeaderCell>
-          Product
-        </Table.HeaderCell>
-        <Table.HeaderCell>
-          Retail price
-        </Table.HeaderCell>
-        <Table.HeaderCell>
-          Options
-        </Table.HeaderCell>
-        <Table.HeaderCell>
-          ACH OH
-        </Table.HeaderCell>
-        <Table.HeaderCell>
-          Total Awaiting
-        </Table.HeaderCell>
-        <Table.HeaderCell>
-          Units To Order
-        </Table.HeaderCell>
-        <Table.HeaderCell>
-          Notes
-        </Table.HeaderCell>
-        <Table.HeaderCell>
-          Internal Notes
-        </Table.HeaderCell>
+          style={{ cursor: 'pointer' }}
+          content={["Date Added", typeof sort === 'object' && sort.key === 'date_added' ? caretIcon : null]}
+          onClick={e => handleOnSortChange('date_added')} />
+
+        <Table.HeaderCell 
+          style={{ cursor: 'pointer' }}
+          content={["Designer", typeof sort === 'object' && sort.key === 'designer' ? caretIcon : null]}
+          onClick={e => handleOnSortChange('designer')} />
+
+        <Table.HeaderCell 
+          style={{ cursor: 'pointer' }}
+          content={["Product", typeof sort === 'object' && sort.key === 'product' ? caretIcon : null]}
+          onClick={e => handleOnSortChange('product')} />
+
+        <Table.HeaderCell 
+          style={{ cursor: 'pointer' }}
+          content={["Retail price", typeof sort === 'object' && sort.key === 'retail_price' ? caretIcon : null]}
+          onClick={e => handleOnSortChange('retail_price')} />
+
+        <Table.HeaderCell
+          content="Options" />
+
+        <Table.HeaderCell 
+          style={{ cursor: 'pointer' }}
+          content={["ACH OH", typeof sort === 'object' && sort.key === 'total_inventory' ? caretIcon : null]}
+          onClick={e => handleOnSortChange('total_inventory')} />
+
+        <Table.HeaderCell 
+          style={{ cursor: 'pointer' }}
+          content={["Total Awaiting", typeof sort === 'object' && sort.key === 'total_awaiting' ? caretIcon : null]}
+          onClick={e => handleOnSortChange('total_awaiting')} />
+
+        <Table.HeaderCell 
+          style={{ cursor: 'pointer' }}
+          content={["Units To Order", typeof sort === 'object' && sort.key === 'need_order' ? caretIcon : null]}
+          onClick={e => handleOnSortChange('need_order')} />
+
+        <Table.HeaderCell 
+          content="Notes" />
+
+        <Table.HeaderCell 
+          content="Internal Notes" />
+
       </Table.Header>
 
       <Table.Body>
@@ -90,6 +100,7 @@ VendorOrderList.propTypes = {
   activePage: PropTypes.number.isRequired,
   totalPages: PropTypes.number.isRequired,
   handleOnPageChange: PropTypes.func.isRequired,
+  handleOnSortChange: PropTypes.func.isRequired
 }
 
 export default VendorOrderList;

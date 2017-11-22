@@ -10,16 +10,36 @@ class VendorOrdersContainer extends React.Component {
     super(props);
   }
 
+  changeSortValue(sortBy) {
+    const params = {
+      ...this.props.location.query,
+      sort_by: sortBy,
+      sort_direction: this.props.location.query.sort_direction === 'ASC' ? 'DESC' : 'ASC'
+    };
+
+    const queryString = Object.keys(params).reduce((all, key) => {
+      let temp = all || '';
+      temp = `${temp}&${key}=${params[key]}`;
+      return temp;
+    }, '?');
+
+    this.props.router.push({
+      pathname: this.props.location.pathname,
+      search: queryString
+    });
+  }
+
   render() {
     return (
       <Grid.Column width="16">
         <Segment loading={false} basic style={{ padding: 0 }}>
           <VendorOrdersList
             sort={{
-              key: "date_added",
-              direction: "DESC"
+              key: this.props.location.query.sort_by,
+              direction: this.props.location.query.sort_direction
             }}
-            activePage={1}  
+            handleOnSortChange={this.changeSortValue.bind(this)}
+            activePage={0}  
             totalPages={5}>
             <VendorOrderListItem
               dateAdded={1514088000000}
