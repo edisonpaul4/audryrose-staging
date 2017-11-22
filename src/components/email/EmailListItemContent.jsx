@@ -114,7 +114,11 @@ export default class EmailListItemContent extends React.Component {
     if(emailSubject !== this.props.emailSubject)
       this.setState({ emailSubject: emailSubject });
     
-    if(this.state.segmentLoading || emailLastLine !== this.props.emailLastLine)
+    if(this.state.segmentLoading 
+      || customer !== this.props.customer
+      || products !== this.props.products
+      || user !== this.props.user
+      || emailLastLine !== this.props.emailLastLine)
       this.setState({
         segmentLoading: false,
         emailMessage: this.prepareMessageTemplate(customer, products, user, emailLastLine)
