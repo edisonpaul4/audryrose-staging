@@ -466,6 +466,14 @@ const getRatesForShipment = (parcelParams, orderId, token) => axios.post('/funct
   orderId
 });
 
+const getAllPendingVendorOrders = (page, sort, direction, ordersToSkip, token) => axios.post('/functions/getAllPendingVendorOrders', {
+  sessionToken: token,
+  page,
+  sort,
+  direction,
+  ordersToSkip
+});
+
 export default {
   signup,
   login,
@@ -511,5 +519,6 @@ export default {
   getOrdersToSendEmails,
   sendOrderEmail,
   deleteOrderEmail,
-  getRatesForShipment
+  getRatesForShipment,
+  getAllPendingVendorOrders
 }

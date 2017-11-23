@@ -55,3 +55,10 @@ export function deleteProductFromVendorOrder(token, productObjectId, vendorOrder
     promise: api.deleteProductFromVendorOrder(token, productObjectId, vendorOrderNumber).then(r => ({ ...r, objectId})),
   }
 }
+
+export function getAllPendingVendorOrders(page, sort, direction, ordersToSkip, token) {
+  return {
+    types: ['VENDORORDERS::GET_VENDOR_ORDERS_REQUEST', 'VENDORORDERS::GET_VENDOR_ORDERS_SUCCESS', 'VENDORORDERS::GET_VENDOR_ORDERS_FAILURE'],
+    promise: api.getAllPendingVendorOrders(page, sort, direction, ordersToSkip, token).then(r => r.data.result)
+  }
+}

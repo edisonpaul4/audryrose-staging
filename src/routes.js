@@ -10,7 +10,9 @@ import OptionsContainer from './containers/OptionsContainer';
 import ShipmentsContainer from './containers/ShipmentsContainer';
 import WebhooksContainer from './containers/WebhooksContainer';
 import NotFound from './components/NotFound';
+
 import { EmailSectionContainer } from './containers/email/';
+import { DesignersMainContainer, VendorOrdersContainer } from './containers/designers/';
 
 export function requireAuth(store) {
   return (nextState, replace) => {
@@ -94,6 +96,18 @@ const createRoutes = (store) => {
 							onEnter: requireAuth(store)
 						}
 					]
+        },
+        {
+          path: 'designers/vendor-orders',
+          component: DesignersMainContainer,
+          onEnter: requireAuth(store),
+          childRoutes: [
+            {
+              path: 'pending',
+              component: VendorOrdersContainer,
+              onEnter: requireAuth(store)
+            }
+          ]
         },
         {
           path: 'designers',
