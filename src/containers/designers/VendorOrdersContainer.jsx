@@ -41,16 +41,32 @@ class VendorOrdersContainer extends React.Component {
     });
   }
 
-  componentWillMount() {
-    const { location } = this.props;
-    this.props.getAllPendingVendorOrders(0, location.query.sort_by, location.query.sort_direction, []);
+  getSortedVendorOrders(sortBy = 'all', sortDirection = "ASC") {
+    const { vendorOrders } = this.props;
+    switch (true) {
+      case sortBy === "dateAdded":
+        return vendorOrders.sort((a, b) => {
+          const aTime = new Date(a.dateAdded.iso).getTime();
+          const bTime = new Date(b.dateAdded.iso).getTime()
+          if(sortDirection === 'ASC')
+            return aTime - bTime;
+          else if(sortDirection === 'DESC')
+            return bTime - aTime;
+        });
+
+      case ["retailPrice", "totalInventory", "totalAwaiting", "unitsToOrder"].indexOf(sortBy) !== -1:
+        return vendorOrders.sort((a, b) => sortDirection === 'DESC' ? (b[sortBy] | 0) - (a[sortBy] | 0) : (a[sortBy] | 0) - (b[sortBy] | 0));
+      
+      case ["designerName", "productName", "note", "internalNote"].indexOf(sortBy) !== -1:
+        return vendorOrders.sort((a, b) => sortDirection === 'DESC' ? b[sortBy].localeCompare(a[sortBy]) : a[sortBy].localeCompare(b[sortBy]));
+      
+      default:
+        return vendorOrders;
+    }
   }
 
-  componentWillReceiveProps(newProps) {
-    if (newProps.location.query.sort_by !== this.props.location.query.sort_by
-      || newProps.location.query.sort_direction !== this.props.location.query.sort_direction) {
-      this.props.getAllPendingVendorOrders(0, newProps.location.query.sort_by, newProps.location.query.sort_direction, []);
-    }
+  componentWillMount() {
+    this.props.getAllPendingVendorOrders();
   }
 
   render() {
@@ -58,7 +74,7 @@ class VendorOrdersContainer extends React.Component {
     const { vendorOrders, requestingVendorOrders, location } = this.props;
     return (
       <Grid.Column width="16">
-        <Segment loading={requestingVendorOrders} basic style={{ padding: 0 }}>
+        <Segment loading={requestingVendorOrders && vendorOrders.length === 0} basic style={{ padding: 0 }}>
           <VendorOrdersList
             sort={{
               key: location.query.sort_by,
@@ -69,7 +85,7 @@ class VendorOrdersContainer extends React.Component {
             activePage={activeOrderPage}
             totalPages={Math.round(vendorOrders.length / totalOrdersPerPage)}>
 
-            {vendorOrders
+            {this.getSortedVendorOrders(location.query.sort_by, location.query.sort_direction)
               .slice(activeOrderPage * totalOrdersPerPage, (activeOrderPage * totalOrdersPerPage) + totalOrdersPerPage)
               .map((vendorOrder, i) => (
                 <VendorOrderListItem

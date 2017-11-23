@@ -9,46 +9,58 @@ const VendorOrderList = props => {
   return (
     <Table>
       <Table.Header>
-        <Table.HeaderCell 
-          style={{ cursor: 'pointer' }}
-          content={["Date Added", typeof sort === 'object' && sort.key === 'date_added' ? caretIcon : null]}
-          onClick={e => handleOnSortChange('date_added')}
+        <Table.HeaderCell
+          content={["Date Added", typeof sort === 'object' && sort.key === 'dateAdded' ? caretIcon : null]}
+          onClick={e => handleOnSortChange("dateAdded")}
+          style={{ cursor: "pointer"}}
           collapsing />
 
-        <Table.HeaderCell 
-          style={{ cursor: 'pointer' }}
-          content={["Designer", typeof sort === 'object' && sort.key === 'designer' ? caretIcon : null]}
-          onClick={e => handleOnSortChange('designer')} />
-
-        <Table.HeaderCell 
-          style={{ cursor: 'pointer' }}
-          content={["Product", typeof sort === 'object' && sort.key === 'product' ? caretIcon : null]}
-          onClick={e => handleOnSortChange('product')} />
+        <Table.HeaderCell
+          content={["Designer", typeof sort === 'object' && sort.key === 'designerName' ? caretIcon : null]}
+          onClick={e => handleOnSortChange("designerName")}
+          style={{ cursor: "pointer"}} />
 
         <Table.HeaderCell
-          content={["Retail price", typeof sort === 'object' && sort.key === 'retail_price' ? caretIcon : null]}
+          content={["Product", typeof sort === 'object' && sort.key === 'productName' ? caretIcon : null]}
+          onClick={e => handleOnSortChange("productName")}
+          style={{ cursor: "pointer"}} />
+
+        <Table.HeaderCell
+          content={["Retail price", typeof sort === 'object' && sort.key === 'retailPrice' ? caretIcon : null]}
+          onClick={e => handleOnSortChange("retailPrice")}
+          style={{ cursor: "pointer"}}
           collapsing />
 
         <Table.HeaderCell
           content="Options" />
 
         <Table.HeaderCell
-          content={["ACH OH", typeof sort === 'object' && sort.key === 'total_inventory' ? caretIcon : null]}
+          content={["ACH OH", typeof sort === 'object' && sort.key === 'totalInventory' ? caretIcon : null]}
+          onClick={e => handleOnSortChange("totalInventory")}
+          style={{ cursor: "pointer"}}
           collapsing />
 
         <Table.HeaderCell
-          content={["Total Awaiting", typeof sort === 'object' && sort.key === 'total_awaiting' ? caretIcon : null]}
+          content={["Total Awaiting", typeof sort === 'object' && sort.key === 'totalAwaiting' ? caretIcon : null]}
+          onClick={e => handleOnSortChange("totalAwaiting")}
+          style={{ cursor: "pointer"}}
           collapsing />
 
         <Table.HeaderCell
-          content={["Units To Order", typeof sort === 'object' && sort.key === 'need_order' ? caretIcon : null]}
+          content={["Units To Order", typeof sort === 'object' && sort.key === 'unitsToOrder' ? caretIcon : null]}
+          onClick={e => handleOnSortChange("unitsToOrder")}
+          style={{ cursor: "pointer"}}
           collapsing />
 
         <Table.HeaderCell
-          content="Notes" />
+          content={["Notes", typeof sort === 'object' && sort.key === 'note' ? caretIcon : null]}
+          onClick={e => handleOnSortChange("note")}
+          style={{ cursor: "pointer"}} />
 
         <Table.HeaderCell
-          content="Internal Notes" />
+          content={["Internal Notes", typeof sort === 'object' && sort.key === 'internalNote' ? caretIcon : null]}
+          onClick={e => handleOnSortChange("internalNote")}
+          style={{ cursor: "pointer"}} />
 
       </Table.Header>
 
