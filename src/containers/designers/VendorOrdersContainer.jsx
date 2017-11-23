@@ -90,6 +90,8 @@ class VendorOrdersContainer extends React.Component {
               .map((vendorOrder, i) => (
                 <VendorOrderListItem
                   key={i}
+                  designerId={vendorOrder.designerId}
+                  productId={vendorOrder.productId}
                   dateAdded={vendorOrder.dateAdded}
                   designerName={vendorOrder.designerName}
                   productName={vendorOrder.productName}
