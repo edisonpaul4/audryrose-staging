@@ -1,15 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Table, Icon, Dropdown } from 'semantic-ui-react';
+import { Table } from 'semantic-ui-react';
 import moment from 'moment';
 
 const VendorOrderListItem = props => (
   <Table.Row>
     <Table.Cell content={moment(props.dateAdded.iso).format("MM/DD/YYYY")} />
 
-    <Table.Cell content={props.designerName} />
+    <Table.Cell 
+      content={<a target="_blank" href={`https://www.loveaudryrose.com/manage/products/brands/${props.designerId}/edit`}>{props.designerName}</a>} />
 
-    <Table.Cell content={props.productName} />
+    <Table.Cell
+      content={<a href={`/products/search?q=${props.productId}`}>{props.productName}</a>} />
 
     <Table.Cell content={props.retailPrice ? `$${props.retailPrice}` : null} />
     
@@ -30,6 +32,8 @@ const VendorOrderListItem = props => (
 );
 
 VendorOrderListItem.propTypes = {
+  designerId: PropTypes.number.isRequired,
+  productId: PropTypes.number.isRequired,
   dateAdded: PropTypes.shape({
     __type: PropTypes.string,
     iso: PropTypes.string
