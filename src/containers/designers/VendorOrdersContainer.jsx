@@ -42,7 +42,15 @@ class VendorOrdersContainer extends React.Component {
   }
 
   componentWillMount() {
-    this.props.getAllPendingVendorOrders();
+    const { location } = this.props;
+    this.props.getAllPendingVendorOrders(0, location.query.sort_by, location.query.sort_direction, []);
+  }
+
+  componentWillReceiveProps(newProps) {
+    if (newProps.location.query.sort_by !== this.props.location.query.sort_by
+      || newProps.location.query.sort_direction !== this.props.location.query.sort_direction) {
+      this.props.getAllPendingVendorOrders(0, newProps.location.query.sort_by, newProps.location.query.sort_direction, []);
+    }
   }
 
   render() {
@@ -73,7 +81,7 @@ class VendorOrdersContainer extends React.Component {
                   productOptions={vendorOrder.productOptions}
                   totalInventory={vendorOrder.totalInventory}
                   totalAwaiting={vendorOrder.totalAwaiting}
-                  needToOrder={vendorOrder.needToOrder}
+                  unitsToOrder={vendorOrder.unitsToOrder}
                   note={vendorOrder.note}
                   internalNote={vendorOrder.internalNote} />
             ))}

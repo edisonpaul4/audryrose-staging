@@ -4,7 +4,7 @@ import { Table, Menu, Icon } from "semantic-ui-react";
 
 const VendorOrderList = props => {
   const { sort, activePage, totalPages, handleOnSortChange } = props;
-  const caretIcon = typeof sort === 'object' ? <Icon disabled name={`caret ${sort.direction === 'ASC' ? 'up' : 'down'}`} /> : null;
+  const caretIcon = typeof sort === 'object' ? <Icon key="1" disabled name={`caret ${sort.direction === 'ASC' ? 'up' : 'down'}`} /> : null;
     
   return (
     <Table>
@@ -12,7 +12,8 @@ const VendorOrderList = props => {
         <Table.HeaderCell 
           style={{ cursor: 'pointer' }}
           content={["Date Added", typeof sort === 'object' && sort.key === 'date_added' ? caretIcon : null]}
-          onClick={e => handleOnSortChange('date_added')} />
+          onClick={e => handleOnSortChange('date_added')}
+          collapsing />
 
         <Table.HeaderCell 
           style={{ cursor: 'pointer' }}
@@ -24,33 +25,29 @@ const VendorOrderList = props => {
           content={["Product", typeof sort === 'object' && sort.key === 'product' ? caretIcon : null]}
           onClick={e => handleOnSortChange('product')} />
 
-        <Table.HeaderCell 
-          style={{ cursor: 'pointer' }}
+        <Table.HeaderCell
           content={["Retail price", typeof sort === 'object' && sort.key === 'retail_price' ? caretIcon : null]}
-          onClick={e => handleOnSortChange('retail_price')} />
+          collapsing />
 
         <Table.HeaderCell
           content="Options" />
 
-        <Table.HeaderCell 
-          style={{ cursor: 'pointer' }}
+        <Table.HeaderCell
           content={["ACH OH", typeof sort === 'object' && sort.key === 'total_inventory' ? caretIcon : null]}
-          onClick={e => handleOnSortChange('total_inventory')} />
+          collapsing />
 
-        <Table.HeaderCell 
-          style={{ cursor: 'pointer' }}
+        <Table.HeaderCell
           content={["Total Awaiting", typeof sort === 'object' && sort.key === 'total_awaiting' ? caretIcon : null]}
-          onClick={e => handleOnSortChange('total_awaiting')} />
+          collapsing />
 
-        <Table.HeaderCell 
-          style={{ cursor: 'pointer' }}
+        <Table.HeaderCell
           content={["Units To Order", typeof sort === 'object' && sort.key === 'need_order' ? caretIcon : null]}
-          onClick={e => handleOnSortChange('need_order')} />
+          collapsing />
 
-        <Table.HeaderCell 
+        <Table.HeaderCell
           content="Notes" />
 
-        <Table.HeaderCell 
+        <Table.HeaderCell
           content="Internal Notes" />
 
       </Table.Header>

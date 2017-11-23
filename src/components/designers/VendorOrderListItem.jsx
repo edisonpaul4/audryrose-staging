@@ -21,7 +21,7 @@ const VendorOrderListItem = props => (
 
     <Table.Cell content={props.totalAwaiting} />
 
-    <Table.Cell content={props.needToOrder} />
+    <Table.Cell content={props.unitsToOrder} />
 
     <Table.Cell content={props.note} />
 
