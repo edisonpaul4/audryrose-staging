@@ -1,35 +1,62 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Table } from 'semantic-ui-react';
+import { Table, Icon } from 'semantic-ui-react';
 import moment from 'moment';
 
-const VendorOrderListItem = props => (
-  <Table.Row>
-    <Table.Cell content={moment(props.dateAdded.iso).format("MM/DD/YYYY")} />
+class VendorOrderListItem extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      rowHover: false,
+    };
+  }
 
-    <Table.Cell 
-      content={<a target="_blank" href={`https://www.loveaudryrose.com/manage/products/brands/${props.designerId}/edit`}>{props.designerName}</a>} />
+  render() {
+    const { dateAdded, designerId, designerName, productId, productName, retailPrice, productOptions, totalInventory, totalAwaiting, unitsToOrder, note, internalNote, handleOnDelete, vendorOrderObjectId, vendorOrderVariantObjectId, designerObjectId } = this.props;
 
-    <Table.Cell
-      content={<a href={`/products/search?q=${props.productId}`}>{props.productName}</a>} />
+    return (
+      <Table.Row
+        onMouseOver={e => this.setState({ rowHover: true })}
+        onMouseOut={e => this.setState({ rowHover: false })}>
 
-    <Table.Cell content={props.retailPrice ? `$${props.retailPrice}` : null} />
-    
-    <Table.Cell content={props.productOptions.map(({ displayName, displayValue }, i) => (
-      <div key={i}>{`${displayName}: ${displayValue}`}</div>
-    ))} />
+        <Table.Cell
+          collapsing
+          content={moment(dateAdded.iso).format("MM/DD/YYYY")} />
 
-    <Table.Cell content={props.totalInventory} />
+        <Table.Cell
+          collapsing
+          content={<a target="_blank" href={`https://www.loveaudryrose.com/manage/products/brands/${designerId}/edit`}>{designerName}</a>} />
 
-    <Table.Cell content={props.totalAwaiting} />
+        <Table.Cell
+          content={<a href={`/products/search?q=${productId}`}>{productName}</a>} />
 
-    <Table.Cell content={props.unitsToOrder} />
+        <Table.Cell
+          content={`$${retailPrice | 0}`} />
 
-    <Table.Cell content={props.note} />
+        <Table.Cell
+          collapsing
+          content={productOptions.map(({ displayName, displayValue }, i) => (
+            <div key={i}>{`${displayName}: ${displayValue}`}</div>
+          ))} />
 
-    <Table.Cell content={props.internalNote} />
-  </Table.Row>
-);
+        <Table.Cell content={totalInventory | 0} />
+
+        <Table.Cell content={totalAwaiting | 0} />
+
+        <Table.Cell content={unitsToOrder | 0} />
+
+        <Table.Cell content={note} />
+
+        <Table.Cell content={internalNote} />
+
+        <Table.Cell
+          onClick={e => handleOnDelete(vendorOrderObjectId, vendorOrderVariantObjectId)}
+          style={{ cursor: 'pointer' }}
+          content={this.state.rowHover ? <Icon name="close" /> : null} />
+      </Table.Row>
+    );
+  }
+};
 
 VendorOrderListItem.propTypes = {
   designerId: PropTypes.number.isRequired,
@@ -50,6 +77,7 @@ VendorOrderListItem.propTypes = {
   unitsToOrder: PropTypes.number,
   note: PropTypes.string,
   internalNote: PropTypes.string,
+  handleOnDelete: PropTypes.func.isRequired,
 };
 
 export default VendorOrderListItem;
