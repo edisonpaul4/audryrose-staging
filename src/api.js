@@ -474,6 +474,12 @@ const getAllPendingVendorOrders = (page, sort, direction, ordersToSkip, token) =
   ordersToSkip
 });
 
+const finishPendingVendorOrderProduct = (vendorOrderObjectId, vendorOrderVariantObjectId, token) => axios.post('/functions/finishPendingVendorOrderProduct', {
+  sessionToken: token,
+  vendorOrderObjectId,
+  vendorOrderVariantObjectId
+});
+
 export default {
   signup,
   login,
@@ -520,5 +526,6 @@ export default {
   sendOrderEmail,
   deleteOrderEmail,
   getRatesForShipment,
-  getAllPendingVendorOrders
+  getAllPendingVendorOrders,
+  finishPendingVendorOrderProduct
 }
