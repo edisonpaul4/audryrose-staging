@@ -6,6 +6,8 @@ import { Grid, Segment } from 'semantic-ui-react';
 import { getAllPendingVendorOrders } from '../../actions/designers';
 import { VendorOrdersList, VendorOrderListItem } from '../../components/designers/';
 
+import { finishPendingVendorOrderProduct } from '../../actions/designers';
+
 class VendorOrdersContainer extends React.Component {
   constructor(props) { 
     super(props);
@@ -65,6 +67,10 @@ class VendorOrdersContainer extends React.Component {
     }
   }
 
+  deleteProductFromVendorOrder(vendorOrder, vendorOrderVariant) {
+    this.props.finishPendingVendorOrderProduct(vendorOrder, vendorOrderVariant);
+  }
+
   componentWillMount() {
     this.props.getAllPendingVendorOrders();
   }
@@ -90,6 +96,9 @@ class VendorOrdersContainer extends React.Component {
               .map((vendorOrder, i) => (
                 <VendorOrderListItem
                   key={i}
+                  vendorOrderObjectId={vendorOrder.vendorOrderObjectId}
+                  vendorOrderVariantObjectId={vendorOrder.vendorOrderVariantObjectId}
+                  designerObjectId={vendorOrder.designerObjectId}
                   designerId={vendorOrder.designerId}
                   productId={vendorOrder.productId}
                   dateAdded={vendorOrder.dateAdded}
@@ -101,7 +110,8 @@ class VendorOrdersContainer extends React.Component {
                   totalAwaiting={vendorOrder.totalAwaiting}
                   unitsToOrder={vendorOrder.unitsToOrder}
                   note={vendorOrder.note}
-                  internalNote={vendorOrder.internalNote} />
+                  internalNote={vendorOrder.internalNote}
+                  handleOnDelete={this.deleteProductFromVendorOrder.bind(this)} />
             ))}
 
           </VendorOrdersList>
@@ -121,7 +131,8 @@ const state = state => ({
 });
 
 const actions = {
-  getAllPendingVendorOrders: getAllPendingVendorOrders
+  getAllPendingVendorOrders,
+  finishPendingVendorOrderProduct
 };
 
 export default connect(state, actions)(VendorOrdersContainer);

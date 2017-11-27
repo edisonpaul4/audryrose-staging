@@ -62,6 +62,8 @@ const VendorOrderList = props => {
           onClick={e => handleOnSortChange("internalNote")}
           style={{ cursor: "pointer"}} />
 
+        <Table.HeaderCell width={1} />
+
       </Table.Header>
 
       <Table.Body>

@@ -62,3 +62,10 @@ export function getAllPendingVendorOrders(page, sort, direction, ordersToSkip, t
     promise: api.getAllPendingVendorOrders(page, sort, direction, ordersToSkip, token).then(r => r.data.result)
   }
 }
+
+export function finishPendingVendorOrderProduct(vendorOrderObjectId, vendorOrderVariantObjectId, token) {
+  return {
+    types: ['VENDORORDERS::REMOVE_PENDING_PRODUCT_REQUEST', 'VENDORORDERS::REMOVE_PENDING_PRODUCT_SUCCESS', 'VENDORORDERS::REMOVE_PENDING_PRODUCT_FAILURE'],
+    promise: api.finishPendingVendorOrderProduct(vendorOrderObjectId, vendorOrderVariantObjectId, token).then(r => r.data.result)
+  }
+}
