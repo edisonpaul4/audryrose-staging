@@ -61,10 +61,12 @@ export default class EmailListItemContent extends React.Component {
         return product.classificationName.toLowerCase();
     }
 
-    const footerMessages = {
-      first: products.length === 1 ? 'this' : 'these',
-      second: products.length === 1 ? getClassificationName(products[0]) : 'pieces',
-    }
+    // const footerMessages = {
+    //   first: products.length === 1 ? 'this' : 'these',
+    //   second: products.length === 1 ? getClassificationName(products[0]) : 'pieces',
+    // }
+    
+    const footerMessages = products.length === 1 ? 'it' : 'they' ;
 
     if (firstRule && firstRule.length > 0) 
       msgContent = msgContent + ` Your ${firstRule} shipped today, hope you love it!`;
@@ -79,7 +81,7 @@ export default class EmailListItemContent extends React.Component {
         return `\n\nYour ${product.name} will take approximately ${this.defineWaitTime(product).toLowerCase()} to ship, ${handmadeMessage}`;
       }).join('');
 
-    const msgFooter = `\n\nIf you need ${footerMessages.first} ${footerMessages.second} by a certain date, please let us know so we can do our best to accommodate you.\n\nPlease let me know if you have any question or concerns.\n\n`;
+    const msgFooter = `\n\nWe guarantee ${footerMessages} will arrive before Christmas; but if you need it by a certain date, kindly let us know so we can do our best to accommodate you.\n\nPlease let me know if you have any question or concerns.\n\n`;
     const lastLine = emailLastLine + '\n\n';
     const msgBrand = `Tracy Inoue\nwww.loveaudryrose.com\n424.387.8000`;
     return msgHeader + msgContent + msgFooter + lastLine + msgBrand;
