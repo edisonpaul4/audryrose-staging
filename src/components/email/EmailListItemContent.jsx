@@ -38,6 +38,11 @@ export default class EmailListItemContent extends React.Component {
   }
 
   prepareMessageTemplate(customer, products, user, emailLastLine) {
+    const nameToCamelCase = fullName => fullName
+      .split(' ')
+      .map(name => name.slice(0, 1).toUpperCase() + name.slice(1).toLowerCase())
+      .join(' ');
+      
     const firstRule = products
       .filter(product => product.isActive && (product.totalInventory !== 0 || product.quantity_shipped > 0))
       .map(product => product.name)
@@ -51,7 +56,7 @@ export default class EmailListItemContent extends React.Component {
     const thirdRule = products
       .filter(product => product.isActive && product.totalInventory === 0 && product.quantity_shipped === 0);
 
-    const msgHeader = `Hi ${customer.firstName},\n\n`;
+    const msgHeader = `Hi ${nameToCamelCase(customer.firstName)},\n\n`;
     let msgContent = `Thank you for your order!`;
 
     const getClassificationName = product => {
