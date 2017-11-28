@@ -66,7 +66,7 @@ export default class EmailListItemContent extends React.Component {
     //   second: products.length === 1 ? getClassificationName(products[0]) : 'pieces',
     // }
     
-    const footerMessages = products.length === 1 ? 'it' : 'they' ;
+    const footerMessages = products.filter(product => (product.totalInventory === 0 && product.quantity_shipped === 0)).length > 1 ? 'they' : 'it' ;
 
     if (firstRule && firstRule.length > 0) 
       msgContent = msgContent + ` Your ${firstRule} shipped today, hope you love it!`;
