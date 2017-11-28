@@ -45,9 +45,13 @@ class VendorOrderListItem extends React.Component {
 
         <Table.Cell content={unitsToOrder | 0} />
 
-        <Table.Cell content={note} />
+        <Table.Cell>
+          <span dangerouslySetInnerHTML={{ __html: note }} />
+        </Table.Cell>
 
-        <Table.Cell content={internalNote} />
+        <Table.Cell>
+          <span dangerouslySetInnerHTML={{ __html: internalNote }} />
+        </Table.Cell>
 
         <Table.Cell
           onClick={e => handleOnDelete(vendorOrderObjectId, vendorOrderVariantObjectId)}
