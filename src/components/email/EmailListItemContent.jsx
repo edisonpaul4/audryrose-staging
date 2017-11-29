@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Table, Segment, Form, Divider, Button } from "semantic-ui-react";
+import { Table, Segment, Form, Divider, Button, Label, Icon } from "semantic-ui-react";
 import * as moment from 'moment';
 
 export default class EmailListItemContent extends React.Component {
@@ -16,9 +16,14 @@ export default class EmailListItemContent extends React.Component {
 
   defineWaitTime(product) {
     if (product.awaitingInventoryExpectedDate && product.quantity_shipped === 0 && product.totalInventory === 0 && product.isActive) {
-      const dayToReceive = parseInt(new moment(product.awaitingInventoryExpectedDate).format('DD'), 10);
-      const today = parseInt(new moment().format('D'), 10);
-      let weeks = ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN'][Math.floor((dayToReceive - today) / 7)];
+      const dayToReceive = new moment(product.awaitingInventoryExpectedDate).utc();
+      const today = new moment().utc();
+      const waitingDays = dayToReceive.utc().diff(today, 'DAYS');
+      if (product.productId === 712) {
+        console.log(dayToReceive.format('DD'), today.format('DD'))
+        console.log(waitingDays)
+      }
+      let weeks = ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN'][Math.floor(waitingDays / 7)];
       if(typeof weeks === 'undefined')
         return 'ONE WEEK';
       else 
@@ -35,6 +40,96 @@ export default class EmailListItemContent extends React.Component {
           return 'THREE WEEKS';
       }
     }
+  }
+
+  createAwaitingInventoryLabels(product, variant) {
+    return product.awaitingInventory.reduce((all, ai) => {
+      let temp = all | [];
+      let label = null;
+
+      if (ai.className === 'VendorOrderVariant') {
+        const vendorOrderMatch = product.awaitingInventoryVendorOrders.reduce((all, aivo) => {
+          if (aivo.vendorOrderVariants) {
+            const vovIndex = aivo.vendorOrderVariants.findIndex(vov => ai.objectId === vov.objectId);
+            return vovIndex !== -1 ? aivo : all;
+          }
+          return all;
+        }, undefined);
+        label = this.getVendorOrderLabel(product.objectId, product.designerId, ai, vendorOrderMatch);
+      } else if (ai.className === 'Resize') {
+        label = this.getResizeLabel(product.productId, ai);
+      }
+
+      return label !== null ? [
+        ...temp,
+        label
+      ] : temp;
+    }, []);
+  }
+
+  getVendorOrderLabel(productObjectId, designerId, vendorOrderVariant, vendorOrder, orderProductMatch) {
+    // Same code that is in OrderDetails.js
+    if (!vendorOrder) return <Label size='tiny' color='red' key={'product-' + productObjectId + '-' + vendorOrderVariant.objectId}>Error: Missing vendor order data</Label>;
+    console.log("--------------------------")
+    console.log(vendorOrder)
+    console.log(vendorOrderVariant)
+    console.log("--------------------------")
+    const averageWaitTime = vendorOrder.vendor.waitTime ? vendorOrder.vendor.waitTime : 21;
+    const expectedDate = vendorOrder.dateOrdered ? moment(vendorOrder.dateOrdered.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
+    const daysLeft = vendorOrder.dateOrdered ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
+    let labelColor = 'yellow';
+    let labelIcon;
+    if (vendorOrderVariant.done === true && !vendorOrderVariant.deleted) {
+      labelColor = 'olive';
+      labelIcon = <Icon name='checkmark' />;
+    } else if (vendorOrderVariant.ordered && daysLeft < 0 || vendorOrderVariant.deleted) {
+      labelColor = 'red';
+    } else if (vendorOrderVariant.ordered) {
+      labelColor = 'olive';
+    }
+    let labelText = vendorOrderVariant.ordered ? vendorOrderVariant.units + ' Sent' : vendorOrderVariant.units + ' Pending';
+
+    if (vendorOrderVariant.done === true && !vendorOrderVariant.deleted) {
+      labelText = vendorOrderVariant.received + ' Received';
+    } else if (vendorOrderVariant.deleted) {
+      labelText = vendorOrderVariant.received + ' Received before being deleted';
+    }// else if (vendorOrderVariant.ordered && vendorOrderVariant.received > 0) {
+    // 	labelText += ', ' + vendorOrderVariant.received + ' Received';
+    // }
+    labelText += ' #' + vendorOrder.vendorOrderNumber;
+    const labelDetailText = vendorOrder.dateOrdered && !vendorOrderVariant.deleted ? daysLeft < 0 ? moment(vendorOrder.dateOrdered.iso).format('M-D-YY') + ' (' + Math.abs(daysLeft) + ' days late)' : moment(vendorOrder.dateOrdered.iso).format('M-D-YY') + ' (' + daysLeft + ' days left)' : (!vendorOrderVariant.deleted ? averageWaitTime + ' days wait' : '');
+    const labelDetail = vendorOrderVariant.done === false ? <Label.Detail>{labelDetailText}</Label.Detail> : null;
+    const labelLink = vendorOrderVariant.done === false ? designerId ? '/designers/search?q=' + designerId : '/designers' : null;
+    let showLabel = true;
+    return showLabel ? <Label as={labelLink ? 'a' : null} href={labelLink} size='tiny' color={labelColor} key={'product-' + productObjectId + '-' + vendorOrderVariant.objectId}>{labelIcon}{labelText}{labelDetail}</Label> : null;
+  }
+
+  getResizeLabel(productId, resizeOrder) {
+    // Same code that is in OrderDetails.js
+    const averageWaitTime = 7;
+    const daysSinceSent = resizeOrder.dateSent ? moment.utc().diff(resizeOrder.dateSent.iso, 'days') : null;
+    let labelColor = 'olive';
+    let labelIcon;
+    if (resizeOrder.done === true) {
+      labelIcon = <Icon name='checkmark' />;
+    } else if (daysSinceSent > averageWaitTime) {
+      labelColor = 'red';
+    }
+    const labelLink = resizeOrder.done === false && productId && productId ? '/products/search?q=' + productId : null;
+
+    let labelText = resizeOrder.units + ' ResizeOrder' + (resizeOrder.units > 1 ? 's' : '') + (resizeOrder.dateSent ? ' Sent' : ' Pending');
+    if (resizeOrder.received >= resizeOrder.units) labelText = resizeOrder.received + ' ResizeOrder Received';
+    const labelDetailText = resizeOrder.dateSent ? daysSinceSent + ' days ago' : '';
+    const labelDetail = resizeOrder.done === false ? <Label.Detail>{labelDetailText}</Label.Detail> : null;
+    let showLabel = false;
+    if (resizeOrder.done === true && resizeOrder.shipped === undefined) {
+      showLabel = true;
+    } else if (resizeOrder.done === true) {
+      showLabel = resizeOrder.shipped < resizeOrder.received ? true : false;
+    } else {
+      showLabel = true;
+    }
+    return showLabel ? <Label as='a' href={labelLink} size='tiny' color={labelColor} key={'resizeOrder-' + resizeOrder.objectId}>{labelIcon}{labelText}{labelDetail}</Label> : null;
   }
 
   prepareMessageTemplate(customer, products, user, emailLastLine) {
@@ -142,7 +237,8 @@ export default class EmailListItemContent extends React.Component {
             <Table.Header>
               <Table.HeaderCell width={4}>Product</Table.HeaderCell>
               <Table.HeaderCell width={4}>Options</Table.HeaderCell>
-              <Table.HeaderCell width={8}>Wait Time</Table.HeaderCell>
+              <Table.HeaderCell width={4}>Wait Time</Table.HeaderCell>
+              <Table.HeaderCell width={4}>Vendor Orders / Resize</Table.HeaderCell>
             </Table.Header>
 
             <Table.Body>
@@ -160,6 +256,10 @@ export default class EmailListItemContent extends React.Component {
                     ))} />
                   <Table.Cell
                     content={this.defineWaitTime(product)} />
+                  
+                  <Table.Cell>
+                    {this.createAwaitingInventoryLabels(product, undefined)}
+                  </Table.Cell>
                 </Table.Row>
               ))}
 
@@ -184,6 +284,7 @@ export default class EmailListItemContent extends React.Component {
               </Table.Row>
 
               <Table.Row>
+                <Table.Cell />
                 <Table.Cell />
                 <Table.Cell />
                 <Table.Cell textAlign="right">
@@ -214,6 +315,7 @@ EmailListItemContent.propTypes = {
     totalInventory: PropTypes.number.isRequired,
     quantity: PropTypes.number.isRequired,
     quantity_shipped: PropTypes.number.isRequired,
+    awaitingInventory: PropTypes.array,
     awaitingInventoryExpectedDate: PropTypes.string,
     product_options: PropTypes.arrayOf(PropTypes.shape({
       display_name: PropTypes.string.isRequired,
