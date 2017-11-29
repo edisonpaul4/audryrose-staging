@@ -1,6 +1,6 @@
 const initialState = {
   isLoadingOrders: false,
-	orders: null
+	orders: []
 };
 
 const orders = (state = initialState, action) => {

@@ -5,11 +5,24 @@ import { Table, Menu, Icon } from "semantic-ui-react";
 const EmailList = props => (
   <Table>
     <Table.Header>
-      <Table.HeaderCell>Customer</Table.HeaderCell>
-      <Table.HeaderCell>Lifetime spend</Table.HeaderCell>
-      <Table.HeaderCell>Order</Table.HeaderCell>
-      <Table.HeaderCell>Label</Table.HeaderCell>
-      <Table.HeaderCell collapsing />
+      <Table.HeaderCell
+        content="Customer" />
+        
+      <Table.HeaderCell
+        content="Lifetime spend" />
+        
+      <Table.HeaderCell
+        content="Order" />
+        
+      <Table.HeaderCell 
+        content="Notes" />
+        
+      <Table.HeaderCell
+        content="Label" />
+        
+      <Table.HeaderCell
+        collapsing />
+        
     </Table.Header>
 
     <Table.Body>
