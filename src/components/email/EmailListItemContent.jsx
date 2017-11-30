@@ -19,10 +19,6 @@ export default class EmailListItemContent extends React.Component {
       const dayToReceive = new moment(product.awaitingInventoryExpectedDate).utc();
       const today = new moment().utc();
       const waitingDays = dayToReceive.utc().diff(today, 'DAYS');
-      if (product.productId === 712) {
-        console.log(dayToReceive.format('DD'), today.format('DD'))
-        console.log(waitingDays)
-      }
       let weeks = ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN'][Math.floor(waitingDays / 7)];
       if(typeof weeks === 'undefined')
         return 'ONE WEEK';
@@ -48,14 +44,17 @@ export default class EmailListItemContent extends React.Component {
       let label = null;
 
       if (ai.className === 'VendorOrderVariant') {
-        const vendorOrderMatch = product.awaitingInventoryVendorOrders.reduce((all, aivo) => {
-          if (aivo.vendorOrderVariants) {
-            const vovIndex = aivo.vendorOrderVariants.findIndex(vov => ai.objectId === vov.objectId);
-            return vovIndex !== -1 ? aivo : all;
+        let vendorOrder, vendorOrderVariant;
+        product.awaitingInventoryVendorOrders.forEach(vo => {
+          if (vo.vendorOrderVariants) {
+            const vovIndex = vo.vendorOrderVariants.findIndex(vov => ai.objectId === vov.objectId);
+            if (vovIndex !== -1) {
+              vendorOrder = vo;
+              vendorOrderVariant = vo.vendorOrderVariants[vovIndex];
+            }
           }
-          return all;
-        }, undefined);
-        label = this.getVendorOrderLabel(product.objectId, product.designerId, ai, vendorOrderMatch);
+        });
+        label = this.getVendorOrderLabel(product, product.designerId, vendorOrder, vendorOrderVariant);
       } else if (ai.className === 'Resize') {
         label = this.getResizeLabel(product.productId, ai);
       }
@@ -67,41 +66,92 @@ export default class EmailListItemContent extends React.Component {
     }, []);
   }
 
-  getVendorOrderLabel(productObjectId, designerId, vendorOrderVariant, vendorOrder, orderProductMatch) {
-    // Same code that is in OrderDetails.js
-    if (!vendorOrder) return <Label size='tiny' color='red' key={'product-' + productObjectId + '-' + vendorOrderVariant.objectId}>Error: Missing vendor order data</Label>;
-    console.log("--------------------------")
-    console.log(vendorOrder)
-    console.log(vendorOrderVariant)
-    console.log("--------------------------")
-    const averageWaitTime = vendorOrder.vendor.waitTime ? vendorOrder.vendor.waitTime : 21;
-    const expectedDate = vendorOrder.dateOrdered ? moment(vendorOrder.dateOrdered.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
-    const daysLeft = vendorOrder.dateOrdered ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
-    let labelColor = 'yellow';
-    let labelIcon;
-    if (vendorOrderVariant.done === true && !vendorOrderVariant.deleted) {
-      labelColor = 'olive';
-      labelIcon = <Icon name='checkmark' />;
-    } else if (vendorOrderVariant.ordered && daysLeft < 0 || vendorOrderVariant.deleted) {
-      labelColor = 'red';
-    } else if (vendorOrderVariant.ordered) {
-      labelColor = 'olive';
-    }
-    let labelText = vendorOrderVariant.ordered ? vendorOrderVariant.units + ' Sent' : vendorOrderVariant.units + ' Pending';
+  getVendorOrderLabel(product, designerId, vendorOrder, vendorOrderVariant) {
+    if (typeof vendorOrder === 'undefined')
+      return <Label size='tiny' color='red' key={'product-' + product.objectId}>Error: Missing vendor order data</Label>;
 
-    if (vendorOrderVariant.done === true && !vendorOrderVariant.deleted) {
-      labelText = vendorOrderVariant.received + ' Received';
-    } else if (vendorOrderVariant.deleted) {
-      labelText = vendorOrderVariant.received + ' Received before being deleted';
-    }// else if (vendorOrderVariant.ordered && vendorOrderVariant.received > 0) {
-    // 	labelText += ', ' + vendorOrderVariant.received + ' Received';
-    // }
-    labelText += ' #' + vendorOrder.vendorOrderNumber;
-    const labelDetailText = vendorOrder.dateOrdered && !vendorOrderVariant.deleted ? daysLeft < 0 ? moment(vendorOrder.dateOrdered.iso).format('M-D-YY') + ' (' + Math.abs(daysLeft) + ' days late)' : moment(vendorOrder.dateOrdered.iso).format('M-D-YY') + ' (' + daysLeft + ' days left)' : (!vendorOrderVariant.deleted ? averageWaitTime + ' days wait' : '');
-    const labelDetail = vendorOrderVariant.done === false ? <Label.Detail>{labelDetailText}</Label.Detail> : null;
-    const labelLink = vendorOrderVariant.done === false ? designerId ? '/designers/search?q=' + designerId : '/designers' : null;
-    let showLabel = true;
-    return showLabel ? <Label as={labelLink ? 'a' : null} href={labelLink} size='tiny' color={labelColor} key={'product-' + productObjectId + '-' + vendorOrderVariant.objectId}>{labelIcon}{labelText}{labelDetail}</Label> : null;
+    const getLabelText = (vo, vov) => {
+      let labelText = '';
+      switch(true) {
+        case vov.done === true && vov.deleted === false:
+          labelText = `${vendorOrderVariant.received} Received`;
+          break;
+
+        case vov.deleted === true:
+          labelText = `${vendorOrderVariant.received} Received before being deleted`;
+          break;
+
+        default:
+          labelText = vov.ordered ? `${vov.units} Sent` : `${vov.units} Pending`;
+          break;
+      }
+      return `${labelText} #${vo.vendorOrderNumber}`
+    }
+
+    const getDaysToWait = product => {
+      const averageWaitTime = product.averageWaitTime ? product.averageWaitTime : 21;
+      const expectedDate = product.awaitingInventoryExpectedDate ? moment(product.awaitingInventoryExpectedDate).utc() : moment().utc().add(averageWaitTime, 'days');
+      return {
+        daysLeft: expectedDate.diff(moment().utc(), 'DAYS'),
+        averageWaitTime
+      };
+    }
+
+    const getLabelColor = (vov, daysLeft) => {
+      switch (true) {
+        case (vov.done === true && vov.deleted === false) || vov.ordered === true:
+          return 'olive';
+        
+        case (vov.ordered && daysLeft < 0) || vov.deleted:
+          return 'red';
+      
+        default:
+          return 'yellow';
+      }
+    }
+
+    const getLabelDetail = (vo, vov, daysLeft, averageWaitTime) => {
+      if (vov.done === true || vov.deleted === true)
+        return null;
+
+      let labelDetailText;
+      if (typeof vo.dateOrdered !== 'undefined')
+        if (daysLeft < 0)
+          labelDetailText = `${moment(vo.dateOrdered.iso).format('M-D-YY')} (${Math.abs(daysLeft)} days late)`;
+        else
+          labelDetailText = `${moment(vo.dateOrdered.iso).format('M-D-YY')} (${daysLeft} days left)`;
+      else
+        labelDetailText = `${averageWaitTime} days wait`;
+
+      return <Label.Detail content={labelDetailText} />;
+    }
+
+    const getLabelLink = (vov, designerId) => {
+      if(vov.done === false)
+        if(typeof designerId !== 'undefined')
+          return `/designers/search?q=${designerId}`;
+        else
+          return '/designers';
+      else
+        return null;
+    }
+
+    const daysToWait = getDaysToWait(product);
+    const labelLink = getLabelLink(vendorOrderVariant, designerId);
+    const labelColor = getLabelColor(vendorOrderVariant, daysToWait.daysLeft);
+    const labelIcon = vendorOrderVariant.done === true && vendorOrderVariant.deleted === false ? <Icon name='checkmark' /> : null;
+    const labelText = getLabelText(vendorOrder, vendorOrderVariant);
+    const labelDetail = getLabelDetail(vendorOrder, vendorOrderVariant, daysToWait.daysLeft, daysToWait.averageWaitTime);
+    return (
+      <Label 
+        as={labelLink ? 'a' : null}
+        href={labelLink}
+        size='tiny'
+        color={labelColor}
+        key={'product-' + product.objectId}>
+        {labelIcon}{labelText}{labelDetail}
+      </Label>
+    );
   }
 
   getResizeLabel(productId, resizeOrder) {
