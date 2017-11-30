@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Table, Icon, Dropdown } from 'semantic-ui-react';
 
+import OrderNotesModal from '../OrderNotesModal';
+
 export default class EmailListItem extends React.Component {
   constructor(props) {
     super(props);
@@ -16,7 +18,7 @@ export default class EmailListItem extends React.Component {
   }
 
   render() {
-    const { customerId, name, lifetimeOrders, lifetimeSpend, orderNumber, handleClick, active } = this.props;
+    const { customerMessage, staffNotes, internalNotes, designerNotes, orderId, customerId, name, lifetimeOrders, lifetimeSpend, orderNumber, handleClick, active, handleUpdateOrderNotes } = this.props;
     return (
       <Table.Row>
         <Table.Cell>
@@ -34,6 +36,17 @@ export default class EmailListItem extends React.Component {
 
         <Table.Cell
           content={`Order #${orderNumber}`} />
+
+        <Table.Cell 
+          collapsing>
+          <OrderNotesModal
+            orderId={orderId}
+            customerMessage={customerMessage}
+            staffNotes={staffNotes}
+            internalNotes={internalNotes}
+            designerNotes={designerNotes}
+            submitHandler={handleUpdateOrderNotes} />
+        </Table.Cell>
 
         <Table.Cell>
           <Dropdown
@@ -57,10 +70,12 @@ export default class EmailListItem extends React.Component {
 
 EmailListItem.propTypes = {
   active: PropTypes.bool.isRequired,
+  orderId: PropTypes.number.isRequired,
   customerId: PropTypes.number.isRequired,
   name: PropTypes.string.isRequired,
   lifetimeSpend: PropTypes.number,
   lifetimeOrders: PropTypes.number,
   orderNumber: PropTypes.number.isRequired,
-  handleClick: PropTypes.func.isRequired
+  handleClick: PropTypes.func.isRequired,
+  handleUpdateOrderNotes: PropTypes.func.isRequired
 }

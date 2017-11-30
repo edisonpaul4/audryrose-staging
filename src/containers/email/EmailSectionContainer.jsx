@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { Grid, Segment } from 'semantic-ui-react';
 
 import { getOrdersToSendEmails, sendOrderEmail, deleteOrderEmail } from '../../actions/emailOrders';
+import { updateOrderNotes } from '../../actions/orders';
 import { EmailList, EmailListItem, EmailListItemContent, EmailsFieldUpdater } from '../../components/email/';
 
 export class EmailSectionContainer extends React.Component {
@@ -57,6 +58,10 @@ export class EmailSectionContainer extends React.Component {
     this.props.getOrdersToSendEmails();
   }
 
+  handleUpdateOrderNotes(orderId, orderNotes) {
+    this.props.updateOrderNotes(this.props.token, orderId, orderNotes);
+  }
+
   render() {
     const { activeOrdersIndexes, activeOrderPage, totalOrdersPerPage, emailsLastLine, emailsSubject } = this.state;
 
@@ -69,6 +74,12 @@ export class EmailSectionContainer extends React.Component {
           <EmailListItem
             key={'ELI' + index}
             active={activeOrdersIndexes.indexOf(index) !== -1}
+            orderId={current.orderId}
+            customerMessage={current.customerMessage}
+            staffNotes={current.staffNotes}
+            internalNotes={current.internalNotes}
+            designerNotes={current.designerNotes}
+            handleUpdateOrderNotes={this.handleUpdateOrderNotes.bind(this)}
             customerId={current.customer.customerId}
             name={`${current.customer.firstName} ${current.customer.lastName}`}
             orderNumber={current.orderId}
@@ -133,7 +144,8 @@ const state = state => ({
 const actions = {
   getOrdersToSendEmails,
   sendOrderEmail,
-  deleteOrderEmail
+  deleteOrderEmail,
+  updateOrderNotes
 };
 
 export default connect(state, actions)(EmailSectionContainer);

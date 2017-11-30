@@ -16,7 +16,6 @@ export default class OrderNotesModal extends React.Component {
   }
 
   onSubmit() {
-    console.log('OrderNotesModal::onSubmit');
     this.setState({ modalOpen: false });
     this.props.submitHandler(this.state.orderId, {
       designerNotes: this.state.designerNotes,
@@ -87,5 +86,6 @@ OrderNotesModal.propTypes = {
   customerMessage: PropTypes.string,
   designerNotes: PropTypes.string,
   staffNote: PropTypes.string,
+  internalNotes: PropTypes.string,
   submitHandler: PropTypes.func.isRequired
 }
