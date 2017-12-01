@@ -18,8 +18,11 @@ class VendorOrdersContainer extends React.Component {
   }
 
   handlePageChange(newPage) {
+    console.log('VendorOrdersContainer::handlePageChange');
+    console.log(Math.floor(this.props.vendorOrders.length / this.state.totalOrdersPerPage), newPage);
+    console.log('---------------------------------------');
     if (newPage < 0
-      || newPage >= (this.props.vendorOrders.length / this.state.totalOrdersPerPage))
+      || newPage >= Math.floor(this.props.vendorOrders.length / this.state.totalOrdersPerPage))
       return;
     this.setState({ activeOrderPage: newPage });
   }
@@ -45,6 +48,7 @@ class VendorOrdersContainer extends React.Component {
 
   getSortedVendorOrders(sortBy = 'all', sortDirection = "ASC") {
     const { vendorOrders } = this.props;
+    // const vendorOrders = this.props.vendorOrders.slice(0, 10)
     switch (true) {
       case sortBy === "dateAdded":
         return vendorOrders.sort((a, b) => {
@@ -106,6 +110,7 @@ class VendorOrdersContainer extends React.Component {
                   productName={vendorOrder.productName}
                   retailPrice={vendorOrder.retailPrice}
                   productOptions={vendorOrder.productOptions}
+                  variantOptions={vendorOrder.variantOptions}
                   totalInventory={vendorOrder.totalInventory}
                   totalAwaiting={vendorOrder.totalAwaiting}
                   unitsToOrder={vendorOrder.unitsToOrder}

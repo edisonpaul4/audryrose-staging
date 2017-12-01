@@ -12,7 +12,9 @@ class VendorOrderListItem extends React.Component {
   }
 
   render() {
-    const { dateAdded, designerId, designerName, productId, productName, retailPrice, productOptions, totalInventory, totalAwaiting, unitsToOrder, note, internalNote, handleOnDelete, vendorOrderObjectId, vendorOrderVariantObjectId, designerObjectId } = this.props;
+    const { dateAdded, designerId, designerName, productId, productName, retailPrice, productOptions, variantOptions, totalInventory, totalAwaiting, unitsToOrder, note, internalNote, handleOnDelete, vendorOrderObjectId, vendorOrderVariantObjectId, designerObjectId } = this.props;
+
+    const options = typeof variantOptions !== 'undefined' ? variantOptions : productOptions;
 
     return (
       <Table.Row
@@ -35,7 +37,7 @@ class VendorOrderListItem extends React.Component {
 
         <Table.Cell
           collapsing
-          content={productOptions.map(({ displayName, displayValue }, i) => (
+          content={options.map(({ displayName, displayValue }, i) => (
             <div key={i}>{`${displayName}: ${displayValue}`}</div>
           ))} />
 
@@ -45,9 +47,13 @@ class VendorOrderListItem extends React.Component {
 
         <Table.Cell content={unitsToOrder | 0} />
 
-        <Table.Cell content={note} />
+        <Table.Cell>
+          <span dangerouslySetInnerHTML={{ __html: note }} />
+        </Table.Cell>
 
-        <Table.Cell content={internalNote} />
+        <Table.Cell>
+          <span dangerouslySetInnerHTML={{ __html: internalNote }} />
+        </Table.Cell>
 
         <Table.Cell
           onClick={e => handleOnDelete(vendorOrderObjectId, vendorOrderVariantObjectId)}
@@ -69,6 +75,10 @@ VendorOrderListItem.propTypes = {
   productName: PropTypes.string,
   retailPrice: PropTypes.number,
   productOptions: PropTypes.arrayOf(PropTypes.shape({
+    displayName: PropTypes.string,
+    displayValue: PropTypes.string,
+  })),
+  variantOptions: PropTypes.arrayOf(PropTypes.shape({
     displayName: PropTypes.string,
     displayValue: PropTypes.string,
   })),
