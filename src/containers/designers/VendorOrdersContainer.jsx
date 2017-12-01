@@ -110,6 +110,7 @@ class VendorOrdersContainer extends React.Component {
                   productName={vendorOrder.productName}
                   retailPrice={vendorOrder.retailPrice}
                   productOptions={vendorOrder.productOptions}
+                  variantOptions={vendorOrder.variantOptions}
                   totalInventory={vendorOrder.totalInventory}
                   totalAwaiting={vendorOrder.totalAwaiting}
                   unitsToOrder={vendorOrder.unitsToOrder}
