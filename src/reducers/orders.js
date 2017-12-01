@@ -47,7 +47,10 @@ const orders = (state = initialState, action) => {
       if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
         ...state,
-        updatedOrders: action.res.updatedOrders,
+        updatedOrders: [
+          ...state.updatedOrders,
+          ...action.res.updatedOrders
+        ],
         tabCounts: action.res.tabCounts
       };
 
@@ -65,7 +68,10 @@ const orders = (state = initialState, action) => {
       if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
         ...state,
-        updatedOrders: action.res.updatedOrders,
+        updatedOrders: [
+          ...state.updatedOrders,
+          ...action.res.updatedOrders
+        ],
         errors: action.res.errors,
         generatedFile: action.res.generatedFile,
         newFiles: action.res.newFiles
@@ -85,7 +91,10 @@ const orders = (state = initialState, action) => {
       if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
         ...state,
-        updatedOrders: action.res.updatedOrders,
+        updatedOrders: [
+          ...state.updatedOrders,
+          ...action.res.updatedOrders
+        ],
         tabCounts: action.res.tabCounts,
         errors: action.res.errors,
         generatedFile: action.res.generatedFile,
@@ -182,7 +191,10 @@ const orders = (state = initialState, action) => {
       if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
         ...state,
-        updatedOrders: action.res.updatedOrders,
+        updatedOrders: [
+          ...state.updatedOrders,
+          ...action.res.updatedOrders
+        ],
         tabCounts: action.res.tabCounts,
         errors: action.res.errors
       };
@@ -201,7 +213,10 @@ const orders = (state = initialState, action) => {
       if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
         ...state,
-        updatedOrders: action.res.updatedOrders
+        updatedOrders: [
+          ...state.updatedOrders,
+          ...action.res.updatedOrders
+        ]
       };
 
     case 'ORDER_SAVE_FAILURE':
@@ -218,7 +233,10 @@ const orders = (state = initialState, action) => {
       if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
         ...state,
-        updatedOrders: action.res.updatedOrders
+        updatedOrders: [
+          ...state.updatedOrders,
+          ...action.res.updatedOrders
+        ]
       };
 
     case 'ORDER_PRODUCT_SAVE_FAILURE':
