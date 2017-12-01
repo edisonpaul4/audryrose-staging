@@ -324,42 +324,35 @@ class Orders extends Component {
 	componentWillReceiveProps(nextProps) {
   	let scope = this;
   	let nextPage = parseFloat(nextProps.location.query.page);
-  	if (!nextPage) nextPage = 1;
+		if (!nextPage) nextPage = 1;
   	let expandedOrders = this.state.expandedOrders;
 
   	let currentOrders = this.state.orders;
-  	if (nextProps.orders) currentOrders = nextProps.orders;
+		if (nextProps.orders) currentOrders = nextProps.orders;
   	let orders = [];
   	let currentlyReloading = this.state.isReloading;
 
-  	if (nextProps.updatedOrders) {
-      currentOrders.map(function(order, i) {
-        let addUpdatedOrder;
-        nextProps.updatedOrders.map(function(updatedOrder, i) {
-        	// If updated product exists, push it into the state products array
-        	if (updatedOrder.get('orderId') === order.orderId) {
-          	addUpdatedOrder = updatedOrder.toJSON();
-          	if (!addUpdatedOrder.dateNeeded) addUpdatedOrder.dateNeeded = '';
-        	}
-        	return updatedOrder;
-      	});
-        if (addUpdatedOrder) {
-          orders.push(addUpdatedOrder);
-        } else {
-          orders.push(order);
-        }
-        // If currently reloading and has successfully updated order, remove updated order
-      	if (currentlyReloading.length && addUpdatedOrder) {
-        	const index = currentlyReloading.indexOf(addUpdatedOrder.orderId);
-          if (index >= 0) currentlyReloading.splice(index, 1);
-        }
-        return order;
-      });
+  	if (nextProps.updatedOrders.length !== 0) {
+			nextProps.updatedOrders.map(o => o.toJSON()).forEach(up => {
+				if (!up.dateNeeded)
+					up.dateNeeded = '';
 
-    } else {
-      orders = currentOrders;
-    }
-    if (nextProps.timeout) currentlyReloading = [];
+				if (currentlyReloading.length !== -1) {
+					const index = currentlyReloading.indexOf(up.orderId);
+					if (index !== -1)
+						currentlyReloading.splice(index, 1);
+				}
+				const orderIndex = currentOrders.findIndex(co => co.objectId === up.objectId);
+				currentOrders = [
+					...currentOrders.slice(0, orderIndex),
+					up,
+					...currentOrders.slice(orderIndex + 1),
+				]
+			});
+		}
+		orders = currentOrders;
+
+		if (nextProps.timeout) currentlyReloading = [];
 
   	// Update tab counts if available
   	const tabCounts = nextProps.tabCounts ? nextProps.tabCounts : this.state.tabCounts;
@@ -367,7 +360,7 @@ class Orders extends Component {
     // Reset on subpage navigation
   	const search = nextProps.router.params.subpage !== 'search' ? null : this.state.search;
   	expandedOrders = nextProps.router.params.subpage !== this.state.subpage ? [] : expandedOrders;
-  	if (nextProps.router.params.subpage === 'search' && orders && orders.length === 1) expandedOrders = [orders[0].orderId];
+		if (nextProps.router.params.subpage === 'search' && orders && orders.length === 1) expandedOrders = [orders[0].orderId];
 
 		// Display any errors
 		let newErrors = [];
@@ -526,7 +519,7 @@ class Orders extends Component {
 				    subpage={scope.state.subpage}
 				    data={orderData}
 				    expanded={expanded}
-				    key={`${orderData.orderId}-1`}
+				    key={`${orderData.orderId}`}
 				    isReloading={isReloading}
 				    handleToggleClick={scope.handleToggleClick}
 				    handleCheckboxClick={scope.handleCheckboxClick}
