@@ -1,6 +1,7 @@
 const initialState = {
   isLoadingOrders: false,
-	orders: []
+  orders: [],
+  updatedOrders: []
 };
 
 const orders = (state = initialState, action) => {
@@ -160,7 +161,10 @@ const orders = (state = initialState, action) => {
       if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
         ...state,
-        updatedOrders: action.res.updatedOrders,
+        updatedOrders: [
+          ...state.updatedOrders,
+          ...action.res.updatedOrders
+        ],
         tabCounts: action.res.tabCounts
       };
 
