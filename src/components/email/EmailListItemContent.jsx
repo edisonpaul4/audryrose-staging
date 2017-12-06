@@ -19,7 +19,8 @@ export default class EmailListItemContent extends React.Component {
       const dayToReceive = new moment(product.awaitingInventoryExpectedDate).utc();
       const today = new moment().utc();
       const waitingDays = dayToReceive.utc().diff(today, 'DAYS');
-      let weeks = ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN'][Math.floor(waitingDays / 7)];
+      // let weeks = ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN'][Math.floor(waitingDays / 7)];
+      let weeks = ['ONE', 'TWO', 'TWO', 'FOUR', 'FIVE', 'SIX', 'SEVEN'][Math.floor(waitingDays / 7)]; // TODO: this is just for xmas
       if(typeof weeks === 'undefined')
         return 'ONE WEEK';
       else 
@@ -33,7 +34,8 @@ export default class EmailListItemContent extends React.Component {
           return 'ONE WEEK';
 
         case product.isActive && product.totalInventory === 0 && product.quantity_shipped === 0:
-          return 'THREE WEEKS';
+          // return 'THREE WEEKS';
+          return 'TWO WEEKS'; // TODO: this is just for xmas
       }
     }
   }
