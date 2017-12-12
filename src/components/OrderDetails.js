@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router';
-import { Table, Button, Dropdown, Dimmer, Segment, Loader, Icon, Label } from 'semantic-ui-react';
+import { Table, Button, Dropdown, Dimmer, Segment, Loader, Icon, Label, Checkbox } from 'semantic-ui-react';
 import classNames from 'classnames';
 // import numeral from 'numeral';
 import moment from 'moment';
@@ -113,6 +113,15 @@ class ProductRow extends Component {
   	if (nextProps.variant) state.variant = nextProps.variant;
   	this.setState(state);
 	}
+
+	handleProductChecked(isChecked) {
+		this.props.handleProductChecked({
+			checked: isChecked,
+			productId: this.props.product.product_id,
+			productOrderId: this.props.product.orderProductId
+		});
+	}
+
 	render() {
   	const scope = this;
 		const product = this.state.product;
@@ -248,10 +257,16 @@ class ProductRow extends Component {
     return (
       <Table.Row>
         <Table.Cell>{productLink}</Table.Cell>
-        <Table.Cell>
-          {options}
-        </Table.Cell>
+        <Table.Cell>{options}</Table.Cell>
         <Table.Cell>{productQuantity}</Table.Cell>
+
+				<Table.Cell collapsing>
+					{product.quantity_shipped > 0 ? (
+						<Checkbox
+							onChange={(e, data) => this.handleProductChecked(data.checked)} />
+					) : null}
+				</Table.Cell>
+
 				<Table.Cell>{alwaysResize}</Table.Cell>
 				<Table.Cell>{inventory}</Table.Cell>
 				<Table.Cell>{variant ? variant.inventoryOnHand : null}</Table.Cell>
@@ -285,7 +300,8 @@ class OrderDetails extends Component {
       shipModalOpen: false,
       shippedGroups: null,
       shippableGroups: null,
-      unshippableGroups: null
+			unshippableGroups: null,
+			checkedProducts: []
     };
     this.handleReloadClick = this.handleReloadClick.bind(this);
     this.handleShipModalOpen = this.handleShipModalOpen.bind(this);
@@ -465,6 +481,24 @@ class OrderDetails extends Component {
 
     return {shippedGroups, shippableGroups, unshippableGroups};
 	}
+
+	setCheckedProduct({ checked, productId, productOrderId }) {
+		const index = this.state.checkedProducts.findIndex(cp => cp.productOrderId === productOrderId);
+		if(checked)
+			this.setState({ checkedProducts: [
+				...this.state.checkedProducts.slice(0, index),
+				{ productId, productOrderId },
+				...this.state.checkedProducts.slice(index)
+			] });
+		else
+			this.setState({
+				checkedProducts: [
+					...this.state.checkedProducts.slice(0, index),
+					...this.state.checkedProducts.slice(index + 1)
+				]
+			});
+	}
+
 	render() {
   	const scope = this;
   	const showProducts = this.props.expanded ? true : false;
@@ -502,11 +536,11 @@ class OrderDetails extends Component {
 
         if (variants) {
     			variants.map(function(variant, j) {
-      			productRows.push(<ProductRow product={productRow} variant={variant} shipment={shipment} handleShipModalOpen={scope.handleShipModalOpen} key={i+'-'+j} handleShowOrderFormClick={scope.handleShowOrderFormClick} handleOrderProductEditClick={scope.handleOrderProductEditClick} />);
+      			productRows.push(<ProductRow product={productRow} variant={variant} shipment={shipment} handleShipModalOpen={scope.handleShipModalOpen} key={i+'-'+j} handleShowOrderFormClick={scope.handleShowOrderFormClick} handleOrderProductEditClick={scope.handleOrderProductEditClick} handleProductChecked={scope.setCheckedProduct.bind(scope)} />);
       			return variant;
     			});
   			} else if (productRow.isCustom) {
-    			productRows.push(<ProductRow product={productRow} shipment={shipment} handleShipModalOpen={scope.handleShipModalOpen} key={i+'-Custom'} handleShowOrderFormClick={scope.handleShowOrderFormClick} handleOrderProductEditClick={scope.handleOrderProductEditClick} />);
+    			productRows.push(<ProductRow product={productRow} shipment={shipment} handleShipModalOpen={scope.handleShipModalOpen} key={i+'-Custom'} handleShowOrderFormClick={scope.handleShowOrderFormClick} handleOrderProductEditClick={scope.handleOrderProductEditClick} handleProductChecked={scope.setCheckedProduct.bind(scope)} />);
   			}
 
 				return productRow;
@@ -537,6 +571,32 @@ class OrderDetails extends Component {
               disabled={this.props.isReloading}
               onClick={()=>this.handleReloadClick(this.props.data.orderId)}
             />
+
+            {this.state.products.findIndex(p => p.quantity_shipped && p.quantity_shipped > 0) !== -1? (
+							<span>
+								<Button circular compact basic size='tiny'
+									icon='truck'
+									content='Return'
+									disabled={this.props.isReloading}
+									onClick={() => this.handleReloadClick(this.props.data.orderId)}
+								/>
+
+								<Button circular compact basic size='tiny'
+									icon='wrench'
+									content='Repair'
+									disabled={this.props.isReloading}
+									onClick={() => this.handleReloadClick(this.props.data.orderId)}
+								/>
+
+								<Button circular compact basic size='tiny'
+									icon='crop'
+									content='Resize'
+									disabled={this.props.isReloading}
+									onClick={() => this.handleReloadClick(this.props.data.orderId)}
+								/>
+							</span>
+						) : null}
+
             {shipAllButton}
             <Segment secondary>
               <Table className='order-products-table' basic='very' size='small' columns={9}>
@@ -545,6 +605,7 @@ class OrderDetails extends Component {
                     <Table.HeaderCell>Product</Table.HeaderCell>
                     <Table.HeaderCell>Options</Table.HeaderCell>
                     <Table.HeaderCell>Quantity</Table.HeaderCell>
+                    <Table.HeaderCell collapsing />
                     <Table.HeaderCell>Always Resize</Table.HeaderCell>
                     <Table.HeaderCell>Inventory</Table.HeaderCell>
                     <Table.HeaderCell>Available</Table.HeaderCell>
