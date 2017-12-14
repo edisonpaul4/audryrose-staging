@@ -29,6 +29,15 @@ class Navigation extends Component {
 					<Menu.Item href='/products' active={pathName.includes('/products')} link>Products</Menu.Item>
 					<Menu.Item href='/shipments' active={pathName.includes('/shipments')} link>Shipments</Menu.Item>
 					<Menu.Item href='/designers' active={pathName.includes('/designers')} link>Designers</Menu.Item>
+
+					<Menu.Item href='/product-stats' active={pathName.includes('/product-stats')} link>
+						Product stats
+					</Menu.Item>
+
+					<Menu.Item href='/repairs-resizes/all' active={pathName.includes('/repairs-resizes')} link>
+						Repairs / Resizes
+					</Menu.Item>
+					
 					<Menu.Menu position='right'>
 			      <Dropdown item text='Settings'>
 			        <Dropdown.Menu>
