@@ -461,7 +461,7 @@ class VariantsTable extends Component {
               <Table.HeaderCell>Size</Table.HeaderCell>
               <Table.HeaderCell>Other Options</Table.HeaderCell>
               <Table.HeaderCell>ACT OH</Table.HeaderCell>
-              <Table.HeaderCell>Inventory on Hand</Table.HeaderCell>
+              <Table.HeaderCell>Available</Table.HeaderCell>
               <Table.HeaderCell>Total Awaiting</Table.HeaderCell>
               <Table.HeaderCell>Ordered/Resizing</Table.HeaderCell>
               <Table.HeaderCell>RETAIL $</Table.HeaderCell>
