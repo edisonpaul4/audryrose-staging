@@ -772,7 +772,7 @@ class Products extends Component {
 							</Table.HeaderCell>
 
 							<Table.HeaderCell className='right aligned'>
-								Inventory on Hand
+								Available
 							</Table.HeaderCell>
 
 							<Table.HeaderCell 

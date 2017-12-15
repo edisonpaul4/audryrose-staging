@@ -547,7 +547,7 @@ class OrderDetails extends Component {
                     <Table.HeaderCell>Quantity</Table.HeaderCell>
                     <Table.HeaderCell>Always Resize</Table.HeaderCell>
                     <Table.HeaderCell>Inventory</Table.HeaderCell>
-                    <Table.HeaderCell>Inventory on hand</Table.HeaderCell>
+                    <Table.HeaderCell>Available</Table.HeaderCell>
                     <Table.HeaderCell>Designer</Table.HeaderCell>
                     <Table.HeaderCell>Vendor Orders / Resize</Table.HeaderCell>
                     <Table.HeaderCell className='right aligned'>Actions</Table.HeaderCell>
