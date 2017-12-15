@@ -564,7 +564,8 @@ class Products extends Component {
           sizeScale: product.sizeScale,
           sku: product.sku,
 					total_stock: product.total_stock,
-					needToOrder: product.needToOrder
+					needToOrder: product.needToOrder,
+					inventoryOnHand: product.inventoryOnHand
   			}
 				productRows.push(
 				  <Product
@@ -601,7 +602,8 @@ class Products extends Component {
             department: product.department,
             vendor: product.vendor,
 						bundleVariants: product.bundleVariants,
-						needToOrder: product.needToOrder
+						needToOrder: product.needToOrder,
+						inventoryOnHand: product.inventoryOnHand
     			}
   				productRows.push(
   				  <ProductDetails
@@ -767,7 +769,11 @@ class Products extends Component {
                 sorted={sortColumn === 'stock' ? (this.state.sort === 'stock-asc' ? 'ascending' : 'descending') : null}
                 onClick={this.state.sort === 'stock-desc' ? ()=>this.handleSortClick('stock-asc') : ()=>this.handleSortClick('stock-desc')}>
                 Stock {stockIcon}
-              </Table.HeaderCell>
+							</Table.HeaderCell>
+
+							<Table.HeaderCell className='right aligned'>
+								Inventory on Hand
+							</Table.HeaderCell>
 
 							<Table.HeaderCell 
 								className='right aligned'
