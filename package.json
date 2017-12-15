@@ -1,6 +1,6 @@
 {
   "name": "loveaudryrose-ims",
-  "version": "0.2.64",
+  "version": "0.2.70",
   "private": true,
   "devDependencies": {
     "nodemon": "^1.10.2",
