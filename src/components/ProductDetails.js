@@ -277,6 +277,7 @@ class VariantRow extends Component {
         <Table.Cell>{data.size_value ? data.size_value : 'OS'}</Table.Cell>
         <Table.Cell>{otherOptions ? otherOptions.join(', ') : null}</Table.Cell>
 				<Table.Cell><Input fluid type='number' value={this.state.inventory ? this.state.inventory : 0} onChange={this.handleInventoryChange} min={0} disabled={this.props.isSaving} /></Table.Cell>
+				<Table.Cell>{data.inventoryOnHand}</Table.Cell>
 				<Table.Cell>{totalAwaitingInventory}</Table.Cell>
 				<Table.Cell>{vendorOrderAndResizes}</Table.Cell>
 				<Table.Cell>{numeral(data.adjustedPrice).format('$0,0.00')}</Table.Cell>
@@ -452,7 +453,7 @@ class VariantsTable extends Component {
     return (
       <Segment secondary>
         {tableTitle}
-        <Table className='variants-table' basic='very' compact size='small' columns={7}>
+        <Table className='variants-table' basic='very' compact size='small' columns={16}>
           <Table.Header>
             <Table.Row>
               <Table.HeaderCell>Style-Color</Table.HeaderCell>
@@ -460,6 +461,7 @@ class VariantsTable extends Component {
               <Table.HeaderCell>Size</Table.HeaderCell>
               <Table.HeaderCell>Other Options</Table.HeaderCell>
               <Table.HeaderCell>ACT OH</Table.HeaderCell>
+              <Table.HeaderCell>Inventory on Hand</Table.HeaderCell>
               <Table.HeaderCell>Total Awaiting</Table.HeaderCell>
               <Table.HeaderCell>Ordered/Resizing</Table.HeaderCell>
               <Table.HeaderCell>RETAIL $</Table.HeaderCell>
@@ -875,7 +877,7 @@ class ProductDetails extends Component {
 
     return (
       <Table.Row className={rowClass}>
-        <Table.Cell colSpan='13' className='variant-row'>
+        <Table.Cell colSpan='16' className='variant-row'>
           <Dimmer.Dimmable as={Segment} vertical dimmed={this.props.isReloading}>
             <Dimmer active={this.props.isReloading} inverted>
               <Loader>Loading</Loader>

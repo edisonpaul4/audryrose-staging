@@ -254,6 +254,7 @@ class ProductRow extends Component {
         <Table.Cell>{productQuantity}</Table.Cell>
 				<Table.Cell>{alwaysResize}</Table.Cell>
 				<Table.Cell>{inventory}</Table.Cell>
+				<Table.Cell>{variant.inventoryOnHand ? variant.inventoryOnHand : 0}</Table.Cell>
 				<Table.Cell>{designerName}</Table.Cell>
 				<Table.Cell>{/*{vendorOrders}{resizes}*/}{awaitingInventoryQueue}</Table.Cell>
 				<Table.Cell className='right aligned'>
@@ -352,7 +353,7 @@ class OrderDetails extends Component {
         total_tax: product.total_tax,
   			variants: product.variants, //TODO: SIMPLIFY THIS
   			vendorOrders: product.vendorOrders, //TODO: SIMPLIFY THIS
-        weight: product.weight
+        weight: product.weight,
   		};
   	});
 		return objs;
@@ -546,6 +547,7 @@ class OrderDetails extends Component {
                     <Table.HeaderCell>Quantity</Table.HeaderCell>
                     <Table.HeaderCell>Always Resize</Table.HeaderCell>
                     <Table.HeaderCell>Inventory</Table.HeaderCell>
+                    <Table.HeaderCell>Inventory on hand</Table.HeaderCell>
                     <Table.HeaderCell>Designer</Table.HeaderCell>
                     <Table.HeaderCell>Vendor Orders / Resize</Table.HeaderCell>
                     <Table.HeaderCell className='right aligned'>Actions</Table.HeaderCell>
