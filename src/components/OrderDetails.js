@@ -254,7 +254,7 @@ class ProductRow extends Component {
         <Table.Cell>{productQuantity}</Table.Cell>
 				<Table.Cell>{alwaysResize}</Table.Cell>
 				<Table.Cell>{inventory}</Table.Cell>
-				<Table.Cell>{variant.inventoryOnHand ? variant.inventoryOnHand : 0}</Table.Cell>
+				<Table.Cell>{variant ? variant.inventoryOnHand : null}</Table.Cell>
 				<Table.Cell>{designerName}</Table.Cell>
 				<Table.Cell>{/*{vendorOrders}{resizes}*/}{awaitingInventoryQueue}</Table.Cell>
 				<Table.Cell className='right aligned'>
