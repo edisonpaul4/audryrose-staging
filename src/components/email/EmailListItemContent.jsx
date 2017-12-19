@@ -240,7 +240,7 @@ export default class EmailListItemContent extends React.Component {
 
     // const msgFooter = `\n\nWe guarantee ${footerMessages} will arrive before Christmas; but if you need it by a certain date, kindly let us know so we can do our best to accommodate you.\n\nPlease let me know if you have any question or concerns.\n\n`;
     // TODO: this is only on xmas
-    const msgFooter = `\n\nIf we need to overnight it we will to insure it gets to you on time!\n\nPlease let me know if you have any question or concerns.\n\nMerry Christmas & Happy New Year!\n\n`;
+    const msgFooter = `\n\nPlease let me know if you have any question or concerns.\n\nMerry Christmas & Happy New Year!\n\n`;
     const lastLine = emailLastLine + '\n\n';
     const msgBrand = `Tracy Inoue\nwww.loveaudryrose.com\n424.387.8000`;
     return msgHeader + msgContent + msgFooter + lastLine + msgBrand;
