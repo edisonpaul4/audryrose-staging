@@ -26,6 +26,13 @@ class RepairsResizesContainer extends React.Component {
               active={this.props.location.pathname === "/repairs-resizes/returns"}
               link
               content="Returns" />
+
+            <Menu.Item
+              as={Link}
+              to="/repairs-resizes/resize"
+              active={this.props.location.pathname === "/repairs-resizes/resize"}
+              link
+              content="Resizes" />
           </Menu>
         </Grid.Column>
 

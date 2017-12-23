@@ -480,6 +480,12 @@ const finishPendingVendorOrderProduct = (vendorOrderObjectId, vendorOrderVariant
   vendorOrderVariantObjectId
 });
 
+const createReturn = (returnTypeId, products, token) => axios.post('/functions/createReturn', {
+  sessionToken: token,
+  returnTypeId,
+  products
+});
+
 export default {
   signup,
   login,
@@ -527,5 +533,6 @@ export default {
   deleteOrderEmail,
   getRatesForShipment,
   getAllPendingVendorOrders,
-  finishPendingVendorOrderProduct
+  finishPendingVendorOrderProduct,
+  createReturn
 }

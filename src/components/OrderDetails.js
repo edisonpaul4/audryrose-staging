@@ -117,8 +117,12 @@ class ProductRow extends Component {
 	handleProductChecked(isChecked) {
 		this.props.handleProductChecked({
 			checked: isChecked,
+			orderId: this.props.shipment.order_id,
+			orderProductId: this.props.product.orderProductId,
 			productId: this.props.product.product_id,
-			productOrderId: this.props.product.orderProductId
+			productVariantId: this.props.product.variants ? this.props.product.variants[0].variantId : null,
+			customerId: this.props.shipment.customer_id,
+			orderShipmentId: this.props.shipment.shipmentId
 		});
 	}
 
@@ -482,12 +486,12 @@ class OrderDetails extends Component {
     return {shippedGroups, shippableGroups, unshippableGroups};
 	}
 
-	setCheckedProduct({ checked, productId, productOrderId }) {
-		const index = this.state.checkedProducts.findIndex(cp => cp.productOrderId === productOrderId);
-		if(checked)
+	setCheckedProduct(data) {
+		const index = this.state.checkedProducts.findIndex(cp => cp.orderProductId === data.orderProductId);
+		if(data.checked)
 			this.setState({ checkedProducts: [
 				...this.state.checkedProducts.slice(0, index),
-				{ productId, productOrderId },
+				data,
 				...this.state.checkedProducts.slice(index)
 			] });
 		else
@@ -497,6 +501,14 @@ class OrderDetails extends Component {
 					...this.state.checkedProducts.slice(index + 1)
 				]
 			});
+	}
+
+	handleReturnsButtons(returnTypeId = null) {
+		if (returnTypeId === null || this.state.checkedProducts.length === 0)
+			alert('You must select at least one product.');
+		else
+			this.props.createReturn(returnTypeId, this.state.checkedProducts);
+		console.log(returnTypeId, JSON.stringify(this.state.checkedProducts))
 	}
 
 	render() {
@@ -578,21 +590,21 @@ class OrderDetails extends Component {
 									icon='truck'
 									content='Return'
 									disabled={this.props.isReloading}
-									onClick={() => this.handleReloadClick(this.props.data.orderId)}
+									onClick={() => this.handleReturnsButtons(0)}
 								/>
 
 								<Button circular compact basic size='tiny'
 									icon='wrench'
 									content='Repair'
 									disabled={this.props.isReloading}
-									onClick={() => this.handleReloadClick(this.props.data.orderId)}
+									onClick={() => this.handleReturnsButtons(1)}
 								/>
 
 								<Button circular compact basic size='tiny'
 									icon='crop'
 									content='Resize'
 									disabled={this.props.isReloading}
-									onClick={() => this.handleReloadClick(this.props.data.orderId)}
+									onClick={() => this.handleReturnsButtons(2)}
 								/>
 							</span>
 						) : null}

@@ -1,7 +1,8 @@
 const initialState = {
   isLoadingOrders: false,
   orders: [],
-  updatedOrders: []
+  updatedOrders: [],
+
 };
 
 const orders = (state = initialState, action) => {
@@ -290,6 +291,50 @@ const orders = (state = initialState, action) => {
         ...state,
         isLoadingOrders: false
       };
+
+    case 'ORDERS::CREATE_RETURN_REQUEST':
+      return {
+        ...state,
+        isLoadingOrders: true
+      }
+    
+    case 'ORDERS::CREATE_RETURN_SUCCESS':
+      console.log(action)
+      if (action.res.length === 0)
+        return state;
+      else
+        return {
+          ...state,
+          isLoadingOrders: false,
+          orders: action.res.reduce((allOrders, { orderProduct, returnObject }) => {
+            const orderIndex = allOrders.findIndex(o => 
+              o.orderProducts.findIndex(op => op.orderProductId === orderProduct.orderProductId) !== -1
+            );
+
+            if(orderIndex === -1)
+              return allOrders;
+
+            const orderProductIndex = allOrders[orderIndex].orderProducts.findIndex(op => op.orderProductId === orderProduct.orderProductId)
+            return [
+              ...allOrders.slice(0, orderIndex),
+              {
+                ...allOrders[orderIndex],
+                orderProducts: [
+                  ...allOrders[orderIndex].orderProducts.slice(0, orderProductIndex),
+                  orderProduct,
+                  ...allOrders[orderIndex].orderProducts.slice(orderProductIndex + 1)
+                ]
+              },
+              ...allOrders.slice(orderIndex + 1)
+            ]
+          }, state.orders)
+      }
+
+    case 'ORDERS::CREATE_RETURN_FAILURE':
+      return {
+        ...state,
+        isLoadingOrders: false
+      }
 
     default:
       return state;
