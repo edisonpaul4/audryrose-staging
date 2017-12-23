@@ -19,14 +19,11 @@ export default class EmailListItemContent extends React.Component {
       const dayToReceive = new moment(product.awaitingInventoryExpectedDate).utc();
       const today = new moment().utc();
       const waitingDays = dayToReceive.utc().diff(today, 'DAYS');
-      // let weeks = ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN'][Math.floor(waitingDays / 7)];
-      let weeks = ['ONE', 'ONE', 'ONE', 'ONE', 'FIVE', 'SIX', 'SEVEN'][Math.floor(waitingDays / 7)]; // TODO: this is just for xmas
+      let weeks = ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN'][Math.floor(waitingDays / 7)];
       if(typeof weeks === 'undefined')
         return 'ONE WEEK';
       else 
-        // return weeks + ' ' + (weeks === 'ONE' ? 'WEEK' : 'WEEKS');
-        // TODO: this is just for xmas
-        return weeks + ' ' + (weeks === 'ONE' ? 'WEEK' : 'WEEK');
+        return weeks + ' ' + (weeks === 'ONE' ? 'WEEK' : 'WEEKS');
 
     } else {
       switch (true) {
@@ -37,8 +34,7 @@ export default class EmailListItemContent extends React.Component {
           return 'ONE WEEK';
 
         case product.isActive && product.totalInventory === 0 && product.quantity_shipped === 0:
-          // return 'THREE WEEKS';
-          return 'ONE WEEK'; // TODO: this is just for xmas
+          return 'THREE WEEKS';
       }
     }
   }
@@ -216,31 +212,25 @@ export default class EmailListItemContent extends React.Component {
         return product.classificationName.toLowerCase();
     }
 
-    // const footerMessages = {
-    //   first: products.length === 1 ? 'this' : 'these',
-    //   second: products.length === 1 ? getClassificationName(products[0]) : 'pieces',
-    // }
-    
-    const footerMessages = products.filter(product => (product.totalInventory === 0 && product.quantity_shipped === 0)).length > 1 ? 'they' : 'it' ;
+    const footerMessages = {
+      first: products.length === 1 ? 'this' : 'these',
+      second: products.length === 1 ? getClassificationName(products[0]) : 'pieces',
+    }
 
     if (firstRule && firstRule.length > 0) 
       msgContent = msgContent + ` Your ${firstRule} shipped today, hope you love it!`;
 
     if (secondRule && secondRule.length > 0)
-      msgContent = msgContent + `\n\nYour ${secondRule} will ship this week and arrive for Christmas!`;
+      msgContent = msgContent + `\n\nYour ${secondRule} will take approximately one week to ship!`;
 
     if (thirdRule && thirdRule.length > 0) 
       msgContent = msgContent + thirdRule.map(product => {
-        // const isEarrings = product.classificationName === 'Earrings';
-        // const handmadeMessage = `as ${isEarrings ? 'they are': 'it is'} being handmade for you!`
-        // return `\n\nYour ${product.name} will take approximately ${this.defineWaitTime(product).toLowerCase()} to ship, ${handmadeMessage}`;
-        // TODO: this is only on xmas
-        return `\n\nYour ${product.name} will ship this week and arrive for Christmas!`;
+        const isEarrings = product.classificationName === 'Earrings';
+        const handmadeMessage = `as ${isEarrings ? 'they are': 'it is'} being handmade for you!`
+        return `\n\nYour ${product.name} will take approximately ${this.defineWaitTime(product).toLowerCase()} to ship, ${handmadeMessage}`;
       }).join('');
 
-    // const msgFooter = `\n\nWe guarantee ${footerMessages} will arrive before Christmas; but if you need it by a certain date, kindly let us know so we can do our best to accommodate you.\n\nPlease let me know if you have any question or concerns.\n\n`;
-    // TODO: this is only on xmas
-    const msgFooter = `\n\nPlease let me know if you have any question or concerns.\n\nMerry Christmas & Happy New Year!\n\n`;
+    const msgFooter = `\n\nIf you need ${footerMessages.first} ${footerMessages.second} by a certain date, please let us know so we can do our best to accommodate you.\n\nPlease let me know if you have any question or concerns.\n\n`;
     const lastLine = emailLastLine + '\n\n';
     const msgBrand = `Tracy Inoue\nwww.loveaudryrose.com\n424.387.8000`;
     return msgHeader + msgContent + msgFooter + lastLine + msgBrand;
