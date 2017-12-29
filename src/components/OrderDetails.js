@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router';
-import { Table, Button, Dropdown, Dimmer, Segment, Loader, Icon, Label, Checkbox } from 'semantic-ui-react';
+import { Table, Button, Dropdown, Dimmer, Segment, Loader, Icon, Label, Checkbox, Modal, Popup } from 'semantic-ui-react';
 import classNames from 'classnames';
 // import numeral from 'numeral';
 import moment from 'moment';
@@ -305,7 +305,9 @@ class OrderDetails extends Component {
       shippedGroups: null,
       shippableGroups: null,
 			unshippableGroups: null,
-			checkedProducts: []
+			checkedProducts: [],
+			showReturnButtonsPopup: false,
+			showReturnResizePopup: false
     };
     this.handleReloadClick = this.handleReloadClick.bind(this);
     this.handleShipModalOpen = this.handleShipModalOpen.bind(this);
@@ -491,7 +493,10 @@ class OrderDetails extends Component {
 		if(data.checked)
 			this.setState({ checkedProducts: [
 				...this.state.checkedProducts.slice(0, index),
-				data,
+				{
+					...data,
+					options: this.state.checkedProducts.length !== 0 ? this.state.checkedProducts[0].options : []
+				},
 				...this.state.checkedProducts.slice(index)
 			] });
 		else
@@ -509,6 +514,18 @@ class OrderDetails extends Component {
 		else
 			this.props.createReturn(returnTypeId, this.state.checkedProducts);
 		console.log(returnTypeId, JSON.stringify(this.state.checkedProducts))
+	}
+
+	handleResizeSizeReturnSelected(e, { name, value }) {
+		this.setState({
+			checkedProducts: this.state.checkedProducts.map(checkedProduct => ({
+				...checkedProduct,
+				options: [{
+					optionType: 'resize',
+					newSize: value
+				}]
+			}))
+		});
 	}
 
 	render() {
@@ -585,28 +602,63 @@ class OrderDetails extends Component {
             />
 
             {this.state.products.findIndex(p => p.quantity_shipped && p.quantity_shipped > 0) !== -1? (
-							<span>
-								<Button circular compact basic size='tiny'
-									icon='truck'
-									content='Return'
-									disabled={this.props.isReloading}
-									onClick={() => this.handleReturnsButtons(0)}
-								/>
+							<Popup 
+								header="Returns' buttons are disabled"
+								content="Please select at least one product to create a return label"
+								onOpen={() => this.setState({ showReturnButtonsPopup: this.state.checkedProducts.length === 0 })}
+								onClose={() => this.setState({ showReturnButtonsPopup: false })}
+								open={this.state.showReturnButtonsPopup}
+								trigger={
+								<span>
+									<Button circular compact basic size='tiny'
+										icon='truck'
+										content='Return'
+										disabled={this.state.checkedProducts.length === 0}
+										onClick={() => this.handleReturnsButtons(0)}
+									/>
 
-								<Button circular compact basic size='tiny'
-									icon='wrench'
-									content='Repair'
-									disabled={this.props.isReloading}
-									onClick={() => this.handleReturnsButtons(1)}
-								/>
+									<Button circular compact basic size='tiny'
+										icon='wrench'
+										content='Repair'
+										disabled={this.state.checkedProducts.length === 0}
+										onClick={() => this.handleReturnsButtons(1)}
+									/>
 
-								<Button circular compact basic size='tiny'
-									icon='crop'
-									content='Resize'
-									disabled={this.props.isReloading}
-									onClick={() => this.handleReturnsButtons(2)}
-								/>
-							</span>
+									<Popup
+										on='click'
+										onOpen={() => this.setState({ showReturnResizePopup: true })}
+										onClose={() => this.setState({ showReturnResizePopup: false })}
+										open={this.state.showReturnResizePopup}
+										header="Select the new size of the ring"
+										trigger={
+											<Button circular compact basic size='tiny'
+												icon='crop'
+												content="Resize"
+												disabled={this.state.checkedProducts.length === 0} />
+										} 
+										content={
+											<Segment>
+												<Dropdown
+													style={{ margin: '1rem 0' }}
+													placeholder='Select or search a size'
+													search
+													selection
+													selectOnNavigation={false}
+													onChange={this.handleResizeSizeReturnSelected.bind(this)}
+													options={[{ text: '6', value: 6 }]} />
+
+												<Button 
+													fluid
+													disabled={!this.state.checkedProducts.every(cp => cp.options && cp.options.length > 0)}
+													content="Send"
+													onClick={() => {
+														this.handleReturnsButtons(2);
+														this.setState({ showReturnResizePopup: false })
+													}} />
+											</Segment>
+										} />
+								</span>
+							} />
 						) : null}
 
             {shipAllButton}
