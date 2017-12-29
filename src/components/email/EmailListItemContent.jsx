@@ -213,7 +213,7 @@ export default class EmailListItemContent extends React.Component {
     }
 
     const footerMessages = {
-      first: products.length === 1 ? 'this' : 'these',
+      first: products.length === 1 && products[0].classificationName !== 'Earrings' ? 'this' : 'these',
       second: products.length === 1 ? getClassificationName(products[0]) : 'pieces',
     }
 
