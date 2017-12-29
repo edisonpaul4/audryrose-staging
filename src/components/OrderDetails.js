@@ -5,6 +5,7 @@ import classNames from 'classnames';
 // import numeral from 'numeral';
 import moment from 'moment';
 import OrderShipModal from './OrderShipModal.js';
+import axios from 'axios';
 
 class ProductRow extends Component {
   constructor(props) {
@@ -307,7 +308,9 @@ class OrderDetails extends Component {
 			unshippableGroups: null,
 			checkedProducts: [],
 			showReturnButtonsPopup: false,
-			showReturnResizePopup: false
+			showReturnResizePopup: false,
+			returnsSizes: [],
+			requestReturnSizes: false
     };
     this.handleReloadClick = this.handleReloadClick.bind(this);
     this.handleShipModalOpen = this.handleShipModalOpen.bind(this);
@@ -516,6 +519,28 @@ class OrderDetails extends Component {
 		console.log(returnTypeId, JSON.stringify(this.state.checkedProducts))
 	}
 
+	handleGetSizesForProducts() {
+		this.setState({ requestReturnSizes: true });
+		axios.defaults.baseURL = process.env.REACT_APP_SERVER_URL;
+		axios.defaults.headers.common['X-Parse-Application-Id'] = process.env.REACT_APP_APP_ID;
+		axios.defaults.headers.common['X-Parse-Master-Key'] = process.env.REACT_APP_MASTER_KEY;
+		axios.post('/functions/getSizesForProduct', { 
+			productIds: this.state.checkedProducts.map(cp => cp.productId)
+		}).then(response => {
+				this.setState({ 
+					requestReturnSizes: false,
+					returnsSizes: response.data.result.reduce((all, current) => {
+						let temp = 'length' in all ? all : [];
+						current.sizes.forEach(c => {
+							if(temp.findIndex(t => c === t) === -1)
+								temp.push(c);
+						});
+						return temp
+					}, [])
+				});
+			});
+	}
+
 	handleResizeSizeReturnSelected(e, { name, value }) {
 		this.setState({
 			checkedProducts: this.state.checkedProducts.map(checkedProduct => ({
@@ -626,7 +651,10 @@ class OrderDetails extends Component {
 
 									<Popup
 										on='click'
-										onOpen={() => this.setState({ showReturnResizePopup: true })}
+										onOpen={() => {
+											this.handleGetSizesForProducts()
+											this.setState({ showReturnResizePopup: true })
+										}}
 										onClose={() => this.setState({ showReturnResizePopup: false })}
 										open={this.state.showReturnResizePopup}
 										header="Select the new size of the ring"
@@ -639,13 +667,16 @@ class OrderDetails extends Component {
 										content={
 											<Segment>
 												<Dropdown
-													style={{ margin: '1rem 0' }}
+													style={{ margin: '1rem 0', color: 'black' }}
 													placeholder='Select or search a size'
-													search
 													selection
-													selectOnNavigation={false}
 													onChange={this.handleResizeSizeReturnSelected.bind(this)}
-													options={[{ text: '6', value: 6 }]} />
+													options={[
+														{ key: 0, text: 'Unknow', value: 0 },
+														...this.state.returnsSizes.map((size, i) => (
+															{ key: i + 1, tex: 'Size: ' + size.toString(), value: size }
+														))
+													]} />
 
 												<Button 
 													fluid
