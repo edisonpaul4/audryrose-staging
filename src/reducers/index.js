@@ -12,6 +12,7 @@ import emailOrders from './emailOrders';
 import shipmentRates from './shipmentRates';
 import vendorOrders from './vendorOrders';
 import error from './error';
+import returns from './returns';
 
 const rootReducer = combineReducers({
   auth,
@@ -24,7 +25,8 @@ const rootReducer = combineReducers({
 	emailOrders,
 	shipmentRates,
 	vendorOrders,
-  error,
+	error,
+	returns,
   routing: routerReducer
 });
 

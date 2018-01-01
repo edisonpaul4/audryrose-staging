@@ -3,15 +3,26 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { Grid, Menu, Segment, Table } from 'semantic-ui-react';
 
+import { ReturnProductRow } from '../../components/returns';
+import { getReturns } from '../../actions/returns';
+
 class RepairsResizesContainer extends React.Component {
   constructor(props) {
     super(props);
   }
 
+  componentWillMount() {
+    this.props.getReturns(this.props.token);
+  }
+
+  checkInProductHandler(returnId) {
+    console.log(returnId);
+  }
+
   render() {
     return (
       <Grid.Row>
-        <Grid.Column width="16" style={{ marginBottom: '1rem' }}>
+        <Grid.Column width="16" style={{ marginBottom: '2rem' }}>
           <Menu pointing secondary>
             <Menu.Item
               as={Link}
@@ -26,6 +37,13 @@ class RepairsResizesContainer extends React.Component {
               active={this.props.location.pathname === "/repairs-resizes/returns"}
               link
               content="Returns" />
+
+            <Menu.Item
+              as={Link}
+              to="/repairs-resizes/repair"
+              active={this.props.location.pathname === "/repairs-resizes/repair"}
+              link
+              content="Repairs" />
 
             <Menu.Item
               as={Link}
@@ -62,6 +80,24 @@ class RepairsResizesContainer extends React.Component {
                   <Table.Cell>C-S</Table.Cell>
                   <Table.Cell>requested</Table.Cell>
                 </Table.Row>
+                {this.props.returns.map(returnObject => (
+                  <ReturnProductRow
+                    key={`return-${returnObject.id}`}
+                    returnId={returnObject.id}
+                    dateRequested={returnObject.dateRequested}
+                    dateCheckedIn={returnObject.dateCheckedIn}
+                    checkedInHandler={this.checkInProductHandler.bind(this, returnObject.id)}
+                    orderId={returnObject.orderId}
+                    customerName={returnObject.customerName}
+                    productName={returnObject.productName}
+                    productImage={returnObject.productImage}
+                    orderNotes={returnObject.orderNotes}
+                    returnStatus={returnObject.returnStatus}
+                    returnStatusId={returnObject.returnStatusId}
+                    returnType={returnObject.returnType}
+                    returnTypeId={returnObject.returnTypeId}
+                    />
+                ))}
               </Table.Body>
             </Table>
           </Segment>
@@ -72,11 +108,14 @@ class RepairsResizesContainer extends React.Component {
 }
 
 const state = state => ({
-
+  user: state.auth.user,
+  token: state.auth.token,
+  returns: state.returns.returns,
+  loadingReturns: state.returns.isLoadingReturns
 });
 
 const actions = {
-
+  getReturns
 };
 
 export default connect(state, actions)(RepairsResizesContainer);

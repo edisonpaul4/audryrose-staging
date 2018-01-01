@@ -486,6 +486,10 @@ const createReturn = (returnTypeId, products, token) => axios.post('/functions/c
   products
 });
 
+const getReturns = (token) => axios.post('/functions/getReturnsWithInformation', {
+  sessionToken: token
+});
+
 export default {
   signup,
   login,
@@ -534,5 +538,6 @@ export default {
   getRatesForShipment,
   getAllPendingVendorOrders,
   finishPendingVendorOrderProduct,
-  createReturn
+  createReturn,
+  getReturns
 }
