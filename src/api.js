@@ -490,6 +490,11 @@ const getReturns = (token) => axios.post('/functions/getReturnsWithInformation',
   sessionToken: token
 });
 
+const checkInReturn = (returnId, token) => axios.post('/functions/checkInReturnedProduct', {
+  sessionToken: token,
+  returnId
+});
+
 export default {
   signup,
   login,
@@ -539,5 +544,6 @@ export default {
   getAllPendingVendorOrders,
   finishPendingVendorOrderProduct,
   createReturn,
-  getReturns
+  getReturns,
+  checkInReturn
 }
