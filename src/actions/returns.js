@@ -15,3 +15,11 @@ export function checkInReturn(returnId, token) {
       .then(r => r.data.result)
   }
 }
+
+export function updateReturnStatus(returnId, returnStatusId, token) {
+  return {
+    types: ['UPDATE_RETURN_STATUS_REQUEST', 'UPDATE_RETURN_STATUS_SUCCESS', 'UPDATE_RETURN_STATUS_FAILURE'],
+    promise: api.updateReturnStatus(returnId, returnStatusId, token)
+      .then(r => r.data.result)
+  }
+}

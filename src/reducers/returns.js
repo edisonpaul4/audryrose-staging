@@ -45,6 +45,26 @@ const returns = (state = initialState, action) => {
         isLoadingReturns: false,
         errors: [...state.errors, { type: 'CHECK_IN_RETURN_FAILURE', message: action.err.response.data.error.message }]
       };
+
+    case 'UPDATE_RETURN_STATUS_REQUEST':
+      return {
+        ...state,
+        isLoadingReturns: true
+      };
+
+    case 'UPDATE_RETURN_STATUS_SUCCESS':
+      return {
+        ...state,
+        isLoadingReturns: false,
+        returns: updateReturnObject(action.res, state.returns)
+      };
+
+    case 'UPDATE_RETURN_STATUS_FAILURE':
+      return {
+        ...state,
+        isLoadingReturns: false,
+        errors: [...state.errors, { type: 'CHECK_IN_RETURN_FAILURE', message: action.err.response.data.error.message }]
+      };
     
       
     default:

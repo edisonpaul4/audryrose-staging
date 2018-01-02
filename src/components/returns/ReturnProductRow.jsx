@@ -1,24 +1,53 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Table, Image, Modal, Button, Icon, Segment, Confirm } from 'semantic-ui-react';
+import { Table, Image, Modal, Button, Icon, Segment, Confirm, Dropdown } from 'semantic-ui-react';
 import moment from 'moment';
 
 class ReturnProductRow extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      notesnotesModalOpen: false,
-      checkInConfirmModal: false
+      notesModalOpen: false,
+      checkInConfirmModal: false,
+
     }
   }
 
   onCheckInConfirm() {
     this.setState({ checkInConfirmModal: false });
-    this.props.checkedInHandler();
+    this.props.checkedInHandler(this.props.returnId);
+  }
+
+  onReturnStatusChanged(e, { value }) {
+    if (this.props.returnStatusId !== value)
+      this.props.updateReturnStatus(this.props.returnId, value);
+  }
+
+  getAvailableStatus(returnStatusId) { 
+    const all = [
+      { key: 0, text: 'Requested', value: 0 },
+      { key: 1, text: 'Being repaired', value: 1 },
+      { key: 2, text: 'Being resized', value: 2 },
+      { key: 3, text: 'Resize completed', value: 3 },
+      { key: 4, text: 'Repair completed', value: 4 },
+      { key: 5, text: 'Ready to ship', value: 5 },
+    ];
+
+    if(returnStatusId === 1)
+      return all.filter(s => s.key === 1 || s.key === 4);
+    else if(returnStatusId === 2)
+      return all.filter(s => s.key === 2 || s.key === 3);
+    else if (returnStatusId === 3 || returnStatusId === 4)
+      return all.filter(s => s.key === returnStatusId || s.key === 5)
+    else if (returnStatusId === 5)
+      return all.filter(s => s.key === 5)
+    else
+      return all.filter(s => s.key === 0);
+
   }
 
   render() {
-    const { dateRequested, dateCheckedIn, orderId, customerName, productName, productImage, orderNotes, returnStatus } = this.props;
+    const { dateRequested, dateCheckedIn, orderId, customerName, productName, productImage, orderNotes, returnStatusId } = this.props;
     
     const words = [
       (orderNotes.customerNotes !== null || orderNotes.staffNotes !== null) ? 'C' : null,
@@ -89,7 +118,14 @@ class ReturnProductRow extends React.Component {
             </Modal.Actions>
           </Modal>
         </Table.Cell>
-        <Table.Cell>{returnStatus}</Table.Cell>
+        <Table.Cell>
+          <Dropdown
+            placeholder='Select status'
+            selection
+            defaultValue={returnStatusId}
+            onChange={this.onReturnStatusChanged.bind(this)}
+            options={this.getAvailableStatus(returnStatusId)} />
+        </Table.Cell>
       </Table.Row>
     );
   }
