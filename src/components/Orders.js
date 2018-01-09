@@ -560,6 +560,7 @@ class Orders extends Component {
   				    handleShowOrderFormClick={scope.handleShowOrderFormClick}
   				    handleProductOrderModalClose={scope.handleProductOrderModalClose}
   				    handleOrderProductEditClick={scope.handleOrderProductEditClick}
+							createReturn={scope.props.createReturn.bind(this)}
   			    />
   		    );
 		    }

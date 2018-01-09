@@ -23,7 +23,6 @@ const promise = store => next => action => {
       res
     });
   }).catch(err => {
-    console.error(err);
     next({
       type: FAILURE,
       ...rest,

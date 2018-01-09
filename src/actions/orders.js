@@ -97,3 +97,10 @@ export function getRatesForShipment(parcelParams, orderId, token) {
     promise: api.getRatesForShipment(parcelParams, orderId, token).then(r => r.data.result)
   }
 }
+
+export function createReturn(returnTypeId, products, token) {
+  return {
+    types: ['ORDERS::CREATE_RETURN_REQUEST', 'ORDERS::CREATE_RETURN_SUCCESS', 'ORDERS::CREATE_RETURN_FAILURE'],
+    promise: api.createReturn(returnTypeId, products, token).then(r => r.data.result)
+  }
+}

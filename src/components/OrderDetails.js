@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router';
-import { Table, Button, Dropdown, Dimmer, Segment, Loader, Icon, Label } from 'semantic-ui-react';
+import { Table, Button, Dropdown, Dimmer, Segment, Loader, Icon, Label, Checkbox, Modal, Popup, Form, Radio } from 'semantic-ui-react';
 import classNames from 'classnames';
 // import numeral from 'numeral';
 import moment from 'moment';
 import OrderShipModal from './OrderShipModal.js';
+import axios from 'axios';
 
 class ProductRow extends Component {
   constructor(props) {
@@ -113,6 +114,19 @@ class ProductRow extends Component {
   	if (nextProps.variant) state.variant = nextProps.variant;
   	this.setState(state);
 	}
+
+	handleProductChecked(isChecked) {
+		this.props.handleProductChecked({
+			checked: isChecked,
+			orderId: this.props.shipment.order_id,
+			orderProductId: this.props.product.orderProductId,
+			productId: this.props.product.product_id,
+			productVariantId: this.props.product.variants ? this.props.product.variants[0].variantId : null,
+			customerId: this.props.shipment.customer_id,
+			orderShipmentId: this.props.shipment.shipmentId
+		});
+	}
+
 	render() {
   	const scope = this;
 		const product = this.state.product;
@@ -248,10 +262,16 @@ class ProductRow extends Component {
     return (
       <Table.Row>
         <Table.Cell>{productLink}</Table.Cell>
-        <Table.Cell>
-          {options}
-        </Table.Cell>
+        <Table.Cell>{options}</Table.Cell>
         <Table.Cell>{productQuantity}</Table.Cell>
+
+				<Table.Cell collapsing>
+					{product.quantity_shipped > 0 ? (
+						<Checkbox
+							onChange={(e, data) => this.handleProductChecked(data.checked)} />
+					) : null}
+				</Table.Cell>
+
 				<Table.Cell>{alwaysResize}</Table.Cell>
 				<Table.Cell>{inventory}</Table.Cell>
 				<Table.Cell>{variant ? variant.inventoryOnHand : null}</Table.Cell>
@@ -285,7 +305,13 @@ class OrderDetails extends Component {
       shipModalOpen: false,
       shippedGroups: null,
       shippableGroups: null,
-      unshippableGroups: null
+			unshippableGroups: null,
+			checkedProducts: [],
+			showReturnButtonsPopup: false,
+			showReturnResizePopup: false,
+			returnsSizes: [],
+			requestReturnSizes: false,
+			newSizeToReturn: 'Unknow'
     };
     this.handleReloadClick = this.handleReloadClick.bind(this);
     this.handleShipModalOpen = this.handleShipModalOpen.bind(this);
@@ -465,6 +491,70 @@ class OrderDetails extends Component {
 
     return {shippedGroups, shippableGroups, unshippableGroups};
 	}
+
+	setCheckedProduct(data) {
+		const index = this.state.checkedProducts.findIndex(cp => cp.orderProductId === data.orderProductId);
+		if(data.checked)
+			this.setState({ checkedProducts: [
+				...this.state.checkedProducts.slice(0, index),
+				{
+					...data,
+					options: this.state.checkedProducts.length !== 0 ? this.state.checkedProducts[0].options : []
+				},
+				...this.state.checkedProducts.slice(index)
+			] });
+		else
+			this.setState({
+				checkedProducts: [
+					...this.state.checkedProducts.slice(0, index),
+					...this.state.checkedProducts.slice(index + 1)
+				]
+			});
+	}
+
+	handleReturnsButtons(returnTypeId = null) {
+		if (returnTypeId === null || this.state.checkedProducts.length === 0)
+			alert('You must select at least one product.');
+		else
+			this.props.createReturn(returnTypeId, this.state.checkedProducts);
+		console.log(returnTypeId, JSON.stringify(this.state.checkedProducts))
+	}
+
+	handleGetSizesForProducts() {
+		this.setState({ requestReturnSizes: true });
+		axios.defaults.baseURL = process.env.REACT_APP_SERVER_URL;
+		axios.defaults.headers.common['X-Parse-Application-Id'] = process.env.REACT_APP_APP_ID;
+		axios.defaults.headers.common['X-Parse-Master-Key'] = process.env.REACT_APP_MASTER_KEY;
+		axios.post('/functions/getSizesForProduct', { 
+			productIds: this.state.checkedProducts.map(cp => cp.productId)
+		}).then(response => {
+				this.setState({ 
+					requestReturnSizes: false,
+					returnsSizes: response.data.result.reduce((all, current) => {
+						let temp = 'length' in all ? all : [];
+						current.sizes.forEach(c => {
+							if(temp.findIndex(t => c === t) === -1)
+								temp.push(c);
+						});
+						return temp
+					}, [])
+				});
+			});
+	}
+
+	handleResizeSizeReturnSelected(e, { name, value }) {
+		this.setState({
+			newSizeToReturn: value,
+			checkedProducts: this.state.checkedProducts.map(checkedProduct => ({
+				...checkedProduct,
+				options: [{
+					optionType: 'resize',
+					newSize: value
+				}]
+			}))
+		});
+	}
+
 	render() {
   	const scope = this;
   	const showProducts = this.props.expanded ? true : false;
@@ -502,11 +592,11 @@ class OrderDetails extends Component {
 
         if (variants) {
     			variants.map(function(variant, j) {
-      			productRows.push(<ProductRow product={productRow} variant={variant} shipment={shipment} handleShipModalOpen={scope.handleShipModalOpen} key={i+'-'+j} handleShowOrderFormClick={scope.handleShowOrderFormClick} handleOrderProductEditClick={scope.handleOrderProductEditClick} />);
+      			productRows.push(<ProductRow product={productRow} variant={variant} shipment={shipment} handleShipModalOpen={scope.handleShipModalOpen} key={i+'-'+j} handleShowOrderFormClick={scope.handleShowOrderFormClick} handleOrderProductEditClick={scope.handleOrderProductEditClick} handleProductChecked={scope.setCheckedProduct.bind(scope)} />);
       			return variant;
     			});
   			} else if (productRow.isCustom) {
-    			productRows.push(<ProductRow product={productRow} shipment={shipment} handleShipModalOpen={scope.handleShipModalOpen} key={i+'-Custom'} handleShowOrderFormClick={scope.handleShowOrderFormClick} handleOrderProductEditClick={scope.handleOrderProductEditClick} />);
+    			productRows.push(<ProductRow product={productRow} shipment={shipment} handleShipModalOpen={scope.handleShipModalOpen} key={i+'-Custom'} handleShowOrderFormClick={scope.handleShowOrderFormClick} handleOrderProductEditClick={scope.handleOrderProductEditClick} handleProductChecked={scope.setCheckedProduct.bind(scope)} />);
   			}
 
 				return productRow;
@@ -537,6 +627,98 @@ class OrderDetails extends Component {
               disabled={this.props.isReloading}
               onClick={()=>this.handleReloadClick(this.props.data.orderId)}
             />
+
+            {this.state.products.findIndex(p => p.quantity_shipped && p.quantity_shipped > 0) !== -1? (
+							<Popup 
+								header="Returns' buttons are disabled"
+								content="Please select at least one product to create a return label"
+								onOpen={() => this.setState({ showReturnButtonsPopup: this.state.checkedProducts.length === 0 })}
+								onClose={() => this.setState({ showReturnButtonsPopup: false })}
+								open={this.state.showReturnButtonsPopup}
+								trigger={
+								<span>
+									<Button circular compact basic size='tiny'
+										icon='truck'
+										content='Return'
+										disabled={this.state.checkedProducts.length === 0}
+										onClick={() => this.handleReturnsButtons(0)}
+									/>
+
+									<Button circular compact basic size='tiny'
+										icon='wrench'
+										content='Repair'
+										disabled={this.state.checkedProducts.length === 0}
+										onClick={() => this.handleReturnsButtons(1)}
+									/>
+
+									<Popup
+										on='click'
+										onOpen={() => {
+											this.handleGetSizesForProducts()
+											this.setState({ showReturnResizePopup: true })
+										}}
+										onClose={() => this.setState({ showReturnResizePopup: false })}
+										open={this.state.showReturnResizePopup}
+										header="Select the new size of the ring"
+										trigger={
+											<Button circular compact basic size='tiny'
+												icon='crop'
+												content="Resize"
+												disabled={this.state.checkedProducts.length === 0} />
+										} 
+										content={
+											<Segment>
+												{/* <Dropdown
+													selection
+													style={{ margin: '1rem 0', color: 'black' }}
+													placeholder='Select or search a size'
+													loading={this.state.requestReturnSizes}
+													onChange={this.handleResizeSizeReturnSelected.bind(this)}
+													options={[
+														{ key: 0, text: 'Unknow', value: 0 },
+														...this.state.returnsSizes.map((size, i) => (
+															{ key: i + 1, tex: 'Size: ' + size.toString(), value: size }
+														)),
+														{ key: 11, text: '11', value: 11 },
+													]} /> */}
+												<Form>
+													<Form.Field>
+														<Radio
+															key={`returnSize-Unknow`}
+															label={'Unknow'}
+															name='radioGroup'
+															value={'Unknow'}
+															checked={this.state.newSizeToReturn === 'Unknow'}
+															onChange={this.handleResizeSizeReturnSelected.bind(this)}
+														/>
+													</Form.Field>
+													{this.state.returnsSizes.map((size, i) => (
+														<Form.Field key={`returnSize-${i}`}>
+															<Radio
+																label={size}
+																name='radioGroup'
+																value={size}
+																checked={this.state.newSizeToReturn === size}
+																onChange={this.handleResizeSizeReturnSelected.bind(this)}
+															/>
+														</Form.Field>
+													))}
+												</Form>
+												<Button 
+													fluid
+													style={{marginTop: '1rem'}}
+													disabled={!this.state.checkedProducts.every(cp => cp.options && cp.options.length > 0)}
+													content="Send"
+													onClick={() => {
+														this.handleReturnsButtons(2);
+														this.setState({ showReturnResizePopup: false })
+													}} />
+											</Segment>
+										} />
+								</span>
+							} />
+						) : null}
+
             {shipAllButton}
             <Segment secondary>
               <Table className='order-products-table' basic='very' size='small' columns={9}>
@@ -545,6 +727,7 @@ class OrderDetails extends Component {
                     <Table.HeaderCell>Product</Table.HeaderCell>
                     <Table.HeaderCell>Options</Table.HeaderCell>
                     <Table.HeaderCell>Quantity</Table.HeaderCell>
+                    <Table.HeaderCell collapsing />
                     <Table.HeaderCell>Always Resize</Table.HeaderCell>
                     <Table.HeaderCell>Inventory</Table.HeaderCell>
                     <Table.HeaderCell>Available</Table.HeaderCell>
