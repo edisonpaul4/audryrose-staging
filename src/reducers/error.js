@@ -7,6 +7,7 @@ export default function error(state = initialState, action) {
   }
 
   if(action.type.includes('_FAILURE')) {
+    console.error('ERROR: ', action)
     return action.err.response.data.error || '';
   }
 

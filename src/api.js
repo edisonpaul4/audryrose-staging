@@ -480,6 +480,38 @@ const finishPendingVendorOrderProduct = (vendorOrderObjectId, vendorOrderVariant
   vendorOrderVariantObjectId
 });
 
+const createReturn = (returnTypeId, products, token) => axios.post('/functions/createReturn', {
+  sessionToken: token,
+  returnTypeId,
+  products
+});
+
+const getReturns = (token) => axios.post('/functions/getReturnsWithInformation', {
+  sessionToken: token
+});
+
+const getReturnsForEmails = (token) => axios.post('/functions/returnsForEmails', {
+  sessionToken: token
+});
+
+const checkInReturn = (returnId, token) => axios.post('/functions/checkInReturnedProduct', {
+  sessionToken: token,
+  returnId
+});
+
+const updateReturnStatus = (returnId, returnStatusId, token) => axios.post('/functions/updateReturnStatus', {
+  sessionToken: token,
+  returnId,
+  returnStatusId
+});
+
+const sendReturnEmail = (returnId, { emailSubject, emailText }, token) => axios.post('/functions/sendReturnEmail', {
+  sessionToken: token,
+  returnId,
+  emailSubject,
+  emailText
+});
+
 export default {
   signup,
   login,
@@ -527,5 +559,11 @@ export default {
   deleteOrderEmail,
   getRatesForShipment,
   getAllPendingVendorOrders,
-  finishPendingVendorOrderProduct
+  finishPendingVendorOrderProduct,
+  createReturn,
+  getReturns,
+  getReturnsForEmails,
+  checkInReturn,
+  updateReturnStatus,
+  sendReturnEmail
 }
