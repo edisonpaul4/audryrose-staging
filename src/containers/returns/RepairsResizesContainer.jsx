@@ -4,7 +4,7 @@ import { Link } from 'react-router';
 import { Grid, Menu, Segment, Table } from 'semantic-ui-react';
 
 import { ReturnProductRow } from '../../components/returns';
-import { getReturns } from '../../actions/returns';
+import { getReturns, checkInReturn, updateReturnStatus } from '../../actions/returns';
 
 class RepairsResizesContainer extends React.Component {
   constructor(props) {
@@ -15,8 +15,43 @@ class RepairsResizesContainer extends React.Component {
     this.props.getReturns(this.props.token);
   }
 
+  getFilteredReturns(returns, type) {
+    switch(type) {
+      case 'all':
+        return returns;
+      
+      case 'waiting':
+        return returns.filter(r => r.returnStatusId === 0);
+      
+      case 'returns':
+        return returns.filter(r => r.returnTypeId === 0);
+
+      case 'repair':
+        return returns.filter(r => r.returnTypeId === 1);
+
+      case 'being-repaired':
+        return returns.filter(r => r.returnTypeId === 1 && r.returnStatusId === 1);
+
+      case 'resize':
+        return returns.filter(r => r.returnTypeId === 2);
+
+      case 'being-resized':
+        return returns.filter(r => r.returnTypeId === 2 && r.returnStatusId === 2);
+
+      case 'completed':
+        return returns.filter(r => r.returnStatusId >= 3);
+
+      default:
+        return returns;
+    }
+  }
+
+  updateReturnStatus(returnId, returnStatusId) {
+    this.props.updateReturnStatus(returnId, returnStatusId);
+  }
+
   checkInProductHandler(returnId) {
-    console.log(returnId);
+    this.props.checkInReturn(returnId);
   }
 
   render() {
@@ -30,6 +65,13 @@ class RepairsResizesContainer extends React.Component {
               active={this.props.location.pathname === "/repairs-resizes/" || this.props.location.pathname === "/repairs-resizes/all"}
               link
               content="All" />
+
+            <Menu.Item
+              as={Link}
+              to="/repairs-resizes/waiting"
+              active={this.props.location.pathname === "/repairs-resizes/waiting"}
+              link
+              content="Waiting for customer" />
 
             <Menu.Item
               as={Link}
@@ -47,15 +89,36 @@ class RepairsResizesContainer extends React.Component {
 
             <Menu.Item
               as={Link}
+              to="/repairs-resizes/being-repaired"
+              active={this.props.location.pathname === "/repairs-resizes/being-repaired"}
+              link
+              content="Being repaired" />
+
+            <Menu.Item
+              as={Link}
               to="/repairs-resizes/resize"
               active={this.props.location.pathname === "/repairs-resizes/resize"}
               link
               content="Resizes" />
+
+            <Menu.Item
+              as={Link}
+              to="/repairs-resizes/being-resized"
+              active={this.props.location.pathname === "/repairs-resizes/being-resized"}
+              link
+              content="Being resized" />
+
+            <Menu.Item
+              as={Link}
+              to="/repairs-resizes/completed"
+              active={this.props.location.pathname === "/repairs-resizes/completed"}
+              link
+              content="Completed" />
           </Menu>
         </Grid.Column>
 
         <Grid.Column width="16">
-          <Segment>
+          <Segment loading={this.props.loadingReturns}>
             <Table celled>
               <Table.Header>
                 <Table.Row>
@@ -70,23 +133,14 @@ class RepairsResizesContainer extends React.Component {
                 </Table.Row>
               </Table.Header>
               <Table.Body>
-                <Table.Row>
-                  <Table.Cell>Today at 2:49 PM</Table.Cell>
-                  <Table.Cell>Today at 2:49 PM</Table.Cell>
-                  <Table.Cell>12123</Table.Cell>
-                  <Table.Cell>Enrique Arrieta</Table.Cell>
-                  <Table.Cell>Aring Ring</Table.Cell>
-                  <Table.Cell>IMAGE</Table.Cell>
-                  <Table.Cell>C-S</Table.Cell>
-                  <Table.Cell>requested</Table.Cell>
-                </Table.Row>
-                {this.props.returns.map(returnObject => (
+                {this.getFilteredReturns(this.props.returns, this.props.routeParams.subpage).map(returnObject => (
                   <ReturnProductRow
                     key={`return-${returnObject.id}`}
                     returnId={returnObject.id}
                     dateRequested={returnObject.dateRequested}
                     dateCheckedIn={returnObject.dateCheckedIn}
-                    checkedInHandler={this.checkInProductHandler.bind(this, returnObject.id)}
+                    checkedInHandler={this.checkInProductHandler.bind(this)}
+                    updateReturnStatus={this.updateReturnStatus.bind(this)}
                     orderId={returnObject.orderId}
                     customerName={returnObject.customerName}
                     productName={returnObject.productName}
@@ -115,7 +169,9 @@ const state = state => ({
 });
 
 const actions = {
-  getReturns
+  getReturns,
+  checkInReturn,
+  updateReturnStatus
 };
 
 export default connect(state, actions)(RepairsResizesContainer);

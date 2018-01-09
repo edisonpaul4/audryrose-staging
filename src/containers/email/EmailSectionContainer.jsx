@@ -124,6 +124,7 @@ export class EmailSectionContainer extends React.Component {
 
         <Segment loading={this.props.emailOrders.isLoading} basic style={{ padding: 0 }}>
           <EmailList
+            headerColumns={["Customer", "Lifetime spend", "Order", "Notes", "Label", ""]}
             activePage={activeOrderPage}
             handleOnPageChange={this.handlePageChange.bind(this)}
             totalPages={Math.round(this.props.emailOrders.orders.length / totalOrdersPerPage)}>

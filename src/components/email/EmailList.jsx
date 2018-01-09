@@ -5,24 +5,13 @@ import { Table, Menu, Icon } from "semantic-ui-react";
 const EmailList = props => (
   <Table>
     <Table.Header>
-      <Table.HeaderCell
-        content="Customer" />
-        
-      <Table.HeaderCell
-        content="Lifetime spend" />
-        
-      <Table.HeaderCell
-        content="Order" />
-        
-      <Table.HeaderCell 
-        content="Notes" />
-        
-      <Table.HeaderCell
-        content="Label" />
-        
-      <Table.HeaderCell
-        collapsing />
-        
+      <Table.Row>
+        {props.headerColumns.map((hc, i) => (
+          <Table.HeaderCell
+            key={i}
+            content={hc} />  
+        ))}
+      </Table.Row>
     </Table.Header>
 
     <Table.Body>
@@ -65,6 +54,7 @@ EmailList.propTypes = {
   activePage: PropTypes.number.isRequired,
   totalPages: PropTypes.number.isRequired,
   handleOnPageChange: PropTypes.func.isRequired,
+  headerColumns: PropTypes.arrayOf(PropTypes.string).isRequired
 }
 
 export default EmailList;

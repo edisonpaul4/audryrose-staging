@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router';
-import { Table, Button, Dropdown, Dimmer, Segment, Loader, Icon, Label, Checkbox, Modal, Popup } from 'semantic-ui-react';
+import { Table, Button, Dropdown, Dimmer, Segment, Loader, Icon, Label, Checkbox, Modal, Popup, Form, Radio } from 'semantic-ui-react';
 import classNames from 'classnames';
 // import numeral from 'numeral';
 import moment from 'moment';
@@ -310,7 +310,8 @@ class OrderDetails extends Component {
 			showReturnButtonsPopup: false,
 			showReturnResizePopup: false,
 			returnsSizes: [],
-			requestReturnSizes: false
+			requestReturnSizes: false,
+			newSizeToReturn: 'Unknow'
     };
     this.handleReloadClick = this.handleReloadClick.bind(this);
     this.handleShipModalOpen = this.handleShipModalOpen.bind(this);
@@ -543,6 +544,7 @@ class OrderDetails extends Component {
 
 	handleResizeSizeReturnSelected(e, { name, value }) {
 		this.setState({
+			newSizeToReturn: value,
 			checkedProducts: this.state.checkedProducts.map(checkedProduct => ({
 				...checkedProduct,
 				options: [{
@@ -666,20 +668,45 @@ class OrderDetails extends Component {
 										} 
 										content={
 											<Segment>
-												<Dropdown
+												{/* <Dropdown
+													selection
 													style={{ margin: '1rem 0', color: 'black' }}
 													placeholder='Select or search a size'
-													selection
+													loading={this.state.requestReturnSizes}
 													onChange={this.handleResizeSizeReturnSelected.bind(this)}
 													options={[
 														{ key: 0, text: 'Unknow', value: 0 },
 														...this.state.returnsSizes.map((size, i) => (
 															{ key: i + 1, tex: 'Size: ' + size.toString(), value: size }
-														))
-													]} />
-
+														)),
+														{ key: 11, text: '11', value: 11 },
+													]} /> */}
+												<Form>
+													<Form.Field>
+														<Radio
+															key={`returnSize-Unknow`}
+															label={'Unknow'}
+															name='radioGroup'
+															value={'Unknow'}
+															checked={this.state.newSizeToReturn === 'Unknow'}
+															onChange={this.handleResizeSizeReturnSelected.bind(this)}
+														/>
+													</Form.Field>
+													{this.state.returnsSizes.map((size, i) => (
+														<Form.Field key={`returnSize-${i}`}>
+															<Radio
+																label={size}
+																name='radioGroup'
+																value={size}
+																checked={this.state.newSizeToReturn === size}
+																onChange={this.handleResizeSizeReturnSelected.bind(this)}
+															/>
+														</Form.Field>
+													))}
+												</Form>
 												<Button 
 													fluid
+													style={{marginTop: '1rem'}}
 													disabled={!this.state.checkedProducts.every(cp => cp.options && cp.options.length > 0)}
 													content="Send"
 													onClick={() => {

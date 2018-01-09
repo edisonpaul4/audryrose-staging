@@ -11,7 +11,7 @@ import ShipmentsContainer from './containers/ShipmentsContainer';
 import WebhooksContainer from './containers/WebhooksContainer';
 import NotFound from './components/NotFound';
 
-import { EmailSectionContainer } from './containers/email/';
+import { EmailSectionMainContainer, EmailSectionContainer, EmailReturnsContainer } from './containers/email/';
 import { DesignersMainContainer, VendorOrdersContainer } from './containers/designers/';
 import { ReturnsMainContainer, RepairsResizesContainer } from './containers/returns';
 
@@ -59,8 +59,20 @@ const createRoutes = (store) => {
         },
         {
           path: 'emails',
-          component: EmailSectionContainer,
-          onEnter: requireAuth(store)
+          component: EmailSectionMainContainer,
+          onEnter: requireAuth(store),
+          childRoutes: [
+            {
+              path: 'customers-orders',
+              component: EmailSectionContainer,
+              onEnter: requireAuth(store)
+            },
+            {
+              path: 'returns',
+              component: EmailReturnsContainer,
+              onEnter: requireAuth(store)
+            }
+          ]
         },
         {
           path: 'products',

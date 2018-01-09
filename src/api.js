@@ -490,6 +490,10 @@ const getReturns = (token) => axios.post('/functions/getReturnsWithInformation',
   sessionToken: token
 });
 
+const getReturnsForEmails = (token) => axios.post('/functions/returnsForEmails', {
+  sessionToken: token
+});
+
 const checkInReturn = (returnId, token) => axios.post('/functions/checkInReturnedProduct', {
   sessionToken: token,
   returnId
@@ -499,6 +503,13 @@ const updateReturnStatus = (returnId, returnStatusId, token) => axios.post('/fun
   sessionToken: token,
   returnId,
   returnStatusId
+});
+
+const sendReturnEmail = (returnId, { emailSubject, emailText }, token) => axios.post('/functions/sendReturnEmail', {
+  sessionToken: token,
+  returnId,
+  emailSubject,
+  emailText
 });
 
 export default {
@@ -551,6 +562,8 @@ export default {
   finishPendingVendorOrderProduct,
   createReturn,
   getReturns,
+  getReturnsForEmails,
   checkInReturn,
-  updateReturnStatus
+  updateReturnStatus,
+  sendReturnEmail
 }

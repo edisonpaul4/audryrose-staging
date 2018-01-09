@@ -25,14 +25,14 @@ class Navigation extends Component {
 				  <Menu.Item header><img className='logo' src='/imgs/logo.png' width='23' alt='Audry Rose Logo'/></Menu.Item>
 	        <Menu.Item href='/dashboard' active={pathName.includes('/dashboard')} link>Dashboard</Menu.Item>
 					<Menu.Item href='/orders' active={pathName.includes('/orders')} link>Orders</Menu.Item>
-					<Menu.Item href='/emails' active={pathName.includes('/emails')} link>Emails</Menu.Item>
+					<Menu.Item href='/emails/customers-orders/' active={pathName.includes('/emails/')} link>Emails</Menu.Item>
 					<Menu.Item href='/products' active={pathName.includes('/products')} link>Products</Menu.Item>
 					<Menu.Item href='/shipments' active={pathName.includes('/shipments')} link>Shipments</Menu.Item>
 					<Menu.Item href='/designers' active={pathName.includes('/designers')} link>Designers</Menu.Item>
 
-					<Menu.Item href='/product-stats' active={pathName.includes('/product-stats')} link>
+					{/* <Menu.Item href='/product-stats' active={pathName.includes('/product-stats')} link>
 						Product stats
-					</Menu.Item>
+					</Menu.Item> */}
 
 					<Menu.Item href='/repairs-resizes/all' active={pathName.includes('/repairs-resizes')} link>
 						Repairs / Resizes

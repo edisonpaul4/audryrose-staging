@@ -25,6 +25,25 @@ const returns = (state = initialState, action) => {
         ...state,
         isLoadingReturns: false
       };
+    
+    case 'GET_RETURNS_TO_EMAIL_REQUEST':
+      return {
+        ...state,
+        isLoadingReturns: true
+      };
+    
+    case 'GET_RETURNS_TO_EMAIL_SUCCESS':
+      return {
+        ...state,
+        isLoadingReturns: false,
+        returns: action.res
+      };
+    
+    case 'GET_RETURNS_TO_EMAIL_FAILURE':
+      return {
+        ...state,
+        isLoadingReturns: false
+      };
 
     case 'CHECK_IN_RETURN_REQUEST':
       return {
@@ -65,7 +84,26 @@ const returns = (state = initialState, action) => {
         isLoadingReturns: false,
         errors: [...state.errors, { type: 'CHECK_IN_RETURN_FAILURE', message: action.err.response.data.error.message }]
       };
-    
+
+    case 'SEND_RETURN_EMAIL_REQUEST':
+      return {
+        ...state,
+        isLoadingReturns: true
+      };
+
+    case 'SEND_RETURN_EMAIL_SUCCESS':
+      return {
+        ...state,
+        isLoadingReturns: false,
+        returns: removeReturnObject(action.res, state.returns)
+      };
+
+    case 'SEND_RETURN_EMAIL_FAILURE':
+      return {
+        ...state,
+        isLoadingReturns: false,
+        errors: [...state.errors, { type: 'CHECK_IN_RETURN_FAILURE', message: action.err.response.data.error.message }]
+      };
       
     default:
       return state;
@@ -77,6 +115,14 @@ const updateReturnObject = (updatedReturn, returnsState) => {
   return [
     ...returnsState.slice(0, index),
     updatedReturn,
+    ...returnsState.slice(index + 1)
+  ];
+};
+
+const removeReturnObject = (updatedReturn, returnsState) => {
+  const index = returnsState.findIndex(returnObject => returnObject.id === updatedReturn.id);
+  return [
+    ...returnsState.slice(0, index),
     ...returnsState.slice(index + 1)
   ];
 };

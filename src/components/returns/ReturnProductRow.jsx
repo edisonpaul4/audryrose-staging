@@ -25,24 +25,24 @@ class ReturnProductRow extends React.Component {
 
   getAvailableStatus(returnStatusId) { 
     const all = [
-      { key: 0, text: 'Requested', value: 0 },
-      { key: 1, text: 'Being repaired', value: 1 },
-      { key: 2, text: 'Being resized', value: 2 },
-      { key: 3, text: 'Resize completed', value: 3 },
-      { key: 4, text: 'Repair completed', value: 4 },
-      { key: 5, text: 'Ready to ship', value: 5 },
+      { key: 0, text: 'Requested', value: 0, disabled: false },
+      { key: 1, text: 'Being repaired', value: 1, disabled: false },
+      { key: 2, text: 'Being resized', value: 2, disabled: false },
+      { key: 3, text: 'Resize completed', value: 3, disabled: false },
+      { key: 4, text: 'Repair completed', value: 4, disabled: false },
+      { key: 5, text: 'Ready to ship', value: 5, disabled: false },
     ];
 
     if(returnStatusId === 1)
-      return all.filter(s => s.key === 1 || s.key === 4);
+      return all.map(s => s.key === 1 || s.key === 4 ? s : { ...s, disabled: true });
     else if(returnStatusId === 2)
-      return all.filter(s => s.key === 2 || s.key === 3);
+      return all.map(s => s.key === 2 || s.key === 3 ? s : { ...s, disabled: true });
     else if (returnStatusId === 3 || returnStatusId === 4)
-      return all.filter(s => s.key === returnStatusId || s.key === 5)
+      return all.map(s => s.key === returnStatusId || s.key === 5 ? s : { ...s, disabled: true });
     else if (returnStatusId === 5)
-      return all.filter(s => s.key === 5)
+      return all.map(s => s.key === 5 ? s : { ...s, disabled: true });
     else
-      return all.filter(s => s.key === 0);
+      return all.map(s => s.key === 0 ? s : { ...s, disabled: true });
 
   }
 
@@ -54,9 +54,11 @@ class ReturnProductRow extends React.Component {
       orderNotes.designerNotes !== null ? 'D' : null,
       orderNotes.internalNotes !== null ? 'I' : null,
     ].filter(w => w !== null).join(' - ');
-
+    
     return (
-      <Table.Row>
+      <Table.Row 
+        style={{ backgroundColor: moment().diff(dateRequested, 'weeks') >= 1  ? 'rgba(255, 0, 0, .25)' : 'transparent'}}>
+
         <Table.Cell>{moment(dateRequested).format('MMMM DD, YYYY')}</Table.Cell>
         <Table.Cell>
           {dateCheckedIn ? moment(dateCheckedIn).format('MMMM DD, YYYY') : (
@@ -122,9 +124,9 @@ class ReturnProductRow extends React.Component {
           <Dropdown
             placeholder='Select status'
             selection
-            defaultValue={returnStatusId}
-            onChange={this.onReturnStatusChanged.bind(this)}
-            options={this.getAvailableStatus(returnStatusId)} />
+            options={this.getAvailableStatus(returnStatusId)}
+            value={returnStatusId}
+            onChange={this.onReturnStatusChanged.bind(this)} />
         </Table.Cell>
       </Table.Row>
     );
