@@ -23,3 +23,7 @@ body {
 .orders.table {
 	width: 100%;
 }
+
+.pointer {
+	cursor: pointer !important;
+}
