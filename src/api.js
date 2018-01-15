@@ -512,6 +512,10 @@ const sendReturnEmail = (returnId, { emailSubject, emailText }, token) => axios.
   emailText
 });
 
+const getProductStats = (token) => axios.post('/functions/getProductStats', {
+  sessionToken: token
+});
+
 export default {
   signup,
   login,
@@ -565,5 +569,6 @@ export default {
   getReturnsForEmails,
   checkInReturn,
   updateReturnStatus,
-  sendReturnEmail
+  sendReturnEmail,
+  getProductStats
 }

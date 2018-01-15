@@ -4,7 +4,7 @@ const initialState = {
   errors: []
 };
 
-const returns = (state = initialState, action) => {
+const productStats = (state = initialState, action) => {
   switch (action.type) {
     
     case 'GET_RETURNS_REQUEST':
@@ -127,4 +127,4 @@ const removeReturnObject = (updatedReturn, returnsState) => {
   ];
 };
 
-export default returns;
+export default productStats;
