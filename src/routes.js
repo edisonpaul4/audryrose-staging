@@ -14,6 +14,7 @@ import NotFound from './components/NotFound';
 import { EmailSectionMainContainer, EmailSectionContainer, EmailReturnsContainer } from './containers/email/';
 import { DesignersMainContainer, VendorOrdersContainer } from './containers/designers/';
 import { ReturnsMainContainer, RepairsResizesContainer } from './containers/returns';
+import { ProductsStatsContainer } from './containers/stats';
 
 export function requireAuth(store) {
   return (nextState, replace) => {
@@ -141,15 +142,8 @@ const createRoutes = (store) => {
         },
         {
           path: 'product-stats',
-          component: ReturnsMainContainer,
-          onEnter: requireAuth(store),
-          // childRoutes: [
-          //   {
-          //     path: ':subpage',
-          //     component: DesignersContainer,
-          //     onEnter: requireAuth(store)
-          //   }
-          // ]
+          component: ProductsStatsContainer,
+          onEnter: requireAuth(store)
         },
         {
           path: 'repairs-resizes',
