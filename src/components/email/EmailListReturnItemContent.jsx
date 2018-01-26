@@ -29,12 +29,11 @@ class EmailListReturnItemContent extends React.Component {
     const { returnTypeId, customerName, productName, productClassification, returnOptions, isCheckedIn } = props;
     const capitalizedCustomerName = customerName
       .split(' ')
-      .map(name => name.slice(0, 1).toUpperCase() + name.slice(1).toLowerCase())
-      .join(' ');
+      .map(name => name.slice(0, 1).toUpperCase() + name.slice(1).toLowerCase());
 
     if(isCheckedIn)
       return emailTextCompleted
-        .replace('{{CUSTOMER_NAME}}', capitalizedCustomerName)
+        .replace('{{CUSTOMER_NAME}}', capitalizedCustomerName[0])
         .replace('{{CLASSIFICATION}}', productClassification ? productClassification.slice(0, -1).toLowerCase() : '')
         .replace('{{REPAIRING_RESIZING}}', returnTypeId === 1 ? 'repairing' : 'resizing');
 
@@ -42,12 +41,12 @@ class EmailListReturnItemContent extends React.Component {
     switch (returnTypeId) {
       case 0:
         return emailTextReturn
-          .replace('{{CUSTOMER_NAME}}', capitalizedCustomerName)
+          .replace('{{CUSTOMER_NAME}}', capitalizedCustomerName[0])
           .replace('{{PRODUCT_NAME}}', productName);
 
       case 1:
         return emailTextRepair
-          .replace('{{CUSTOMER_NAME}}', capitalizedCustomerName)
+          .replace('{{CUSTOMER_NAME}}', capitalizedCustomerName[0])
           .replace('{{PRODUCT_NAME}}', productName)
           .replace('{{CLASSIFICATION}}', productClassification ? productClassification.slice(0, -1).toLowerCase() : '')
 
@@ -55,10 +54,10 @@ class EmailListReturnItemContent extends React.Component {
         const tempOption = returnOptions[returnOptions.length - 1];
         if (tempOption.newSize === 0)
           return emailTextUnknownResize
-            .replace('{{CUSTOMER_NAME}}', capitalizedCustomerName);
+            .replace('{{CUSTOMER_NAME}}', capitalizedCustomerName[0]);
         else
           return emailTextKnownResize
-            .replace('{{CUSTOMER_NAME}}', capitalizedCustomerName)
+            .replace('{{CUSTOMER_NAME}}', capitalizedCustomerName[0])
             .replace('{{SIZE}}', tempOption.newSize);
 
       default:
