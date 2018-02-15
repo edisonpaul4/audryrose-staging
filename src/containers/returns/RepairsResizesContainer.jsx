@@ -18,7 +18,7 @@ class RepairsResizesContainer extends React.Component {
   getFilteredReturns(returns, type) {
     switch(type) {
       case 'all':
-        return returns;
+        return returns.filter(r => r.returnStatusId <= 2);
       
       case 'waiting':
         return returns.filter(r => r.returnStatusId === 0);
