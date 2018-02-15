@@ -581,6 +581,7 @@ class Products extends Component {
 				if (expanded) {
   		    // Create ProductDetails row
     			let productDetailsData = {
+						designerProductName: product.designerProductName,
             productId: product.productId,
             is_active: product.is_active,
             sizeScale: product.sizeScale,
