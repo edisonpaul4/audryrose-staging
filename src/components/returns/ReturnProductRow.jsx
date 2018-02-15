@@ -23,14 +23,17 @@ class ReturnProductRow extends React.Component {
       this.props.updateReturnStatus(this.props.returnId, value);
   }
 
-  getAvailableStatus(returnStatusId) { 
+  getAvailableStatus(returnStatusId, returnType, returnTypeId) { 
+    const startedStatus = (returnType.slice(0, 1).toUpperCase() + returnType.slice(1).toLowerCase()) + ' Initiated';
+    const completedStatus = (returnType.slice(0, 1).toUpperCase() + returnType.slice(1).toLowerCase()) + ' Completed';
+
     const all = [
-      { key: 0, text: 'Requested', value: 0, disabled: false },
+      { key: 0, text: startedStatus, value: 0, disabled: false },
       { key: 1, text: 'Being repaired', value: 1, disabled: false },
       { key: 2, text: 'Being resized', value: 2, disabled: false },
       { key: 3, text: 'Resize completed', value: 3, disabled: false },
       { key: 4, text: 'Repair completed', value: 4, disabled: false },
-      { key: 5, text: 'Ready to ship', value: 5, disabled: false },
+      { key: 5, text: completedStatus, value: 5, disabled: false },
     ];
 
     if(returnStatusId === 1)
@@ -47,7 +50,7 @@ class ReturnProductRow extends React.Component {
   }
 
   render() {
-    const { dateRequested, dateCheckedIn, orderId, customerName, productName, productImage, orderNotes, returnStatusId } = this.props;
+    const { dateRequested, dateCheckedIn, orderId, customerName, productName, productImage, orderNotes, returnStatusId, returnType, returnTypeId } = this.props;
     
     const words = [
       (orderNotes.customerNotes !== null || orderNotes.staffNotes !== null) ? 'C' : null,
@@ -124,7 +127,7 @@ class ReturnProductRow extends React.Component {
           <Dropdown
             placeholder='Select status'
             selection
-            options={this.getAvailableStatus(returnStatusId)}
+            options={this.getAvailableStatus(returnStatusId, returnType, returnTypeId)}
             value={returnStatusId}
             onChange={this.onReturnStatusChanged.bind(this)} />
         </Table.Cell>
