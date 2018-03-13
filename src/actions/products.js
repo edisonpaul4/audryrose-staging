@@ -7,6 +7,13 @@ export function getProducts(token, subpage, page, sort, search, filters) {
   }
 }
 
+export function getProductAndVariants(token, productId) {
+  return {
+    types: ['PRODUCT_REQUEST', 'PRODUCT_SUCCESS', 'PRODUCT_FAILURE'],
+    promise: api.getProductAndVariants(token, productId).then(r => r.data.result)
+  }
+}
+
 export function getProductFilters(token) {
   return {
     types: ['PRODUCT_FILTERS_REQUEST', 'PRODUCT_FILTERS_SUCCESS', 'PRODUCT_FILTERS_FAILURE'],

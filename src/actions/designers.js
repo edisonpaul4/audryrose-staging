@@ -69,3 +69,10 @@ export function finishPendingVendorOrderProduct(vendorOrderObjectId, vendorOrder
     promise: api.finishPendingVendorOrderProduct(vendorOrderObjectId, vendorOrderVariantObjectId, token).then(r => r.data.result)
   }
 }
+
+export function updateVendorOrderProduct(token, options) {
+  return {
+    types: ['DESIGNERS_REQUEST', 'DESIGNERS_SUCCESS', 'DESIGNERS_FAILURE'],
+    promise: api.updateVendorOrderProduct(token, options).then(r => r.data.result)
+  };
+}

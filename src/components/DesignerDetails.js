@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Table, Button, Dimmer, Segment, Loader, Header, Form,Input, TextArea, Divider, Label, Icon, Confirm } from 'semantic-ui-react';
 import classNames from 'classnames';
 import moment from 'moment';
+import { ProductToOrderEditModal } from './../containers/designers/'
 
 class ProductRow extends Component {
   constructor(props) {
@@ -66,7 +67,7 @@ class ProductRow extends Component {
     return edited;
   }
 	componentWillReceiveProps(nextProps) {
-  	if (this.state.isSaving && nextProps.vendorOrderVariant) {
+  	if (this.state.isSaving && nextProps.vendorOrderVariant || this.props.vendorOrderVariant.updatedAt !== nextProps.vendorOrderVariant.updatedAt) {
     	this.setState({
         units: nextProps.vendorOrderVariant.units ? parseFloat(nextProps.vendorOrderVariant.units) : 0,
         notes: nextProps.vendorOrderVariant.notes ? nextProps.vendorOrderVariant.notes : '',
@@ -207,6 +208,19 @@ class ProductRow extends Component {
 				<Table.Cell className='right aligned'>
   				<Icon name='checkmark' color='olive' size='large' className={doneIconClass} />
 				</Table.Cell>
+        {this.props.status === 'Pending' ? (
+          <Table.Cell className='right aligned'>
+            <ProductToOrderEditModal
+              vendorOrderVariantId={this.props.vendorOrderVariant.objectId}
+              vendorOrderNumber={this.props.vendorOrder.vendorOrderNumber}
+              productId={this.props.vendorOrderVariant.variant.productId}
+              productName={this.props.vendorOrderVariant.variant.designerProductName}
+              vendorName={this.props.vendor.name}
+              productUnits={this.state.units}
+              notes={this.state.notes}
+              internalNotes={this.state.internalNotes} />
+          </Table.Cell>
+        ) : null}
       </Table.Row>
     );
   }
@@ -316,7 +330,7 @@ class VendorOrder extends Component {
 
 	render() {
   	const scope = this;
-  	const { status, order, vendor } = this.props;
+    const { status, order, vendor } = this.props;
 
   	// Create Pending Order Table
 		let orderProductRows = [];
@@ -327,7 +341,9 @@ class VendorOrder extends Component {
           return null;
   			totalReceived += vendorOrderVariant.received;
 				orderProductRows.push(
-          <ProductRow 
+          <ProductRow
+            vendor={scope.props.vendor}
+            vendorOrder={scope.props.order}
             status={scope.props.status} 
             vendorOrderVariant={vendorOrderVariant} 
             key={vendorOrderVariant.objectId} 
@@ -430,6 +446,7 @@ class VendorOrder extends Component {
               ) : null}
 
               <Table.HeaderCell className='right aligned'></Table.HeaderCell>
+              <Table.HeaderCell></Table.HeaderCell>
               <Table.HeaderCell></Table.HeaderCell>
             </Table.Row>
           </Table.Header>
