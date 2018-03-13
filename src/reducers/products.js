@@ -8,11 +8,21 @@ const initialState = {
 	filterData: null
 };
 
+const updateProduct = (newProduct, productsState) => {
+  const index = productsState.findIndex(p => p.objectId === newProduct.objectId);
+  return [
+    ...productsState.slice(0, index),
+    newProduct,
+    ...productsState.slice(index + 1)
+  ];
+};
+
 const products = (state = initialState, action) => {
   let productsData;
   switch(action.type) {
 
     case 'PRODUCTS_REQUEST':
+    case 'PRODUCT_REQUEST':
       return {
         ...state,
         isLoadingProducts: true
@@ -35,7 +45,15 @@ const products = (state = initialState, action) => {
         tabCounts: action.res.tabCounts
       };
 
+    case 'PRODUCT_SUCCESS':
+      return {
+        ...state,
+        products: updateProduct(action.res, state.products),
+        isLoadingProducts: false
+      }
+    
     case 'PRODUCTS_FAILURE':
+    case 'PRODUCT_FAILURE':
       return {
         ...state,
         isLoadingProducts: false
