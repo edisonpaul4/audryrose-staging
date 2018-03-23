@@ -279,14 +279,15 @@ class ProductRow extends Component {
 				<Table.Cell>{/*{vendorOrders}{resizes}*/}{awaitingInventoryQueue}</Table.Cell>
 				<Table.Cell className='right aligned'>
           <Button.Group color='grey' size='mini' compact>
-            {primaryButton}
-            {shippingLabel}
-            {dropdownItems.length > 0 ? <Dropdown floating button compact pointing className='icon'>
+					{dropdownItems.length > 0 ? <Dropdown floating button compact pointing className='icon'>
               <Dropdown.Menu>
                 {dropdownItems}
               </Dropdown.Menu>
             </Dropdown>
             : null}
+            {primaryButton}
+            {shippingLabel}
+            
           </Button.Group>
 				</Table.Cell>
       </Table.Row>
