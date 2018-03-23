@@ -3,6 +3,7 @@ import thunk from 'redux-thunk';
 import rootReducer from '../reducers';
 import promise from './promise';
 import { createSession } from 'redux-session';
+import logger from 'redux-logger'
 
 const configureStore = () => {
 	
@@ -26,7 +27,8 @@ const configureStore = () => {
   const middleware = [
     thunk,
     promise,
-		session
+		session,
+		logger
   ];
 	console.log(process.env)
   const store = createStore(
