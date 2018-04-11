@@ -505,11 +505,12 @@ const updateReturnStatus = (returnId, returnStatusId, token) => axios.post('/fun
   returnStatusId
 });
 
-const sendReturnEmail = (returnId, { emailSubject, emailText }, token) => axios.post('/functions/sendReturnEmail', {
+const sendReturnEmail = (returnId, { emailSubject, emailText, emailTo }, token) => axios.post('/functions/sendReturnEmail', {
   sessionToken: token,
   returnId,
   emailSubject,
-  emailText
+  emailText,
+  emailTo
 });
 
 const getProductStats = (token) => axios.post('/functions/getProductStats', {

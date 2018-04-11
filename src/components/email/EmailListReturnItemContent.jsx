@@ -67,7 +67,7 @@ class EmailListReturnItemContent extends React.Component {
 
   render() {
     const { returnId, returnType, onSenEmail } = this.props;
-    const { emailText, emailSubject } = this.state;
+    const { emailText, emailSubject, emailTo } = this.state;
     return (
       <Table.Row colSpan="12" as="td">
         <Segment loading={false} secondary={true}>
@@ -77,6 +77,13 @@ class EmailListReturnItemContent extends React.Component {
                 label="Subject"
                 value={emailSubject}
                 onChange={(e, { value }) => this.setState({ emailSubject: value })} />
+                <Form.Input
+                label="To"
+                placeholder="Customer's default"
+                onChange={(e, { value }) => {
+                  this.setState({ emailTo: value })
+                  console.log(this.state)
+                  }} />
             </Form.Group>
 
             <Form.Group widths='equal'>
@@ -93,7 +100,7 @@ class EmailListReturnItemContent extends React.Component {
           <Button
             color="green"
             content="Send"
-            onClick={() => onSenEmail(returnId, { emailSubject, emailText })} />
+            onClick={() => onSenEmail(returnId, { emailSubject, emailText, emailTo })} />
         </Segment>
       </Table.Row>
     );
