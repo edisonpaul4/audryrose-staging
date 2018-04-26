@@ -4,9 +4,9 @@ import { Grid, Table, Dimmer, Loader, Checkbox, Icon, Header, Sidebar, Menu, But
 import NotificationSystem from 'react-notification-system';
 import OrdersNav from './OrdersNav.js';
 import Order from './Order.js';
-import OrderDetails from './OrderDetails.js';
-import Pagination from './Pagination.js';
-import ProductOrderModal from './ProductOrderModal.js';
+import OrderDetails from './OrderDetails';
+import Pagination from '../../components/Pagination';
+import ProductOrderModal from '../../components/ProductOrderModal.js';
 import OrderProductEditModal from './OrderProductEditModal.js';
 
 class Orders extends Component {

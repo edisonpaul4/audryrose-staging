@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Grid, Segment } from 'semantic-ui-react';
 
 import { getOrdersToSendEmails, sendOrderEmail, deleteOrderEmail } from '../../actions/emailOrders';
-import { updateOrderNotes } from '../../actions/orders';
+import { updateOrderNotes } from '../../orders/actions';
 import { EmailList, EmailListItem, EmailListItemContent, EmailsFieldUpdater } from '../../components/email/';
 
 export class EmailSectionContainer extends React.Component {

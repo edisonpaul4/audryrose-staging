@@ -209,8 +209,10 @@ class ProductRow extends Component {
   		});
     }
 
-	  let awaitingInventoryQueue = [];
+      let awaitingInventoryQueue = [];
+      let count = 0;
 		if (product && product.awaitingInventory && product.awaitingInventory.length > 0) {
+            console.log(product);
   		let label;
   		product.awaitingInventory.map(function(inventoryItem, i) {
     		const isVendorOrder = inventoryItem.className === 'VendorOrderVariant' ? true : false;
@@ -235,7 +237,6 @@ class ProductRow extends Component {
     		}
 
     		if (label) awaitingInventoryQueue.push(label);
-
     		return inventoryItem;
   		});
     }

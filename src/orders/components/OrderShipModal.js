@@ -3,7 +3,7 @@ import { Modal, Button, List, Segment, Icon, Header, Form, Divider } from 'seman
 import moment from 'moment';
 import axios from 'axios';
 
-import { OrderShipmentRates } from '../containers/orders/';
+import  OrderShipmentRates  from '../containers/OrderShipmentRates';
 
 const SHIPPING_PARCELS = [
   { value: 'USPS_SmallFlatRateBox', text: 'Small Flat Rate Box', length: '8.69', width: '5.44', height: '1.75', weight: '3'},

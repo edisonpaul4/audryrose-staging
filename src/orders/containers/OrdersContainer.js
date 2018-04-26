@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { getOrders, reloadOrder, createShipments, batchCreateShipments, batchPrintShipments, printPickSheet, getProduct, addOrderProductToVendorOrder, createResize, saveOrder, saveOrderProduct, getOrderProductFormData, updateOrderNotes, createReturn } from '../actions/orders';
+import { getOrders, reloadOrder, createShipments, batchCreateShipments, batchPrintShipments, printPickSheet, getProduct, addOrderProductToVendorOrder, createResize, saveOrder, saveOrderProduct, getOrderProductFormData, updateOrderNotes, createReturn } from '../actions';
 import Orders from '../components/Orders';
 
 const select = state => ({
