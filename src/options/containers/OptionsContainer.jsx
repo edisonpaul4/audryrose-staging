@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
-import { getOptions, saveOption } from '../actions/options';
-import Options from '../components/Options';
+import { getOptions, saveOption } from '../../options/actions';
+import {Options} from '../components/components';
 
 const select = state => ({
   token: state.auth.token,

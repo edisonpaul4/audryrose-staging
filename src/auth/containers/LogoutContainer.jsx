@@ -1,7 +1,6 @@
 import { connect } from 'react-redux';
 import { login, loadSession, logout } from '../actions';
-import Login from '../components/login.component';
-
+import Logout  from '../components/Logout';
 const select = state => ({
     error: state.error,
     isLoggedIn: state.auth.isLoggedIn,
@@ -17,4 +16,4 @@ const actions = {
     logout,
 };
 
-export default connect(select, actions)(Login);
+export default connect(select, actions)(Logout);

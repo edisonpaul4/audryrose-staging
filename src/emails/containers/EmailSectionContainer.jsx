@@ -2,9 +2,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Grid, Segment } from 'semantic-ui-react';
 
-import { getOrdersToSendEmails, sendOrderEmail, deleteOrderEmail } from '../../actions/emailOrders';
+import { getOrdersToSendEmails, sendOrderEmail, deleteOrderEmail } from '../actions';
 import { updateOrderNotes } from '../../orders/actions';
-import { EmailList, EmailListItem, EmailListItemContent, EmailsFieldUpdater } from '../../components/email/';
+import { EmailList, EmailListItem, EmailListItemContent, EmailsFieldUpdater } from '../components/components';
 
 export class EmailSectionContainer extends React.Component {
   constructor(props) {

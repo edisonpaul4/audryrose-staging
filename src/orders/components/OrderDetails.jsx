@@ -4,7 +4,7 @@ import { Table, Button, Dropdown, Dimmer, Segment, Loader, Icon, Label, Checkbox
 import classNames from 'classnames';
 // import numeral from 'numeral';
 import moment from 'moment';
-import OrderShipModal from './OrderShipModal.js';
+import {OrderShipModal} from './components';
 import axios from 'axios';
 
 class ProductRow extends Component {

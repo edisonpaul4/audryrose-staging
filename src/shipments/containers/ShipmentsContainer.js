@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
-import { getShipments } from '../actions/shipments';
-import Shipments from '../components/Shipments';
+import { getShipments } from '../actions';
+import {Shipments} from '../components/components';
 
 const select = state => ({
   token: state.auth.token,

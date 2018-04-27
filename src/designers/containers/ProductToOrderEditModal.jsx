@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Icon, Modal, Form, Button } from 'semantic-ui-react';
-import { getProductAndVariants } from '../../actions/products';
-import { updateVendorOrderProduct } from '../../actions/designers';
+import { getProductAndVariants } from '../../products/actions';
+import { updateVendorOrderProduct } from '../actions';
 
 class ProductToOrderEditModal extends React.Component {
   constructor(props) {

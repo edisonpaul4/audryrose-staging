@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Table, Icon, Dropdown } from 'semantic-ui-react';
 
-import OrderNotesModal from '../../orders/components/OrderNotesModal';
+import {OrderNotesModal} from '../../orders/components/components';
 
 export default class EmailListItem extends React.Component {
   constructor(props) {

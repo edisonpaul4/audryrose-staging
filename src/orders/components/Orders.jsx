@@ -2,12 +2,9 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router';
 import { Grid, Table, Dimmer, Loader, Checkbox, Icon, Header, Sidebar, Menu, Button } from 'semantic-ui-react';
 import NotificationSystem from 'react-notification-system';
-import OrdersNav from './OrdersNav.js';
-import Order from './Order.js';
-import OrderDetails from './OrderDetails';
-import Pagination from '../../components/Pagination';
-import ProductOrderModal from '../../components/ProductOrderModal.js';
-import OrderProductEditModal from './OrderProductEditModal.js';
+import Pagination from '../../shared/components/Pagination';
+import { ProductOrderModal } from '../../products/components/components';
+import { OrdersNav, Order,OrderDetails, OrderProductEditModal } from './components';
 
 class Orders extends Component {
   constructor(props) {

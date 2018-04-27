@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
-import { getProducts, getProductFilters, getProductOptions, reloadProduct, saveProduct, saveVariants, addToVendorOrder, createResize, saveResize, getBundleFormData, productBundleSave } from '../actions/products';
-import Products from '../components/Products';
+import { getProducts, getProductFilters, getProductOptions, reloadProduct, saveProduct, saveVariants, addToVendorOrder, createResize, saveResize, getBundleFormData, productBundleSave } from '../actions';
+import {Products} from '../components/components';
 
 const select = state => ({
   token: state.auth.token,

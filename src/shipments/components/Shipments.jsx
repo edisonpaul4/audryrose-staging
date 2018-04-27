@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router';
 import { Grid, Table, Dimmer, Loader, Button } from 'semantic-ui-react';
-import Pagination from './Pagination.js';
+import Pagination from '../../shared/components/Pagination.js';
 import moment from 'moment';
 
 class Shipment extends Component {

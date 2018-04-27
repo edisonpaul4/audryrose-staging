@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Grid, Segment, Table, Icon } from 'semantic-ui-react';
 import { Link } from 'react-router';
 
-import * as productStatsActions from '../../actions/productStats';
+import * as productStatsActions from '../actions';
 
 import NotificationSystem from 'react-notification-system';
 

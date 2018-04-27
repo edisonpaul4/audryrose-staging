@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { getWebhooks, createWebhook, deleteWebhook } from '../actions/webhooks';
+import { getWebhooks, createWebhook, deleteWebhook } from '../actions';
 import Webhooks from '../components/Webhooks';
 
 const select = state => ({

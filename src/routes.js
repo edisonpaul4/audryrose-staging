@@ -1,20 +1,20 @@
-import App from './components/App';
-import SignupContainer from './auth/containers/signup.container';
-import LoginContainer from './auth/containers/login.container';
-import LogoutContainer from './auth/containers/logout.container';
-import DashboardContainer from './containers/DashboardContainer';
+import App from './shared/components/App';
+import SignupContainer from './auth/containers/SignupContainer';
+import LoginContainer from './auth/containers/LoginContainer';
+import LogoutContainer from './auth/containers/LogoutContainer';
+import DashboardContainer from './shared/containers/DashboardContainer';
 import OrdersContainer from './orders/containers/OrdersContainer';
-import ProductsContainer from './containers/ProductsContainer';
-import DesignersContainer from './containers/DesignersContainer';
-import OptionsContainer from './containers/OptionsContainer';
-import ShipmentsContainer from './containers/ShipmentsContainer';
-import WebhooksContainer from './containers/WebhooksContainer';
-import NotFound from './components/NotFound';
+import ProductsContainer from './products/containers/ProductsContainer';
+import DesignersContainer from './designers/containers/DesignersContainer';
+import OptionsContainer from './options/containers/OptionsContainer';
+import ShipmentsContainer from './shipments/containers/ShipmentsContainer';
+import WebhooksContainer from './webhooks/containers/WebhooksContainer';
+import NotFound from './shared/components/NotFound';
 
-import { EmailSectionMainContainer, EmailSectionContainer, EmailReturnsContainer } from './containers/email/';
-import { DesignersMainContainer, VendorOrdersContainer } from './containers/designers/';
-import { ReturnsMainContainer, RepairsResizesContainer } from './containers/returns';
-import { ProductsStatsContainer } from './containers/stats';
+import { EmailSectionMainContainer, EmailSectionContainer, EmailReturnsContainer } from './emails/containers/containers';
+import { DesignersMainContainer, VendorOrdersContainer } from './designers/containers/containers';
+import { ReturnsMainContainer, RepairsResizesContainer } from './repairs-resizes/containers/containers';
+import { ProductsStatsContainer } from './products-stats/containers/containers';
 
 export function requireAuth(store) {
   return (nextState, replace) => {

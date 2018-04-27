@@ -1,6 +1,6 @@
 import { createStore, applyMiddleware, compose } from 'redux';
 import thunk from 'redux-thunk';
-import rootReducer from '../reducers';
+import rootReducer from './reducers';
 import promise from './promise';
 import { createSession } from 'redux-session';
 import logger from 'redux-logger'

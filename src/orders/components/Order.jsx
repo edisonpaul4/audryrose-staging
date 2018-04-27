@@ -4,7 +4,7 @@ import { SingleDatePicker } from 'react-dates';
 import 'react-dates/lib/css/_datepicker.css';
 import numeral from 'numeral';
 import moment from 'moment';
-import OrderNotesModal from './OrderNotesModal';
+import {OrderNotesModal} from './components';
 
 class Order extends PureComponent {
     constructor(props) {

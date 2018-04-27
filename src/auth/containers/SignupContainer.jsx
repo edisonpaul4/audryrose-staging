@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'; 
 import { signup } from '../actions'; 
-import Signup from '../components/signup.component'; 
+import Signup from '../components/Signup'; 
  
 const select = state => ({ 
   error: state.error, 

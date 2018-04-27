@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Grid, Segment } from 'semantic-ui-react';
 
-import { getAllPendingVendorOrders } from '../../actions/designers';
-import { VendorOrdersList, VendorOrderListItem } from '../../components/designers/';
+import { getAllPendingVendorOrders } from '../actions';
+import { VendorOrdersList, VendorOrderListItem } from '../components/components';
 
-import { finishPendingVendorOrderProduct } from '../../actions/designers';
+import { finishPendingVendorOrderProduct } from '../../designers/actions';
 
 class VendorOrdersContainer extends React.Component {
   constructor(props) { 

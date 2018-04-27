@@ -1,4 +1,4 @@
-import { resetError } from '../actions/error';
+import { resetError } from '../shared/actions/error';
 
 const promise = store => next => action => {
 

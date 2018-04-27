@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { Grid, Menu, Segment, Table } from 'semantic-ui-react';
 
-import { ReturnProductRow } from '../../components/returns';
-import { getReturns, checkInReturn, updateReturnStatus } from '../../actions/returns';
+import { ReturnProductRow } from '../components/components';
+import { getReturns, checkInReturn, updateReturnStatus } from '../actions';
 
 class RepairsResizesContainer extends React.Component {
   constructor(props) {

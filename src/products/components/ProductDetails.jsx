@@ -3,7 +3,7 @@ import { Table, Input, Button, Dropdown, Dimmer, Segment, Loader, Label, Form, I
 import classNames from 'classnames';
 import numeral from 'numeral';
 import moment from 'moment';
-import ProductResizeModal from './ProductResizeModal.js';
+import {ProductResizeModal} from './components';
 
 class VariantRow extends Component {
   constructor(props) {

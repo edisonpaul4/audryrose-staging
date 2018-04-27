@@ -5,7 +5,7 @@ const initialState = {
 
 };
 
-const orders = (state = initialState, action) => {
+export const orders = (state = initialState, action) => {
   var ordersData;
   switch(action.type) {
 
@@ -340,5 +340,3 @@ const orders = (state = initialState, action) => {
       return state;
   }
 }
-
-export default orders;

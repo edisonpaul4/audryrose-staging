@@ -45,7 +45,6 @@ const auth = (state = initialState, action) => {
             }
 
         case 'LOGIN_SUCCESS':
-            console.log(JSON.stringify(action.res));
             return {
                 ...state,
                 isLoggedIn: true,
@@ -65,13 +64,11 @@ const auth = (state = initialState, action) => {
             }
 
         case 'LOGOUT_REQUEST':
-            console.log(JSON.stringify(action.res));
             return {
                 ...state
             }
 
         case 'LOGOUT_SUCCESS':
-            console.log(JSON.stringify(action.res));
             return {
                 ...state,
                 isLoggedIn: false,
@@ -80,7 +77,6 @@ const auth = (state = initialState, action) => {
             }
 
         case 'LOGOUT_FAILURE':
-            console.log(JSON.stringify(action.res));
             return {
                 ...state,
                 isLoggingIn: false

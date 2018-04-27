@@ -1,9 +1,9 @@
 import { connect } from 'react-redux';
 import { getOrders, reloadOrder, createShipments, batchCreateShipments, batchPrintShipments, printPickSheet, getProduct, addOrderProductToVendorOrder, createResize, saveOrder, saveOrderProduct, getOrderProductFormData, updateOrderNotes, createReturn } from '../actions';
-import Orders from '../components/Orders';
+import { Orders } from '../components/components';
 
 const select = state => ({
-  token: state.auth.token,
+	token: state.auth.token,
 	isLoadingOrders: state.orders.isLoadingOrders,
 	orders: state.orders.orders,
 	updatedOrders: state.orders.updatedOrders,
@@ -21,17 +21,17 @@ const select = state => ({
 });
 
 const actions = {
-  getOrders,
-  reloadOrder,
-  createShipments,
-  batchCreateShipments,
-  batchPrintShipments,
-  printPickSheet,
-  getProduct,
-  addOrderProductToVendorOrder,
-  createResize,
-  saveOrder,
-  saveOrderProduct,
+	getOrders,
+	reloadOrder,
+	createShipments,
+	batchCreateShipments,
+	batchPrintShipments,
+	printPickSheet,
+	getProduct,
+	addOrderProductToVendorOrder,
+	createResize,
+	saveOrder,
+	saveOrderProduct,
 	getOrderProductFormData,
 	updateOrderNotes,
 	createReturn

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Table, Button, Dimmer, Segment, Loader, Header, Form, Input, TextArea, Divider, Label, Icon, Confirm } from 'semantic-ui-react';
 import classNames from 'classnames';
 import moment from 'moment';
-import { ProductToOrderEditModal } from './../containers/designers/'
+import { ProductToOrderEditModal } from '../containers/containers'
 
 class ProductRow extends Component {
   constructor(props) {
