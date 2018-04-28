@@ -13,6 +13,8 @@ import error from '../shared/reducers/error';
 import returns from '../repairs-resizes/reducers';
 import productStats from '../products-stats/reducers';
 import auth from '../auth/reducers';
+import { loadingBarReducer } from 'react-redux-loading-bar'
+
 const rootReducer = combineReducers({
     orders,
     products,
@@ -27,6 +29,7 @@ const rootReducer = combineReducers({
     returns,
     productStats,
     auth,
+    loadingBar: loadingBarReducer,
     routing: routerReducer
 });
 

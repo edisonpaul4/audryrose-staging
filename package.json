@@ -29,6 +29,7 @@
     "react-dom": "^15.6.1",
     "react-notification-system": "^0.2.14",
     "react-redux": "^5.0.5",
+    "react-redux-loading-bar": "^4.0.4",
     "react-router": "^3.0.0",
     "react-router-redux": "^4.0.5",
     "redux": "^3.7.2",

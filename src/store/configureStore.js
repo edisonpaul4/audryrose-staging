@@ -4,6 +4,7 @@ import rootReducer from './reducers';
 import promise from './promise';
 import { createSession } from 'redux-session';
 import logger from 'redux-logger'
+import { loadingBarMiddleware } from 'react-redux-loading-bar'
 
 const configureStore = () => {
     const session = createSession({
@@ -27,13 +28,13 @@ const configureStore = () => {
         thunk,
         promise,
         session,
-        logger
+        logger,
     ];
     console.log(process.env)
     const store = createStore(
         rootReducer,
         compose(
-            applyMiddleware(...middleware),
+            applyMiddleware(...middleware, loadingBarMiddleware()),
             window.devToolsExtension && process.env.NODE_ENV === "development" ? window.devToolsExtension() : f => f
         ));
 
