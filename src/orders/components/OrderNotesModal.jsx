@@ -3,6 +3,7 @@ import { PropTypes } from 'prop-types';
 import { Form, Modal, Icon, Button } from 'semantic-ui-react';
 
 export default class OrderNotesModal extends React.Component {
+    
   constructor(props) {
     super(props);
     this.state = {
