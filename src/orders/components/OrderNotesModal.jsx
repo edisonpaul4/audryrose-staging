@@ -3,7 +3,7 @@ import { PropTypes } from 'prop-types';
 import { Form, Modal, Icon, Button } from 'semantic-ui-react';
 
 export default class OrderNotesModal extends React.Component {
-    
+
   constructor(props) {
     super(props);
     this.state = {
@@ -30,7 +30,6 @@ export default class OrderNotesModal extends React.Component {
       this.state.designerNotes !== '' ? 'D' : null,
       this.state.internalNotes !== '' ? 'I' : null,
     ].filter(w => w !== null).join(' - ');
-
     return (
       <section>
         <div style={Styles.textWrapper}>
