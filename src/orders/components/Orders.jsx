@@ -508,7 +508,6 @@ class Orders extends Component {
                     items_total: order.items_total,
                     fraudData: scope.fraudCheck(order),
                     staff_notes: order.staff_notes,
-                    customer_message: order.customer_message,
                     designerNotes: order.designerNotes,
                     internalNotes: order.internalNotes
                 };
@@ -573,7 +572,7 @@ class Orders extends Component {
         sortColumn = (this.state.sort.includes('date-shipped')) ? 'date-shipped' : sortColumn;
         sortColumn = (this.state.sort.includes('total')) ? 'total' : sortColumn;
 
-        const searchHeader = this.state.search ? <Header as='h2'>{totalOrders} results for "{this.props.location.query.q}"</Header> : null;
+        const searchHeader = this.state.search ? <Header as='h2'>{totalOrders} results for {this.props.location.query.q}</Header> : null;
         const dateIcon = this.state.sort === 'date-added-desc' || this.state.sort === 'date-added-asc' ? null : <Icon disabled name='caret down' />;
         const dateNeededIcon = this.state.sort === 'date-needed-desc' || this.state.sort === 'date-needed-asc' ? null : <Icon disabled name='caret down' />;
         const dateShippedIcon = this.state.sort === 'date-shipped-desc' || this.state.sort === 'date-shipped-asc' ? null : <Icon disabled name='caret down' />;

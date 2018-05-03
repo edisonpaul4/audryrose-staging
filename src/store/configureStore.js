@@ -30,7 +30,6 @@ const configureStore = () => {
         session,
         logger,
     ];
-    console.log(process.env)
     const store = createStore(
         rootReducer,
         compose(

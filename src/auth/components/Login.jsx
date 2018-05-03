@@ -33,13 +33,10 @@ class Login extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log('componentWillReceiveProps: ' + JSON.stringify(nextProps));
         if (nextProps.isLoggedIn) {
             const nextPath = nextProps.location.query.next ? nextProps.location.query.next : '/dashboard';
-            console.log('logged in, redirect to ' + nextPath);
             this.props.router.push(nextPath);
         } else if (this.state.token) {
-            console.log('not logged in, load session from token ' + nextProps.token);
             this.props.loadSession(nextProps.token);
         }
 

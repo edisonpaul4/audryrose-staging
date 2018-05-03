@@ -188,16 +188,11 @@ class OrderProductEditModal extends Component {
             if (product.variants) {
                 product.variants.map(function (variant, j) {
                     if (variant.objectId === objectId) {
-                        console.log('matched ' + objectId, variant);
                         state.selectedProduct = product.productId;
                         state.selectedColor = variant.colorCode ? variant.colorCode.objectId : '';
-                        console.log('state.selectedColor', state.selectedColor);
                         state.selectedStone = variant.stoneCode ? variant.stoneCode.objectId : '';
-                        console.log('state.selectedStone', state.selectedStone);
                         state.selectedSize = variant.sizeCode ? variant.sizeCode.objectId : '';
-                        console.log('state.selectedSize', state.selectedSize);
                         state.selectedMisc = variant.miscCode ? variant.miscCode.objectId : '';
-                        console.log('state.selectedMisc', state.selectedMisc);
                     }
                     return variant;
                 });

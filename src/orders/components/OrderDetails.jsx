@@ -212,7 +212,6 @@ class ProductRow extends Component {
         let awaitingInventoryQueue = [];
         let count = 0;
         if (product && product.awaitingInventory && product.awaitingInventory.length > 0) {
-            console.log(product);
             let label;
             product.awaitingInventory.map(function (inventoryItem, i) {
                 const isVendorOrder = inventoryItem.className === 'VendorOrderVariant' ? true : false;
@@ -521,7 +520,6 @@ class OrderDetails extends Component {
             alert('You must select at least one product.');
         else
             this.props.createReturn(returnTypeId, this.state.checkedProducts);
-        console.log(returnTypeId, JSON.stringify(this.state.checkedProducts))
     }
 
     handleGetSizesForProducts() {

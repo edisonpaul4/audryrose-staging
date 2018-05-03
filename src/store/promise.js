@@ -2,33 +2,33 @@ import { resetError } from '../shared/actions/error';
 
 const promise = store => next => action => {
 
-  const { promise, types, ...rest } = action;
+    const { promise, types, ...rest } = action;
 
-  if (!promise || !types) {
-    return next(action);
-  }
+    if (!promise || !types) {
+        return next(action);
+    }
 
-  store.dispatch(resetError());
+    store.dispatch(resetError());
 
-  const [REQUEST, SUCCESS, FAILURE] = types;
+    const [REQUEST, SUCCESS, FAILURE] = types;
 
-  next({
-    type: REQUEST
-  });
-
-  return promise.then(res => {
     next({
-      ...rest,
-      type: SUCCESS,
-      res
+        type: REQUEST
     });
-  }).catch(err => {
-    next({
-      type: FAILURE,
-      ...rest,
-      err
+
+    return promise.then(res => {
+        next({
+            ...rest,
+            type: SUCCESS,
+            res
+        });
+    }).catch(err => {
+        next({
+            type: FAILURE,
+            ...rest,
+            err
+        });
     });
-  });
 };
 
 export default promise;

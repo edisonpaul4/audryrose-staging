@@ -72,7 +72,6 @@ export const reloadOrder = (token, orderId) => axios.post('/jobs/reloadOrder', {
         return;
     }
 }).catch(function (error) {
-    console.log(error);
     return error;
 });
 
@@ -120,7 +119,6 @@ export const batchCreateShipments = (token, ordersToShip) => axios.post('/jobs/b
         return;
     }
 }).catch(function (error) {
-    console.log(error);
     return error;
 });
 
@@ -161,7 +159,6 @@ export const batchPrintShipments = (token, ordersToPrint) => axios.post('/jobs/b
         return;
     }
 }).catch(function (error) {
-    console.log(error);
     return error;
 });
 
@@ -193,7 +190,6 @@ export const printPickSheet = (token, ordersToPrint) => axios.post('/jobs/printP
         return;
     }
 }).catch(function (error) {
-    console.log(error);
     return error;
 });
 
@@ -358,7 +354,6 @@ export const saveVendorOrder = (token, data) => axios.post('/jobs/saveVendorOrde
         return;
     }
 }).catch(function (error) {
-    console.log(error);
     return error;
 });
 

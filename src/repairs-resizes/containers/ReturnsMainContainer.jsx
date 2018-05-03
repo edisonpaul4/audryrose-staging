@@ -6,22 +6,22 @@ import { Link } from 'react-router';
 import NotificationSystem from 'react-notification-system';
 
 class ReturnsMainContainer extends React.Component {
-  constructor(props) {
-    super(props);
-  }
+    constructor(props) {
+        super(props);
+    }
 
-  render() {
-    return (
-      <Grid.Column width='16'>
-        <NotificationSystem ref="notificationSystem" />
-        {this.props.children}
-      </Grid.Column>
-    );
-  }
+    render() {
+        return (
+            <Grid.Column width='16'>
+                <NotificationSystem ref="notificationSystem" />
+                {this.props.children}
+            </Grid.Column>
+        );
+    }
 }
 
 const state = state => ({
-  
+
 });
 
 const actions = {
