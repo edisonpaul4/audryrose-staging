@@ -211,7 +211,7 @@ class ProductOrderModal extends Component {
         let variantOptions = [];
         let variants = [];
         products.map(function (product, i) {
-            if (product.variant != undefined) {
+            if (product.variants != undefined) {
                 if (product.variants.length > 0) {
                     product.variants.map(function (variant, j) {
                         if (product.productId === selectedProduct) {
