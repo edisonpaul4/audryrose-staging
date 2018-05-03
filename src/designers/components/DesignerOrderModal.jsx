@@ -211,14 +211,17 @@ class ProductOrderModal extends Component {
         let variantOptions = [];
         let variants = [];
         products.map(function (product, i) {
-            if (product.variants.length > 0) {
-                product.variants.map(function (variant, j) {
-                    if (product.productId === selectedProduct) {
-                        variants.push(variant);
-                    }
-                    return variant;
-                });
+            if (product.variant != undefined) {
+                if (product.variants.length > 0) {
+                    product.variants.map(function (variant, j) {
+                        if (product.productId === selectedProduct) {
+                            variants.push(variant);
+                        }
+                        return variant;
+                    });
+                }
             }
+
             productOptions.push({ key: i, value: product.productId, text: product.productId + ' - ' + product.name });
             return product;
         });
