@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Menu, Dropdown } from 'semantic-ui-react';
 import './Navigation.css';
-import {Link} from 'react-router';
+import { Link } from 'react-router';
 class Navigation extends Component {
     constructor(props) {
         super(props);
@@ -26,30 +26,30 @@ class Navigation extends Component {
                 <Menu.Item as={Link} to='/orders' active={pathName.includes('/orders')} link>Orders</Menu.Item>
                 <Menu.Item as={Link} to='/emails/customers-orders/' active={pathName.includes('/emails/')} link>Emails</Menu.Item>
                 <Menu.Item as={Link} to='/products' active={pathName.includes('/products')} link>Products</Menu.Item>
-                <Menu.Item href='/shipments' active={pathName.includes('/shipments')} link>Shipments</Menu.Item>
-                <Menu.Item href='/designers' active={pathName.includes('/designers')} link>Designers</Menu.Item>
+                <Menu.Item as={Link} to='/shipments' active={pathName.includes('/shipments')} link>Shipments</Menu.Item>
+                <Menu.Item as={Link} to='/designers' active={pathName.includes('/designers')} link>Designers</Menu.Item>
 
-                <Menu.Item href='/product-stats' active={pathName.includes('/product-stats')} link>
+                <Menu.Item as={Link} to='/product-stats' active={pathName.includes('/product-stats')} link>
                     Product stats
 					</Menu.Item>
 
-                <Menu.Item href='/repairs-resizes/all' active={pathName.includes('/repairs-resizes')} link>
+                <Menu.Item as={Link} to='/repairs-resizes/all' active={pathName.includes('/repairs-resizes')} link>
                     Repairs / Resizes
 					</Menu.Item>
 
                 <Menu.Menu position='right'>
                     <Dropdown item text='Settings'>
                         <Dropdown.Menu>
-                            <Dropdown.Item href='/users'>Users</Dropdown.Item>
-                            <Dropdown.Item href='/background-jobs'>Background Jobs</Dropdown.Item>
-                            <Dropdown.Item href='/options'>Product Options</Dropdown.Item>
-                            <Dropdown.Item href='/webhooks'>Webhooks</Dropdown.Item>
+                            <Dropdown.Item as={Link} to='/users'>Users</Dropdown.Item>
+                            <Dropdown.Item as={Link} to='/background-jobs'>Background Jobs</Dropdown.Item>
+                            <Dropdown.Item as={Link} to='/options'>Product Options</Dropdown.Item>
+                            <Dropdown.Item as={Link} to='/webhooks'>Webhooks</Dropdown.Item>
                         </Dropdown.Menu>
                     </Dropdown>
                     <Dropdown item text={this.props.user.firstName}>
                         <Dropdown.Menu>
-                            <Dropdown.Item href='/profile'>Profile</Dropdown.Item>
-                            <Dropdown.Item href='/logout'>Logout</Dropdown.Item>
+                            <Dropdown.Item as={Link} to='/profile'>Profile</Dropdown.Item>
+                            <Dropdown.Item as={Link} to='/logout'>Logout</Dropdown.Item>
                         </Dropdown.Menu>
                     </Dropdown>
                 </Menu.Menu>
