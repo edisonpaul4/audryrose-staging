@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Menu, Dropdown } from 'semantic-ui-react';
 import './Navigation.css';
-
+import {Link} from 'react-router';
 class Navigation extends Component {
     constructor(props) {
         super(props);
@@ -22,10 +22,10 @@ class Navigation extends Component {
         return (
             <Menu className='main-nav' attached borderless stackable>
                 <Menu.Item header><img className='logo' src='/imgs/logo.png' width='23' alt='Audry Rose Logo' /></Menu.Item>
-                <Menu.Item href='/dashboard' active={pathName.includes('/dashboard')} link>Dashboard</Menu.Item>
-                <Menu.Item href='/orders' active={pathName.includes('/orders')} link>Orders</Menu.Item>
-                <Menu.Item href='/emails/customers-orders/' active={pathName.includes('/emails/')} link>Emails</Menu.Item>
-                <Menu.Item href='/products' active={pathName.includes('/products')} link>Products</Menu.Item>
+                <Menu.Item as={Link} to='/dashboard' active={pathName.includes('/dashboard')} link>Dashboard</Menu.Item>
+                <Menu.Item as={Link} to='/orders' active={pathName.includes('/orders')} link>Orders</Menu.Item>
+                <Menu.Item as={Link} to='/emails/customers-orders/' active={pathName.includes('/emails/')} link>Emails</Menu.Item>
+                <Menu.Item as={Link} to='/products' active={pathName.includes('/products')} link>Products</Menu.Item>
                 <Menu.Item href='/shipments' active={pathName.includes('/shipments')} link>Shipments</Menu.Item>
                 <Menu.Item href='/designers' active={pathName.includes('/designers')} link>Designers</Menu.Item>
 

@@ -9,7 +9,6 @@ class DashboardContainer extends Component {
         this.props.router.push('/orders');
     }
     render() {
-        console.log('render dashboard');
         return (
             <LoadingBar style={{ backgroundColor: 'blue', height: '5px' }} />
         );
