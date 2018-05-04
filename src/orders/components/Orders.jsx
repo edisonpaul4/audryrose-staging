@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router';
-import { Grid, Table, Dimmer, Loader, Checkbox, Icon, Header, Sidebar, Menu, Button } from 'semantic-ui-react';
+import { Grid, Table, Dimmer, Loader, Checkbox, Icon, Header, Sidebar, Menu, Button, Transition, List } from 'semantic-ui-react';
 import NotificationSystem from 'react-notification-system';
 import Pagination from '../../shared/components/Pagination';
 import { ProductOrderModal } from '../../products/components/components';
@@ -68,7 +68,7 @@ class Orders extends Component {
     componentDidMount() {
         this._notificationSystem = this.refs.notificationSystem;
         this.props.getOrders(this.props.token, this.state.subpage, this.state.page, this.state.sort, this.state.search);
-        this.props.getOrderProductFormData(this.props.token, 1000);
+        // this.props.getOrderProductFormData(this.props.token, 1000);
     }
 
     handleToggleClick(orderId) {
@@ -655,7 +655,7 @@ class Orders extends Component {
                 {searchHeader}
                 {error}
                 <Dimmer active={isLoadingOrders} inverted>
-                    <Loader inverted>Loading</Loader>
+                    <Loader inverted>Loading...</Loader>
                 </Dimmer>
                 <Sidebar.Pushable>
                     <Sidebar as={Menu} borderless size='small' animation='push' direction='top' visible={this.state.selectedRows.length > 0}>

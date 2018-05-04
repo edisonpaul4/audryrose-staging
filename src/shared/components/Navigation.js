@@ -21,8 +21,8 @@ class Navigation extends Component {
         const pathName = this.props.path;
         return (
             <Menu className='main-nav' attached borderless stackable>
-                <Menu.Item header><img className='logo' src='/imgs/logo.png' width='23' alt='Audry Rose Logo' /></Menu.Item>
-                <Menu.Item as={Link} to='/dashboard' active={pathName.includes('/dashboard')} link>Dashboard</Menu.Item>
+                <Menu.Item header as={Link} to='/orders'><img className='logo' src='/imgs/logo.png' width='23' alt='Audry Rose Logo' /></Menu.Item>
+                {/*<Menu.Item as={Link} to='/dashboard' active={pathName.includes('/dashboard')} link>Dashboard</Menu.Item>*/}
                 <Menu.Item as={Link} to='/orders' active={pathName.includes('/orders')} link>Orders</Menu.Item>
                 <Menu.Item as={Link} to='/emails/customers-orders/' active={pathName.includes('/emails/')} link>Emails</Menu.Item>
                 <Menu.Item as={Link} to='/products' active={pathName.includes('/products')} link>Products</Menu.Item>

@@ -50,6 +50,11 @@ class ProductRow extends Component {
         this.props.handleOrderProductEditClick({ orderProductId: this.state.product.orderProductId, variant: variant });
     }
     getVendorOrderLabel(product, variant, vendorOrderVariant, vendorOrder, orderProductMatch) {
+        console.log('PRODUCT',product);
+        console.log('VARIANT',variant);
+        console.log('VENDORORDERVARIANT',vendorOrderVariant);
+        console.log('VENDORORDER',vendorOrder);
+        // console.log(orderProductMatch);
         if (!vendorOrder) return <Label size='tiny' color='red' key={'product-' + product.objectId + '-' + vendorOrderVariant.objectId}>Error: Missing vendor order data</Label>;
 
         const averageWaitTime = vendorOrder.vendor.waitTime ? vendorOrder.vendor.waitTime : 21;
@@ -211,8 +216,10 @@ class ProductRow extends Component {
 
         let awaitingInventoryQueue = [];
         let count = 0;
+        // console.log(product);
         if (product && product.awaitingInventory && product.awaitingInventory.length > 0) {
             let label;
+            
             product.awaitingInventory.map(function (inventoryItem, i) {
                 const isVendorOrder = inventoryItem.className === 'VendorOrderVariant' ? true : false;
                 if (isVendorOrder) {
@@ -220,17 +227,24 @@ class ProductRow extends Component {
                     if (product.awaitingInventoryVendorOrders) {
                         product.awaitingInventoryVendorOrders.map(function (vendorOrder, j) {
                             if (vendorOrder.vendorOrderVariants) {
-                                vendorOrder.vendorOrderVariants.map(function (vendorOrderVariant, l) {
-                                    if (inventoryItem.objectId === vendorOrderVariant.objectId) {
+                                //vendorOrder.vendorOrderVariants.map(function (vendorOrderVariant, l) {
+                                    // console.log('DENTRO',vendorOrderVariant );
+                                   // if (inventoryItem.objectId === vendorOrderVariant.objectId) {
                                         vendorOrderMatch = vendorOrder;
-                                    }
-                                    return vendorOrderVariant;
-                                });
+                                        //count++;
+                                  //  }
+                                   // return vendorOrderVariant;
+                                //});
                             }
                             return vendorOrder;
                         });
                     }
-                    label = scope.getVendorOrderLabel(product, variant, inventoryItem, vendorOrderMatch);
+                    console.log('AAAA',vendorOrderMatch.vendorOrderVariants);
+                    console.log('BBBB',variant);
+                    let vendorOrderOut = vendorOrderMatch.vendorOrderVariants.find(ele => ele.variant.objectId === variant.objectId);
+                    vendorOrderOut = vendorOrderOut == undefined ? vendorOrderMatch : vendorOrderOut;
+                    label = scope.getVendorOrderLabel(product, variant, vendorOrderOut , vendorOrderMatch, vendorOrderMatch);
+                    //console.log('LABEL', label);
                 } else {
                     label = scope.getResizeLabel(product, variant, inventoryItem);
                 }
