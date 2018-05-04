@@ -27,3 +27,6 @@ body {
 .pointer {
 	cursor: pointer !important;
 }
+.ui.loader {
+    top:14% !important;
+}
