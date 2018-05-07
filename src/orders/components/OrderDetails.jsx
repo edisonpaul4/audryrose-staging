@@ -217,32 +217,36 @@ class ProductRow extends Component {
         let awaitingInventoryQueue = [];
         let count = 0;
         // console.log(product);
-        if (product && product.awaitingInventory && product.awaitingInventory.length > 0) {
+        console.log('AQUI');
+        console.log('A', product);
+        if (product && product.awaitingInventoryVendorOrders && product.awaitingInventoryVendorOrders.length > 0) {
             let label;
-            
+            console.log('AQUI2');
             product.awaitingInventory.map(function (inventoryItem, i) {
                 const isVendorOrder = inventoryItem.className === 'VendorOrderVariant' ? true : false;
                 if (isVendorOrder) {
                     let vendorOrderMatch;
                     if (product.awaitingInventoryVendorOrders) {
-                        product.awaitingInventoryVendorOrders.map(function (vendorOrder, j) {
-                            if (vendorOrder.vendorOrderVariants) {
+                       // product.awaitingInventoryVendorOrders.map(function (vendorOrder, j) {
+                           // if (vendorOrder.vendorOrderVariants) {
                                 //vendorOrder.vendorOrderVariants.map(function (vendorOrderVariant, l) {
                                     // console.log('DENTRO',vendorOrderVariant );
                                    // if (inventoryItem.objectId === vendorOrderVariant.objectId) {
-                                        vendorOrderMatch = vendorOrder;
+                                    vendorOrderMatch = product.awaitingInventoryVendorOrders.find(vendorO => vendorO.vendor.abbreviation == variant.designer.abbreviation);
+
                                         //count++;
                                   //  }
                                    // return vendorOrderVariant;
                                 //});
-                            }
-                            return vendorOrder;
-                        });
+                           // }
+                           // return vendorOrder;
+                       // });
                     }
-                    console.log('AAAA',vendorOrderMatch.vendorOrderVariants);
-                    console.log('BBBB',variant);
+                    //console.log('AAAA',vendorOrderMatch);
+                    //console.log('BBBB',variant);
                     let vendorOrderOut = vendorOrderMatch.vendorOrderVariants.find(ele => ele.variant.objectId === variant.objectId);
                     vendorOrderOut = vendorOrderOut == undefined ? vendorOrderMatch : vendorOrderOut;
+                    console.log(vendorOrderOut);
                     label = scope.getVendorOrderLabel(product, variant, vendorOrderOut , vendorOrderMatch, vendorOrderMatch);
                     //console.log('LABEL', label);
                 } else {
@@ -589,7 +593,6 @@ class OrderDetails extends Component {
                 return parseFloat(a.orderProductId) - parseFloat(b.orderProductId);
             });
         }
-
         let productRows = [];
         if (products) {
             products.map(function (productRow, i) {
