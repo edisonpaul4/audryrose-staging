@@ -68,7 +68,7 @@ class Orders extends Component {
     componentDidMount() {
         this._notificationSystem = this.refs.notificationSystem;
         this.props.getOrders(this.props.token, this.state.subpage, this.state.page, this.state.sort, this.state.search);
-        // this.props.getOrderProductFormData(this.props.token, 1000);
+        this.props.getOrderProductFormData(this.props.token, 1000);
     }
 
     handleToggleClick(orderId) {
