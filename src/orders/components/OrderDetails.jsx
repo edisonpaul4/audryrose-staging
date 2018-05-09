@@ -217,12 +217,9 @@ class ProductRow extends Component {
                 const isVendorOrder = inventoryItem.className === 'VendorOrderVariant' ? true : false;
                 if (isVendorOrder) {
                     let vendorOrderMatch;
-                    if (product.awaitingInventoryVendorOrders) {
 
-                        vendorOrderMatch = product.awaitingInventoryVendorOrders.find(vendorO => vendorO.vendor.abbreviation == variant.designer.abbreviation);
-                        if (vendorOrderMatch == undefined) {
-                            vendorOrderMatch = product.awaitingInventoryVendorOrders.find(vendorO => vendorO.vendorOrderVariants.find(orVar => orVar.variant.productId == variant.productId) != undefined);
-                        }
+                    if (product.awaitingInventoryVendorOrders) {
+                        vendorOrderMatch = product.awaitingInventoryVendorOrders.find(vendorO => vendorO.vendorOrderVariants.find(orVar => orVar.variant.productId == variant.productId) != undefined);
                         if (vendorOrderMatch != undefined) {
                             let vendorOrderOut = vendorOrderMatch.vendorOrderVariants.find(ele => ele.variant.objectId === variant.objectId);
                             vendorOrderOut = vendorOrderOut == undefined ? vendorOrderMatch : vendorOrderOut;
