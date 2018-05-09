@@ -128,6 +128,7 @@ class ProductRow extends Component {
     }
 
     render() {
+        console.log('1.0.0');
         const scope = this;
         const product = this.state.product;
         const shipment = this.state.shipment;
