@@ -210,10 +210,6 @@ class ProductRow extends Component {
             });
         }
 
-        
-
-
-
         let awaitingInventoryQueue = [];
         let count = 0;
         if (product && product.awaitingInventoryVendorOrders && product.awaitingInventoryVendorOrders.length > 0) {
@@ -221,6 +217,7 @@ class ProductRow extends Component {
             product.awaitingInventory.map(function (inventoryItem, i) {
                 const isVendorOrder = inventoryItem.className === 'VendorOrderVariant' ? true : false;
                 if (isVendorOrder) {
+                    console.log('Is vendor Order');
                     let vendorOrderMatch;
 
                     if (product.awaitingInventoryVendorOrders) {
@@ -232,7 +229,9 @@ class ProductRow extends Component {
                         }
                     }
                 } else {
+                    console.log('RESIZE');
                     label = scope.getResizeLabel(product, variant, inventoryItem);
+                    console.log(label);
                 }
 
                 if (label) awaitingInventoryQueue.push(label);
