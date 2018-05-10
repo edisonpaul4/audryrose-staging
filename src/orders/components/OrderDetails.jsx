@@ -210,6 +210,10 @@ class ProductRow extends Component {
             });
         }
 
+        
+
+
+
         let awaitingInventoryQueue = [];
         let count = 0;
         if (product && product.awaitingInventoryVendorOrders && product.awaitingInventoryVendorOrders.length > 0) {
@@ -235,7 +239,6 @@ class ProductRow extends Component {
                 return inventoryItem;
             });
         }
-
         let primaryButton;
         let dropdownItems = [];
         const allowEditing = true;
