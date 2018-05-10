@@ -231,7 +231,6 @@ class ProductRow extends Component {
                 } else {
                     console.log('RESIZE');
                     label = scope.getResizeLabel(product, variant, inventoryItem);
-                    console.log(label);
                 }
 
                 if (label) awaitingInventoryQueue.push(label);
