@@ -128,7 +128,6 @@ class ProductRow extends Component {
     }
 
     render() {
-        console.log('1.0.0');
         const scope = this;
         const product = this.state.product;
         const shipment = this.state.shipment;
@@ -217,9 +216,7 @@ class ProductRow extends Component {
             product.awaitingInventory.map(function (inventoryItem, i) {
                 const isVendorOrder = inventoryItem.className === 'VendorOrderVariant' ? true : false;
                 if (isVendorOrder) {
-                    console.log('Is vendor Order');
                     let vendorOrderMatch;
-
                     if (product.awaitingInventoryVendorOrders) {
                         vendorOrderMatch = product.awaitingInventoryVendorOrders.find(vendorO => vendorO.vendorOrderVariants.find(orVar => orVar.variant.productId == variant.productId) != undefined);
                         if (vendorOrderMatch != undefined) {
@@ -229,7 +226,6 @@ class ProductRow extends Component {
                         }
                     }
                 } else {
-                    console.log('RESIZE');
                     label = scope.getResizeLabel(product, variant, inventoryItem);
                 }
 
