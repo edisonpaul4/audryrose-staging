@@ -31,3 +31,6 @@ body {
 .ui.loader {
     top:14% !important;
 }
+[data-reactroot] {
+	margin-top: 15px !important;
+} 
