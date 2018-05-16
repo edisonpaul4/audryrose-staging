@@ -238,8 +238,10 @@ class ProductRow extends Component {
         const allowEditing = true;
         if (shipment) {
             primaryButton = <Button icon='shipping' content='View' onClick={this.handleShipModalOpen} />;
+            dropdownItems.push(<Dropdown.Item key='1' icon='add to cart' text='Order' onClick={this.handleShowOrderFormClick} />);
         } else if (product.shippable || product.partiallyShippable) {
             primaryButton = <Button icon='shipping' content='Custom Shipment' onClick={this.handleShipModalOpen} />;
+            dropdownItems.push(<Dropdown.Item key='1' icon='add to cart' text='Order' onClick={this.handleShowOrderFormClick} />);
             if (allowEditing) dropdownItems.push(<Dropdown.Item key='1' icon='edit' text='Edit Product' onClick={this.handleShowEditOrderProductFormClick} />);
         } else if (product.resizable) {
             primaryButton = <Button icon='exchange' content='Resize' onClick={this.handleShowResizeFormClick} />;
@@ -250,6 +252,7 @@ class ProductRow extends Component {
             if (allowEditing) dropdownItems.push(<Dropdown.Item key='2' icon='edit' text='Edit Product' onClick={this.handleShowEditOrderProductFormClick} />);
         } else if (product.isCustom) {
             if (allowEditing) primaryButton = <Button icon='edit' content='Edit Product' onClick={this.handleShowEditOrderProductFormClick} />;
+            dropdownItems.push(<Dropdown.Item key='1' icon='add to cart' text='Order' onClick={this.handleShowOrderFormClick} />);
         }
 
         return (
