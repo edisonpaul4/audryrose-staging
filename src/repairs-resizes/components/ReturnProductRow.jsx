@@ -50,7 +50,7 @@ class ReturnProductRow extends React.Component {
     }
 
     render() {
-        const { dateRequested, dateCheckedIn, orderId, customerName, productName, productImage, orderNotes, returnStatusId, returnType, returnTypeId } = this.props;
+        const { dateRequested, dateCheckedIn, orderId, customerName, productName, productImage, orderNotes, returnStatusId, returnType, returnTypeId, shippoInfo } = this.props;
 
         const words = [
             (orderNotes.customerNotes !== null || orderNotes.staffNotes !== null) ? 'C' : null,
@@ -130,6 +130,8 @@ class ReturnProductRow extends React.Component {
                         options={this.getAvailableStatus(returnStatusId, returnType, returnTypeId)}
                         value={returnStatusId}
                         onChange={this.onReturnStatusChanged.bind(this)} />
+
+                    <Button content='Track' onClick={() => window.open(shippoInfo.tracking_url_provider, "_blank")} />
                 </Table.Cell>
             </Table.Row>
         );

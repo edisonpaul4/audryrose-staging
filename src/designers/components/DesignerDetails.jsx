@@ -429,7 +429,7 @@ class VendorOrder extends Component {
                     ) : null)}
                     {(order.emailConfirmed ? (
                         order.emailConfirmed == 'true'?
-                        <Label positive>Email Confirmed</Label> : <Label positive>Unconfirmed</Label>
+                        <Label positive>Email Confirmed</Label> : <Label positive>Email Unconfirmed</Label>
                     ) : null)}
                     <Confirm
                         open={this.state.completeOrderConfirm}

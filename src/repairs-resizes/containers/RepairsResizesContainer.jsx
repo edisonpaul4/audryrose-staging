@@ -150,6 +150,7 @@ class RepairsResizesContainer extends React.Component {
                                         returnStatusId={returnObject.returnStatusId}
                                         returnType={returnObject.returnType}
                                         returnTypeId={returnObject.returnTypeId}
+                                        shippoInfo={returnObject.shippoInfo}
                                     />
                                 ))}
                             </Table.Body>
