@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Button, Dimmer, Segment, Loader, Header, Form, Input, TextArea, Divider, Label, Icon, Confirm } from 'semantic-ui-react';
+import { Table, Button, Dimmer, Segment, Loader, Header, Form, Input, TextArea, Divider, Label, Icon, Confirm, Message } from 'semantic-ui-react';
 import classNames from 'classnames';
 import moment from 'moment';
 import { ProductToOrderEditModal } from '../containers/containers'
@@ -426,6 +426,10 @@ class VendorOrder extends Component {
                             color='green'>
                             Clear entire order
             </Button>
+                    ) : null)}
+                    {(order.emailConfirmed ? (
+                        order.emailConfirmed == 'true'?
+                        <Label positive>Email Confirmed</Label> : <Label positive>Unconfirmed</Label>
                     ) : null)}
                     <Confirm
                         open={this.state.completeOrderConfirm}

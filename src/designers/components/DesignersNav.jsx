@@ -37,6 +37,12 @@ class DesignersNav extends Component {
                     active={pathName === "/designers/completed"}
                     link
                     content="Completed" />
+                <Menu.Item
+                    as={Link}
+                    to="/designers/unconfirmed"
+                    active={pathName === "/designers/unconfirmed"}
+                    link
+                    content="Unconfirmed" />
             </Menu>
         );
     }

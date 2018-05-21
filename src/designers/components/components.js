@@ -6,6 +6,7 @@ import DesignerOrderModal from './DesignerOrderModal';
 import Designers from './Designers';
 import DesignersNav from './DesignersNav';
 import VendorEditModal from './VendorEditModal';
+import EmailVerification from './EmailVerification';
 export {
   VendorOrdersList,
   VendorOrderListItem,
@@ -14,5 +15,6 @@ export {
   DesignerOrderModal,
   Designers,
   DesignersNav,
-  VendorEditModal
+  VendorEditModal,
+  EmailVerification
 };

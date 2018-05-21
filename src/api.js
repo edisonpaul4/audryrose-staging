@@ -522,6 +522,9 @@ const updateVendorOrderProduct = (token, options) => axios.post('/functions/upda
     options
 });
 
+const confirmVendorOrderEmail = (options) => axios.post('/functions/updateVendorOrderProduct2',{
+    order: options
+})
 export default {
     signup,
     login,
@@ -578,5 +581,6 @@ export default {
     sendReturnEmail,
     getProductStats,
     getProductAndVariants,
-    updateVendorOrderProduct
+    updateVendorOrderProduct,
+    confirmVendorOrderEmail
 }

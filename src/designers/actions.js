@@ -76,3 +76,10 @@ export function updateVendorOrderProduct(token, options) {
         promise: api.updateVendorOrderProduct(token, options).then(r => r.data.result)
     };
 }
+
+export function confirmVendorOrderEmail(options) {
+    return {
+        types: ['CONFIRM_PRODUCT_VENDOR_ORDER_EMAIL_REQUEST', 'CONFIRM_PRODUCT_VENDOR_ORDER_EMAIL_SUCCESS', 'CONFIRM_PRODUCT_VENDOR_ORDER_EMAIL_FAIL'],
+        promise: api.confirmVendorOrderEmail(options).then(r => r)
+    };
+}
