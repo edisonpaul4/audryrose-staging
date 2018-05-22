@@ -380,8 +380,10 @@ class Designers extends Component {
                     vendors: designer.vendors,
                     orderHasNotes
                 }
+                // console.log(designer)
                 if(subpage == 'unconfirmed'){
-                    if(designer.vendorOrders.filter(vendorOrder => vendorOrder.order.emailConfirmed && (vendorOrder.order.emailConfirmed == 'false')).length == 0) return designer;
+                    if(designer.vendorOrders.filter(vendorOrder => 
+                        vendorOrder.order.emailConfirmed && (vendorOrder.order.emailConfirmed == 'false') && (vendorOrder.status.toLowerCase() == 'sent')).length == 0) return designer;
                 }
                 designerRows.push(
                     <Designer
