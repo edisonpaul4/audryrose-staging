@@ -381,7 +381,7 @@ class Designers extends Component {
                     orderHasNotes
                 }
                 if(subpage == 'unconfirmed'){
-                    if(designer.vendorOrders.filter(vendorOrder => vendorOrder.order.emailConfirmed).length == 0) return designer;
+                    if(designer.vendorOrders.filter(vendorOrder => vendorOrder.order.emailConfirmed && (vendorOrder.order.emailConfirmed == 'false')).length == 0) return designer;
                 }
                 designerRows.push(
                     <Designer
