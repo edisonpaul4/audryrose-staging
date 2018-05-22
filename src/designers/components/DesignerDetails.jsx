@@ -107,7 +107,6 @@ class ProductRow extends Component {
         const productName = variant.designerProductName ? variant.designerProductName : variant.productName ? variant.productName : '';
         const productUrl = '/products/search?q=' + variant.productId;
         const productLink = <a href={productUrl}>{productName}</a>;
-
         // Create an array of other options values
         let options = [];
         if (variant) {
@@ -124,7 +123,7 @@ class ProductRow extends Component {
         let totalAwaitingInventory = 0;
         if (this.props.status === 'Pending')
             totalAwaitingInventory = this.props.vendorOrderVariant.variant.totalAwaitingInventory;
-        else if (this.props.status === 'Sent')
+        else if (this.props.status === 'Sent' )
             totalAwaitingInventory = this.state.units - this.state.received > 0 ? this.state.units - this.state.received : 0;
 
         const inventory = variant.inventoryLevel ? variant.inventoryLevel : 0;
@@ -328,7 +327,6 @@ class VendorOrder extends Component {
     render() {
         const scope = this;
         const { status, order, vendor } = this.props;
-
         // Create Pending Order Table
         let orderProductRows = [];
         let totalReceived = 0;
@@ -515,8 +513,9 @@ class DesignerDetails extends Component {
         const data = this.state.data;
         let vendorOrderRows = [];
         if (data.vendorOrders) data.vendorOrders.map((vendorOrder, i) => {
-            if (!subpage || subpage === 'all' || subpage === 'search' || vendorOrder.status.toLowerCase() === subpage) {
+            if (!subpage || subpage === 'all' || subpage === 'search' || vendorOrder.status.toLowerCase() === subpage || (subpage === 'unconfirmed' && vendorOrder.status.toLowerCase() === 'sent')) {
                 if (subpage === 'all' && vendorOrder.status === 'Completed') return vendorOrder;
+               if ( subpage === 'unconfirmed' && (!vendorOrder.order.emailConfirmed || vendorOrder.order.emailConfirmed == 'true')) return vendorOrder;
                 vendorOrderRows.push(
                     <VendorOrder
                         status={vendorOrder.status}

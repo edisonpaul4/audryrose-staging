@@ -33,7 +33,6 @@ export function updateReturnStatus(returnId, returnStatusId, token) {
 }
 
 export function sendReturnEmail(returnId, emailData, token) {
-  console.log('RETURNJS', emailData);
   return {
     types: ['SEND_RETURN_EMAIL_REQUEST', 'SEND_RETURN_EMAIL_SUCCESS', 'SEND_RETURN_EMAIL_FAILURE'],
     promise: api.sendReturnEmail(returnId, emailData, token)

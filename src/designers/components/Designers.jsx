@@ -359,7 +359,6 @@ class Designers extends Component {
         const { error, isLoadingDesigners, totalPages } = this.props;
         const { designers, subpage } = this.state;
         let designerRows = [];
-
         if (designers) {
             designers.map(function (designer, i) {
                 let isSaving = scope.state.isSavingDesigners.indexOf(designer.objectId) >= 0 ? true : false;
@@ -381,7 +380,9 @@ class Designers extends Component {
                     vendors: designer.vendors,
                     orderHasNotes
                 }
-
+                if(subpage == 'unconfirmed'){
+                    if(designer.vendorOrders.filter(vendorOrder => vendorOrder.order.emailConfirmed).length == 0) return designer;
+                }
                 designerRows.push(
                     <Designer
                         data={designerData}

@@ -82,7 +82,6 @@ class EmailListReturnItemContent extends React.Component {
                 placeholder="Customer's default"
                 onChange={(e, { value }) => {
                   this.setState({ emailTo: value })
-                  console.log(this.state)
                   }} />
             </Form.Group>
 

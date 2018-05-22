@@ -299,7 +299,6 @@ export const orders = (state = initialState, action) => {
       }
     
     case 'ORDERS::CREATE_RETURN_SUCCESS':
-      console.log(action)
       if (action.res.length === 0)
         return state;
       else
