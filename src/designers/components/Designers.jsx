@@ -384,6 +384,7 @@ class Designers extends Component {
                 if(subpage == 'unconfirmed'){
                     if(designer.vendorOrders.filter(vendorOrder => 
                         vendorOrder.order.emailConfirmed && (vendorOrder.order.emailConfirmed == 'false') && (vendorOrder.status.toLowerCase() == 'sent')).length == 0) return designer;
+                        expanded = true;
                 }
                 designerRows.push(
                     <Designer
