@@ -42,7 +42,6 @@ class EmailReturnsContainer extends React.Component {
           current.orderNotes.internalNotes !== null ? 'I' : null,
         ].filter(w => w !== null).join(' - ');
         if (search !== '') {
-          console.log(current)
           let fName = current.customerName.toLowerCase();
           let orderId = current.orderId.toString();
           let found = false;
