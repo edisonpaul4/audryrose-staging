@@ -30,18 +30,30 @@ class EmailReturnsContainer extends React.Component {
 
   render() {
     const { activeOrdersIndexes, activeOrderPage, totalOrdersPerPage, emailsLastLine, emailsSubject } = this.state;
-
-    const emailListContent = this.props.returns
+    let temp = [];
+    const search = this.props.location.query.q ? this.props.location.query.q.toLowerCase() : '';
+    let emailListContent = this.props.returns
       .slice(activeOrderPage * totalOrdersPerPage, (activeOrderPage * totalOrdersPerPage) + totalOrdersPerPage)
       .reduce((all, current, index) => {
-        let temp = all || [];
 
         const words = [
           (current.orderNotes.customerNotes !== null || current.orderNotes.staffNotes !== null) ? 'C' : null,
           current.orderNotes.designerNotes !== null ? 'D' : null,
           current.orderNotes.internalNotes !== null ? 'I' : null,
         ].filter(w => w !== null).join(' - ');
-
+        if (search !== '') {
+          console.log(current)
+          let fName = current.customerName.toLowerCase();
+          let orderId = current.orderId.toString();
+          let found = false;
+          if (search.includes(orderId)) {
+            found = true;
+          }
+          if (fName != '' && fName.includes(search)) {
+            found = true;
+          }
+          if (!found) return;
+        }
         temp.push(
           <EmailListReturnItem
             key={'up-' + index}
@@ -51,7 +63,7 @@ class EmailReturnsContainer extends React.Component {
             customerLifetime={current.customerLifetime}
             orderNotes={current.orderNotes} />
         );
-        
+
         temp.push(
           <EmailListReturnItemContent
             key={'down-' + index}
@@ -68,6 +80,7 @@ class EmailReturnsContainer extends React.Component {
 
         return temp;
       }, []); // END emailListContent
+    emailListContent = emailListContent == undefined ? temp : emailListContent;
 
     return (
       <Grid.Column width="16">

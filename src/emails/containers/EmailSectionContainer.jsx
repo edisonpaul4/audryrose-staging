@@ -10,7 +10,7 @@ export class EmailSectionContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      activeOrdersIndexes: [...Array(20)].map((u,i) => i),
+      activeOrdersIndexes: [...Array(20)].map((u, i) => i),
       activeOrderPage: 0,
       totalOrdersPerPage: 20,
       emailsLastLine: 'Thanks again!',
@@ -40,7 +40,7 @@ export class EmailSectionContainer extends React.Component {
   }
 
   handlePageChange(newPage) {
-    if (newPage < 0 
+    if (newPage < 0
       || newPage >= (this.props.emailOrders.orders.length / this.state.totalOrdersPerPage))
       return;
     this.setState({ activeOrderPage: newPage });
@@ -64,12 +64,27 @@ export class EmailSectionContainer extends React.Component {
 
   render() {
     const { activeOrdersIndexes, activeOrderPage, totalOrdersPerPage, emailsLastLine, emailsSubject } = this.state;
-
-    const emailListContent = this.props.emailOrders.orders
+    const search = this.props.location.query.q ? this.props.location.query.q.toLowerCase() : '';
+    let temp = [];
+    let emailListContent = this.props.emailOrders.orders
       .slice(activeOrderPage * totalOrdersPerPage, (activeOrderPage * totalOrdersPerPage) + totalOrdersPerPage)
       .reduce((all, current, index) => {
-        let temp = all || [];
-
+        if (search !== '') {
+          let fName = current.customer.firstName.toLowerCase();
+          let lName = current.customer.lastName.toLowerCase();
+          let orderId = current.orderId.toString();
+          let found = false;
+          if(search.includes(orderId)){
+            found = true;
+          }
+          if(fName != '' && search.includes(fName)){
+            found = true;
+          }
+          if(lName != '' && search.includes(lName)){
+            found = true;
+          }
+          if(!found) return;
+        }
         temp.push(
           <EmailListItem
             key={'ELI' + index}
@@ -88,7 +103,7 @@ export class EmailSectionContainer extends React.Component {
             lifetimeOrders={current.customer.totalOrders} />
         );
 
-        if(activeOrdersIndexes.indexOf(index) !== -1)
+        if (activeOrdersIndexes.indexOf(index) !== -1)
           temp.push(
             <EmailListItemContent
               key={'ELIC' + index}
@@ -102,10 +117,9 @@ export class EmailSectionContainer extends React.Component {
               handleSendOrder={this.handleSendOrder.bind(this)}
               handleDeleteOrder={this.handleDeleteOrder.bind(this)} />
           );
-
         return temp;
       }, []); // END emailListContent
-
+      emailListContent = emailListContent == undefined ? temp : emailListContent;
     return (
       <Grid.Column width="16">
         <EmailsFieldUpdater

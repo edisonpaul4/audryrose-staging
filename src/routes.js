@@ -67,12 +67,26 @@ const createRoutes = (store) => {
                         {
                             path: 'customers-orders',
                             component: EmailSectionContainer,
-                            onEnter: requireAuth(store)
+                            onEnter: requireAuth(store),
+                            childRoutes: [
+                                {
+                                    path: ':subpage',
+                                    component: EmailSectionContainer,
+                                    onEnter: requireAuth(store)
+                                }
+                            ]
                         },
                         {
                             path: 'returns',
                             component: EmailReturnsContainer,
-                            onEnter: requireAuth(store)
+                            onEnter: requireAuth(store),
+                            childRoutes: [
+                                {
+                                    path: ':subpage',
+                                    component: EmailReturnsContainer,
+                                    onEnter: requireAuth(store)
+                                }
+                            ]
                         }
                     ]
                 },
