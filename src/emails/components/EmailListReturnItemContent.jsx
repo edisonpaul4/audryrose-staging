@@ -11,7 +11,7 @@ class EmailListReturnItemContent extends React.Component {
     };
   }
   componentWillMount() {
-    this.setState({ 
+    this.setState({
       emailText: this.createEmailText(this.props),
       emailSubject: `Audry Rose ${this.props.returnType.slice(0, 1).toUpperCase() + this.props.returnType.slice(1)}`
     });
@@ -25,13 +25,17 @@ class EmailListReturnItemContent extends React.Component {
       });
   }
 
+  handleDeleteReturnEmail(returnId) {
+    this.props.onDeleteEmail(returnId)
+  }
+
   createEmailText(props) {
     const { returnTypeId, customerName, productName, productClassification, returnOptions, isCheckedIn } = props;
     const capitalizedCustomerName = customerName
       .split(' ')
       .map(name => name.slice(0, 1).toUpperCase() + name.slice(1).toLowerCase());
 
-    if(isCheckedIn)
+    if (isCheckedIn)
       return emailTextCompleted
         .replace('{{CUSTOMER_NAME}}', capitalizedCustomerName[0])
         .replace('{{CLASSIFICATION}}', productClassification ? productClassification.slice(0, -1).toLowerCase() : '')
@@ -77,12 +81,12 @@ class EmailListReturnItemContent extends React.Component {
                 label="Subject"
                 value={emailSubject}
                 onChange={(e, { value }) => this.setState({ emailSubject: value })} />
-                <Form.Input
+              <Form.Input
                 label="To"
                 placeholder="Customer's default"
                 onChange={(e, { value }) => {
                   this.setState({ emailTo: value })
-                  }} />
+                }} />
             </Form.Group>
 
             <Form.Group widths='equal'>
@@ -95,7 +99,7 @@ class EmailListReturnItemContent extends React.Component {
           </Form>
           <Button
             color="red"
-            content="Delete" />
+            content="Delete" onClick={() => this.handleDeleteReturnEmail(returnId)} />
           <Button
             color="green"
             content="Send"

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { Grid, Menu, Segment, Table, Icon, Form, Button, Divider, Modal } from 'semantic-ui-react';
 
-import { getReturnsForEmails, sendReturnEmail } from '../../repairs-resizes/actions';
+import { getReturnsForEmails, sendReturnEmail, deleteReturnEmail } from '../../repairs-resizes/actions';
 import { EmailList, EmailListReturnItem, EmailListReturnItemContent } from '../components/components';
 
 class EmailReturnsContainer extends React.Component {
@@ -74,7 +74,8 @@ class EmailReturnsContainer extends React.Component {
             returnTypeId={current.returnTypeId}
             returnOptions={current.returnOptions}
             onSenEmail={this.props.sendReturnEmail.bind(this)}
-            isCheckedIn={current.dateCheckedIn !== null} />
+            isCheckedIn={current.dateCheckedIn !== null} 
+            onDeleteEmail={this.props.deleteReturnEmail.bind(this)}/>
         );
 
         return temp;
@@ -106,7 +107,8 @@ const state = state => ({
 
 const actions = {
   getReturnsForEmails,
-  sendReturnEmail
+  sendReturnEmail,
+  deleteReturnEmail
 };
 
 export default connect(state, actions)(EmailReturnsContainer);

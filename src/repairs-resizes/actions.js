@@ -15,7 +15,13 @@ export function getReturnsForEmails(token) {
       .then(r => r.data.result)
   }
 }
-
+export function deleteReturnEmail(returnId, token) {
+  return {
+    types: ['DELETE_RETURN_EMAIL_REQUEST', 'DELETE_RETURN_EMAIL_SUCCESS', 'DELETE_RETURN_EMAIL_FAILURE'],
+    promise: api.deleteReturnEmail(returnId, token)
+      .then(r => r.data.result)
+  }
+}
 export function checkInReturn(returnId, token) {
   return {
     types: ['CHECK_IN_RETURN_REQUEST', 'CHECK_IN_RETURN_SUCCESS', 'CHECK_IN_RETURN_FAILURE'],

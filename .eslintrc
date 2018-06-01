@@ -26,6 +26,7 @@
         "react/no-string-refs": 0,
         "no-mixed-spaces-and-tabs":0,
         "react/jsx-key":0,
-        "no-redeclare":0
+        "no-redeclare":0,
+        "no-case-declarations":0
     }
 }

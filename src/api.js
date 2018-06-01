@@ -489,6 +489,11 @@ const getReturnsForEmails = (token) => axios.post('/functions/returnsForEmails',
     sessionToken: token
 });
 
+const deleteReturnEmail = (returnId, token) => axios.post('/functions/deleteReturnEmail', {
+    sessionToken: token,
+    returnId
+});
+
 const checkInReturn = (returnId, token) => axios.post('/functions/checkInReturnedProduct', {
     sessionToken: token,
     returnId
@@ -588,5 +593,6 @@ export default {
     getProductAndVariants,
     updateVendorOrderProduct,
     confirmVendorOrderEmail,
-    deleteReturnResize
+    deleteReturnResize,
+    deleteReturnEmail
 }
