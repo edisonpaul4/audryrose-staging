@@ -104,7 +104,25 @@ const productStats = (state = initialState, action) => {
         isLoadingReturns: false,
         errors: [...state.errors, { type: 'CHECK_IN_RETURN_FAILURE', message: action.err.response.data.error.message }]
       };
-      
+      case 'DELETE_RETURN_REQUEST':
+      return {
+        ...state,
+        isLoadingReturns: true
+      };
+
+    case 'DELETE_RETURN_SUCCESS':
+      return {
+        ...state,
+        isLoadingReturns: false,
+        returns: removeReturnFormList(action.res, state.returns)
+      };
+
+    case 'DELETE_RETURN_FAILURE':
+      return {
+        ...state,
+        isLoadingReturns: false,
+        errors: [...state.errors, { type: 'CHECK_IN_RETURN_FAILURE', message: action.err.response.data.error.message }]
+      };
     default:
       return state;
   }
@@ -127,4 +145,11 @@ const removeReturnObject = (updatedReturn, returnsState) => {
   ];
 };
 
+const removeReturnFormList= (updatedReturn, returnsState) => {
+ const index = returnsState.findIndex(returnObject => returnObject.id === updatedReturn);
+ return [
+   ...returnsState.slice(0, index),
+   ...returnsState.slice(index + 1)
+ ];
+};
 export default productStats;

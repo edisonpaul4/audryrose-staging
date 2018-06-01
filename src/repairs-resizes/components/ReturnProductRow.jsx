@@ -23,6 +23,10 @@ class ReturnProductRow extends React.Component {
             this.props.updateReturnStatus(this.props.returnId, value);
     }
 
+    onDelete(id){
+        this.props.deleteReturn(this.props.returnId)
+    }
+
     getAvailableStatus(returnStatusId, returnType, returnTypeId) {
         const startedStatus = (returnType.slice(0, 1).toUpperCase() + returnType.slice(1).toLowerCase()) + ' Initiated';
         const completedStatus = (returnType.slice(0, 1).toUpperCase() + returnType.slice(1).toLowerCase()) + ' Completed';
@@ -132,6 +136,9 @@ class ReturnProductRow extends React.Component {
                         onChange={this.onReturnStatusChanged.bind(this)} />
 
                     <Button content='Track' onClick={() => window.open(shippoInfo.tracking_url_provider, "_blank")} />
+                    <Button icon onClick={() => this.onDelete(orderId)}>
+                        <Icon name='trash' color='red'/>
+                    </Button>
                 </Table.Cell>
             </Table.Row>
         );

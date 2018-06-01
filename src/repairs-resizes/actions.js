@@ -39,3 +39,11 @@ export function sendReturnEmail(returnId, emailData, token) {
       .then(r => r.data.result)
   }
 }
+
+export function deleteRepairResize(returnId, token) {
+  return {
+    types: ['DELETE_RETURN_REQUEST', 'DELETE_RETURN_SUCCESS', 'DELETE_RETURN_FAILURE'],
+    promise: api.deleteReturnResize(returnId, token)
+      .then(r => r.data.result)
+  }
+}
