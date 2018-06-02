@@ -33,10 +33,10 @@ const configureStore = () => {
     const store = createStore(
         rootReducer,
         compose(
-            applyMiddleware(...middleware, loadingBarMiddleware()),
+            applyMiddleware(...middleware),
             window.devToolsExtension && process.env.NODE_ENV === "development" ? window.devToolsExtension() : f => f
         ));
-
+        //store.dispatch({ type: 'LOAD_STORED_STATE'})
     return store;
 }
 
