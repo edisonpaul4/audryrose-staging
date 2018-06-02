@@ -54,6 +54,6 @@
     "extends": "react-app"
   },
   "engines": {
-    "node": "8.3.x"
+    "node": "8.11.x"
   }
 }
