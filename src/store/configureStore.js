@@ -10,9 +10,6 @@ const configureStore = () => {
     const session = createSession({
         ns: 'audryroseims',
         throttle: 1,
-        onLoad(storedState, dispatch) {
-            dispatch({ type: 'LOAD_STORED_STATE', storedState })
-        },
         selectState(state) {
             return {
                 token: state.auth.token,
@@ -27,8 +24,8 @@ const configureStore = () => {
     const middleware = [
         thunk,
         promise,
-        session,
         logger,
+        session
     ];
     const store = createStore(
         rootReducer,
@@ -36,7 +33,6 @@ const configureStore = () => {
             applyMiddleware(...middleware),
             window.devToolsExtension && process.env.NODE_ENV === "development" ? window.devToolsExtension() : f => f
         ));
-        //store.dispatch({ type: 'LOAD_STORED_STATE'})
     return store;
 }
 
