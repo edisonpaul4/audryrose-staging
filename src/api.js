@@ -453,6 +453,12 @@ const sendOrderEmail = (orderId, emailParams, token) => axios.post('/functions/s
     emailParams
 });
 
+const sendFollowUpEmail = (orderId, emailParams, token) => axios.post('/functions/sendFollowUpEmail', {
+    sessionToken: token,
+    orderId,
+    emailParams
+});
+
 const deleteOrderEmail = (orderId, token) => axios.post('/functions/deleteOrderEmail', {
     sessionToken: token,
     orderId
@@ -603,5 +609,6 @@ export default {
     deleteReturnResize,
     deleteReturnEmail,
     getFollowUpEmails,
-    deleteFollowUpEmail
+    deleteFollowUpEmail,
+    sendFollowUpEmail
 }

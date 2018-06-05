@@ -12,7 +12,14 @@ const removeEmailOrderFromState = (orderId, orders) => {
   ];
 }
 
-const removeEmailFollowUpFromState = (customerId, customers) => {
+const removeEmailFollowUpFromState = (orderId, customers) => {
+  const orderIndex = customers.findIndex(customer => customer.lastOrder.orderId === orderId);
+  return [
+    ...customers.slice(0, orderIndex),
+    ...customers.slice(orderIndex + 1)
+  ];
+}
+const removeEmailFollowUpFromStateByCustomerId = (customerId, customers) => {
   const orderIndex = customers.findIndex(customer => customer.customerId === customerId);
   return [
     ...customers.slice(0, orderIndex),
@@ -105,7 +112,7 @@ const emailOrders = (state = initialState, action) => {
       return {
         ...state,
         isLoading: false,
-        followUpsCustomers: removeEmailFollowUpFromState(action.res.customerId, state.followUpsCustomers)
+        followUpsCustomers: removeEmailFollowUpFromStateByCustomerId(action.res.customerId, state.followUpsCustomers)
       };
 
     case 'DELETE_FOLLOWUP_EMAIL_FAILURE':
@@ -123,7 +130,7 @@ const emailOrders = (state = initialState, action) => {
       return {
         ...state,
         isLoading: false,
-        followUpsCustomers: removeEmailFollowUpFromState(action.res.customerId, state.followUpsCustomers)
+        followUpsCustomers: removeEmailFollowUpFromState(action.res.orderId, state.followUpsCustomers)
       };
 
     case 'SEND_FOLLOWUP_EMAIL_FAILURE':

@@ -32,11 +32,11 @@ export class EmailFollowUpContainer extends React.Component {
     }
 
     handleSendOrder(objectId, emailParams) {
-        this.props.sendOrderEmail(objectId, emailParams, this.props.token);
+        this.props.sendFollowUpEmail(objectId, emailParams, this.props.token);
     }
 
     handleDeleteOrder(customerId) {
-        this.props.sendFollowUpEmail(customerId, this.props.token);
+        this.props.deleteFollowUpEmail(customerId, this.props.token);
     }
 
     handlePageChange(newPage) {
