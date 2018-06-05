@@ -46,6 +46,9 @@ export const getOrders = (token, subpage, page, sort, search) => Parse.Cloud.run
         search
     }
 );
+export const getFollowUpEmails = (token) => axios.post('/functions/getFollowUpEmails', {
+    sessionToken: token
+});
 
 export const reloadOrder = (token, orderId) => axios.post('/jobs/reloadOrder', {
     orderId: orderId
@@ -450,6 +453,12 @@ const sendOrderEmail = (orderId, emailParams, token) => axios.post('/functions/s
     emailParams
 });
 
+const sendFollowUpEmail = (orderId, emailParams, token) => axios.post('/functions/sendFollowUpEmail', {
+    sessionToken: token,
+    orderId,
+    emailParams
+});
+
 const deleteOrderEmail = (orderId, token) => axios.post('/functions/deleteOrderEmail', {
     sessionToken: token,
     orderId
@@ -499,6 +508,10 @@ const checkInReturn = (returnId, token) => axios.post('/functions/checkInReturne
     returnId
 });
 
+const deleteFollowUpEmail = (customerId, token) => axios.post('/functions/deleteFollowUpEmail', {
+    sessionToken: token,
+    customerId
+});
 const updateReturnStatus = (returnId, returnStatusId, token) => axios.post('/functions/updateReturnStatus', {
     sessionToken: token,
     returnId,
@@ -594,5 +607,8 @@ export default {
     updateVendorOrderProduct,
     confirmVendorOrderEmail,
     deleteReturnResize,
-    deleteReturnEmail
+    deleteReturnEmail,
+    getFollowUpEmails,
+    deleteFollowUpEmail,
+    sendFollowUpEmail
 }
