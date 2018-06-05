@@ -12,7 +12,7 @@ import WebhooksContainer from './webhooks/containers/WebhooksContainer';
 import NotFound from './shared/components/NotFound';
 import DesignersConfirmEmail from './designers/containers/DesignersConfirmEmail';
 
-import { EmailSectionMainContainer, EmailSectionContainer, EmailReturnsContainer } from './emails/containers/containers';
+import { EmailSectionMainContainer, EmailSectionContainer, EmailReturnsContainer, EmailFollowUpContainer } from './emails/containers/containers';
 import { DesignersMainContainer, VendorOrdersContainer } from './designers/containers/containers';
 import { ReturnsMainContainer, RepairsResizesContainer } from './repairs-resizes/containers/containers';
 import { ProductsStatsContainer } from './products-stats/containers/containers';
@@ -84,6 +84,18 @@ const createRoutes = (store) => {
                                 {
                                     path: ':subpage',
                                     component: EmailReturnsContainer,
+                                    onEnter: requireAuth(store)
+                                }
+                            ]
+                        },
+                        {
+                            path: 'customers-followups',
+                            component: EmailFollowUpContainer,
+                            onEnter: requireAuth(store),
+                            childRoutes: [
+                                {
+                                    path: ':subpage',
+                                    component: EmailFollowUpContainer,
                                     onEnter: requireAuth(store)
                                 }
                             ]

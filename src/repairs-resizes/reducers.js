@@ -4,6 +4,10 @@ const initialState = {
   errors: []
 };
 
+const filterReturns = (returns) => {
+  return returns.filter(returnIn => returnIn.emailDeleted != true)
+}
+
 const productStats = (state = initialState, action) => {
   switch (action.type) {
 
@@ -36,7 +40,7 @@ const productStats = (state = initialState, action) => {
       return {
         ...state,
         isLoadingReturns: false,
-        returns: action.res
+        returns: filterReturns(action.res)
       };
 
     case 'GET_RETURNS_TO_EMAIL_FAILURE':

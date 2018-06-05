@@ -7,11 +7,11 @@ class EmailSectionMainContainer extends React.Component {
   constructor(props) {
     super(props);
   }
-  
+
   render() {
     let search = this.props.location.query ? this.props.location.query.q : '';
     const getWindowLocationSearch = (inSearch) => {
-      return window.location.origin + this.props.location.pathname.replace('/search','') + '/search?q=' + inSearch;
+      return window.location.origin + this.props.location.pathname.replace('/search', '') + '/search?q=' + inSearch;
     }
     return (
       <Grid.Row>
@@ -32,6 +32,12 @@ class EmailSectionMainContainer extends React.Component {
                   active={this.props.location.pathname.includes("/emails/returns")}
                   link
                   content="Returns' E-mails" />
+                <Menu.Item
+                  as={Link}
+                  to="/emails/customers-followups"
+                  active={this.props.location.pathname.includes("/emails/customers-followups")}
+                  link
+                  content="Follow ups' E-mails" />
                 <Menu.Item fitted className='subnav-search'>
                   <Form action={getWindowLocationSearch(search)} method='get' size='small'>
                     <Form.Input
