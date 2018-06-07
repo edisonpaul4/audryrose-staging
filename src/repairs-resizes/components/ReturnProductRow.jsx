@@ -32,17 +32,17 @@ class ReturnProductRow extends React.Component {
         const completedStatus = (returnType.slice(0, 1).toUpperCase() + returnType.slice(1).toLowerCase()) + ' Completed';
 
         const resizeOp = [
-            { key: 0, text: startedStatus, value: 0, disabled: true },
+            { key: 0, text: startedStatus, value: 0, disabled: !(returnStatusId != 0 && returnStatusId != 2 && returnStatusId != 3) },
             { key: 1, text: 'Being resized', value: 2, disabled: !(returnStatusId == 0 ) },
             { key: 2, text: completedStatus, value: 3, disabled: !(returnStatusId == 2 ) },
         ];
         const repairOp = [
-            { key: 0, text: startedStatus, value: 0, disabled: true },
+            { key: 0, text: startedStatus, value: 0, disabled: !(returnStatusId != 0 && returnStatusId != 1 && returnStatusId != 4) },
             { key: 1, text: 'Being repaired', value: 1, disabled: !(returnStatusId == 0 ) },
             { key: 2, text: completedStatus, value: 4, disabled: !(returnStatusId == 1 ) },
         ];
         const returnOp = [
-            { key: 0, text: startedStatus, value: 0, disabled: true },
+            { key: 0, text: startedStatus, value: 0, disabled: !(returnStatusId != 0 && returnStatusId != 5) },
             { key: 1, text: completedStatus, value: 5, disabled: !(returnStatusId == 0 )},
         ]; 
         if(returnTypeId == 0){ //return 
