@@ -31,26 +31,30 @@ class ReturnProductRow extends React.Component {
         const startedStatus = (returnType.slice(0, 1).toUpperCase() + returnType.slice(1).toLowerCase()) + ' Initiated';
         const completedStatus = (returnType.slice(0, 1).toUpperCase() + returnType.slice(1).toLowerCase()) + ' Completed';
 
-        const all = [
-            { key: 0, text: startedStatus, value: 0, disabled: false },
-            { key: 1, text: 'Being repaired', value: 1, disabled: false },
-            { key: 2, text: 'Being resized', value: 2, disabled: false },
-            { key: 3, text: 'Resize completed', value: 3, disabled: false },
-            { key: 4, text: 'Repair completed', value: 4, disabled: false },
-            { key: 5, text: completedStatus, value: 5, disabled: false },
+        const resizeOp = [
+            { key: 0, text: startedStatus, value: 0, disabled: true },
+            { key: 1, text: 'Being resized', value: 2, disabled: !(returnStatusId == 0 ) },
+            { key: 2, text: completedStatus, value: 3, disabled: !(returnStatusId == 2 ) },
         ];
-
-        if (returnStatusId === 1)
-            return all.map(s => s.key === 1 || s.key === 4 ? s : { ...s, disabled: true });
-        else if (returnStatusId === 2)
-            return all.map(s => s.key === 2 || s.key === 3 ? s : { ...s, disabled: true });
-        else if (returnStatusId === 3 || returnStatusId === 4)
-            return all.map(s => s.key === returnStatusId || s.key === 5 ? s : { ...s, disabled: true });
-        else if (returnStatusId === 5)
-            return all.map(s => s.key === 5 ? s : { ...s, disabled: true });
-        else
-            return all.map(s => s.key === 0 ? s : { ...s, disabled: true });
-
+        const repairOp = [
+            { key: 0, text: startedStatus, value: 0, disabled: true },
+            { key: 1, text: 'Being repaired', value: 1, disabled: !(returnStatusId == 0 ) },
+            { key: 2, text: completedStatus, value: 4, disabled: !(returnStatusId == 1 ) },
+        ];
+        const returnOp = [
+            { key: 0, text: startedStatus, value: 0, disabled: true },
+            { key: 1, text: completedStatus, value: 5, disabled: !(returnStatusId == 0 )},
+        ]; 
+        if(returnTypeId == 0){ //return 
+            return returnOp;
+        }
+        if(returnTypeId == 1){ //repair
+            return repairOp;
+        }
+        if(returnTypeId == 2){ //resize
+            return resizeOp;
+        }
+        
     }
 
     render() {
