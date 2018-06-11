@@ -556,7 +556,7 @@ class OrderDetails extends Component {
                 ...checkedProduct,
                 options: [{
                     optionType: 'resize',
-                    newSize: value == 'custom' ? this.state.customSize : value
+                    newSize: value
                 }]
             }))
         });
@@ -721,7 +721,7 @@ class OrderDetails extends Component {
                                                                 onChange={this.handleResizeSizeReturnSelected.bind(this)}>
                                                                 
                                                             </Radio>
-                                                            <Input type='number' placeholder='Custom size..'  onChange={this.handleCustomSize}/>
+                                                            <Input type='number' placeholder='Custom size..'  onChange={this.handleResizeSizeReturnSelected.bind(this)}/>
                                                         </Form.Field>
                                                     </Form>
                                                     <Button
