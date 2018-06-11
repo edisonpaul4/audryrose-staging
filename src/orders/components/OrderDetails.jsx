@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router';
-import { Table, Button, Dropdown, Dimmer, Segment, Loader, Icon, Label, Checkbox, Modal, Popup, Form, Radio } from 'semantic-ui-react';
+import { Table, Button, Dropdown, Dimmer, Segment, Loader, Icon, Label, Checkbox, Modal, Popup, Form, Radio, Input } from 'semantic-ui-react';
 import classNames from 'classnames';
 // import numeral from 'numeral';
 import moment from 'moment';
@@ -316,6 +316,7 @@ class OrderDetails extends Component {
         this.handleCreateShipments = this.handleCreateShipments.bind(this);
         this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
         this.handleOrderProductEditClick = this.handleOrderProductEditClick.bind(this);
+        this.handleCustomSize = this.handleCustomSize.bind(this);
     }
     handleReloadClick(orderId) {
         this.props.handleReloadClick(orderId);
@@ -348,6 +349,11 @@ class OrderDetails extends Component {
     }
     handleOrderProductEditClick(data) {
         this.props.handleOrderProductEditClick(data);
+    }
+    handleCustomSize(e, { value }){
+        this.setState({
+            customSize:value
+        })
     }
     createProductObjects(products) {
         const objs = products.map((product) => {
@@ -512,10 +518,13 @@ class OrderDetails extends Component {
     }
 
     handleReturnsButtons(returnTypeId = null) {
-        if (returnTypeId === null || this.state.checkedProducts.length === 0)
+        if (returnTypeId === null || this.state.checkedProducts.length === 0){
             alert('You must select at least one product.');
-        else
+
+        }
+        else{
             this.props.createReturn(returnTypeId, this.state.checkedProducts);
+        }
     }
 
     handleGetSizesForProducts() {
@@ -547,7 +556,7 @@ class OrderDetails extends Component {
                 ...checkedProduct,
                 options: [{
                     optionType: 'resize',
-                    newSize: value
+                    newSize: value == 'custom' ? this.state.customSize : value
                 }]
             }))
         });
@@ -689,6 +698,8 @@ class OrderDetails extends Component {
                                                                 onChange={this.handleResizeSizeReturnSelected.bind(this)}
                                                             />
                                                         </Form.Field>
+
+                                                       
                                                         {this.state.returnsSizes.map((size, i) => (
                                                             <Form.Field key={`returnSize-${i}`}>
                                                                 <Radio
@@ -700,6 +711,18 @@ class OrderDetails extends Component {
                                                                 />
                                                             </Form.Field>
                                                         ))}
+                                                         <Form.Field>
+                                                            <Radio
+                                                                key={`returnSize-Custom`}
+                                                                label={'Custom:'}
+                                                                name='radioGroup'
+                                                                value={'custom'}
+                                                                checked={this.state.newSizeToReturn === 'custom'}
+                                                                onChange={this.handleResizeSizeReturnSelected.bind(this)}>
+                                                                
+                                                            </Radio>
+                                                            <Input type='number' placeholder='Custom size..'  onChange={this.handleCustomSize}/>
+                                                        </Form.Field>
                                                     </Form>
                                                     <Button
                                                         fluid
