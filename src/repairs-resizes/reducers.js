@@ -146,11 +146,29 @@ const productStats = (state = initialState, action) => {
         isLoadingReturns: false,
         errors: [...state.errors, { type: 'CHECK_IN_RETURN_FAILURE', message: action.err.response.data.error.message }]
       };
+      case 'EDIT_RESIZE_SIZE_REQUEST':
+      return {
+        ...state,
+        isLoadingReturns: true
+      };
+
+    case 'EDIT_RESIZE_SIZE_SUCCESS':
+      return {
+        ...state,
+        isLoadingReturns: false,
+        returns: updateReturnObject(action.res, state.returns)
+      };
+
+    case 'EDIT_RESIZE_SIZE_FAILURE':
+      return {
+        ...state,
+        isLoadingReturns: false,
+        errors: [...state.errors, { type: 'CHECK_IN_RETURN_FAILURE', message: action.err.response.data.error.message }]
+      };
     default:
       return state;
   }
 }
-
 const updateReturnObject = (updatedReturn, returnsState) => {
   const index = returnsState.findIndex(returnObject => returnObject.id === updatedReturn.id);
   return [

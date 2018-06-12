@@ -4,7 +4,7 @@ import { Link } from 'react-router';
 import { Grid, Menu, Segment, Table } from 'semantic-ui-react';
 
 import { ReturnProductRow } from '../components/components';
-import { getReturns, checkInReturn, updateReturnStatus, deleteRepairResize } from '../actions';
+import { getReturns, checkInReturn, updateReturnStatus, deleteRepairResize, updateResizeSize } from '../actions';
 
 class RepairsResizesContainer extends React.Component {
     constructor(props) {
@@ -56,6 +56,10 @@ class RepairsResizesContainer extends React.Component {
 
     deleteReturnResizeHandler(returnId){
         this.props.deleteRepairResize(returnId,this.props.token)
+    }
+
+    updateResizeSizeHandler(returnId, newSize){
+        this.props.updateResizeSize(returnId, newSize, this.props.token)
     }
     render() {
         return (
@@ -154,7 +158,9 @@ class RepairsResizesContainer extends React.Component {
                                         returnType={returnObject.returnType}
                                         returnTypeId={returnObject.returnTypeId}
                                         shippoInfo={returnObject.shippoInfo}
-                                        deleteReturn={this.deleteReturnResizeHandler.bind(this)} 
+                                        deleteReturn={this.deleteReturnResizeHandler.bind(this)}
+                                        returnOptions={returnObject.returnOptions}
+                                        updateResize={this.updateResizeSizeHandler.bind(this)}
                                     />
                                 ))}
                             </Table.Body>
@@ -177,7 +183,8 @@ const actions = {
     getReturns,
     checkInReturn,
     updateReturnStatus,
-    deleteRepairResize
+    deleteRepairResize,
+    updateResizeSize
 };
 
 export default connect(state, actions)(RepairsResizesContainer);
