@@ -53,3 +53,13 @@ export function deleteRepairResize(returnId, token) {
       .then(r => r.data.result)
   }
 }
+
+export function updateResizeSize(returnId, newSize, token) {
+  return {
+    types: ['EDIT_RESIZE_SIZE_REQUEST', 'EDIT_RESIZE_SIZE_SUCCESS', 'EDIT_RESIZE_SIZE_FAILURE'],
+    promise: api.updateResizeSize(returnId, newSize, token)
+      .then(r => r.data.result)
+  }
+}
+
+

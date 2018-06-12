@@ -548,6 +548,12 @@ const updateVendorOrderProduct = (token, options) => axios.post('/functions/upda
 const confirmVendorOrderEmail = (options) => axios.post('/functions/updateVendorOrderProduct2',{
     order: options
 })
+
+const updateResizeSize = (returnId, newSize,token) => axios.post('/functions/updateResizeSize',{
+    returnId,
+    newSize,
+    sessionToken: token
+})
 export default {
     signup,
     login,
@@ -610,5 +616,6 @@ export default {
     deleteReturnEmail,
     getFollowUpEmails,
     deleteFollowUpEmail,
-    sendFollowUpEmail
+    sendFollowUpEmail,
+    updateResizeSize
 }

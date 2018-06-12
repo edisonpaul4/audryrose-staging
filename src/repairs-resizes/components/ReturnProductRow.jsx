@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Table, Image, Modal, Button, Icon, Segment, Confirm, Dropdown } from 'semantic-ui-react';
+import { Table, Image, Modal, Button, Icon, Segment, Confirm, Dropdown, Input } from 'semantic-ui-react';
 import moment from 'moment';
 
 class ReturnProductRow extends React.Component {
@@ -9,7 +9,8 @@ class ReturnProductRow extends React.Component {
         this.state = {
             notesModalOpen: false,
             checkInConfirmModal: false,
-
+            editSizeModal: false,
+            customSize: 0
         }
     }
 
@@ -23,8 +24,22 @@ class ReturnProductRow extends React.Component {
             this.props.updateReturnStatus(this.props.returnId, value);
     }
 
-    onDelete(id){
+    onDelete(id) {
         this.props.deleteReturn(this.props.returnId)
+    }
+
+    onSizeChanged(e, { value }){
+        this.setState({
+            customSize:value
+        })
+
+    }
+
+    handleResizeSizeSave(){
+        if(this.state.customSize > 0){
+            this.setState({ editSizeModal: false })
+            this.props.updateResize(this.props.returnId, this.state.customSize);
+        }
     }
 
     getAvailableStatus(returnStatusId, returnType, returnTypeId) {
@@ -32,40 +47,43 @@ class ReturnProductRow extends React.Component {
         const completedStatus = (returnType.slice(0, 1).toUpperCase() + returnType.slice(1).toLowerCase()) + ' Completed';
 
         const resizeOp = [
-            { key: 0, text: startedStatus, value: 0, disabled: !(returnStatusId == 0 ||( returnStatusId != 2 && returnStatusId != 3)) },
+            { key: 0, text: startedStatus, value: 0, disabled: !(returnStatusId == 0 || (returnStatusId != 2 && returnStatusId != 3)) },
             { key: 1, text: 'Being resized', value: 2, disabled: !(returnStatusId == 0 || returnStatusId == 2) },
-            { key: 2, text: completedStatus, value: 3, disabled: !(returnStatusId == 2 || returnStatusId == 3 ) },
+            { key: 2, text: completedStatus, value: 3, disabled: !(returnStatusId == 2 || returnStatusId == 3) },
         ];
         const repairOp = [
-            { key: 0, text: startedStatus, value: 0, disabled: !(returnStatusId == 0 ||( returnStatusId != 1 && returnStatusId != 4)) },
+            { key: 0, text: startedStatus, value: 0, disabled: !(returnStatusId == 0 || (returnStatusId != 1 && returnStatusId != 4)) },
             { key: 1, text: 'Being repaired', value: 1, disabled: !(returnStatusId == 0 || returnStatusId == 1) },
-            { key: 2, text: completedStatus, value: 4, disabled: !(returnStatusId == 1 || returnStatusId == 4 ) },
+            { key: 2, text: completedStatus, value: 4, disabled: !(returnStatusId == 1 || returnStatusId == 4) },
         ];
         const returnOp = [
             { key: 0, text: startedStatus, value: 0, disabled: !(returnStatusId == 0 && returnStatusId != 5) },
-            { key: 1, text: completedStatus, value: 5, disabled: !(returnStatusId == 0 || returnStatusId == 5 )},
-        ]; 
-        if(returnTypeId == 0){ //return 
+            { key: 1, text: completedStatus, value: 5, disabled: !(returnStatusId == 0 || returnStatusId == 5) },
+        ];
+        if (returnTypeId == 0) { //return 
             return returnOp;
         }
-        if(returnTypeId == 1){ //repair
+        if (returnTypeId == 1) { //repair
             return repairOp;
         }
-        if(returnTypeId == 2){ //resize
+        if (returnTypeId == 2) { //resize
             return resizeOp;
         }
-        
+
     }
 
     render() {
-        const { dateRequested, dateCheckedIn, orderId, customerName, productName, productImage, orderNotes, returnStatusId, returnType, returnTypeId, shippoInfo } = this.props;
+        let { dateRequested, dateCheckedIn, orderId, customerName, productName, productImage, orderNotes, returnStatusId, returnType, returnTypeId, shippoInfo, returnOptions } = this.props;
 
         const words = [
             (orderNotes.customerNotes !== null || orderNotes.staffNotes !== null) ? 'C' : null,
             orderNotes.designerNotes !== null ? 'D' : null,
             orderNotes.internalNotes !== null ? 'I' : null,
         ].filter(w => w !== null).join(' - ');
-
+        productName = returnOptions[0] != undefined ? (productName + '  - Size:  ' + returnOptions[0].newSize + ' - ') : productName;
+        const buttonEdit = returnOptions[0] != undefined ? (<Button icon onClick={() => this.setState({ editSizeModal: true })}>
+            <Icon name='edit' />
+        </Button>) : null;
         return (
             <Table.Row
                 style={{ backgroundColor: moment().diff(dateRequested, 'weeks') >= 1 ? 'rgba(255, 0, 0, .25)' : 'transparent' }}>
@@ -91,7 +109,28 @@ class ReturnProductRow extends React.Component {
                 </Table.Cell>
                 <Table.Cell>{orderId}</Table.Cell>
                 <Table.Cell>{customerName}</Table.Cell>
-                <Table.Cell>{productName}</Table.Cell>
+                <Table.Cell>{productName}
+                    {buttonEdit}
+                    <Modal dimmer={true} size="small" open={this.state.editSizeModal} onClose={() => this.setState({ editSizeModal: false })}>
+                        <Modal.Header
+                            content="Edit Resize Size" />
+                        <Modal.Content>
+                            <Segment>
+                                <b>{"Current Size: "}</b> <br />
+                                {returnOptions[0].newSize}
+                            </Segment>
+                            <Segment>
+                                <b>{"New Size: "}</b> <br />
+                                <Input type='number' onChange={this.onSizeChanged.bind(this)}/>
+                            </Segment>
+                        </Modal.Content>
+
+                        <Modal.Actions>
+                            <Button content='Close' onClick={() => this.setState({ editSizeModal: false })} />
+                            <Button content='Save' onClick={() => this.handleResizeSizeSave()} />
+                        </Modal.Actions>
+                    </Modal>
+                </Table.Cell>
                 <Table.Cell>
                     <Image
                         href={productImage} />
@@ -141,7 +180,7 @@ class ReturnProductRow extends React.Component {
 
                     <Button content='Track' onClick={() => window.open(shippoInfo.tracking_url_provider, "_blank")} />
                     <Button icon onClick={() => this.onDelete(orderId)}>
-                        <Icon name='trash' color='red'/>
+                        <Icon name='trash' color='red' />
                     </Button>
                 </Table.Cell>
             </Table.Row>
