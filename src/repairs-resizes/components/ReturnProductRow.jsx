@@ -28,15 +28,15 @@ class ReturnProductRow extends React.Component {
         this.props.deleteReturn(this.props.returnId)
     }
 
-    onSizeChanged(e, { value }){
+    onSizeChanged(e, { value }) {
         this.setState({
-            customSize:value
+            customSize: value
         })
 
     }
 
-    handleResizeSizeSave(){
-        if(this.state.customSize > 0){
+    handleResizeSizeSave() {
+        if (this.state.customSize > 0) {
             this.setState({ editSizeModal: false })
             this.props.updateResize(this.props.returnId, this.state.customSize);
         }
@@ -81,9 +81,28 @@ class ReturnProductRow extends React.Component {
             orderNotes.internalNotes !== null ? 'I' : null,
         ].filter(w => w !== null).join(' - ');
         productName = returnOptions[0] != undefined ? (productName + '  - Size:  ' + returnOptions[0].newSize + ' - ') : productName;
-        const buttonEdit = returnOptions[0] != undefined ? (<Button icon onClick={() => this.setState({ editSizeModal: true })}>
+        const buttonEdit = (returnOptions[0] && returnOptions[0].newSize != undefined) ? (<Button icon onClick={() => this.setState({ editSizeModal: true })}>
             <Icon name='edit' />
         </Button>) : null;
+        const modalEdit = (returnOptions[0] && returnOptions[0].newSize != undefined) != undefined ? (<Modal dimmer={true} size="small" open={this.state.editSizeModal} onClose={() => this.setState({ editSizeModal: false })}>
+            <Modal.Header
+                content="Edit Resize Size" />
+            <Modal.Content>
+                <Segment>
+                    <b>{"Current Size: "}</b> <br />
+                    {returnOptions[0].newSize}
+                </Segment>
+                <Segment>
+                    <b>{"New Size: "}</b> <br />
+                    <Input type='number' onChange={this.onSizeChanged.bind(this)} />
+                </Segment>
+            </Modal.Content>
+
+            <Modal.Actions>
+                <Button content='Close' onClick={() => this.setState({ editSizeModal: false })} />
+                <Button content='Save' onClick={() => this.handleResizeSizeSave()} />
+            </Modal.Actions>
+        </Modal>) : null;
         return (
             <Table.Row
                 style={{ backgroundColor: moment().diff(dateRequested, 'weeks') >= 1 ? 'rgba(255, 0, 0, .25)' : 'transparent' }}>
@@ -111,25 +130,7 @@ class ReturnProductRow extends React.Component {
                 <Table.Cell>{customerName}</Table.Cell>
                 <Table.Cell>{productName}
                     {buttonEdit}
-                    <Modal dimmer={true} size="small" open={this.state.editSizeModal} onClose={() => this.setState({ editSizeModal: false })}>
-                        <Modal.Header
-                            content="Edit Resize Size" />
-                        <Modal.Content>
-                            <Segment>
-                                <b>{"Current Size: "}</b> <br />
-                                {returnOptions[0].newSize}
-                            </Segment>
-                            <Segment>
-                                <b>{"New Size: "}</b> <br />
-                                <Input type='number' onChange={this.onSizeChanged.bind(this)}/>
-                            </Segment>
-                        </Modal.Content>
-
-                        <Modal.Actions>
-                            <Button content='Close' onClick={() => this.setState({ editSizeModal: false })} />
-                            <Button content='Save' onClick={() => this.handleResizeSizeSave()} />
-                        </Modal.Actions>
-                    </Modal>
+                    {modalEdit}
                 </Table.Cell>
                 <Table.Cell>
                     <Image
