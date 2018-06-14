@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router';
 import { Menu } from 'semantic-ui-react';
-
 class DesignersNav extends Component {
+
     render() {
         const pathName = this.props.pathname;
         return (

@@ -12,6 +12,7 @@ export const orders = (state = initialState, action) => {
     case 'ORDERS_REQUEST':
       return {
         ...state,
+        orders: [],
         isLoadingOrders: true
       };
 
