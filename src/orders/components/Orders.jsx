@@ -281,7 +281,7 @@ class Orders extends Component {
             orderProductEditFormData: orderProductEditFormData,
             orderProductEditFormIsLoading: orderProductEditFormData.products ? false : true
         });
-        //if (!orderProductEditFormData.products) this.props.getOrderProductFormData(this.props.token, data.orderProductId);
+        if (!orderProductEditFormData.products && !this.state.orderProductEditFormIsLoading) this.props.getOrderProductFormData(this.props.token, data.orderProductId);
     }
 
     handleOrderProductEditClose(data) {

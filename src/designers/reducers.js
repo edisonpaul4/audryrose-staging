@@ -55,6 +55,8 @@ const designers = (state = initialState, action) => {
   let designersArray = [];
 
   switch (action.type) {
+    case 'RESET_STORAGE':
+      return initialState;
 
     case 'DESIGNERS_REQUEST':
       return {

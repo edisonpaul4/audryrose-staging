@@ -165,7 +165,10 @@ class Designers extends Component {
         this.handleDesignerOrderModalClose = this.handleDesignerOrderModalClose.bind(this);
         this._notificationSystem = null;
     }
-
+    componentWillUnmount(){
+        //resetStorage();
+        this.props.resetStorage()
+      }
     componentDidMount() {
         this._notificationSystem = this.refs.notificationSystem;
         this.props.getDesigners(this.props.token, this.state.subpage, this.state.page, this.state.search);

@@ -83,3 +83,9 @@ export function confirmVendorOrderEmail(options) {
         promise: api.confirmVendorOrderEmail(options).then(r => r)
     };
 }
+export function resetStorage() {
+    return {
+      type: 'RESET_STORAGE'
+    }
+  }
+  
