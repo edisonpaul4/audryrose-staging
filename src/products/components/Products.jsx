@@ -67,6 +67,9 @@ class Products extends Component {
         this.props.getProductOptions(this.props.token);
     }
 
+    componentWillUnmount() {
+        this.props.resetStorage();
+    }
     handleToggleClick(productId) {
         let currentlyExpanded = this.state.expandedProducts;
         var index = currentlyExpanded.indexOf(productId);
