@@ -83,3 +83,9 @@ export function productBundleSave(token, data) {
     promise: api.productBundleSave(token, data)
   }
 }
+
+export function resetStorage() {
+  return {
+    type: 'RESET_PRODUCTS_STORAGE'
+  }
+}

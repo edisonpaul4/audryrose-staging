@@ -4,8 +4,8 @@
 
 const initialState = {
   isLoadingProducts: false,
-	products: [],
-	filterData: null
+  products: [],
+  filterData: null
 };
 
 const updateProduct = (newProduct, productsState) => {
@@ -19,21 +19,23 @@ const updateProduct = (newProduct, productsState) => {
 
 const products = (state = initialState, action) => {
   let productsData;
-  switch(action.type) {
+  switch (action.type) {
 
     case 'PRODUCTS_REQUEST':
     case 'PRODUCT_REQUEST':
       return {
-        ...state,
+        ...initialState,
         isLoadingProducts: true
       }
+    case 'RESET_PRODUCTS_STORAGE':
+      return initialState;
 
     case 'PRODUCTS_SUCCESS':
       productsData = [];
       if (action.res.products) {
-      	productsData = action.res.products.map(function(product, i) {
-        	return product.toJSON();
-      	});
+        productsData = action.res.products.map(function (product, i) {
+          return product.toJSON();
+        });
       }
       return {
         ...state,
@@ -51,7 +53,7 @@ const products = (state = initialState, action) => {
         products: updateProduct(action.res, state.products),
         isLoadingProducts: false
       }
-    
+
     case 'PRODUCTS_FAILURE':
     case 'PRODUCT_FAILURE':
       return {
@@ -100,13 +102,13 @@ const products = (state = initialState, action) => {
 
     case 'PRODUCT_RELOAD_SUCCESS':
       if (state.products && action.res.updatedProduct) {
-      	productsData = state.products.map(function(product, i) {
-        	if (product.objectId === action.res.updatedProduct.id) {
-          	product = action.res.updatedProduct.toJSON();
-        	}
-        	return product;
-      	});
-    	}
+        productsData = state.products.map(function (product, i) {
+          if (product.objectId === action.res.updatedProduct.id) {
+            product = action.res.updatedProduct.toJSON();
+          }
+          return product;
+        });
+      }
       return {
         ...state,
         timeout: action.res.timeout ? action.res.timeout : undefined,
@@ -127,13 +129,13 @@ const products = (state = initialState, action) => {
 
     case 'PRODUCT_SAVE_SUCCESS':
       if (state.products && action.res.updatedProduct) {
-      	productsData = state.products.map(function(product, i) {
-        	if (product.objectId === action.res.updatedProduct.id) {
-          	product = action.res.updatedProduct.toJSON();
-        	}
-        	return product;
-      	});
-    	}
+        productsData = state.products.map(function (product, i) {
+          if (product.objectId === action.res.updatedProduct.id) {
+            product = action.res.updatedProduct.toJSON();
+          }
+          return product;
+        });
+      }
       return {
         ...state,
         timeout: action.res.timeout ? action.res.timeout : undefined,
@@ -154,16 +156,16 @@ const products = (state = initialState, action) => {
 
     case 'VARIANT_SAVE_SUCCESS':
       if (state.products && action.res.updatedProducts) {
-      	productsData = state.products.map(function(product, i) {
-        	action.res.updatedProducts.map(function(updatedProduct, j) {
-          	if (product.objectId === updatedProduct.id) {
-            	product = updatedProduct.toJSON();
-          	}
-          	return updatedProduct;
+        productsData = state.products.map(function (product, i) {
+          action.res.updatedProducts.map(function (updatedProduct, j) {
+            if (product.objectId === updatedProduct.id) {
+              product = updatedProduct.toJSON();
+            }
+            return updatedProduct;
           });
-        	return product;
-      	});
-    	}
+          return product;
+        });
+      }
       return {
         ...state,
         timeout: action.res.timeout ? action.res.timeout : undefined,
@@ -185,16 +187,16 @@ const products = (state = initialState, action) => {
 
     case 'VARIANTS_SAVE_SUCCESS':
       if (state.products && action.res.updatedProducts) {
-      	productsData = state.products.map(function(product, i) {
-        	action.res.updatedProducts.map(function(updatedProduct, j) {
-          	if (product.objectId === updatedProduct.id) {
-            	product = updatedProduct.toJSON();
-          	}
-          	return updatedProduct;
+        productsData = state.products.map(function (product, i) {
+          action.res.updatedProducts.map(function (updatedProduct, j) {
+            if (product.objectId === updatedProduct.id) {
+              product = updatedProduct.toJSON();
+            }
+            return updatedProduct;
           });
-        	return product;
-      	});
-    	}
+          return product;
+        });
+      }
       return {
         ...state,
         timeout: action.res.timeout ? action.res.timeout : undefined,
@@ -216,16 +218,16 @@ const products = (state = initialState, action) => {
 
     case 'ADD_TO_VENDOR_ORDER_SUCCESS':
       if (state.products && action.res.updatedProducts) {
-      	productsData = state.products.map(function(product, i) {
-        	action.res.updatedProducts.map(function(updatedProduct, j) {
-          	if (product.objectId === updatedProduct.id) {
-            	product = updatedProduct.toJSON();
-          	}
-          	return updatedProduct;
+        productsData = state.products.map(function (product, i) {
+          action.res.updatedProducts.map(function (updatedProduct, j) {
+            if (product.objectId === updatedProduct.id) {
+              product = updatedProduct.toJSON();
+            }
+            return updatedProduct;
           });
-        	return product;
-      	});
-    	}
+          return product;
+        });
+      }
       return {
         ...state,
         timeout: action.res.timeout ? action.res.timeout : undefined,
@@ -249,16 +251,16 @@ const products = (state = initialState, action) => {
 
     case 'CREATE_PRODUCT_RESIZE_SUCCESS':
       if (state.products && action.res.updatedProducts) {
-      	productsData = state.products.map(function(product, i) {
-        	action.res.updatedProducts.map(function(updatedProduct, j) {
-          	if (product.objectId === updatedProduct.id) {
-            	product = updatedProduct.toJSON();
-          	}
-          	return updatedProduct;
+        productsData = state.products.map(function (product, i) {
+          action.res.updatedProducts.map(function (updatedProduct, j) {
+            if (product.objectId === updatedProduct.id) {
+              product = updatedProduct.toJSON();
+            }
+            return updatedProduct;
           });
-        	return product;
-      	});
-    	}
+          return product;
+        });
+      }
       return {
         ...state,
         timeout: action.res.timeout ? action.res.timeout : undefined,
@@ -281,16 +283,16 @@ const products = (state = initialState, action) => {
 
     case 'SAVE_PRODUCT_RESIZE_SUCCESS':
       if (state.products && action.res.updatedProducts) {
-      	productsData = state.products.map(function(product, i) {
-        	action.res.updatedProducts.map(function(updatedProduct, j) {
-          	if (product.objectId === updatedProduct.id) {
-            	product = updatedProduct.toJSON();
-          	}
-          	return updatedProduct;
+        productsData = state.products.map(function (product, i) {
+          action.res.updatedProducts.map(function (updatedProduct, j) {
+            if (product.objectId === updatedProduct.id) {
+              product = updatedProduct.toJSON();
+            }
+            return updatedProduct;
           });
-        	return product;
-      	});
-    	}
+          return product;
+        });
+      }
       return {
         ...state,
         timeout: action.res.timeout ? action.res.timeout : undefined,
@@ -330,16 +332,16 @@ const products = (state = initialState, action) => {
 
     case 'BUNDLE_SAVE_SUCCESS':
       if (state.products && action.res.updatedProducts) {
-      	productsData = state.products.map(function(product, i) {
-        	action.res.updatedProducts.map(function(updatedProduct, j) {
-          	if (product.objectId === updatedProduct.id) {
-            	product = updatedProduct.toJSON();
-          	}
-          	return updatedProduct;
+        productsData = state.products.map(function (product, i) {
+          action.res.updatedProducts.map(function (updatedProduct, j) {
+            if (product.objectId === updatedProduct.id) {
+              product = updatedProduct.toJSON();
+            }
+            return updatedProduct;
           });
-        	return product;
-      	});
-    	}
+          return product;
+        });
+      }
       return {
         ...state,
         timeout: action.res.timeout ? action.res.timeout : undefined,
