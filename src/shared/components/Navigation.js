@@ -21,19 +21,19 @@ class Navigation extends Component {
         const pathName = this.props.path;
         return (
             <Menu className='main-nav' attached borderless stackable>
-                <Menu.Item header as={Link} to='/orders'><img className='logo' src='/imgs/logo.png' width='23' alt='Audry Rose Logo' /></Menu.Item>
+                <Menu.Item header href='/orders'><img className='logo' src='/imgs/logo.png' width='23' alt='Audry Rose Logo' /></Menu.Item>
                 {/*<Menu.Item as={Link} to='/dashboard' active={pathName.includes('/dashboard')} link>Dashboard</Menu.Item>*/}
-                <Menu.Item as={Link} to='/orders' active={pathName.includes('/orders')} link>Orders</Menu.Item>
-                <Menu.Item as={Link} to='/emails/customers-orders' active={pathName.includes('/emails/')} link>Emails</Menu.Item>
-                <Menu.Item as={Link} to='/products' active={pathName.includes('/products')} link>Products</Menu.Item>
-                <Menu.Item as={Link} to='/shipments' active={pathName.includes('/shipments')} link>Shipments</Menu.Item>
-                <Menu.Item as={Link} to='/designers' active={pathName.includes('/designers')} link>Designers</Menu.Item>
+                <Menu.Item href='/orders' active={pathName.includes('/orders')} link>Orders</Menu.Item>
+                <Menu.Item href='/emails/customers-orders' active={pathName.includes('/emails/')} link>Emails</Menu.Item>
+                <Menu.Item href='/products' active={pathName.includes('/products')} link>Products</Menu.Item>
+                <Menu.Item href='/shipments' active={pathName.includes('/shipments')} link>Shipments</Menu.Item>
+                <Menu.Item href='/designers' active={pathName.includes('/designers')} link>Designers</Menu.Item>
 
-                <Menu.Item as={Link} to='/product-stats' active={pathName.includes('/product-stats')} link>
+                <Menu.Item href='/product-stats' active={pathName.includes('/product-stats')} link>
                     Product stats
 					</Menu.Item>
 
-                <Menu.Item as={Link} to='/repairs-resizes/all' active={pathName.includes('/repairs-resizes')} link>
+                <Menu.Item href='/repairs-resizes/all' active={pathName.includes('/repairs-resizes')} link>
                     Repairs / Resizes
 					</Menu.Item>
 
