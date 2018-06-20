@@ -32,16 +32,16 @@ const products = (state = initialState, action) => {
 
     case 'PRODUCTS_SUCCESS':
       productsData = [];
-      if (action.res.products) {
-        productsData = action.res.products.map(function (product, i) {
-          return product.toJSON();
-        });
-      }
+      //if (action.res.products) {
+      //  productsData = action.res.products.map(function (product, i) {
+      //    return product.toJSON();
+      //  });
+      //}
       return {
         ...state,
         timeout: action.res.timeout ? action.res.timeout : undefined,
         isLoadingProducts: false,
-        products: productsData,
+        products: action.res.products,
         totalPages: action.res.totalPages,
         totalProducts: action.res.totalProducts,
         tabCounts: action.res.tabCounts
