@@ -29,6 +29,7 @@ class Navigation extends Component {
                 <Menu.Item href='/shipments' active={pathName.includes('/shipments')} link>Shipments</Menu.Item>
                 <Menu.Item href='/designers' active={pathName.includes('/designers')} link>Designers</Menu.Item>
 
+
                 <Menu.Item href='/product-stats' active={pathName.includes('/product-stats')} link>
                     Product stats
 					</Menu.Item>
