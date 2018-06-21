@@ -34,3 +34,23 @@ body {
 [data-reactroot] {
 	margin-top: 15px !important;
 } 
+.ui.basic.olive.label {
+    background-color: none #fff!important;
+    color: white!important; */
+    border-color: #b5cc18!important;
+}
+.ui.basic.red.label {
+    background-color: none #fff!important;
+    color: white!important;
+    border-color: #db2828!important;
+}
+.ui.basic.yellow.label {
+    background-color: none #FFFFFF !important;
+    color: white !important;
+    border-color: #FBBD08 !important;
+}
+.ui.basic.teal.label {
+    background-color: none #FFFFFF !important;
+    color: white !important;
+    border-color: #00B5AD !important;
+}
