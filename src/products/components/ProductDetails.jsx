@@ -91,7 +91,7 @@ class VariantRow extends Component {
     }
     getVendorOrderLabel(product, variant, vendorOrderVariant, vendorOrder, orderProductMatch) {
         if (!vendorOrder) return <Label size='tiny' color='red' key={'vendorOrder-' + vendorOrder.objectId + '-' + vendorOrderVariant.objectId}>Error: Missing vendor order data</Label>;
-
+        console.log(vendorOrder)
         const averageWaitTime = vendorOrder.vendor.waitTime ? vendorOrder.vendor.waitTime : 21;
         const expectedDate = vendorOrder.dateOrdered ? moment(vendorOrder.dateOrdered.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
         const daysLeft = vendorOrder.dateOrdered ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
@@ -105,7 +105,7 @@ class VariantRow extends Component {
         } else if (vendorOrderVariant.ordered) {
             labelColor = 'olive';
         }
-        let labelText = vendorOrderVariant.ordered ? vendorOrderVariant.units + ' Sent' : vendorOrderVariant.units + ' Pending';
+        let labelText = vendorOrderVariant.ordered ? vendorOrderVariant.units + ' Sent' : vendorOrderVariant.units + ' Pending' ;
 
         if (vendorOrderVariant.done === true) {
             labelText = vendorOrderVariant.received + ' Received';
@@ -129,6 +129,7 @@ class VariantRow extends Component {
         } else {
             showLabel = true;
         }
+        labelText = labelText + ' - ' + vendorOrder.vendorOrderNumber;
         return showLabel ? <Label as={labelLink ? 'a' : null} href={labelLink} size='tiny' color={labelColor} key={'vendorOrder-' + vendorOrder.objectId + '-' + vendorOrderVariant.objectId}>{labelIcon}{labelText}{labelDetail}</Label> : null;
     }
     getResizeLabel(product, variant, resize, orderProductMatch) {
