@@ -91,7 +91,6 @@ class VariantRow extends Component {
     }
     getVendorOrderLabel(product, variant, vendorOrderVariant, vendorOrder, orderProductMatch) {
         if (!vendorOrder) return <Label size='tiny' color='red' key={'vendorOrder-' + vendorOrder.objectId + '-' + vendorOrderVariant.objectId}>Error: Missing vendor order data</Label>;
-        console.log(vendorOrder)
         const averageWaitTime = vendorOrder.vendor.waitTime ? vendorOrder.vendor.waitTime : 21;
         const expectedDate = vendorOrder.dateOrdered ? moment(vendorOrder.dateOrdered.iso).add(averageWaitTime, 'days') : moment.utc().add(averageWaitTime, 'days');
         const daysLeft = vendorOrder.dateOrdered ? expectedDate.diff(moment.utc(), 'days') : averageWaitTime;
