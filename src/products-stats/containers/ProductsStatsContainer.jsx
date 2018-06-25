@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Grid, Segment, Table, Icon } from 'semantic-ui-react';
 import { Link } from 'react-router';
-
+import { ImagesModal } from '../components/components';
 import * as productStatsActions from '../actions';
 
 import NotificationSystem from 'react-notification-system';
@@ -10,7 +10,13 @@ import NotificationSystem from 'react-notification-system';
 class ProductsStatsContainer extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            isModalOpen: false,
+            focusedProductId: null,
+            focusedProductName: ''
+        }
     }
+
 
     componentWillMount() {
         this.props.getProductStats();
@@ -88,7 +94,21 @@ class ProductsStatsContainer extends React.Component {
         else
             return null;
     }
-
+    handleOpenModal(productId, productName) {
+        this.setState({
+            isModalOpen: true,
+            focusedProductId: productId,
+            focusedProductName: productName
+        })
+        this.props.getPicturesRepairsByProduct(productId,this.props.token);
+    }
+    handleImagesModalClose() {
+        this.setState({
+            isModalOpen: false,
+            focusedProductId: null,
+            focusedProductName: ''
+        })
+    }
     onChangeSort(type) {
         const sortQuery = this.props.location.query.sort ? this.props.location.query.sort : '';
         const queryString = `?sort=${type}_${sortQuery.includes('asc') ? 'desc' : 'asc'}`;
@@ -164,12 +184,21 @@ class ProductsStatsContainer extends React.Component {
                                             <Table.Cell>{ps.totalSold}</Table.Cell>
                                             <Table.Cell>{ps.unitsReturned}</Table.Cell>
                                             <Table.Cell>{ps.unitsReturnedP.toFixed(2)}</Table.Cell>
-                                            <Table.Cell>{ps.unitsRepaired}</Table.Cell>
+                                            <Table.Cell onClick={() => {
+                                                if (ps.unitsRepairedP > 0) {
+                                                    this.handleOpenModal(ps.productId, ps.productName)
+                                                }
+                                            }}>{ps.unitsRepaired}</Table.Cell>
                                             <Table.Cell>{ps.unitsRepairedP.toFixed(2)}</Table.Cell>
                                             <Table.Cell>{ps.totalReveneu}</Table.Cell>
                                         </Table.Row>
                                     ))}
                                 </Table.Body>
+                                <ImagesModal
+                                    open={this.state.isModalOpen}
+                                    productName={this.state.focusedProductName}
+                                    handleImagesModalClose={this.handleImagesModalClose.bind(this)}
+                                    pictureUrl={this.props.productStats.pictureUrl}/>
                             </Table>
                         </Segment>
                     </Grid.Column>
@@ -188,11 +217,13 @@ const styles = {
 }
 
 const state = state => ({
-    productStats: state.productStats
+    productStats: state.productStats,
+    isModalOpen: false
 });
 
 const actions = {
-    getProductStats: productStatsActions.getProductStats
+    getProductStats: productStatsActions.getProductStats,
+    getPicturesRepairsByProduct: productStatsActions.getPicturesRepairsByProduct
 }
 
 export default connect(state, actions)(ProductsStatsContainer);

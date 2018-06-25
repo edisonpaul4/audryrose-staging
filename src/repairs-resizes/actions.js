@@ -62,4 +62,11 @@ export function updateResizeSize(returnId, newSize, token) {
   }
 }
 
+export function uploadRepairImage(returnId, file, token) {
+  return {
+    types: ['UPLOAD_REPAIR_IMAGE_REQUEST', 'UPLOAD_REPAIR_IMAGE_SUCCESS', 'UPLOAD_REPAIR_IMAGE_FAILURE'],
+    promise: api.uploadRepairImage(returnId, file, token)
+      .then(r => r.data.result)
+  }
+}
 

@@ -4,7 +4,7 @@ import { Link } from 'react-router';
 import { Grid, Menu, Segment, Table } from 'semantic-ui-react';
 
 import { ReturnProductRow } from '../components/components';
-import { getReturns, checkInReturn, updateReturnStatus, deleteRepairResize, updateResizeSize } from '../actions';
+import { getReturns, checkInReturn, updateReturnStatus, deleteRepairResize, updateResizeSize, uploadRepairImage } from '../actions';
 
 class RepairsResizesContainer extends React.Component {
     constructor(props) {
@@ -60,6 +60,9 @@ class RepairsResizesContainer extends React.Component {
 
     updateResizeSizeHandler(returnId, newSize){
         this.props.updateResizeSize(returnId, newSize, this.props.token)
+    }
+    uploadRepairImageHandler(returnId, file){
+        this.props.uploadRepairImage(returnId,file,this.props.token)
     }
     render() {
         return (
@@ -161,6 +164,8 @@ class RepairsResizesContainer extends React.Component {
                                         deleteReturn={this.deleteReturnResizeHandler.bind(this)}
                                         returnOptions={returnObject.returnOptions}
                                         updateResize={this.updateResizeSizeHandler.bind(this)}
+                                        uploadRepairImageHandler={this.uploadRepairImageHandler.bind(this)}
+                                        pictureUrl={returnObject.pictureUrl}
                                     />
                                 ))}
                             </Table.Body>
@@ -184,7 +189,8 @@ const actions = {
     checkInReturn,
     updateReturnStatus,
     deleteRepairResize,
-    updateResizeSize
+    updateResizeSize,
+    uploadRepairImage
 };
 
 export default connect(state, actions)(RepairsResizesContainer);

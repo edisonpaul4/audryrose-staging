@@ -146,7 +146,7 @@ const productStats = (state = initialState, action) => {
         isLoadingReturns: false,
         errors: [...state.errors, { type: 'CHECK_IN_RETURN_FAILURE', message: action.err.response.data.error.message }]
       };
-      case 'EDIT_RESIZE_SIZE_REQUEST':
+    case 'EDIT_RESIZE_SIZE_REQUEST':
       return {
         ...state,
         isLoadingReturns: true
@@ -160,6 +160,25 @@ const productStats = (state = initialState, action) => {
       };
 
     case 'EDIT_RESIZE_SIZE_FAILURE':
+      return {
+        ...state,
+        isLoadingReturns: false,
+        errors: [...state.errors, { type: 'CHECK_IN_RETURN_FAILURE', message: action.err.response.data.error.message }]
+      };
+    case 'UPLOAD_REPAIR_IMAGE_REQUEST':
+      return {
+        ...state,
+        isLoadingReturns: true
+      };
+
+    case 'UPLOAD_REPAIR_IMAGE_SUCCESS':
+      return {
+        ...state,
+        isLoadingReturns: false,
+        returns: updateReturnObject(action.res, state.returns)
+      };
+
+    case 'UPLOAD_REPAIR_IMAGE_FAILURE':
       return {
         ...state,
         isLoadingReturns: false,

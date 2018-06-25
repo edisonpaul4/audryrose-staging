@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Table, Image, Modal, Button, Icon, Segment, Confirm, Dropdown, Input } from 'semantic-ui-react';
 import moment from 'moment';
-
+import {ImagesModal} from '../../products-stats/components/components';
 class ReturnProductRow extends React.Component {
     constructor(props) {
         super(props);
@@ -10,7 +10,10 @@ class ReturnProductRow extends React.Component {
             notesModalOpen: false,
             checkInConfirmModal: false,
             editSizeModal: false,
-            customSize: 0
+            customSize: 0,
+            isModalOpen: false,
+            focusedProductId: null,
+            focusedProductName: ''
         }
     }
 
@@ -34,12 +37,29 @@ class ReturnProductRow extends React.Component {
         })
 
     }
-
+    handleOpenModal(productId, productName) {
+        this.setState({
+            isModalOpen: true,
+            focusedProductId: productId,
+            focusedProductName: productName
+        })
+    }
+    handleImagesModalClose() {
+        this.setState({
+            isModalOpen: false,
+            focusedProductId: null,
+            focusedProductName: ''
+        })
+    }
     handleResizeSizeSave() {
         if (this.state.customSize > 0) {
             this.setState({ editSizeModal: false })
             this.props.updateResize(this.props.returnId, this.state.customSize);
         }
+    }
+    handleUploadRepairImage(file){
+        this.props.uploadRepairImageHandler(this.props.returnId,file)
+
     }
 
     getAvailableStatus(returnStatusId, returnType, returnTypeId) {
@@ -73,8 +93,7 @@ class ReturnProductRow extends React.Component {
     }
 
     render() {
-        let { dateRequested, dateCheckedIn, orderId, customerName, productName, productImage, orderNotes, returnStatusId, returnType, returnTypeId, shippoInfo, returnOptions } = this.props;
-
+        let { dateRequested, dateCheckedIn, orderId, customerName, productName, productImage, orderNotes, returnStatusId, returnType, returnTypeId, shippoInfo, returnOptions, productId, returnId, pictureUrl } = this.props;
         const words = [
             (orderNotes.customerNotes !== null || orderNotes.staffNotes !== null) ? 'C' : null,
             orderNotes.designerNotes !== null ? 'D' : null,
@@ -103,6 +122,18 @@ class ReturnProductRow extends React.Component {
                 <Button content='Save' onClick={() => this.handleResizeSizeSave()} />
             </Modal.Actions>
         </Modal>) : null;
+        const addPicture = returnTypeId == 1 && (returnStatusId == 1 || returnStatusId == 4) ? (<Button icon onClick={() => this.handleOpenModal(productId, productName)}>
+            <Icon name='file' color='green' />
+        </Button>) : null;
+
+        const modalPictures = returnTypeId == 1 && (returnStatusId == 1 || returnStatusId == 4) ? ( <ImagesModal
+            open={this.state.isModalOpen}
+            productName={this.state.focusedProductName}
+            returnId= {returnId}
+            handleImagesModalClose={this.handleImagesModalClose.bind(this)}
+            handleUploadRepairImage={this.handleUploadRepairImage.bind(this)}
+            pictureUrl={pictureUrl}
+            isUniqueReturn={true}/>) : null;
         return (
             <Table.Row
                 style={{ backgroundColor: moment().diff(dateRequested, 'weeks') >= 1 ? 'rgba(255, 0, 0, .25)' : 'transparent' }}>
@@ -183,8 +214,11 @@ class ReturnProductRow extends React.Component {
                     <Button icon onClick={() => this.onDelete(orderId)}>
                         <Icon name='trash' color='red' />
                     </Button>
+                    {addPicture}
                 </Table.Cell>
+                {modalPictures}
             </Table.Row>
+            
         );
     }
 }

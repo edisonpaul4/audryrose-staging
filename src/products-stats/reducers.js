@@ -1,7 +1,8 @@
 const initialState = {
   isLoadingProducts: false,
   stats: [],
-  errors: []
+  errors: [],
+  pictureUrl:[]
 };
 
 const returns = (state = initialState, action) => {
@@ -18,7 +19,25 @@ const returns = (state = initialState, action) => {
         isLoadingProducts: false,
         stats: action.res
       };
+      case 'GET_REPAIR_IMAGES_REQUEST':
+      return {
+        ...state,
+        isLoadingProducts: true
+      };
 
+    case 'GET_REPAIR_IMAGES_SUCCESS':
+      return {
+        ...state,
+        isLoadingProducts: false,
+        pictureUrl: action.res
+      };
+
+    case 'GET_REPAIR_IMAGES_FAILURE':
+      return {
+        ...state,
+        isLoadingProducts: false,
+        errors: [...state.errors, { type: 'CHECK_IN_RETURN_FAILURE', message: action.err.response.data.error.message }]
+      };
     default:
       return state;
   }

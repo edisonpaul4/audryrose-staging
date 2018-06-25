@@ -554,6 +554,21 @@ const updateResizeSize = (returnId, newSize,token) => axios.post('/functions/upd
     newSize,
     sessionToken: token
 })
+
+const getPicturesRepairsByProduct = (productId,token) => axios.post('/functions/getRepairsPicturesByProduct',{
+    productId,
+    sessionToken: token
+})
+
+const uploadRepairImage = (returnId, file, token ) => {
+    return new Parse.File('picRepair.png',file).save().then(res => {
+        return axios.post('/functions/saveRepairPicture',{
+            returnId,
+            fileUrl:res._name,
+            sessionToken: token
+        })
+    })
+}
 export default {
     signup,
     login,
@@ -617,5 +632,7 @@ export default {
     getFollowUpEmails,
     deleteFollowUpEmail,
     sendFollowUpEmail,
-    updateResizeSize
+    updateResizeSize,
+    uploadRepairImage,
+    getPicturesRepairsByProduct
 }

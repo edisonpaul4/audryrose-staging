@@ -7,3 +7,10 @@ export function getProductStats(token) {
       .then(r => r.data.result)
   }
 }
+export function getPicturesRepairsByProduct(productId, token) {
+  return {
+    types: ['GET_REPAIR_IMAGES_REQUEST', 'GET_REPAIR_IMAGES_SUCCESS', 'GET_REPAIR_IMAGES_FAILURE'],
+    promise: api.getPicturesRepairsByProduct(productId, token)
+      .then(r => r.data.result)
+  }
+}

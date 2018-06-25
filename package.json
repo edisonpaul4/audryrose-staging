@@ -30,6 +30,7 @@
     "react-addons-transition-group": "^15.6.0",
     "react-dates": "^12.3.0",
     "react-dom": "^15.6.1",
+    "react-image-lightbox": "^5.0.0",
     "react-notification-system": "^0.2.14",
     "react-redux": "^5.0.5",
     "react-redux-loading-bar": "^4.0.4",
