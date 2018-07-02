@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Table, Image, Modal, Button, Icon, Segment, Confirm, Dropdown, Input } from 'semantic-ui-react';
 import moment from 'moment';
-import {ImagesModal} from '../../products-stats/components/components';
+import { ImagesModal } from '../../products-stats/components/components';
 class ReturnProductRow extends React.Component {
     constructor(props) {
         super(props);
@@ -57,8 +57,8 @@ class ReturnProductRow extends React.Component {
             this.props.updateResize(this.props.returnId, this.state.customSize);
         }
     }
-    handleUploadRepairImage(file){
-        this.props.uploadRepairImageHandler(this.props.returnId,file)
+    handleUploadRepairImage(file) {
+        this.props.uploadRepairImageHandler(this.props.returnId, file)
 
     }
 
@@ -93,7 +93,11 @@ class ReturnProductRow extends React.Component {
     }
 
     render() {
-        let { dateRequested, dateCheckedIn, orderId, customerName, productName, productImage, orderNotes, returnStatusId, returnType, returnTypeId, shippoInfo, returnOptions, productId, returnId, pictureUrl } = this.props;
+        let { dateRequested, dateCheckedIn, orderId, customerName, productName,
+            productImage, orderNotes, returnStatusId, returnType, returnTypeId,
+            shippoInfo, returnOptions, productId, returnId, pictureUrl, returnObj } = this.props;
+        let returnObject = [];
+        returnObject.push(returnObj)
         const words = [
             (orderNotes.customerNotes !== null || orderNotes.staffNotes !== null) ? 'C' : null,
             orderNotes.designerNotes !== null ? 'D' : null,
@@ -126,14 +130,14 @@ class ReturnProductRow extends React.Component {
             <Icon name='file' color='green' />
         </Button>) : null;
 
-        const modalPictures = returnTypeId == 1 && (returnStatusId == 1 || returnStatusId == 4) ? ( <ImagesModal
+        const modalPictures = returnTypeId == 1 && (returnStatusId == 1 || returnStatusId == 4) ? (<ImagesModal
             open={this.state.isModalOpen}
             productName={this.state.focusedProductName}
-            returnId= {returnId}
+            returnId={returnId}
             handleImagesModalClose={this.handleImagesModalClose.bind(this)}
             handleUploadRepairImage={this.handleUploadRepairImage.bind(this)}
             pictureUrl={pictureUrl}
-            isUniqueReturn={true}/>) : null;
+            isUniqueReturn={true} />) : null;
         return (
             <Table.Row
                 style={{ backgroundColor: moment().diff(dateRequested, 'weeks') >= 1 ? 'rgba(255, 0, 0, .25)' : 'transparent' }}>
@@ -218,7 +222,7 @@ class ReturnProductRow extends React.Component {
                 </Table.Cell>
                 {modalPictures}
             </Table.Row>
-            
+
         );
     }
 }

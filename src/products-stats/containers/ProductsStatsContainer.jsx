@@ -198,7 +198,7 @@ class ProductsStatsContainer extends React.Component {
                                     open={this.state.isModalOpen}
                                     productName={this.state.focusedProductName}
                                     handleImagesModalClose={this.handleImagesModalClose.bind(this)}
-                                    pictureUrl={this.props.productStats.pictureUrl}/>
+                                    returnObj={this.props.productStats.pictureUrl}/>
                             </Table>
                         </Segment>
                     </Grid.Column>

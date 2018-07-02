@@ -5,20 +5,12 @@ import "react-image-lightbox/style.css";
 import { Modal, Button, Table, Form, Input, Header, Segment, Dimmer, Loader, Image, List, Grid, Label } from 'semantic-ui-react';
 
 
-let images = [
-    "https://www.catster.com/wp-content/uploads/2017/08/A-fluffy-cat-looking-funny-surprised-or-concerned.jpg",
-    "http://www.catster.com/wp-content/uploads/2017/08/A-brown-cat-licking-its-lips.jpg",
-    "https://images.pexels.com/photos/126407/pexels-photo-126407.jpeg?cs=srgb&dl=animal-cat-cute-126407.jpg&fm=jpg",
-    "https://www.catster.com/wp-content/uploads/2017/08/A-fluffy-cat-looking-funny-surprised-or-concerned.jpg",
-    "http://www.catster.com/wp-content/uploads/2017/08/A-brown-cat-licking-its-lips.jpg",
-    "https://images.pexels.com/photos/126407/pexels-photo-126407.jpeg?cs=srgb&dl=animal-cat-cute-126407.jpg&fm=jpg",
-];
 
 class ImagesModal extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            photoIndex: 0,
+            photoSrc: '',
             isOpen: false
         };
         this.handleClose = this.handleClose.bind(this);
@@ -37,12 +29,45 @@ class ImagesModal extends Component {
             type="file"
             onChange={this.handleRepairPictureUpload}
             name="file"
-        accept="image/x-png,image/gif,image/jpeg" />) : null;
-        let pictures = this.props.pictureUrl ? this.props.pictureUrl.map(url => 'https://audryrose-dev.s3.amazonaws.com/'+url) :[];
-        const { photoIndex, isOpen } = this.state;
-        const imagesList = pictures.map((image, index) => <Grid.Column key={index}>
-            <Image src={image} onClick={() => this.setState({ isOpen: true, photoIndex: index })} />
-        </Grid.Column>)
+            accept="image/x-png,image/gif,image/jpeg" />) : null;
+        let pictures;
+        let imagesList;
+        if (this.props.pictureUrl) {
+            pictures = this.props.pictureUrl ? this.props.pictureUrl.map(url => 'https://audryrose-dev.s3.amazonaws.com/' + url) : [];
+            imagesList =
+                (<Grid columns={3} divided>
+                    {pictures.map((image, index) => <Grid.Column key={index}>
+                        <Image src={image} onClick={() => this.setState({ isOpen: true, photoSrc: image })} />
+                    </Grid.Column>)}
+                </Grid>)
+
+        }
+        if (this.props.returnObj) {
+            pictures = ['test'];
+            imagesList = this.props.returnObj.map((returnIn) =>
+                <Segment key={returnIn.objectId}>
+                    <Label>For Order ID: {returnIn.orderId}, Created at: {returnIn.createdAt}</Label>
+                    <Grid columns={3} divided key={returnIn.objectId}>
+                        {returnIn.pictureUrl.map((url, index) => {
+                            url = 'https://audryrose-dev.s3.amazonaws.com/' + url;
+                            return (
+                                <Grid.Column key={index}>
+                                    <Image src={url} onClick={() => this.setState({ isOpen: true, photoSrc: url })} />
+                                </Grid.Column>)
+                        })}
+                    </Grid>
+                </Segment>
+            )
+        }
+        if ((imagesList && imagesList.length == 0) || imagesList == undefined) {
+            imagesList =
+                (<Grid columns={3} divided>
+                    <Grid.Column>
+                        <Image src={'https://www.allwoodstairs.com/wp-content/uploads/2015/07/Photo_not_available-4-300x300.jpg'} />
+                    </Grid.Column>
+            </Grid>)
+        }
+        const { photoSrc, isOpen } = this.state;
         return (
             <Modal open={this.props.open} onClose={this.handleClose} size='large' closeIcon='close'>
                 <Modal.Content>
@@ -50,30 +75,19 @@ class ImagesModal extends Component {
                     <div>
                         {isOpen && (
                             <Lightbox
-                                mainSrc={pictures[photoIndex]}
-                                nextSrc={pictures[(photoIndex + 1) % pictures.length]}
-                                prevSrc={pictures[(photoIndex + pictures.length - 1) % pictures.length]}
+                                mainSrc={photoSrc}
                                 onCloseRequest={() => this.setState({ isOpen: false })}
-                                onMovePrevRequest={() =>
-                                    this.setState({
-                                        photoIndex: (photoIndex + pictures.length - 1) % pictures.length
-                                    })
-                                }
-                                onMoveNextRequest={() =>
-                                    this.setState({
-                                        photoIndex: (photoIndex + 1) % pictures.length
-                                    })
-                                }
+
                             />
                         )}
                     </div>
-                    <Grid columns={3} divided>
-                        {imagesList}
-                    </Grid>
-                   
+
+                    {imagesList}
+
+
                 </Modal.Content>
                 <Modal.Actions>
-                {addictureButton}
+                    {addictureButton}
                 </Modal.Actions>
             </Modal>
 
