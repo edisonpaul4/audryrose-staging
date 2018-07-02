@@ -112,7 +112,7 @@ const designers = (state = initialState, action) => {
           }
 
           designersArray.push(designer);
-          return designer;
+          //return designer;
         });
       }
 
