@@ -239,22 +239,26 @@ class ProductRow extends Component {
         if (shipment) {
             primaryButton = <Button icon='shipping' content='View' onClick={this.handleShipModalOpen} />;
             dropdownItems.push(<Dropdown.Item key='1' icon='add to cart' text='Order' onClick={this.handleShowOrderFormClick} />);
+            dropdownItems.push(<Dropdown.Item key='2' icon='shipping' text='Custom Shipment' onClick={this.handleShipModalOpen} />);
         } else if (product.shippable || product.partiallyShippable) {
             primaryButton = <Button icon='shipping' content='Custom Shipment' onClick={this.handleShipModalOpen} />;
             dropdownItems.push(<Dropdown.Item key='1' icon='add to cart' text='Order' onClick={this.handleShowOrderFormClick} />);
-            if (allowEditing) dropdownItems.push(<Dropdown.Item key='1' icon='edit' text='Edit Product' onClick={this.handleShowEditOrderProductFormClick} />);
+            if (allowEditing) dropdownItems.push(<Dropdown.Item key='2' icon='edit' text='Edit Product' onClick={this.handleShowEditOrderProductFormClick} />);
         } else if (product.resizable) {
             primaryButton = <Button icon='exchange' content='Resize' onClick={this.handleShowResizeFormClick} />;
             dropdownItems.push(<Dropdown.Item key='1' icon='add to cart' text='Order' onClick={this.handleShowOrderFormClick} />);
-            if (allowEditing) dropdownItems.push(<Dropdown.Item key='2' icon='edit' text='Edit Product' onClick={this.handleShowEditOrderProductFormClick} />);
+            dropdownItems.push(<Dropdown.Item key='2' icon='shipping' text='Custom Shipment' onClick={this.handleShipModalOpen} />);
+            if (allowEditing) dropdownItems.push(<Dropdown.Item key='3' icon='edit' text='Edit Product' onClick={this.handleShowEditOrderProductFormClick} />);
         } else if (product.variants || product.editedVariants) {
             primaryButton = <Button icon='add to cart' content='Order' onClick={this.handleShowOrderFormClick} />;
-            if (allowEditing) dropdownItems.push(<Dropdown.Item key='2' icon='edit' text='Edit Product' onClick={this.handleShowEditOrderProductFormClick} />);
+            dropdownItems.push(<Dropdown.Item key='2' icon='shipping' text='Custom Shipment' onClick={this.handleShipModalOpen} />);
+            if (allowEditing) dropdownItems.push(<Dropdown.Item key='3' icon='edit' text='Edit Product' onClick={this.handleShowEditOrderProductFormClick} />);
         } else if (product.isCustom) {
             if (allowEditing) primaryButton = <Button icon='edit' content='Edit Product' onClick={this.handleShowEditOrderProductFormClick} />;
             dropdownItems.push(<Dropdown.Item key='1' icon='add to cart' text='Order' onClick={this.handleShowOrderFormClick} />);
-        }
+            dropdownItems.push(<Dropdown.Item key='2' icon='shipping' text='Custom Shipment' onClick={this.handleShipModalOpen} />);
 
+        }
         return (
             <Table.Row>
                 <Table.Cell>{productLink}</Table.Cell>
