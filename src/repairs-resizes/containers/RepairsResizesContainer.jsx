@@ -137,7 +137,8 @@ class RepairsResizesContainer extends React.Component {
                                     <Table.HeaderCell>Order #</Table.HeaderCell>
                                     <Table.HeaderCell>Customer name</Table.HeaderCell>
                                     <Table.HeaderCell>Product name</Table.HeaderCell>
-                                    <Table.HeaderCell>Product image</Table.HeaderCell>
+                                    <Table.HeaderCell>Original size</Table.HeaderCell>
+                                    <Table.HeaderCell>New size</Table.HeaderCell>
                                     <Table.HeaderCell>Notes</Table.HeaderCell>
                                     <Table.HeaderCell>Status</Table.HeaderCell>
                                 </Table.Row>
@@ -166,6 +167,7 @@ class RepairsResizesContainer extends React.Component {
                                         updateResize={this.updateResizeSizeHandler.bind(this)}
                                         uploadRepairImageHandler={this.uploadRepairImageHandler.bind(this)}
                                         pictureUrl={returnObject.pictureUrl}
+                                        originalSize={returnObject.originalSize}
                                     />
                                 ))}
                             </Table.Body>

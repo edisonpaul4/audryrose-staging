@@ -95,7 +95,7 @@ class ReturnProductRow extends React.Component {
     render() {
         let { dateRequested, dateCheckedIn, orderId, customerName, productName,
             productImage, orderNotes, returnStatusId, returnType, returnTypeId,
-            shippoInfo, returnOptions, productId, returnId, pictureUrl, returnObj } = this.props;
+            shippoInfo, returnOptions, productId, returnId, pictureUrl, returnObj, originalSize } = this.props;
         let returnObject = [];
         returnObject.push(returnObj)
         const words = [
@@ -103,7 +103,7 @@ class ReturnProductRow extends React.Component {
             orderNotes.designerNotes !== null ? 'D' : null,
             orderNotes.internalNotes !== null ? 'I' : null,
         ].filter(w => w !== null).join(' - ');
-        productName = returnOptions[0] != undefined ? (productName + '  - Size:  ' + returnOptions[0].newSize + ' - ') : productName;
+        let newSize = returnOptions[0] != undefined ? returnOptions[0].newSize : '';
         const buttonEdit = (returnOptions[0] && returnOptions[0].newSize != undefined) ? (<Button icon onClick={() => this.setState({ editSizeModal: true })}>
             <Icon name='edit' />
         </Button>) : null;
@@ -164,12 +164,15 @@ class ReturnProductRow extends React.Component {
                 <Table.Cell>{orderId}</Table.Cell>
                 <Table.Cell>{customerName}</Table.Cell>
                 <Table.Cell>{productName}
-                    {buttonEdit}
-                    {modalEdit}
+                   
                 </Table.Cell>
                 <Table.Cell>
-                    <Image
-                        href={productImage} />
+                    {originalSize}
+                </Table.Cell>
+                <Table.Cell>
+                   {newSize}
+                   {buttonEdit}
+                    {modalEdit}
                 </Table.Cell>
 
                 <Table.Cell>
