@@ -535,6 +535,10 @@ const getProductStats = (token) => axios.post('/functions/getProductStats', {
     sessionToken: token
 });
 
+const getDesignerStats = (token) => axios.post('/functions/getDesignerStats', {
+    sessionToken: token
+});
+
 const getProductAndVariants = (token, productId) => axios.post('/functions/getProductAndVariants', {
     sessionToken: token,
     productId
@@ -624,6 +628,7 @@ export default {
     updateReturnStatus,
     sendReturnEmail,
     getProductStats,
+    getDesignerStats,
     getProductAndVariants,
     updateVendorOrderProduct,
     confirmVendorOrderEmail,

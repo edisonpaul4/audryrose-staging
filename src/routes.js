@@ -16,6 +16,7 @@ import { EmailSectionMainContainer, EmailSectionContainer, EmailReturnsContainer
 import { DesignersMainContainer, VendorOrdersContainer } from './designers/containers/containers';
 import { ReturnsMainContainer, RepairsResizesContainer } from './repairs-resizes/containers/containers';
 import { ProductsStatsContainer } from './products-stats/containers/containers';
+import { DesignerStatsContainer } from './products-stats/containers/containers';
 
 export function requireAuth(store) {
     return (nextState, replace) => {
@@ -171,6 +172,16 @@ const createRoutes = (store) => {
                 {
                     path: 'product-stats',
                     component: ProductsStatsContainer,
+                    onEnter: requireAuth(store)
+                },
+                {
+                    path: 'product-stats/product-stats',
+                    component: ProductsStatsContainer,
+                    onEnter: requireAuth(store)
+                },
+                {
+                    path: 'product-stats/designer-stats',
+                    component: DesignerStatsContainer,
                     onEnter: requireAuth(store)
                 },
                 {

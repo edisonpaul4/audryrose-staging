@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { Grid, Segment, Table, Icon } from 'semantic-ui-react';
 import { Link } from 'react-router';
 import { ImagesModal } from '../components/components';
+import { StatsNav } from '../components/components';
 import * as productStatsActions from '../actions';
 
 import NotificationSystem from 'react-notification-system';
@@ -123,6 +124,7 @@ class ProductsStatsContainer extends React.Component {
         return (
             <Grid.Column width='16'>
                 <NotificationSystem ref="notificationSystem" />
+                <StatsNav key={this.props.location.pathname} pathname={this.props.location.pathname} query={this.props.location.query} />
                 <Grid.Row>
                     <Grid.Column width="16">
                         <Segment style={styles.statsContainer} loading={this.props.productStats.isLoadingProducts && this.props.productStats.stats.length === 0}>
