@@ -2,7 +2,9 @@ const initialState = {
   isLoadingProducts: false,
   stats: [],
   errors: [],
-  pictureUrl:[]
+  pictureUrl:[],
+  isLoadingDesigners: false,
+  designerStats : [],
 };
 
 const returns = (state = initialState, action) => {
@@ -38,6 +40,20 @@ const returns = (state = initialState, action) => {
         isLoadingProducts: false,
         errors: [...state.errors, { type: 'CHECK_IN_RETURN_FAILURE', message: action.err.response.data.error.message }]
       };
+      
+      case 'GET_DESIGNER_STATS_REQUEST':
+        return {
+          ...state,
+          isLoadingDesigners: true
+        };
+
+      case 'GET_DESIGNER_STATS_SUCCESS':
+        return {
+          ...state,
+          isLoadingDesigners: false,
+          designerStats: action.res
+        };
+        
     default:
       return state;
   }

@@ -31,7 +31,7 @@ class Navigation extends Component {
 
 
                 <Menu.Item href='/product-stats' active={pathName.includes('/product-stats')} link>
-                    Product stats
+                    Stats
 					</Menu.Item>
 
                 <Menu.Item href='/repairs-resizes/all' active={pathName.includes('/repairs-resizes')} link>

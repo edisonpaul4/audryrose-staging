@@ -14,3 +14,11 @@ export function getPicturesRepairsByProduct(productId, token) {
       .then(r => r.data.result)
   }
 }
+
+export function getDesignerStats (token) {
+  return {
+    types: ['GET_DESIGNER_STATS_REQUEST', 'GET_DESIGNER_STATS_SUCCESS', 'GET_DESIGNER_STATS_FAILURE'],
+    promise: api.getDesignerStats(token)
+      .then(r => r.data.result)
+  }
+}
