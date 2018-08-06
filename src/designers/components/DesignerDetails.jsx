@@ -107,7 +107,7 @@ class ProductRow extends Component {
         const productName = variant.designerProductName ? variant.designerProductName : variant.productName ? variant.productName : '';
         const productUrl = '/products/search?q=' + variant.productId;
         const productLink = <a href={productUrl}>{productName}</a>;
-        const wholesalePrice = vendorOrderVariant.variant.adjustedWholesalePrice ? Number(vendorOrderVariant.variant.adjustedWholesalePrice).toFixed(2) : "";
+        const wholesalePrice = vendorOrderVariant.variant.adjustedWholesalePrice ? Number(vendorOrderVariant.variant.adjustedWholesalePrice).toFixed(0) : "";
         // Create an array of other options values
         let options = [];
         if (variant) {
