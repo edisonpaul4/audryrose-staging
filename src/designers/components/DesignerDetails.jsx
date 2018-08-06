@@ -107,6 +107,7 @@ class ProductRow extends Component {
         const productName = variant.designerProductName ? variant.designerProductName : variant.productName ? variant.productName : '';
         const productUrl = '/products/search?q=' + variant.productId;
         const productLink = <a href={productUrl}>{productName}</a>;
+        const wholesalePrice = vendorOrderVariant.variant.adjustedWholesalePrice ? Number(vendorOrderVariant.variant.adjustedWholesalePrice).toFixed(2) : "";
         // Create an array of other options values
         let options = [];
         if (variant) {
@@ -142,7 +143,7 @@ class ProductRow extends Component {
                 <Table.Cell>
                     {options.map((option, i) => <span key={i}>{option}<br /></span>)}
                 </Table.Cell>
-
+                {this.props.subpage === 'sent' ? <Table.Cell>{wholesalePrice}</Table.Cell> : null}
                 {this.props.status !== 'Completed' ? <Table.Cell>{inventory}</Table.Cell> : null}
 
                 {this.props.status === 'Sent' || this.props.status === 'Pending' ? (
@@ -341,6 +342,7 @@ class VendorOrder extends Component {
                         vendor={scope.props.vendor}
                         vendorOrder={scope.props.order}
                         status={scope.props.status}
+                        subpage = {scope.props.subpage}
                         vendorOrderVariant={vendorOrderVariant}
                         key={vendorOrderVariant.objectId}
                         handleVariantEdited={scope.handleVariantEdited}
@@ -439,8 +441,9 @@ class VendorOrder extends Component {
                     <Table.Header>
                         <Table.Row>
                             <Table.HeaderCell>Product</Table.HeaderCell>
-                            <Table.HeaderCell>Options</Table.HeaderCell>
-
+                            <Table.HeaderCell>Options</Table.HeaderCell> 
+                            {this.props.subpage === 'sent' ? (<Table.HeaderCell>Wholesale Price</Table.HeaderCell>) : null}
+                          
                             {this.props.status !== 'Completed' ? <Table.HeaderCell>ACH OH</Table.HeaderCell> : null}
 
                             {this.props.status === 'Sent' || this.props.status === 'Pending' ? (
@@ -523,6 +526,7 @@ class DesignerDetails extends Component {
                         vendor={vendorOrder.vendor}
                         isSaving={this.props.isSaving}
                         key={i}
+                        subpage = {subpage}
                         handleSaveVendorOrder={this.handleSaveVendorOrder}
                         handleSendVendorOrder={this.handleSendVendorOrder}
                         handleCompleteVendorOrder={this.props.handleCompleteVendorOrder}
