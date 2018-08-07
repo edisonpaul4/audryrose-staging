@@ -30,6 +30,7 @@ class Orders extends Component {
             //       filterData: null,
             updatedOrders: null,
             expandedOrders: [],
+            expandedAll: true,
             isReloading: [],
             isGeneratingFile: false,
             tabCounts: null,
@@ -63,6 +64,7 @@ class Orders extends Component {
         this.handleOrderProductEditClick = this.handleOrderProductEditClick.bind(this);
         this.handleOrderProductEditClose = this.handleOrderProductEditClose.bind(this);
         this.handleOrderProductSave = this.handleOrderProductSave.bind(this);
+        this.handleExpandAll = this.handleExpandAll.bind(this);
     }
 
     componentDidMount() {
@@ -82,6 +84,23 @@ class Orders extends Component {
         this.setState({
             expandedOrders: currentlyExpanded
         });
+        
+    }
+    
+    handleExpandAll() {
+      let expandedRows;
+      let expandAll = this.state.expandedAll;
+      if (this.state.expandedAll) {
+        expandedRows = [];
+        expandAll = false;
+      } else {
+        expandedRows = this.state.orders.map(function (order) { return order.orderId});
+        expandAll = true;
+      }
+      this.setState({
+        expandedOrders : expandedRows, 
+        expandedAll : expandAll
+      });
     }
 
     handleCheckboxClick(orderId) {
@@ -443,6 +462,12 @@ class Orders extends Component {
             orderProductEditFormData.miscCodes = nextProps.orderProductEditFormData.miscCodes;
             orderProductEditFormIsLoading = false;
         }
+        
+        let expandedAll = this.state.expandedAll;
+        if (expandedAll) {
+          expandedOrders = orders.map(function(order){return order.orderId});
+        }
+        
 
         this.setState({
             subpage: nextProps.router.params.subpage,
@@ -462,7 +487,9 @@ class Orders extends Component {
             product: product,
             productOrderData: productOrderData,
             orderProductEditFormData: orderProductEditFormData,
-            orderProductEditFormIsLoading: orderProductEditFormIsLoading
+            orderProductEditFormIsLoading: orderProductEditFormIsLoading,
+            expandedAll: expandedAll,
+            expandedOrders : expandedOrders
         });
 
         if (nextPage !== this.state.page || nextProps.router.params.subpage !== this.state.subpage) {
@@ -651,7 +678,7 @@ class Orders extends Component {
             <Grid.Column width='16'>
                 <NotificationSystem ref="notificationSystem" />
 
-                <OrdersNav key={this.props.location.pathname} pathname={this.props.location.pathname} query={this.props.location.query} tabCounts={tabCounts} files={files} />
+                <OrdersNav key={this.props.location.pathname} pathname={this.props.location.pathname} query={this.props.location.query} tabCounts={tabCounts} files={files} expanded={this.state.expandedAll} handleToggleClick={this.handleExpandAll} />
                 {searchHeader}
                 {error}
                 <Dimmer active={isLoadingOrders} inverted>

@@ -1,14 +1,16 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router';
-import { Menu, Label, Form, Dropdown } from 'semantic-ui-react';
+import { Menu, Label, Form, Dropdown, Button } from 'semantic-ui-react';
 import moment from 'moment';
 
 class OrdersNav extends Component {
+    
     render() {
         const pathName = this.props.pathname;
         const search = this.props.query.q ? this.props.query.q : '';
         const tabCounts = this.props.tabCounts;
-
+        let expanded = this.props.expanded;
+        let expandedIcon = expanded ? 'minus' : 'plus'
         // Display files list
         let files = [];
         if (this.props.files) {
@@ -97,6 +99,9 @@ class OrdersNav extends Component {
                                 {files}
                             </Dropdown.Menu>
                         </Dropdown>
+                    </Menu.Item>
+                    <Menu.Item fitted className='subnav-files'>
+                        <Button circular icon={expandedIcon} basic size='mini' onClick={() => this.props.handleToggleClick()}/>
                     </Menu.Item>
                     <Menu.Item fitted className='subnav-search'>
                         <Form action={searchUrl} method='get' size='small'>
