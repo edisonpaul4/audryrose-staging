@@ -19,6 +19,12 @@ class StatsNav extends Component {
                     active={pathName === "/product-stats/designer-stats"}
                     link
                     content="Designer Stats" />
+                <Menu.Item
+                    as={Link}
+                    to="/product-stats/products-by-designer"
+                    active={pathName === "/product-stats/products-by-designer"}
+                    link
+                    content="Products by Designer" />
             </Menu>
         );
     }

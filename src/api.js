@@ -321,6 +321,19 @@ export const getDesigners = (token, subpage, page, search) => axios.post('/funct
     }
 );
 
+export const getDesignersName = (token) => axios.post('/functions/getDesignersName',
+    {
+        sessionToken: token
+    }
+);
+
+export const getProductStatsByDesigner = (token, designerId) => axios.post('/functions/getProductStatsByDesigner',
+    {
+        sessionToken: token,
+        designerId: designerId
+    }
+);
+
 export const saveVendor = (token, data) => Parse.Cloud.run('saveVendor',
     {
         sessionToken: token,
@@ -600,7 +613,7 @@ export default {
     addToVendorOrder,
     getBundleFormData,
     productBundleSave,
-    getDesigners,
+    getDesignersName,
     saveVendor,
     saveVendorOrder,
     sendVendorOrder,
@@ -629,6 +642,8 @@ export default {
     sendReturnEmail,
     getProductStats,
     getDesignerStats,
+    getProductStatsByDesigner,
+    getDesigners,
     getProductAndVariants,
     updateVendorOrderProduct,
     confirmVendorOrderEmail,

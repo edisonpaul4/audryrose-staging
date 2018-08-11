@@ -5,6 +5,10 @@ const initialState = {
   pictureUrl:[],
   isLoadingDesigners: false,
   designerStats : [],
+  productsStatsByDesigner: [],
+  isLoadingProductsStatsByDesigner : false,
+  isLoadingDesignersName: false,
+  designers: []
 };
 
 const returns = (state = initialState, action) => {
@@ -53,6 +57,32 @@ const returns = (state = initialState, action) => {
           isLoadingDesigners: false,
           designerStats: action.res
         };
+        
+      case 'GET_PRODUCTS_BY_DESIGNER_STATS_REQUEST':
+        return {
+          ...state,
+          isLoadingProductsStatsByDesigner: true
+        };
+
+      case 'GET_PRODUCTS_BY_DESIGNER_STATS_SUCCESS':
+        return {
+          ...state,
+          isLoadingProductsStatsByDesigner: false,
+          productsStatsByDesigner: action.res
+        };
+        
+        case 'GET_DESIGNERS_REQUEST':
+          return {
+            ...state,
+            isLoadingDesignersName: true
+          };
+
+        case 'GET_DESIGNERS_SUCCESS':
+          return {
+            ...state,
+            isLoadingDesignersName: false,
+            designers: action.res
+          };
         
     default:
       return state;
