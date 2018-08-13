@@ -17,6 +17,7 @@ import { DesignersMainContainer, VendorOrdersContainer } from './designers/conta
 import { ReturnsMainContainer, RepairsResizesContainer } from './repairs-resizes/containers/containers';
 import { ProductsStatsContainer } from './products-stats/containers/containers';
 import { DesignerStatsContainer } from './products-stats/containers/containers';
+import { ProductsByDesignerStatsContainer } from './products-stats/containers/containers';
 
 export function requireAuth(store) {
     return (nextState, replace) => {
@@ -182,6 +183,11 @@ const createRoutes = (store) => {
                 {
                     path: 'product-stats/designer-stats',
                     component: DesignerStatsContainer,
+                    onEnter: requireAuth(store)
+                },
+                {
+                    path: 'product-stats/products-by-designer',
+                    component: ProductsByDesignerStatsContainer,
                     onEnter: requireAuth(store)
                 },
                 {

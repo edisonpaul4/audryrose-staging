@@ -22,3 +22,19 @@ export function getDesignerStats (token) {
       .then(r => r.data.result)
   }
 }
+
+export function getProductStatsByDesigner (designerId, token) {
+  return {
+    types: ['GET_PRODUCTS_BY_DESIGNER_STATS_REQUEST', 'GET_PRODUCTS_BY_DESIGNER_STATS_SUCCESS', 'GET_PRODUCTS_BY_DESIGNER_STATS_FAILURE'],
+    promise: api.getProductStatsByDesigner(token, designerId)
+      .then(r => r.data.result)
+  }
+}
+
+export function getDesigners (token) {
+  return {
+    types: ['GET_DESIGNERS_REQUEST', 'GET_DESIGNERS_SUCCESS', 'GET_DESIGNERS_FAILURE'],
+    promise: api.getDesignersName(token)
+      .then(r => r.data.result)
+  }
+}
