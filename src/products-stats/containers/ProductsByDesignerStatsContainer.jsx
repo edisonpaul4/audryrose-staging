@@ -184,6 +184,7 @@ class ProductsByDesignerStatsContainer extends React.Component {
                       </Table>
                     </Segment>
                   </Grid.Column>
+                  {this.state.designerIdSelected == null && <center><p style={styles.textStyle}> Choose a Designer... </p></center>}
               </Grid.Row>
           </Grid.Column>
       );
@@ -195,6 +196,9 @@ const styles = {
         maxHeight: '85vh',
         overflowY: 'scroll',
         padding: 0
+    },
+    textStyle : {
+      padding:10
     }
 }
 
