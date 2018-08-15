@@ -317,9 +317,13 @@ class OrderDetails extends Component {
         this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
         this.handleOrderProductEditClick = this.handleOrderProductEditClick.bind(this);
         this.handleCustomSize = this.handleCustomSize.bind(this);
+        this.handleRemoveNeedsAction = this.handleRemoveNeedsAction.bind(this);
     }
     handleReloadClick(orderId) {
         this.props.handleReloadClick(orderId);
+    }
+    handleRemoveNeedsAction(orderId) {
+        this.props.handleRemoveNeedsAction(orderId);
     }
     handleCreateShipments() {
         this.props.handleCreateShipments(this.state.shippableGroups);
@@ -633,6 +637,14 @@ class OrderDetails extends Component {
                             disabled={this.props.isReloading}
                             onClick={() => this.handleReloadClick(this.props.data.orderId)}
                         />
+                        {this.props.subpage === 'needs-action' && 
+                          <Button circular compact basic size='tiny'
+                            icon='delete'
+                            content='Remove From Tab'
+                            disabled={this.props.isReloading}
+                            onClick={() => this.handleRemoveNeedsAction(this.props.data.orderId)}
+                          
+                        />}
 
                         {this.state.products.findIndex(p => p.quantity_shipped && p.quantity_shipped > 0) !== -1 ? (
                             <Popup

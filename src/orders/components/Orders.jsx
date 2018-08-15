@@ -51,6 +51,7 @@ class Orders extends Component {
         this.handleCheckboxClick = this.handleCheckboxClick.bind(this);
         this.handleSelectAllClick = this.handleSelectAllClick.bind(this);
         this.handleReloadClick = this.handleReloadClick.bind(this);
+        this.handleRemoveNeedsAction = this.handleRemoveNeedsAction.bind(this);
         this.handleCreateShipments = this.handleCreateShipments.bind(this);
         this.handleShipSelectedClick = this.handleShipSelectedClick.bind(this);
         this.handlePrintSelectedClick = this.handlePrintSelectedClick.bind(this);
@@ -182,6 +183,10 @@ class Orders extends Component {
             isReloading: currentlyReloading
         });
         this.props.reloadOrder(this.props.token, orderId);
+    }
+    
+    handleRemoveNeedsAction (orderId) {
+        this.props.removeOrderFromNeedsAction(this.props.token, {orderId:orderId, removedFromNeedsAction:true});
     }
 
     handleSortClick(sort) {
@@ -578,6 +583,7 @@ class Orders extends Component {
                             key={`${order.orderId}-2`}
                             isReloading={isReloading}
                             handleReloadClick={scope.handleReloadClick}
+                            handleRemoveNeedsAction={scope.handleRemoveNeedsAction}
                             handleCreateShipments={scope.handleCreateShipments}
                             handleAddToVendorOrder={scope.handleAddToVendorOrder}
                             handleCreateResize={scope.handleCreateResize}
