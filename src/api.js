@@ -327,10 +327,12 @@ export const getDesignersName = (token) => axios.post('/functions/getDesignersNa
     }
 );
 
-export const getProductStatsByDesigner = (token, designerId) => axios.post('/functions/getProductStatsByDesigner',
+export const getProductStatsByDesigner = (token, designerId, date_from, date_to) => axios.post('/functions/getProductStatsByDesigner',
     {
         sessionToken: token,
-        designerId: designerId
+        designerId: designerId,
+        date_from: date_from,
+        date_to: date_to
     }
 );
 

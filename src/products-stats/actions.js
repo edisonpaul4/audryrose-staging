@@ -23,10 +23,10 @@ export function getDesignerStats (token) {
   }
 }
 
-export function getProductStatsByDesigner (designerId, token) {
+export function getProductStatsByDesigner (designerId, date_from, date_to, token) {
   return {
     types: ['GET_PRODUCTS_BY_DESIGNER_STATS_REQUEST', 'GET_PRODUCTS_BY_DESIGNER_STATS_SUCCESS', 'GET_PRODUCTS_BY_DESIGNER_STATS_FAILURE'],
-    promise: api.getProductStatsByDesigner(token, designerId)
+    promise: api.getProductStatsByDesigner(token, designerId, date_from, date_to)
       .then(r => r.data.result)
   }
 }

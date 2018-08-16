@@ -4,6 +4,8 @@ import { Grid, Segment, Table, Icon, Dropdown } from 'semantic-ui-react';
 import { Link } from 'react-router';
 import { ImagesModal } from '../components/components';
 import { StatsNav } from '../components/components';
+import { SingleDatePicker } from 'react-dates';
+import moment from 'moment';
 import * as productStatsActions from '../actions';
 
 import NotificationSystem from 'react-notification-system';
@@ -15,9 +17,14 @@ class ProductsByDesignerStatsContainer extends React.Component {
             isModalOpen: false,
             focusedProductId: null,
             focusedProductName: '',
-            designerIdSelected: null
+            designerIdSelected: null,
+            dateFromSelected: null,
+            dateFromFocused: false,
+            dateToSelected: null,
+            dateToFocused: false
         }
         this.handleDesignerChange = this.handleDesignerChange.bind(this);
+        this.handleDateFromChange = this.handleDateFromChange.bind(this);
     }
 
     componentWillMount() {
@@ -27,7 +34,28 @@ class ProductsByDesignerStatsContainer extends React.Component {
     handleDesignerChange (event, data) {
       console.log("on change follower", data.value)
       this.setState({designerIdSelected: data.value});
-      this.props.getProductStatsByDesigner(data.value);
+      this.props.getProductStatsByDesigner(data.value, this.state.dateFromSelected, this.state.dateToSelected);
+    }
+    
+    handleDateFromChange(data) {
+      var date = data.date ? moment(data.date) : null;
+      this.setState({
+          dateFromSelected: date
+      });
+      
+      if (this.state.designerIdSelected !== null) {
+        this.props.getProductStatsByDesigner(this.state.designerIdSelected, data.date, this.state.dateToSelected);
+      }
+    }
+    
+    handleDateToChange(data) {
+      var date = data.date ? moment(data.date) : null;
+      this.setState({
+          dateToSelected: date
+      });
+      if (this.state.designerIdSelected !== null) {
+        this.props.getProductStatsByDesigner(this.state.designerIdSelected, this.state.dateFromSelected, data.date);
+      }
     }
     
     sortedProducts(stats, type) {
@@ -120,9 +148,36 @@ class ProductsByDesignerStatsContainer extends React.Component {
                   text: designer.name
                 }
                 })
-              } loading={this.props.productStats.isLoadingDesignersName} onChange={this.handleDesignerChange}/>
-              <Grid.Row style={{"padding-top":10}}>
-                  <Grid.Column width="16" padding="20">
+              } loading={this.props.productStats.isLoadingDesignersName} onChange={this.handleDesignerChange}
+              />
+              <div style={styles.dateStyle}>
+                <SingleDatePicker
+                    date={this.state.dateFromSelected !== null ? moment(this.state.dateFromSelected) : null}
+                    placeholder={"Choose Date From..."}
+                    numberOfMonths={1}
+                    isOutsideRange = {() => false}
+                    hideKeyboardShortcutsPanel={true}
+                    showClearDate={true}
+                    onDateChange={date => this.handleDateFromChange({date})}
+                    focused={this.state.dateFromFocused}
+                    onFocusChange={({ focused }) => this.setState({ dateFromFocused: focused })}
+                    disabled={this.props.productStats.isLoadingProductsStatsByDesigner}
+                />
+                <SingleDatePicker
+                    date={this.state.dateToSelected !== null ? moment(this.state.dateToSelected) : null}
+                    placeholder={"Choose Date To..."}
+                    numberOfMonths={1}
+                    isOutsideRange = {() => false}
+                    hideKeyboardShortcutsPanel={true}
+                    showClearDate={true}
+                    onDateChange={date => this.handleDateToChange({date})}
+                    focused={this.state.dateToFocused}
+                    onFocusChange={({ focused }) => this.setState({ dateToFocused: focused })}
+                    disabled={this.props.productStats.isLoadingProductsStatsByDesigner}
+                />
+              </div>
+              <Grid.Row style={{"paddingTop":10}}>
+                  <Grid.Column width="16">
                     <Segment style={styles.statsContainer} loading={this.props.productStats.isLoadingProductsStatsByDesigner}>
                       <Table celled>
                           <Table.Header>
@@ -198,7 +253,10 @@ const styles = {
         padding: 0
     },
     textStyle : {
-      padding:10
+      padding:10,
+    },
+    dateStyle : {
+      paddingTop:10
     }
 }
 
