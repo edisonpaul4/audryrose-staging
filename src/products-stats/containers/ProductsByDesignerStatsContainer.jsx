@@ -140,16 +140,6 @@ class ProductsByDesignerStatsContainer extends React.Component {
           <Grid.Column width='16'>
               <NotificationSystem ref="notificationSystem" />
               <StatsNav key={this.props.location.pathname} pathname={this.props.location.pathname} query={this.props.location.query} />
-              <Dropdown placeholder="Select Designer" fluid search selection options = {this.props.productStats.designers.map(designer => {
-                return {
-                  key:designer.designerId,
-                  value: designer.designerId,
-                  flag: designer.designerId,
-                  text: designer.name
-                }
-                })
-              } loading={this.props.productStats.isLoadingDesignersName} onChange={this.handleDesignerChange}
-              />
               <div style={styles.dateStyle}>
                 <SingleDatePicker
                     date={this.state.dateFromSelected !== null ? moment(this.state.dateFromSelected) : null}
@@ -176,6 +166,16 @@ class ProductsByDesignerStatsContainer extends React.Component {
                     disabled={this.props.productStats.isLoadingProductsStatsByDesigner}
                 />
               </div>
+              <Dropdown placeholder="Select Designer" fluid search selection options = {this.props.productStats.designers.map(designer => {
+                return {
+                  key:designer.designerId,
+                  value: designer.designerId,
+                  flag: designer.designerId,
+                  text: designer.name
+                }
+                })
+              } loading={this.props.productStats.isLoadingDesignersName} onChange={this.handleDesignerChange}
+              />
               <Grid.Row style={{"paddingTop":10}}>
                   <Grid.Column width="16">
                     <Segment style={styles.statsContainer} loading={this.props.productStats.isLoadingProductsStatsByDesigner}>
@@ -256,7 +256,7 @@ const styles = {
       padding:10,
     },
     dateStyle : {
-      paddingTop:10
+      paddingBottom:10
     }
 }
 
