@@ -77,6 +77,13 @@ export function updateVendorOrderProduct(token, options) {
     };
 }
 
+export function addCustomProductToVendorOrder(token, vendorOrderNumber, options) {
+    return {
+        types: ['DESIGNERS_REQUEST', 'DESIGNERS_SUCCESS', 'DESIGNERS_FAILURE'],
+        promise: api.addCustomProductToVendorOrder(token, vendorOrderNumber, options).then(r => r.data.result)
+    };
+}
+
 export function confirmVendorOrderEmail(options) {
     return {
         types: ['CONFIRM_PRODUCT_VENDOR_ORDER_EMAIL_REQUEST', 'CONFIRM_PRODUCT_VENDOR_ORDER_EMAIL_SUCCESS', 'CONFIRM_PRODUCT_VENDOR_ORDER_EMAIL_FAIL'],

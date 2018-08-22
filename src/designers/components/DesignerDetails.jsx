@@ -562,51 +562,7 @@ class VendorOrder extends Component {
                             (sizeA - sizeB);
                 }))
         }
-        //TESTING
-        /*
-        let custom = [
-          {
-            objectId:123,
-            internalNotes:'test',
-            notes: 'test',
-            options: 'color:red',
-            units: 2,
-            productName: 'name'
-          },
-          {
-            objectId:124,
-            internalNotes:'test',
-            notes: 'test',
-            options: 'color:red',
-            units: 2,
-            productName: 'name'
-          },
-          {
-            objectId:125,
-            internalNotes:'test',
-            notes: 'test',
-            options: 'color:red',
-            units: 2,
-            productName: 'name'
-          }
-        ]
-        let customOrder = [];/*
-        if (scope.props.subpage == 'pending') {
-          custom.map(function (vendorOrderVariant) {
-            customOrder.push(
-                <CustomProductRow
-                    vendor={scope.props.vendor}
-                    vendorOrder={scope.props.order}
-                    status={scope.props.status}
-                    subpage = {scope.props.subpage}
-                    customVendorOrderVariant={vendorOrderVariant}
-                    key={vendorOrderVariant.objectId}
-                    handleVariantEdited={scope.handleVariantEdited}
-                    isSaving={scope.props.isSaving}
-                    handleDeleteProductFromVendorOrder={productObjectId => scope.handleDeleteProductFromVendorOrder(productObjectId)} />
-            );
-          })
-        }*/
+        
         let customOrder = [];
         if (order && order.customVendorOrderVariants && order.customVendorOrderVariants.length > 0 && scope.props.subpage == 'pending') {
           order.customVendorOrderVariants.map(function (vendorOrderVariant) {
@@ -696,6 +652,7 @@ class VendorOrder extends Component {
                             <CustomProductModal
                               vendorName={this.props.vendor.name}
                               style={{ cursor: 'pointer', float: 'right' }}
+                              vendorOrderNumber={this.props.order.vendorOrderNumber}
                             />
                     ) : null}
                     <Confirm

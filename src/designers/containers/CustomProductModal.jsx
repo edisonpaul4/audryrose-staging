@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Icon, Modal, Form, Button } from 'semantic-ui-react';
 import { getProductAndVariants } from '../../products/actions';
-import { updateVendorOrderProduct } from '../actions';
+import { addCustomProductToVendorOrder } from '../actions';
 
 class CustomProductModal extends React.Component {
   constructor(props) {
@@ -29,8 +29,8 @@ class CustomProductModal extends React.Component {
     };
     
     this.setState({ modalOpen: false });
-    console.log(options);
-    //this.props.updateVendorOrderProduct(this.props.token, options);
+    
+    this.props.addCustomProductToVendorOrder(this.props.token, this.props.vendorOrderNumber, options);
   }
   
   render() {
@@ -123,7 +123,7 @@ const state = state => ({
 
 const actions = {
   getProductAndVariants,
-  updateVendorOrderProduct
+  addCustomProductToVendorOrder
 };
 
 export default connect(state, actions)(CustomProductModal);
