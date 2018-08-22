@@ -50,7 +50,7 @@ class OrdersNav extends Component {
                     to='/orders/needs-action'
                     active={pathName === '/orders/needs-action'}
                     link>
-                    Needs Action
+                    Needs Ordering
             <Label horizontal circular size='tiny' color={tabCounts && tabCounts.needsAction > 0 ? 'olive' : null}>{tabCounts ? tabCounts.needsAction : null}</Label>
                 </Menu.Item>
                 <Menu.Item

@@ -70,6 +70,13 @@ export function saveOrder(token, data) {
   }
 }
 
+export function removeOrderFromNeedsAction(token, data) {
+  return {
+    types: ['ORDER_REMOVE_REQUEST', 'ORDER_REMOVE_SUCCESS', 'ORDER_REMOVE_FAILURE'],
+    promise: api.saveOrder(token, data)
+  }
+}
+
 export function saveOrderProduct(token, data) {
   return {
     types: ['ORDER_PRODUCT_SAVE_REQUEST', 'ORDER_PRODUCT_SAVE_SUCCESS', 'ORDER_PRODUCT_SAVE_FAILURE'],

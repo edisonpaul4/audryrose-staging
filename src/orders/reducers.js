@@ -69,7 +69,14 @@ export const orders = (state = initialState, action) => {
     case 'CREATE_SHIPMENTS_SUCCESS':
       if (action.res.timeout) return { ...state, timeout: action.res.timeout };
       return {
-        ...state,
+        ...state,/*
+        orders : state.orders.filter(function(order) {
+          if (order.orderId !== action.res.updatedOrders[0].get('orderId')) {
+            return true
+          } else {
+            return false
+          }
+        }),*/
         updatedOrders: [
           ...state.updatedOrders,
           ...action.res.updatedOrders
@@ -221,10 +228,33 @@ export const orders = (state = initialState, action) => {
         ]
       };
 
-    case 'ORDER_SAVE_FAILURE':
+    case 'ORDER_REMOVE_FAILURE':
       return {
         ...state
       }
+      
+      case 'ORDER_REMOVE_REQUEST':
+        return {
+          ...state
+        }
+
+      case 'ORDER_REMOVE_SUCCESS':
+        if (action.res.timeout) return { ...state, timeout: action.res.timeout };
+        return {
+          ...state,
+          orders : state.orders.filter(function(order) {
+            if (order.orderId !== action.res.updatedOrders[0].get('orderId')) {
+              return true
+            } else {
+              return false
+            }
+          })
+        };
+
+      case 'ORDER_SAVE_FAILURE':
+        return {
+          ...state
+        }
 
     case 'ORDER_PRODUCT_SAVE_REQUEST':
       return {
