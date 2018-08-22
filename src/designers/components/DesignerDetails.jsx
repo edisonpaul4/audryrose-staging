@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Table, Button, Dimmer, Segment, Loader, Header, Form, Input, TextArea, Divider, Label, Icon, Confirm, Message } from 'semantic-ui-react';
 import classNames from 'classnames';
 import moment from 'moment';
-import { ProductToOrderEditModal } from '../containers/containers'
+import { ProductToOrderEditModal, CustomProductModal } from '../containers/containers'
 
 class ProductRow extends Component {
     constructor(props) {
@@ -691,11 +691,19 @@ class VendorOrder extends Component {
                         order.emailConfirmed == 'true'?
                         <Label positive>Email Confirmed</Label> : <Label positive>Email Unconfirmed</Label>
                     ) : null)}
+                    
+                    {scope.props.subpage === 'pending' ? (
+                            <CustomProductModal
+                              vendorName={this.props.vendor.name}
+                              style={{ cursor: 'pointer', float: 'right' }}
+                            />
+                    ) : null}
                     <Confirm
                         open={this.state.completeOrderConfirm}
                         content="Are you sure you want to delete this incoming order?"
                         onConfirm={() => this.handleCompleteVendorOrder(this.props.order.vendorOrderNumber)}
                         onCancel={() => this.setState({ completeOrderConfirm: false })} />
+                      
                 </Header>
                 <Table className='order-products-table' basic='very' compact size='small' columns={6}>
                     <Table.Header>
