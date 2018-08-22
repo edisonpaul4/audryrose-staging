@@ -225,6 +225,172 @@ class ProductRow extends Component {
     }
 }
 
+class CustomProductRow extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            units: this.props.customVendorOrderVariant.units ? parseFloat(this.props.customVendorOrderVariant.units) : 0,
+            notes: this.props.customVendorOrderVariant.notes ? this.props.customVendorOrderVariant.notes : '',
+            received: this.props.customVendorOrderVariant.received ? parseFloat(this.props.customVendorOrderVariant.received) : 0,
+            options : this.props.customVendorOrderVariant.options ? this.props.customVendorOrderVariant.options : '',
+            productName: this.props.customVendorOrderVariant.productName ? this.props.customVendorOrderVariant.productName : '',
+            variantSaved: false,
+            isSaving: false,
+            hoverRow: false,
+            deleteProductConfirm: false,
+            internalNotes: this.props.customVendorOrderVariant.internalNotes ? this.props.customVendorOrderVariant.internalNotes : ''
+        };
+        this.handleUnitsChange = this.handleUnitsChange.bind(this);
+        this.handleNotesChange = this.handleNotesChange.bind(this);
+        this.handleProductNameChange = this.handleProductNameChange.bind(this);
+        this.handleInternalNotesChange = this.handleInternalNotesChange.bind(this);
+        this.handleOptionsChange = this.handleOptionsChange.bind(this);
+        //this.handleReceivedChange = this.handleReceivedChange.bind(this);
+        this.handleCancelVariantClick = this.handleCancelVariantClick.bind(this);
+    }
+    
+    handleUnitsChange(e, { value }) {
+        this.setState({
+            units: parseFloat(value),
+            variantSaved: false
+        });
+        this.props.handleVariantEdited({ objectId: this.props.customVendorOrderVariant.objectId, productName: this.state.productName, options: this.state.options, units: parseFloat(value), notes: this.state.notes, received: this.state.received, internalNotes: this.state.internalNotes });
+    }
+    handleNotesChange(e, { value }) {
+        this.setState({
+            notes: value,
+            variantSaved: false
+        });
+        this.props.handleVariantEdited({ objectId: this.props.customVendorOrderVariant.objectId, productName: this.state.productName, options: this.state.options, units: this.state.units, notes: value, received: this.state.received, internalNotes: this.state.internalNotes });
+    }
+    
+    handleProductNameChange(e, { value }) {
+        this.setState({
+            productName: value,
+            variantSaved: false
+        });
+        this.props.handleVariantEdited({ objectId: this.props.customVendorOrderVariant.objectId, productName: value, options: this.state.options, units: this.state.units, notes: this.state.notes, received: this.state.received, internalNotes: this.state.internalNotes });
+    }
+    
+    handleInternalNotesChange(e, { value }) {
+        this.setState({
+            internalNotes: value,
+            variantSaved: false
+        });
+        this.props.handleVariantEdited({ objectId: this.props.customVendorOrderVariant.objectId, productName: this.state.productName, options: this.state.options, units: this.state.units, notes: this.state.notes, received: this.state.received, internalNotes: value });
+    }
+    
+    handleOptionsChange (e, { value }) {
+        this.setState({
+            options: value,
+            variantSaved: false
+        });
+        this.props.handleVariantEdited({ objectId: this.props.customVendorOrderVariant.objectId, productName: this.state.productName, options: value, units: this.state.units, notes: this.state.notes, received: this.state.received, internalNotes: value });
+    }
+    
+    handleCancelVariantClick(e, { value }) {
+        console.log(this.props.customVendorOrderVariant);
+        const units = this.props.customVendorOrderVariant.units ? parseFloat(this.props.customVendorOrderVariant.units) : 0;
+        const notes = this.props.customVendorOrderVariant.notes ? this.props.customVendorOrderVariant.notes : '';
+        const received = this.props.customVendorOrderVariant.received ? parseFloat(this.props.customVendorOrderVariant.received) : 0;
+        const internalNotes = this.props.customVendorOrderVariant.internalNotes ? this.props.customVendorOrderVariant.internalNotes : '';
+        const productName = this.props.customVendorOrderVariant.productName ? this.props.customVendorOrderVariant.productName : '';
+        const options = this.props.customVendorOrderVariant.options ? this.props.customVendorOrderVariant.options : '';
+        this.setState({
+            units: units,
+            notes: notes,
+            received: received,
+            internalNotes: internalNotes,
+            options: options,
+            productName: productName,
+            variantSaved: false,      
+        });
+        this.props.handleVariantEdited({ objectId: this.props.customVendorOrderVariant.objectId, units: units, notes: notes, internalNotes: internalNotes, received: received });
+    }
+    
+    isEdited() {
+        let edited = false;
+        if (parseFloat(this.props.customVendorOrderVariant.units) !== parseFloat(this.state.units)) edited = true;
+        if (this.props.customVendorOrderVariant.notes !== this.state.notes) edited = true;
+        if (this.props.customVendorOrderVariant.options !== this.state.options) edited = true;
+        if (this.props.customVendorOrderVariant.productName !== this.state.productName) edited = true;
+        //if (parseFloat(this.props.customVendorOrderVariant.received) !== parseFloat(this.state.received)) edited = true;
+        if (this.props.customVendorOrderVariant.internalNotes && this.props.customVendorOrderVariant.internalNotes !== this.state.internalNotes) edited = true
+        return edited;
+    }
+    
+    render () {
+      const customVendorOrderVariant = this.props.customVendorOrderVariant;
+      const productName = this.state.productName;
+      const options = this.state.options;
+      const units = this.state.units;
+      const notes = this.state.notes;
+      const internalNotes = this.state.internalNotes;
+      
+      const doneIconClass = customVendorOrderVariant.done ? '' : 'invisible';
+      // const received = (this.props.status === 'Sent') ? <Table.Cell><Input type='number' value={this.state.received ? this.state.received : 0} onChange={this.handleReceivedChange} min={0} disabled={this.props.isSaving} /></Table.Cell> : null;
+      const cancelClass = this.isEdited() ? '' : 'invisible';
+      
+      return (
+          <Table.Row>
+            <Table.Cell>
+              <Input type='text' value={productName} onChange={this.handleProductNameChange} min={0} disabled={this.props.isSaving} />
+            </Table.Cell>
+            <Table.Cell>
+              <Input type='text' value={options} onChange={this.handleOptionsChange} min={0} disabled={this.props.isSaving} />
+            </Table.Cell>
+            <Table.Cell>
+              -
+            </Table.Cell>
+            <Table.Cell>
+              -
+            </Table.Cell>
+            <Table.Cell>
+              <Input type='number' value={units} onChange={this.handleUnitsChange} min={0} disabled={this.props.isSaving} />
+            </Table.Cell>
+            <Table.Cell>
+              <Input type='text' value={notes} onChange={this.handleNotesChange} min={0} disabled={this.props.isSaving} />
+            </Table.Cell>
+            <Table.Cell>
+              <Input type='text' value={internalNotes} onChange={this.handleInternalNotesChange} min={0} disabled={this.props.isSaving} />
+            </Table.Cell>
+            
+            <Table.Cell className='right aligned'>
+                <Button.Group size='mini'>
+                    <Button content='Cancel'
+                        className={cancelClass}
+                        secondary
+                        compact
+                        loading={this.props.isSaving}
+                        disabled={this.props.isSaving}
+                        onClick={this.handleCancelVariantClick}
+                    />
+                </Button.Group>
+            </Table.Cell>
+            <Table.Cell className='right aligned'>
+                <Icon
+                    style={{ cursor: 'pointer' }}
+                    name='remove'
+                    color='black'
+                    size='large'
+                    className={this.state.hoverRow && this.props.status === 'Sent' ? '' : 'invisible'}
+                    onClick={() => this.setState({ deleteProductConfirm: true })} />
+                <Confirm
+                    open={this.state.deleteProductConfirm}
+                    content="Are you sure you want to delete this incoming product?"
+                    onConfirm={() => this.handleDeleteProductFromVendorOrder(this.props.vendorOrderVariant.objectId)}
+                    onCancel={() => this.setState({ deleteProductConfirm: false })} />
+
+            </Table.Cell>
+            <Table.Cell className='right aligned'>
+                <Icon name='checkmark' color='olive' size='large' className={doneIconClass} />
+            </Table.Cell>
+            
+          </Table.Row>
+      );
+    }
+}
+
 class VendorOrder extends Component {
     constructor(props) {
         super(props);
@@ -233,15 +399,18 @@ class VendorOrder extends Component {
             variantsEdited: false,
             message: this.props.order && this.props.order.message ? this.props.order.message : this.generateMessage(),
             variantsData: null,
+            customVariantsEdited: false,
+            customVariantsData: null,
             completeOrderConfirm: false
         };
         this.handleSaveVendorOrderClick = this.handleSaveVendorOrderClick.bind(this);
         this.handleSendVendorOrderClick = this.handleSendVendorOrderClick.bind(this);
         this.handleVariantEdited = this.handleVariantEdited.bind(this);
         this.handleMessageChange = this.handleMessageChange.bind(this);
+        this.handleCustomVariantEdited = this.handleCustomVariantEdited.bind(this);
     }
     handleSaveVendorOrderClick() {
-        this.props.handleSaveVendorOrder({ orderId: this.props.order.objectId, variantsData: this.state.variantsData, message: this.state.message });
+        this.props.handleSaveVendorOrder({ orderId: this.props.order.objectId, variantsData: this.state.variantsData, customVariantsData: this.state.customVariantsData, message: this.state.message });
     }
     handleSendVendorOrderClick() {
         this.props.handleSendVendorOrder({ orderId: this.props.order.objectId, variantsData: this.state.variantsData, message: this.state.message });
@@ -267,6 +436,33 @@ class VendorOrder extends Component {
             variantsData: variantsData
         });
     }
+    
+    handleCustomVariantEdited(data) {
+        console.log(data);
+        console.log(this.state.customVariantsData);
+        const scope = this;
+        let customVariantsEdited = false;
+        let customVariantsData = this.state.customVariantsData.map(function (variant, i) {
+            if (variant.objectId === data.objectId) variant = data;
+            scope.props.order.customVendorOrderVariants.map(function (vendorOrderVariant, j) {
+                if (vendorOrderVariant.objectId === variant.objectId) {
+                    if (vendorOrderVariant.units !== variant.units) customVariantsEdited = true;
+                    if (vendorOrderVariant.notes !== variant.notes) customVariantsEdited = true;
+                    if (vendorOrderVariant.received !== variant.received) customVariantsEdited = true;
+                    if (vendorOrderVariant.internalNotes !== variant.internalNotes) customVariantsEdited = true;
+                    if (vendorOrderVariant.options !== variant.options) customVariantsEdited = true;
+                    if (vendorOrderVariant.productName !== variant.productName) customVariantsEdited = true;
+                }
+                return vendorOrderVariant;
+            });
+            return variant;
+        });
+        this.setState({
+            customVariantsEdited: customVariantsEdited,
+            customVariantsData: customVariantsData
+        });
+    }
+    
     handleMessageChange(e, { value }) {
         let edited = false;
         if (!this.props.order.message && this.generateMessage() !== value) {
@@ -304,6 +500,7 @@ class VendorOrder extends Component {
         this.setState({
             variantsData: this.props.order.vendorOrderVariants ? this.getVariantsData(this.props.order.vendorOrderVariants) : null,
             message: this.props.order && this.props.order.message ? this.props.order.message : this.generateMessage(),
+            customVariantsData : this.props.order.customVendorOrderVariants ? this.props.order.customVendorOrderVariants : null
         });
     }
     componentWillReceiveProps(nextProps) {
@@ -311,7 +508,8 @@ class VendorOrder extends Component {
             this.setState({
                 variantsData: this.getVariantsData(nextProps.order.vendorOrderVariants),
                 formEdited: false,
-                variantsEdited: false
+                variantsEdited: false,
+                customVariantsData: nextProps.order.customVendorOrderVariants
             });
         }
     }
@@ -364,10 +562,72 @@ class VendorOrder extends Component {
                             (sizeA - sizeB);
                 }))
         }
-
+        //TESTING
+        /*
+        let custom = [
+          {
+            objectId:123,
+            internalNotes:'test',
+            notes: 'test',
+            options: 'color:red',
+            units: 2,
+            productName: 'name'
+          },
+          {
+            objectId:124,
+            internalNotes:'test',
+            notes: 'test',
+            options: 'color:red',
+            units: 2,
+            productName: 'name'
+          },
+          {
+            objectId:125,
+            internalNotes:'test',
+            notes: 'test',
+            options: 'color:red',
+            units: 2,
+            productName: 'name'
+          }
+        ]
+        let customOrder = [];/*
+        if (scope.props.subpage == 'pending') {
+          custom.map(function (vendorOrderVariant) {
+            customOrder.push(
+                <CustomProductRow
+                    vendor={scope.props.vendor}
+                    vendorOrder={scope.props.order}
+                    status={scope.props.status}
+                    subpage = {scope.props.subpage}
+                    customVendorOrderVariant={vendorOrderVariant}
+                    key={vendorOrderVariant.objectId}
+                    handleVariantEdited={scope.handleVariantEdited}
+                    isSaving={scope.props.isSaving}
+                    handleDeleteProductFromVendorOrder={productObjectId => scope.handleDeleteProductFromVendorOrder(productObjectId)} />
+            );
+          })
+        }*/
+        let customOrder = [];
+        if (order && order.customVendorOrderVariants && order.customVendorOrderVariants.length > 0 && scope.props.subpage == 'pending') {
+          order.customVendorOrderVariants.map(function (vendorOrderVariant) {
+            customOrder.push(
+                <CustomProductRow
+                    vendor={scope.props.vendor}
+                    vendorOrder={scope.props.order}
+                    status={scope.props.status}
+                    subpage = {scope.props.subpage}
+                    customVendorOrderVariant={vendorOrderVariant}
+                    key={vendorOrderVariant.objectId}
+                    handleVariantEdited={scope.handleCustomVariantEdited}
+                    isSaving={scope.props.isSaving}
+                    handleDeleteProductFromVendorOrder={productObjectId => scope.handleDeleteProductFromVendorOrder(productObjectId)} />
+            );
+          })
+        }
+        
         const partiallyReceived = (order.orderedAll === true && order.receivedAll === false && totalReceived > 0) ? true : false;
         const partiallyReceivedLabel = partiallyReceived ? <Label size='small' color='orange'>Partially Received</Label> : null;
-        const saveChangesButton = this.state.variantsEdited || this.state.formEdited ? <Button
+        const saveChangesButton = this.state.variantsEdited || this.state.formEdited || this.state.customVariantsEdited ? <Button
             primary
             circular
             compact
@@ -466,6 +726,7 @@ class VendorOrder extends Component {
                     </Table.Header>
                     <Table.Body>
                         {orderProductRows}
+                        {customOrder}
                     </Table.Body>
                 </Table>
                 {emailMessage}
