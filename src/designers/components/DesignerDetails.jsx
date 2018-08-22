@@ -285,11 +285,10 @@ class CustomProductRow extends Component {
             options: value,
             variantSaved: false
         });
-        this.props.handleVariantEdited({ objectId: this.props.customVendorOrderVariant.objectId, productName: this.state.productName, options: value, units: this.state.units, notes: this.state.notes, received: this.state.received, internalNotes: value });
+        this.props.handleVariantEdited({ objectId: this.props.customVendorOrderVariant.objectId, productName: this.state.productName, options: value, units: this.state.units, notes: this.state.notes, received: this.state.received, internalNotes: this.state.internalNotes });
     }
     
     handleCancelVariantClick(e, { value }) {
-        console.log(this.props.customVendorOrderVariant);
         const units = this.props.customVendorOrderVariant.units ? parseFloat(this.props.customVendorOrderVariant.units) : 0;
         const notes = this.props.customVendorOrderVariant.notes ? this.props.customVendorOrderVariant.notes : '';
         const received = this.props.customVendorOrderVariant.received ? parseFloat(this.props.customVendorOrderVariant.received) : 0;
@@ -438,8 +437,6 @@ class VendorOrder extends Component {
     }
     
     handleCustomVariantEdited(data) {
-        console.log(data);
-        console.log(this.state.customVariantsData);
         const scope = this;
         let customVariantsEdited = false;
         let customVariantsData = this.state.customVariantsData.map(function (variant, i) {
