@@ -16,10 +16,13 @@ class VariantRow extends Component {
             startWholesalePrice: this.props.data.customWholesalePrice ? parseFloat(this.props.data.customWholesalePrice) : this.props.data.adjustedWholesalePrice ? parseFloat(this.props.data.adjustedWholesalePrice) : 0,
             color: this.props.data.color_value ? this.props.data.color_value : '',
             startColor: this.props.data.color_value ? this.props.data.color_value : '',
+            in_store : this.props.data.in_store ? parseFloat(this.props.data.in_store) : 0,
+            start_in_store: this.props.data.start_in_store ? parseFloat(this.props.data.start_in_store) : 0,
             variantEdited: false,
             variantSaved: false
         };
         this.handleInventoryChange = this.handleInventoryChange.bind(this);
+        this.handleInStoreChange = this.handleInStoreChange.bind(this);
         this.handleWholesalePriceChange = this.handleWholesalePriceChange.bind(this);
         this.handleColorChange = this.handleColorChange.bind(this);
         this.handleSaveVariantClick = this.handleSaveVariantClick.bind(this);
@@ -34,35 +37,53 @@ class VariantRow extends Component {
         if (!this.state.startInventory && parseFloat(value) === 0) edited = false;
         if (this.state.wholesalePrice !== this.state.startWholesalePrice) edited = true;
         if (this.state.color !== this.state.startColor) edited = true;
+        if (this.state.in_store !== this.state.start_in_store) edited = true;
         this.setState({
             inventory: parseFloat(value),
             variantEdited: edited,
             variantSaved: false
         });
-        this.props.handleVariantEdited({ objectId: this.props.data.objectId, inventory: parseFloat(value), color: this.state.color, wholesalePrice: this.state.wholesalePrice }, edited);
+        this.props.handleVariantEdited({ objectId: this.props.data.objectId, inventory: parseFloat(value), in_store: this.state.in_store, color: this.state.color, wholesalePrice: this.state.wholesalePrice }, edited);
     }
+    
+    handleInStoreChange (e, { value }) {
+      let edited = (parseFloat(value) !== parseFloat(this.state.start_in_store)) ? true : false;
+      if (this.state.wholesalePrice !== this.state.startWholesalePrice) edited = true;
+      if (this.state.color !== this.state.startColor) edited = true;
+      if (this.state.inventory !== this.state.startInventory) edited = true;
+      
+      this.setState({
+          in_store: parseFloat(value),
+          variantEdited: edited,
+          variantSaved: false
+      });
+      this.props.handleVariantEdited({ objectId: this.props.data.objectId, inventory: this.state.inventory, in_store: parseFloat(value), color: this.state.color, wholesalePrice: this.state.wholesalePrice }, edited);
+    }
+    
     handleWholesalePriceChange(e, { value }) {
         let edited = (parseFloat(value) !== parseFloat(this.state.startWholesalePrice)) ? true : false;
         if (this.state.inventory !== this.state.startInventory) edited = true;
         if (this.state.color !== this.state.startColor) edited = true;
+        if (this.state.in_store !== this.state.start_in_store) edited = true;
         this.setState({
             wholesalePrice: parseFloat(value),
             variantEdited: edited,
             variantSaved: false
         });
-        this.props.handleVariantEdited({ objectId: this.props.data.objectId, inventory: this.state.inventory, color: this.state.color, wholesalePrice: parseFloat(value) }, edited);
+        this.props.handleVariantEdited({ objectId: this.props.data.objectId, inventory: this.state.inventory, in_store: this.state.in_store, color: this.state.color, wholesalePrice: parseFloat(value) }, edited);
     }
     handleColorChange(e, { value }) {
         let edited = (value !== this.state.startColor) ? true : false;
         if (!this.state.startColor && value === '') edited = false;
         if (this.state.inventory !== this.state.startInventory) edited = true;
         if (this.state.wholesalePrice !== this.state.startWholesalePrice) edited = true;
+        if (this.state.in_store !== this.state.start_in_store) edited = true;
         this.setState({
             color: value,
             variantEdited: edited,
             variantSaved: false
         });
-        this.props.handleVariantEdited({ objectId: this.props.data.objectId, inventory: this.state.inventory, color: value, wholesalePrice: this.state.wholesalePrice }, edited);
+        this.props.handleVariantEdited({ objectId: this.props.data.objectId, inventory: this.state.inventory, in_store: this.state.in_store, color: value, wholesalePrice: this.state.wholesalePrice }, edited);
     }
     handleSaveVariantClick(e, { value }) {
         this.props.handleSaveVariantClick({ objectId: this.props.data.objectId, inventory: this.state.inventory, color: this.state.color, wholesalePrice: this.state.wholesalePrice });
@@ -199,7 +220,7 @@ class VariantRow extends Component {
         const scope = this;
         const data = this.props.data;
         const optionsData = this.props.optionsData;
-        let variantEdited = (this.state.inventory !== this.state.startInventory || this.state.color !== this.state.startColor || this.state.wholesalePrice !== this.state.startWholesalePrice) ? true : false;
+        let variantEdited = (this.state.inventory !== this.state.startInventory || this.state.color !== this.state.startColor || this.state.wholesalePrice !== this.state.startWholesalePrice || this.state.in_store !== this.state.start_in_store) ? true : false;
         // if (!this.state.startInventory && this.state.inventory === 0) variantEdited = false;
         // if (!this.state.startColor && this.state.color === '') variantEdited = false;
 
@@ -276,7 +297,7 @@ class VariantRow extends Component {
                     {/*resize vertical*/}
                 </Table.Cell>
                 <Table.Cell>{data.size_value ? data.size_value : 'OS'}</Table.Cell>
-                <Table.Cell>{otherOptions ? otherOptions.join(', ') : null}</Table.Cell>
+                <Table.Cell><Input fluid type='number' value={this.state.in_store ? this.state.in_store : 0} min={0} max={this.state.inventory} onChange={this.handleInStoreChange} disabled={this.props.isSaving} /></Table.Cell>
                 <Table.Cell><Input fluid type='number' value={this.state.inventory ? this.state.inventory : 0} onChange={this.handleInventoryChange} min={0} disabled={this.props.isSaving} /></Table.Cell>
                 <Table.Cell>{data.inventoryOnHand}</Table.Cell>
                 <Table.Cell>{totalAwaitingInventory}</Table.Cell>
@@ -460,7 +481,7 @@ class VariantsTable extends Component {
                             <Table.HeaderCell>Style-Color</Table.HeaderCell>
                             <Table.HeaderCell>Color</Table.HeaderCell>
                             <Table.HeaderCell>Size</Table.HeaderCell>
-                            <Table.HeaderCell>Other Options</Table.HeaderCell>
+                            <Table.HeaderCell>In Store</Table.HeaderCell>
                             <Table.HeaderCell>ACT OH</Table.HeaderCell>
                             <Table.HeaderCell>Available</Table.HeaderCell>
                             <Table.HeaderCell>Total Awaiting</Table.HeaderCell>
@@ -679,7 +700,7 @@ class ProductDetails extends Component {
             variantsEdited.splice(index, 1);
         } else if (edited && index >= 0) {
             variantsEdited[index] = data;
-        }
+        }    
         this.setState({
             variantsEdited: variantsEdited
         });
