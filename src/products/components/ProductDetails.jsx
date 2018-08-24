@@ -93,6 +93,7 @@ class VariantRow extends Component {
             inventory: this.state.startInventory,
             color: this.state.startColor,
             wholesalePrice: this.state.startWholesalePrice,
+            in_store: this.state.start_in_store,
             variantEdited: false,
             variantSaved: false
         });
