@@ -57,6 +57,7 @@ class Products extends Component {
         this.handleAddToVendorOrder = this.handleAddToVendorOrder.bind(this);
         this.handleCreateResize = this.handleCreateResize.bind(this);
         this.handleSaveResize = this.handleSaveResize.bind(this);
+        this.handleSoldStore = this.handleSoldStore.bind(this);
         this.handleProductOrderModalClose = this.handleProductOrderModalClose.bind(this);
     }
 
@@ -385,6 +386,13 @@ class Products extends Component {
         });
         this.props.saveResize(this.props.token, data);
     }
+    
+    handleSoldStore(variantId) {
+      this.setState({
+          savingVariants: [variantId]
+      });
+      this.props.soldInStore(this.props.token, variantId);
+    }
 
     handleProductOrderModalClose(data) {
         this.setState({
@@ -622,6 +630,7 @@ class Products extends Component {
                             handleProductSave={scope.handleProductSave}
                             handleEditBundleClick={scope.handleEditBundleClick}
                             handleSaveResize={scope.handleSaveResize}
+                            handleSoldStore={scope.handleSoldStore}
                         />
                     );
                 }

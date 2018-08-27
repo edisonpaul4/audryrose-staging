@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { getProducts, getProductFilters,resetStorage, getProductOptions, reloadProduct, saveProduct, saveVariants, addToVendorOrder, createResize, saveResize, getBundleFormData, productBundleSave } from '../actions';
+import { getProducts, getProductFilters,resetStorage, getProductOptions, reloadProduct, saveProduct, saveVariants, addToVendorOrder, createResize, saveResize, getBundleFormData, productBundleSave, soldInStore } from '../actions';
 import { Products } from '../components/components';
 
 const select = state => ({
@@ -29,6 +29,7 @@ const actions = {
     addToVendorOrder,
     createResize,
     saveResize,
+    soldInStore,
     getBundleFormData,
     productBundleSave,
     resetStorage
