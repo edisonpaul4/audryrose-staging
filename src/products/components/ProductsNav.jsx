@@ -44,6 +44,13 @@ class ProductsNav extends Component {
                             </Menu.Item>
                             <Menu.Item
                                 as={Link}
+                                to={{ pathname: '/products/in-store', query: query }}
+                                active={pathName === '/products' || pathName === '/products/in-store'}
+                                link>
+                                In Store<Label horizontal circular size='tiny' color={tabCounts && tabCounts.inStore > 0 ? 'olive' : null}>{tabCounts ? tabCounts.inStore : null}</Label>
+                            </Menu.Item>
+                            <Menu.Item
+                                as={Link}
                                 to={{ pathname: '/products/need-to-order', query: query }}
                                 active={pathName === '/products/need-to-order'}
                                 link>
