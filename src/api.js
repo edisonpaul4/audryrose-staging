@@ -291,6 +291,13 @@ export const saveVariants = (token, variants) => Parse.Cloud.run('saveVariants',
     }
 );
 
+export const soldInStore = (token, variantId) => Parse.Cloud.run('soldInStore', 
+    {
+        sessionToken: token,
+        variantId
+    }
+);
+
 export const addToVendorOrder = (token, orders) => Parse.Cloud.run('addToVendorOrder',
     {
         sessionToken: token,
@@ -612,6 +619,7 @@ export default {
     reloadProduct,
     saveProduct,
     saveVariants,
+    soldInStore,
     addToVendorOrder,
     getBundleFormData,
     productBundleSave,

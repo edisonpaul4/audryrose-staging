@@ -31,6 +31,7 @@ class VariantRow extends Component {
         this.handleShowResizeFormClick = this.handleShowResizeFormClick.bind(this);
         this.handleApplyToAllClick = this.handleApplyToAllClick.bind(this);
         this.handleSaveResize = this.handleSaveResize.bind(this);
+        this.handleSoldStore = this.handleSoldStore.bind(this);
     }
     handleInventoryChange(e, { value }) {
         let edited = (parseFloat(value) !== parseFloat(this.state.startInventory)) ? true : false;
@@ -99,6 +100,16 @@ class VariantRow extends Component {
         });
         this.props.handleVariantEdited({ objectId: this.props.data.objectId }, false);
     }
+    handleSoldStore (e, { value }) {
+        this.setState({
+          in_store: this.state.in_store - 1,
+          start_in_store: this.state.in_store - 1,
+          inventory: this.state.inventory -1,
+          startInventory: this.state.inventory - 1
+        })
+        this.props.handleSoldStore({variantId: this.props.data.objectId});
+    }
+    
     handleShowOrderFormClick(e, { value }) {
         this.props.handleShowOrderFormClick({ productId: this.props.data.productId, variant: this.props.data.objectId, resize: false });
     }
@@ -276,7 +287,7 @@ class VariantRow extends Component {
 
         const dropdownItems = [];
         if (data.size_value) dropdownItems.push(<Dropdown.Item icon='exchange' text='Resize' disabled={this.props.isSaving || variantEdited} onClick={this.handleShowResizeFormClick} key={'dropdown-resize'} />);
-        
+        if (data.in_store > 0) dropdownItems.push(<Dropdown.Item icon='exchange' text='Sold Store' disabled={this.props.isSaving || variantEdited} onClick={this.handleSoldStore} key={'dropdown-sold-store'} />);
         return (
             <Table.Row warning={variantEdited ? true : false} positive={this.state.variantSaved && !variantEdited ? true : false} disabled={this.props.isSaving}>
                 <Table.Cell>{data.styleNumber ? data.styleNumber : ''}{stoneColorCode}</Table.Cell>
@@ -373,6 +384,7 @@ class VariantsTable extends Component {
         this.handleApplyToAll = this.handleApplyToAll.bind(this);
         this.handleClearApplyAllData = this.handleClearApplyAllData.bind(this);
         this.handleSaveResize = this.handleSaveResize.bind(this);
+        this.handleSoldStore = this.handleSoldStore.bind(this);
     }
     handleVariantEdited(data, edited) {
         this.props.handleVariantsEdited(data, edited)
@@ -391,6 +403,9 @@ class VariantsTable extends Component {
     }
     handleSaveResize(data) {
         this.props.handleSaveResize(data);
+    }
+    handleSoldStore(data) {
+        this.props.handleSoldStore(data);  
     }
     render() {
         var scope = this;
@@ -461,6 +476,7 @@ class VariantsTable extends Component {
                         isReloading={scope.props.isReloading}
                         handleSaveVariantClick={scope.handleSaveVariantClick}
                         handleVariantEdited={scope.handleVariantEdited}
+                        handleSoldStore = {scope.handleSoldStore}
                         isSaving={isSaving}
                         updatedVariant={updatedVariantMatch}
                         handleShowOrderFormClick={scope.handleShowOrderFormClick}
@@ -676,6 +692,7 @@ class ProductDetails extends Component {
         this.handleClearApplyAllData = this.handleClearApplyAllData.bind(this);
         this.handleProductSave = this.handleProductSave.bind(this);
         this.handleSaveResize = this.handleSaveResize.bind(this);
+        this.handleSoldStore = this.handleSoldStore.bind(this);
     }
     handleReloadClick(productId) {
         this.props.handleReloadClick(productId);
@@ -686,6 +703,9 @@ class ProductDetails extends Component {
     handleSaveAllVariantsClick() {
         this.props.handleSaveAllVariantsClick(this.state.variantsEdited);
     }
+    handleSoldStore (variantId) {
+        this.props.handleSoldStore(variantId);
+    } 
     handleProductSave(data) {
         this.props.handleProductSave(data);
     }
@@ -847,6 +867,7 @@ class ProductDetails extends Component {
                             handleSaveResize={scope.handleSaveResize}
                             handleApplyToAll={scope.handleApplyToAll}
                             handleClearApplyAllData={scope.handleClearApplyAllData}
+                            handleSoldStore = {scope.handleSoldStore}
                         />
                     );
                     return variantGroup;
@@ -871,6 +892,7 @@ class ProductDetails extends Component {
                         handleSaveResize={scope.handleSaveResize}
                         handleApplyToAll={scope.handleApplyToAll}
                         handleClearApplyAllData={scope.handleClearApplyAllData}
+                        handleSoldStore = {scope.handleSoldStore}
                     />
                 );
             }
