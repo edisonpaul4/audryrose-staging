@@ -17,7 +17,7 @@ class VariantRow extends Component {
             color: this.props.data.color_value ? this.props.data.color_value : '',
             startColor: this.props.data.color_value ? this.props.data.color_value : '',
             in_store : this.props.data.in_store ? parseFloat(this.props.data.in_store) : 0,
-            start_in_store: this.props.data.start_in_store ? parseFloat(this.props.data.start_in_store) : 0,
+            start_in_store: this.props.data.in_store ? parseFloat(this.props.data.in_store) : 0,
             variantEdited: false,
             variantSaved: false
         };
@@ -86,7 +86,7 @@ class VariantRow extends Component {
         this.props.handleVariantEdited({ objectId: this.props.data.objectId, inventory: this.state.inventory, in_store: this.state.in_store, color: value, wholesalePrice: this.state.wholesalePrice }, edited);
     }
     handleSaveVariantClick(e, { value }) {
-        this.props.handleSaveVariantClick({ objectId: this.props.data.objectId, inventory: this.state.inventory, color: this.state.color, wholesalePrice: this.state.wholesalePrice });
+        this.props.handleSaveVariantClick({ objectId: this.props.data.objectId, inventory: this.state.inventory, in_store: this.state.in_store, color: this.state.color, wholesalePrice: this.state.wholesalePrice });
     }
     handleCancelVariantClick(e, { value }) {
         this.setState({
@@ -189,6 +189,7 @@ class VariantRow extends Component {
             state.variantData = this.props.isSaving ? nextProps.data : this.state.variantData;
             state.startInventory = nextProps.updatedVariant.inventoryLevel;
             state.startColor = nextProps.updatedVariant.color_value;
+            state.start_in_store = nextProps.updatedVariant.in_store;
             state.startWholesalePrice = nextProps.updatedVariant.customWholesalePrice ? parseFloat(nextProps.updatedVariant.customWholesalePrice) : nextProps.updatedVariant.adjustedWholesalePrice ? parseFloat(nextProps.updatedVariant.adjustedWholesalePrice) : 0;
             state.variantSaved = true;
         }
@@ -275,7 +276,7 @@ class VariantRow extends Component {
 
         const dropdownItems = [];
         if (data.size_value) dropdownItems.push(<Dropdown.Item icon='exchange' text='Resize' disabled={this.props.isSaving || variantEdited} onClick={this.handleShowResizeFormClick} key={'dropdown-resize'} />);
-
+        
         return (
             <Table.Row warning={variantEdited ? true : false} positive={this.state.variantSaved && !variantEdited ? true : false} disabled={this.props.isSaving}>
                 <Table.Cell>{data.styleNumber ? data.styleNumber : ''}{stoneColorCode}</Table.Cell>
