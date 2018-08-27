@@ -103,11 +103,12 @@ class VariantRow extends Component {
     handleSoldStore (e, { value }) {
         this.setState({
           in_store: this.state.in_store - 1,
-          start_in_store: this.state.in_store - 1,
           inventory: this.state.inventory -1,
-          startInventory: this.state.inventory - 1
+          variantEdited: true,
+          variantSaved: true
         })
         this.props.handleSoldStore({variantId: this.props.data.objectId});
+        this.props.handleVariantEdited({ objectId: this.props.data.objectId }, true);
     }
     
     handleShowOrderFormClick(e, { value }) {
@@ -246,7 +247,8 @@ class VariantRow extends Component {
         if (data.font_value) otherOptions.push(data.font_value);
 
         const stoneColorCode = data.code ? '-' + data.code : null;
-        const saveCancelClass = variantEdited ? '' : 'invisible';
+        const saveCancelClass = this.state.variantSaved ? 'invisible' : variantEdited ? '' : 'invisible';
+        
 
         let vendorOrderAndResizes = [];
         if (data.vendorOrders) {
