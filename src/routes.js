@@ -18,6 +18,7 @@ import { ReturnsMainContainer, RepairsResizesContainer } from './repairs-resizes
 import { ProductsStatsContainer } from './products-stats/containers/containers';
 import { DesignerStatsContainer } from './products-stats/containers/containers';
 import { ProductsByDesignerStatsContainer } from './products-stats/containers/containers';
+import { ProductsStatsInStoreContainer } from './products-stats/containers/containers';
 
 export function requireAuth(store) {
     return (nextState, replace) => {
@@ -188,6 +189,11 @@ const createRoutes = (store) => {
                 {
                     path: 'product-stats/products-by-designer',
                     component: ProductsByDesignerStatsContainer,
+                    onEnter: requireAuth(store)
+                },
+                {
+                    path: 'product-stats/product-store-stats',
+                    component: ProductsStatsInStoreContainer,
                     onEnter: requireAuth(store)
                 },
                 {

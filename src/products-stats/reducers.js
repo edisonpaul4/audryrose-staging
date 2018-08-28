@@ -8,7 +8,9 @@ const initialState = {
   productsStatsByDesigner: [],
   isLoadingProductsStatsByDesigner : false,
   isLoadingDesignersName: false,
-  designers: []
+  designers: [],
+  statsInStore: [],
+  isLoadingProductsInStore: false
 };
 
 const returns = (state = initialState, action) => {
@@ -25,6 +27,20 @@ const returns = (state = initialState, action) => {
         isLoadingProducts: false,
         stats: action.res
       };
+      
+      case 'GET_PRODUCT_STATS_IN_STORE_REQUEST':
+        return {
+          ...state,
+          isLoadingProductsInStore: true
+        };
+
+      case 'GET_PRODUCT_STATS_IN_STORE_SUCCESS':
+        return {
+          ...state,
+          isLoadingProductsInStore: false,
+          statsInStore: action.res
+        };
+        
       case 'GET_REPAIR_IMAGES_REQUEST':
       return {
         ...state,
