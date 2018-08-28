@@ -343,6 +343,12 @@ export const getProductStatsByDesigner = (token, designerId, date_from, date_to)
     }
 );
 
+export const getProductStatsInStore = (token) => axios.post('/functions/getProductStatsInStore',
+    {
+        sessionToken: token
+    }
+);
+
 export const saveVendor = (token, data) => Parse.Cloud.run('saveVendor',
     {
         sessionToken: token,
@@ -653,6 +659,7 @@ export default {
     getProductStats,
     getDesignerStats,
     getProductStatsByDesigner,
+    getProductStatsInStore,
     getDesigners,
     getProductAndVariants,
     updateVendorOrderProduct,

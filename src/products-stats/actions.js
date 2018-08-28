@@ -7,6 +7,15 @@ export function getProductStats(token) {
       .then(r => r.data.result)
   }
 }
+
+export function getProductStatsInStore(token) {
+  return {
+    types: ['GET_PRODUCT_STATS_IN_STORE_REQUEST', 'GET_PRODUCT_STATS_IN_STORE_SUCCESS', 'GET_PRODUCT_STATS_IN_STORE_FAILURE'],
+    promise: api.getProductStatsInStore(token)
+      .then(r => r.data.result)
+  }
+}
+
 export function getPicturesRepairsByProduct(productId, token) {
   return {
     types: ['GET_REPAIR_IMAGES_REQUEST', 'GET_REPAIR_IMAGES_SUCCESS', 'GET_REPAIR_IMAGES_FAILURE'],
