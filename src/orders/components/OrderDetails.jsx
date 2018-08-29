@@ -13,15 +13,23 @@ class ProductRow extends Component {
         this.state = {
             product: this.props.product,
             shipment: this.props.shipment,
-            variant: this.props.variant
+            variant: this.props.variant,
+            soldInStore: this.props.soldInStore
         };
         this.handleShipModalOpen = this.handleShipModalOpen.bind(this);
         this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
         this.handleShowResizeFormClick = this.handleShowResizeFormClick.bind(this);
         this.handleShowEditOrderProductFormClick = this.handleShowEditOrderProductFormClick.bind(this);
+        this.handleSoldStore = this.handleSoldStore.bind(this);
     }
     handleShipModalOpen() {
         this.props.handleShipModalOpen();
+    }
+    handleSoldStore (e, {value}) {
+        let variantObjectId = this.state.variant? this.state.variant.objectId : null;
+        let quantity = this.state.product.quantity; 
+        let orderProductId = this.state.product.orderProductId;
+        this.props.handleSoldStore(orderProductId, variantObjectId, quantity);
     }
     getProductInventory(variants) {
         let inventoryLevel = 0;
@@ -112,6 +120,7 @@ class ProductRow extends Component {
         if (nextProps.product) state.product = nextProps.product;
         if (nextProps.shipment) state.shipment = nextProps.shipment;
         if (nextProps.variant) state.variant = nextProps.variant;
+        if (nextProps.product.variantsSoldInStore && nextProps.product.variantsSoldInStore.indexOf(nextProps.variant.objectId)!==-1) {state.soldInStore=true}
         this.setState(state);
     }
 
@@ -170,6 +179,8 @@ class ProductRow extends Component {
                 <Icon name='print' />Print
 	    </Button> : null;
 
+        const soldInStore = this.state.soldInStore;
+        
         // Check if variant has been ordered
         let vendorOrders = [];
         if (product && product.vendorOrders) {
@@ -255,6 +266,9 @@ class ProductRow extends Component {
             dropdownItems.push(<Dropdown.Item key='1' icon='add to cart' text='Order' onClick={this.handleShowOrderFormClick} />);
 
         }
+        
+        dropdownItems.push(<Dropdown.Item key='3' icon='home' text='Sold Store' disabled={soldInStore} onClick={this.handleSoldStore} />);
+        
         return (
             <Table.Row>
                 <Table.Cell>{productLink}</Table.Cell>
@@ -318,6 +332,7 @@ class OrderDetails extends Component {
         this.handleOrderProductEditClick = this.handleOrderProductEditClick.bind(this);
         this.handleCustomSize = this.handleCustomSize.bind(this);
         this.handleRemoveNeedsAction = this.handleRemoveNeedsAction.bind(this);
+        this.handleSoldStore = this.handleSoldStore.bind(this);
     }
     handleReloadClick(orderId) {
         this.props.handleReloadClick(orderId);
@@ -359,6 +374,10 @@ class OrderDetails extends Component {
             customSize:value
         })
     }
+    handleSoldStore(orderProductId, variantObjectId, quantity) {
+      this.props.handleSoldStore(orderProductId, variantObjectId, quantity);  
+    }
+    
     createProductObjects(products) {
         const objs = products.map((product) => {
             return {
@@ -387,6 +406,7 @@ class OrderDetails extends Component {
                 variants: product.variants, //TODO: SIMPLIFY THIS
                 vendorOrders: product.vendorOrders, //TODO: SIMPLIFY THIS
                 weight: product.weight,
+                variantsSoldInStore: product.variantsSoldInStore
             };
         });
         return objs;
@@ -602,11 +622,12 @@ class OrderDetails extends Component {
 
                 if (variants) {
                     variants.map(function (variant, j) {
-                        productRows.push(<ProductRow product={productRow} variant={variant} shipment={shipment} handleShipModalOpen={scope.handleShipModalOpen} key={i + '-' + j} handleShowOrderFormClick={scope.handleShowOrderFormClick} handleOrderProductEditClick={scope.handleOrderProductEditClick} handleProductChecked={scope.setCheckedProduct.bind(scope)} />);
+                        let soldInStore = productRow.variantsSoldInStore ? productRow.variantsSoldInStore.indexOf(variant.objectId)!==-1 ? true : false : false;
+                        productRows.push(<ProductRow product={productRow} variant={variant} shipment={shipment} handleShipModalOpen={scope.handleShipModalOpen} key={i + '-' + j} handleShowOrderFormClick={scope.handleShowOrderFormClick} handleOrderProductEditClick={scope.handleOrderProductEditClick} handleProductChecked={scope.setCheckedProduct.bind(scope)} handleSoldStore = {scope.handleSoldStore} soldInStore={soldInStore} />);
                         return variant;
                     });
                 } else if (productRow.isCustom) {
-                    productRows.push(<ProductRow product={productRow} shipment={shipment} handleShipModalOpen={scope.handleShipModalOpen} key={i + '-Custom'} handleShowOrderFormClick={scope.handleShowOrderFormClick} handleOrderProductEditClick={scope.handleOrderProductEditClick} handleProductChecked={scope.setCheckedProduct.bind(scope)} />);
+                    productRows.push(<ProductRow product={productRow} shipment={shipment} handleShipModalOpen={scope.handleShipModalOpen} key={i + '-Custom'} handleShowOrderFormClick={scope.handleShowOrderFormClick} handleOrderProductEditClick={scope.handleOrderProductEditClick} handleProductChecked={scope.setCheckedProduct.bind(scope)} handleSoldStore = {scope.handleSoldStore} soldInStore={true}/>);
                 }
 
                 return productRow;

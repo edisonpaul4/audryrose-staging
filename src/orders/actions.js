@@ -111,3 +111,10 @@ export function createReturn(returnTypeId, products, token) {
     promise: api.createReturn(returnTypeId, products, token).then(r => r.data.result)
   }
 }
+
+export function addToStoreStats (token, orderProductId, variantObjectId, quantity) {
+  return {
+    types: ['ADD_TO_STORE_STATS_REQUEST', 'ADD_TO_STORE_STATS_SUCCESS', 'ADD_TO_STORE_STATS_FAILURE'],
+    promise: api.addToStoreStats(token, orderProductId, variantObjectId, quantity)
+  }
+}
