@@ -319,8 +319,8 @@ class Orders extends Component {
         });
     }
     
-    handleSoldStore(variantObjectId, quantity) {
-      this.props.addToStoreStats(this.props.token, variantObjectId, quantity);
+    handleSoldStore(orderProductId,variantObjectId, quantity) {
+      this.props.addToStoreStats(this.props.token, orderProductId, variantObjectId, quantity);
     }
 
     handleOrderProductSave(data) {

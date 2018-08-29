@@ -298,10 +298,11 @@ export const soldInStore = (token, variantId) => Parse.Cloud.run('soldInStore',
     }
 );
 
-export const addToStoreStats = (token, variantObjectId, quantity) => Parse.Cloud.run('addToStoreStats', 
+export const addToStoreStats = (token, orderProductId, variantObjectId, quantity) => Parse.Cloud.run('addToStoreStats', 
     {
         sessionToken: token,
         variantObjectId,
+        orderProductId,
         quantity
     }
 );

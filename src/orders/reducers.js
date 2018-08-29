@@ -373,9 +373,19 @@ export const orders = (state = initialState, action) => {
       };
 
     case 'ADD_TO_STORE_STATS_SUCCESS':
+      let orderIndex = state.orders.findIndex(o => o.orderId === action.res.order.orderId);
+      let newOrder = {
+        ...state.orders[orderIndex],
+        variantsSoldInStore: action.res.order.variantsSoldInStore,
+        sold_in_store:true
+      }
       return {
         ...state,
-        isLoadingOrders: false
+        isLoadingOrders: false,
+        updatedOrders: [
+          ...state.updatedOrders,
+          ...action.res.updatedOrders
+        ]
       };
 
     default:

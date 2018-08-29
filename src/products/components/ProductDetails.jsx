@@ -289,7 +289,7 @@ class VariantRow extends Component {
 
         const dropdownItems = [];
         if (data.size_value) dropdownItems.push(<Dropdown.Item icon='exchange' text='Resize' disabled={this.props.isSaving || variantEdited} onClick={this.handleShowResizeFormClick} key={'dropdown-resize'} />);
-        if (data.in_store > 0) dropdownItems.push(<Dropdown.Item icon='exchange' text='Sold Store' disabled={this.props.isSaving || variantEdited} onClick={this.handleSoldStore} key={'dropdown-sold-store'} />);
+        if (data.in_store > 0) dropdownItems.push(<Dropdown.Item icon='home' text='Sold Store' disabled={this.props.isSaving || variantEdited} onClick={this.handleSoldStore} key={'dropdown-sold-store'} />);
         return (
             <Table.Row warning={variantEdited ? true : false} positive={this.state.variantSaved && !variantEdited ? true : false} disabled={this.props.isSaving}>
                 <Table.Cell>{data.styleNumber ? data.styleNumber : ''}{stoneColorCode}</Table.Cell>
