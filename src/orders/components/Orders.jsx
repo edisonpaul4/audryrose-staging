@@ -66,6 +66,7 @@ class Orders extends Component {
         this.handleOrderProductEditClose = this.handleOrderProductEditClose.bind(this);
         this.handleOrderProductSave = this.handleOrderProductSave.bind(this);
         this.handleExpandAll = this.handleExpandAll.bind(this);
+        this.handleSoldStore = this.handleSoldStore.bind(this);
     }
 
     componentDidMount() {
@@ -316,6 +317,10 @@ class Orders extends Component {
             orderProductEditFormData: orderProductEditFormData,
             orderProductEditFormIsLoading: false
         });
+    }
+    
+    handleSoldStore(variantObjectId, quantity) {
+      this.props.addToStoreStats(this.props.token, variantObjectId, quantity);
     }
 
     handleOrderProductSave(data) {
@@ -590,6 +595,7 @@ class Orders extends Component {
                             handleShowOrderFormClick={scope.handleShowOrderFormClick}
                             handleProductOrderModalClose={scope.handleProductOrderModalClose}
                             handleOrderProductEditClick={scope.handleOrderProductEditClick}
+                            handleSoldStore = {scope.handleSoldStore}
                             createReturn={scope.props.createReturn.bind(this)}
                         />
                     );

@@ -19,9 +19,15 @@ class ProductRow extends Component {
         this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
         this.handleShowResizeFormClick = this.handleShowResizeFormClick.bind(this);
         this.handleShowEditOrderProductFormClick = this.handleShowEditOrderProductFormClick.bind(this);
+        this.handleSoldStore = this.handleSoldStore.bind(this);
     }
     handleShipModalOpen() {
         this.props.handleShipModalOpen();
+    }
+    handleSoldStore (e, {value}) {
+        let variantObjectId = this.state.variant? this.state.variant.objectId : null;
+        let quantity = this.state.product.quantity;  
+        this.props.handleSoldStore(variantObjectId, quantity);
     }
     getProductInventory(variants) {
         let inventoryLevel = 0;
@@ -255,6 +261,9 @@ class ProductRow extends Component {
             dropdownItems.push(<Dropdown.Item key='1' icon='add to cart' text='Order' onClick={this.handleShowOrderFormClick} />);
 
         }
+        
+        dropdownItems.push(<Dropdown.Item key='3' icon='home' text='Sold Store' onClick={this.handleSoldStore} />);
+
         return (
             <Table.Row>
                 <Table.Cell>{productLink}</Table.Cell>
@@ -318,6 +327,7 @@ class OrderDetails extends Component {
         this.handleOrderProductEditClick = this.handleOrderProductEditClick.bind(this);
         this.handleCustomSize = this.handleCustomSize.bind(this);
         this.handleRemoveNeedsAction = this.handleRemoveNeedsAction.bind(this);
+        this.handleSoldStore = this.handleSoldStore.bind(this);
     }
     handleReloadClick(orderId) {
         this.props.handleReloadClick(orderId);
@@ -359,6 +369,10 @@ class OrderDetails extends Component {
             customSize:value
         })
     }
+    handleSoldStore(variantObjectId, quantity) {
+      this.props.handleSoldStore(variantObjectId, quantity);  
+    }
+    
     createProductObjects(products) {
         const objs = products.map((product) => {
             return {
@@ -602,11 +616,11 @@ class OrderDetails extends Component {
 
                 if (variants) {
                     variants.map(function (variant, j) {
-                        productRows.push(<ProductRow product={productRow} variant={variant} shipment={shipment} handleShipModalOpen={scope.handleShipModalOpen} key={i + '-' + j} handleShowOrderFormClick={scope.handleShowOrderFormClick} handleOrderProductEditClick={scope.handleOrderProductEditClick} handleProductChecked={scope.setCheckedProduct.bind(scope)} />);
+                        productRows.push(<ProductRow product={productRow} variant={variant} shipment={shipment} handleShipModalOpen={scope.handleShipModalOpen} key={i + '-' + j} handleShowOrderFormClick={scope.handleShowOrderFormClick} handleOrderProductEditClick={scope.handleOrderProductEditClick} handleProductChecked={scope.setCheckedProduct.bind(scope)} handleSoldStore = {scope.handleSoldStore} />);
                         return variant;
                     });
                 } else if (productRow.isCustom) {
-                    productRows.push(<ProductRow product={productRow} shipment={shipment} handleShipModalOpen={scope.handleShipModalOpen} key={i + '-Custom'} handleShowOrderFormClick={scope.handleShowOrderFormClick} handleOrderProductEditClick={scope.handleOrderProductEditClick} handleProductChecked={scope.setCheckedProduct.bind(scope)} />);
+                    productRows.push(<ProductRow product={productRow} shipment={shipment} handleShipModalOpen={scope.handleShipModalOpen} key={i + '-Custom'} handleShowOrderFormClick={scope.handleShowOrderFormClick} handleOrderProductEditClick={scope.handleOrderProductEditClick} handleProductChecked={scope.setCheckedProduct.bind(scope)} handleSoldStore = {scope.handleSoldStore}/>);
                 }
 
                 return productRow;

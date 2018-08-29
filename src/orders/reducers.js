@@ -365,6 +365,18 @@ export const orders = (state = initialState, action) => {
         ...state,
         isLoadingOrders: false
       }
+      
+    case 'ADD_TO_STORE_STATS_REQUEST':
+      return {
+        ...state,
+        isLoadingOrders: true
+      };
+
+    case 'ADD_TO_STORE_STATS_SUCCESS':
+      return {
+        ...state,
+        isLoadingOrders: false
+      };
 
     default:
       return state;
