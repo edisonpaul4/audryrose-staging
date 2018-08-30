@@ -352,9 +352,11 @@ export const getProductStatsByDesigner = (token, designerId, date_from, date_to)
     }
 );
 
-export const getProductStatsInStore = (token) => axios.post('/functions/getProductStatsInStore',
+export const getProductStatsInStore = (token, date_from, date_to) => axios.post('/functions/getProductStatsInStore',
     {
-        sessionToken: token
+      sessionToken: token,
+      date_from,
+      date_to
     }
 );
 
