@@ -8,10 +8,10 @@ export function getProductStats(token) {
   }
 }
 
-export function getProductStatsInStore(token) {
+export function getProductStatsInStore(date_from, date_to, token) {
   return {
     types: ['GET_PRODUCT_STATS_IN_STORE_REQUEST', 'GET_PRODUCT_STATS_IN_STORE_SUCCESS', 'GET_PRODUCT_STATS_IN_STORE_FAILURE'],
-    promise: api.getProductStatsInStore(token)
+    promise: api.getProductStatsInStore(token, date_from, date_to)
       .then(r => r.data.result)
   }
 }

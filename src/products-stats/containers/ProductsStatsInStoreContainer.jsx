@@ -4,6 +4,8 @@ import { Grid, Segment, Table, Icon } from 'semantic-ui-react';
 import { Link } from 'react-router';
 import { ImagesModal } from '../components/components';
 import { StatsNav } from '../components/components';
+import { SingleDatePicker } from 'react-dates';
+import moment from 'moment';
 import * as productStatsActions from '../actions';
 
 import NotificationSystem from 'react-notification-system';
@@ -14,13 +16,35 @@ class ProductsStatsInStoreContainer extends React.Component {
         this.state = {
             isModalOpen: false,
             focusedProductId: null,
-            focusedProductName: ''
+            focusedProductName: '',
+            dateFromSelected: null,
+            dateFromFocused: false,
+            dateToSelected: null,
+            dateToFocused: false
         }
+        this.handleDateFromChange = this.handleDateFromChange.bind(this);
+        this.handleDateToChange = this.handleDateToChange.bind(this);
     }
 
 
     componentWillMount() {
-        this.props.getProductStatsInStore();
+        this.props.getProductStatsInStore(undefined, undefined);
+    }
+    
+    handleDateFromChange(data) {
+      var date = data.date ? moment(data.date) : null;
+      this.setState({
+          dateFromSelected: date
+      });
+      this.props.getProductStatsInStore(date, this.state.dateToSelected);
+    }
+    
+    handleDateToChange(data) {
+      var date = data.date ? moment(data.date) : null;
+      this.setState({
+          dateToSelected: date
+      });
+      this.props.getProductStatsInStore(this.state.dateFromSelected, date);
     }
 
     sortedProducts(stats, type) {
@@ -101,9 +125,35 @@ class ProductsStatsInStoreContainer extends React.Component {
             <Grid.Column width='16'>
                 <NotificationSystem ref="notificationSystem" />
                 <StatsNav key={this.props.location.pathname} pathname={this.props.location.pathname} query={this.props.location.query} />
+                <div style={styles.dateStyle}>
+                  <SingleDatePicker
+                      date={this.state.dateFromSelected !== null ? moment(this.state.dateFromSelected) : null}
+                      placeholder={"Choose Date From..."}
+                      numberOfMonths={1}
+                      isOutsideRange = {() => false}
+                      hideKeyboardShortcutsPanel={true}
+                      showClearDate={true}
+                      onDateChange={date => this.handleDateFromChange({date})}
+                      focused={this.state.dateFromFocused}
+                      onFocusChange={({ focused }) => this.setState({ dateFromFocused: focused })}
+                      disabled={this.props.productStats.isLoadingProductsInStore}
+                  />
+                  <SingleDatePicker
+                      date={this.state.dateToSelected !== null ? moment(this.state.dateToSelected) : null}
+                      placeholder={"Choose Date To..."}
+                      numberOfMonths={1}
+                      isOutsideRange = {() => false}
+                      hideKeyboardShortcutsPanel={true}
+                      showClearDate={true}
+                      onDateChange={date => this.handleDateToChange({date})}
+                      focused={this.state.dateToFocused}
+                      onFocusChange={({ focused }) => this.setState({ dateToFocused: focused })}
+                      disabled={this.props.productStats.isLoadingProductsInStore}
+                  />
+                </div>
                 <Grid.Row>
                     <Grid.Column width="16">
-                        <Segment style={styles.statsContainer} loading={this.props.productStats.isLoadingProductsInStore && this.props.productStats.statsInStore.length === 0}>
+                        <Segment style={styles.statsContainer} loading={this.props.productStats.isLoadingProductsInStore}>
                             <Table celled>
                                 <Table.Header>
                                     <Table.Row>
@@ -161,6 +211,9 @@ const styles = {
         maxHeight: '85vh',
         overflowY: 'scroll',
         padding: 0
+    },
+    dateStyle : {
+      paddingBottom:10
     }
 }
 
