@@ -588,6 +588,12 @@ const updateVendorOrderProduct = (token, options) => axios.post('/functions/upda
     options
 });
 
+const addCustomProductToVendorOrder = (token, vendorOrderNumber, options) => axios.post('/functions/addCustomProductToVendorOrder', {
+    sessionToken: token,
+    options,
+    vendorOrderNumber
+});
+
 const confirmVendorOrderEmail = (options) => axios.post('/functions/updateVendorOrderProduct2',{
     order: options
 })
@@ -675,6 +681,7 @@ export default {
     getDesigners,
     getProductAndVariants,
     updateVendorOrderProduct,
+    addCustomProductToVendorOrder,
     confirmVendorOrderEmail,
     deleteReturnResize,
     deleteReturnEmail,
