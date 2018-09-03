@@ -234,6 +234,8 @@ class CustomProductRow extends Component {
             received: this.props.customVendorOrderVariant.received ? parseFloat(this.props.customVendorOrderVariant.received) : 0,
             options : this.props.customVendorOrderVariant.options ? this.props.customVendorOrderVariant.options : '',
             productName: this.props.customVendorOrderVariant.productName ? this.props.customVendorOrderVariant.productName : '',
+            onHand: this.props.customVendorOrderVariant.onHand ? this.props.customVendorOrderVariant.onHand : 0,
+            totalAwaiting: this.props.customVendorOrderVariant.totalAwaiting ? this.props.customVendorOrderVariant.totalAwaiting : 0,
             variantSaved: false,
             isSaving: false,
             hoverRow: false,
@@ -247,6 +249,8 @@ class CustomProductRow extends Component {
         this.handleOptionsChange = this.handleOptionsChange.bind(this);
         //this.handleReceivedChange = this.handleReceivedChange.bind(this);
         this.handleCancelVariantClick = this.handleCancelVariantClick.bind(this);
+        this.handleOnHandChange = this.handleOnHandChange.bind(this);
+        this.handleTotalAwaitingChange = this.handleTotalAwaitingChange.bind(this);
     }
     
     handleUnitsChange(e, { value }) {
@@ -254,14 +258,14 @@ class CustomProductRow extends Component {
             units: parseFloat(value),
             variantSaved: false
         });
-        this.props.handleVariantEdited({ objectId: this.props.customVendorOrderVariant.objectId, productName: this.state.productName, options: this.state.options, units: parseFloat(value), notes: this.state.notes, received: this.state.received, internalNotes: this.state.internalNotes });
+        this.props.handleVariantEdited({ objectId: this.props.customVendorOrderVariant.objectId, productName: this.state.productName, options: this.state.options, units: parseFloat(value), notes: this.state.notes, received: this.state.received, internalNotes: this.state.internalNotes, onHand: this.state.onHand, totalAwaiting: this.state.totalAwaiting });
     }
     handleNotesChange(e, { value }) {
         this.setState({
             notes: value,
             variantSaved: false
         });
-        this.props.handleVariantEdited({ objectId: this.props.customVendorOrderVariant.objectId, productName: this.state.productName, options: this.state.options, units: this.state.units, notes: value, received: this.state.received, internalNotes: this.state.internalNotes });
+        this.props.handleVariantEdited({ objectId: this.props.customVendorOrderVariant.objectId, productName: this.state.productName, options: this.state.options, units: this.state.units, notes: value, received: this.state.received, internalNotes: this.state.internalNotes, onHand: this.state.onHand, totalAwaiting: this.state.totalAwaiting });
     }
     
     handleProductNameChange(e, { value }) {
@@ -269,7 +273,7 @@ class CustomProductRow extends Component {
             productName: value,
             variantSaved: false
         });
-        this.props.handleVariantEdited({ objectId: this.props.customVendorOrderVariant.objectId, productName: value, options: this.state.options, units: this.state.units, notes: this.state.notes, received: this.state.received, internalNotes: this.state.internalNotes });
+        this.props.handleVariantEdited({ objectId: this.props.customVendorOrderVariant.objectId, productName: value, options: this.state.options, units: this.state.units, notes: this.state.notes, received: this.state.received, internalNotes: this.state.internalNotes, onHand: this.state.onHand, totalAwaiting: this.state.totalAwaiting });
     }
     
     handleInternalNotesChange(e, { value }) {
@@ -277,7 +281,7 @@ class CustomProductRow extends Component {
             internalNotes: value,
             variantSaved: false
         });
-        this.props.handleVariantEdited({ objectId: this.props.customVendorOrderVariant.objectId, productName: this.state.productName, options: this.state.options, units: this.state.units, notes: this.state.notes, received: this.state.received, internalNotes: value });
+        this.props.handleVariantEdited({ objectId: this.props.customVendorOrderVariant.objectId, productName: this.state.productName, options: this.state.options, units: this.state.units, notes: this.state.notes, received: this.state.received, internalNotes: value, onHand: this.state.onHand, totalAwaiting: this.state.totalAwaiting });
     }
     
     handleOptionsChange (e, { value }) {
@@ -285,7 +289,23 @@ class CustomProductRow extends Component {
             options: value,
             variantSaved: false
         });
-        this.props.handleVariantEdited({ objectId: this.props.customVendorOrderVariant.objectId, productName: this.state.productName, options: value, units: this.state.units, notes: this.state.notes, received: this.state.received, internalNotes: this.state.internalNotes });
+        this.props.handleVariantEdited({ objectId: this.props.customVendorOrderVariant.objectId, productName: this.state.productName, options: value, units: this.state.units, notes: this.state.notes, received: this.state.received, internalNotes: this.state.internalNotes, onHand: this.state.onHand, totalAwaiting: this.state.totalAwaiting });
+    }
+    
+    handleOnHandChange(e, { value }) {
+      this.setState({
+          onHand: parseFloat(value),
+          variantSaved: false
+      });
+      this.props.handleVariantEdited({ objectId: this.props.customVendorOrderVariant.objectId, productName: this.state.productName, options: value, units: this.state.units, notes: this.state.notes, received: this.state.received, internalNotes: this.state.internalNotes, onHand: parseFloat(value), totalAwaiting: this.state.totalAwaiting });
+    }
+    
+    handleTotalAwaitingChange(e, { value }) {
+      this.setState({
+          totalAwaiting: parseFloat(value),
+          variantSaved: false
+      });
+      this.props.handleVariantEdited({ objectId: this.props.customVendorOrderVariant.objectId, productName: this.state.productName, options: value, units: this.state.units, notes: this.state.notes, received: this.state.received, internalNotes: this.state.internalNotes, onHand: this.state.onHand, totalAwaiting: parseFloat(value) });
     }
     
     handleCancelVariantClick(e, { value }) {
@@ -295,6 +315,8 @@ class CustomProductRow extends Component {
         const internalNotes = this.props.customVendorOrderVariant.internalNotes ? this.props.customVendorOrderVariant.internalNotes : '';
         const productName = this.props.customVendorOrderVariant.productName ? this.props.customVendorOrderVariant.productName : '';
         const options = this.props.customVendorOrderVariant.options ? this.props.customVendorOrderVariant.options : '';
+        const onHand = this.props.customVendorOrderVariant.onHand ? this.props.customVendorOrderVariant.onHand : 0;
+        const totalAwaiting = this.props.customVendorOrderVariant.totalAwaiting ? this.props.customVendorOrderVariant.totalAwaiting : 0;
         this.setState({
             units: units,
             notes: notes,
@@ -302,6 +324,8 @@ class CustomProductRow extends Component {
             internalNotes: internalNotes,
             options: options,
             productName: productName,
+            onHand: onHand,
+            totalAwaiting: totalAwaiting,
             variantSaved: false,      
         });
         this.props.handleVariantEdited({ objectId: this.props.customVendorOrderVariant.objectId, units: units, notes: notes, internalNotes: internalNotes, received: received });
@@ -313,6 +337,8 @@ class CustomProductRow extends Component {
         if (this.props.customVendorOrderVariant.notes !== this.state.notes) edited = true;
         if (this.props.customVendorOrderVariant.options !== this.state.options) edited = true;
         if (this.props.customVendorOrderVariant.productName !== this.state.productName) edited = true;
+        if (this.props.customVendorOrderVariant.onHand !== this.state.onHand) edited = true;
+        if (this.props.customVendorOrderVariant.totalAwaiting !== this.state.totalAwaiting) edited = true;
         //if (parseFloat(this.props.customVendorOrderVariant.received) !== parseFloat(this.state.received)) edited = true;
         if (this.props.customVendorOrderVariant.internalNotes && this.props.customVendorOrderVariant.internalNotes !== this.state.internalNotes) edited = true
         return edited;
@@ -325,6 +351,8 @@ class CustomProductRow extends Component {
       const units = this.state.units;
       const notes = this.state.notes;
       const internalNotes = this.state.internalNotes;
+      const onHand = this.state.onHand;
+      const totalAwaiting = this.state.totalAwaiting;
       
       const doneIconClass = customVendorOrderVariant.done ? '' : 'invisible';
       // const received = (this.props.status === 'Sent') ? <Table.Cell><Input type='number' value={this.state.received ? this.state.received : 0} onChange={this.handleReceivedChange} min={0} disabled={this.props.isSaving} /></Table.Cell> : null;
@@ -339,10 +367,10 @@ class CustomProductRow extends Component {
               <Input type='text' value={options} onChange={this.handleOptionsChange} min={0} disabled={this.props.isSaving} />
             </Table.Cell>
             <Table.Cell>
-              -
+              <Input type='number' value={onHand} onChange={this.handleOnHandChange} min={0} disabled={this.props.isSaving} />
             </Table.Cell>
             <Table.Cell>
-              -
+              <Input type='number' value={totalAwaiting} onChange={this.handleTotalAwaitingChange} min={0} disabled={this.props.isSaving} />
             </Table.Cell>
             <Table.Cell>
               <Input type='number' value={units} onChange={this.handleUnitsChange} min={0} disabled={this.props.isSaving} />
@@ -449,6 +477,8 @@ class VendorOrder extends Component {
                     if (vendorOrderVariant.internalNotes !== variant.internalNotes) customVariantsEdited = true;
                     if (vendorOrderVariant.options !== variant.options) customVariantsEdited = true;
                     if (vendorOrderVariant.productName !== variant.productName) customVariantsEdited = true;
+                    if (vendorOrderVariant.onHand !== variant.onHand) customVariantsEdited = true;
+                    if (vendorOrderVariant.totalAwaiting !== variant.totalAwaiting) customVariantsEdited = true;
                 }
                 return vendorOrderVariant;
             });
