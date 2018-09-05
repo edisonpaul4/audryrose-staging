@@ -1,6 +1,7 @@
 const initialState = {
   isLoadingDesigners: false,
-  designers: null
+  designers: null,
+  totalVendorOrdersOutstadingInDollars: 0
 };
 
 const mergeUpdatedDesigner = function (designers, updatedDesigner, completedVendorOrders) {
@@ -71,6 +72,10 @@ const designers = (state = initialState, action) => {
         designersArray = [];
         action.res.designers.map((designer) => {
           // designer = designer.toJSON();
+          const getOutStandingAmountInDollars = function(vendorOrderNumber, vendorOrdersOutStandingAmount) {
+            let index = vendorOrdersOutStandingAmount.map(vendorOrder => vendorOrder.vendorOrderNumber).indexOf(vendorOrderNumber);
+            return index == -1 ? 0 : vendorOrdersOutStandingAmount[index].outStandingAmountInDollars;
+          }
           designer.vendorOrders = [];
           var vendorIds = [];
 
@@ -82,6 +87,9 @@ const designers = (state = initialState, action) => {
                 let status = vendorOrder.orderedAll && vendorOrder.receivedAll === false ? 'Sent' : 'Pending';
                 if (vendorOrder.orderedAll && vendorOrder.receivedAll === true) status = 'Completed';
                 if (vendorOrder.updatedAt) designer.vendorOrders.push({ status: status, order: vendorOrder, vendor: vendor });
+                if (action.res.vendorOrdersOutStandingAmount && action.res.vendorOrdersOutStandingAmount.length > 0) {
+                  vendorOrder.outStandingAmountInDollars = getOutStandingAmountInDollars(vendorOrder.vendorOrderNumber, action.res.vendorOrdersOutStandingAmount);
+                }
                 return vendorOrder;
               });
               vendor.vendorOrders = null;
@@ -122,7 +130,8 @@ const designers = (state = initialState, action) => {
         isLoadingDesigners: false,
         designers: designersArray,
         updateProducts: null,
-        totalPages: action.res.totalPages
+        totalPages: action.res.totalPages,
+        totalVendorOrdersOutstadingInDollars: action.res.totalVendorOrdersOutstadingInDollars
       };
 
     case 'DESIGNERS_FAILURE':
