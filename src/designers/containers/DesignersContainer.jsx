@@ -6,6 +6,7 @@ const select = state => ({
 	token: state.auth.token,
 	isLoadingDesigners: state.designers.isLoadingDesigners,
 	designers: state.designers.designers,
+	totalVendorOrdersOutstadingInDollars: state.designers.totalVendorOrdersOutstadingInDollars,
 	products: state.designers.products,
 	updatedDesigner: state.designers.updatedDesigner,
 	designerOrderFormIsLoading: state.designers.designerOrderFormIsLoading,

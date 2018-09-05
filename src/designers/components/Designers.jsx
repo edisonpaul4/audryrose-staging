@@ -145,6 +145,7 @@ class Designers extends Component {
             page: this.props.location.query.page ? this.props.location.query.page : 1,
             search: search,
             designers: null,
+            totalVendorOrdersOutstadingInDollars: 0,
             products: null,
             expanded: [],
             designerOrderOpen: false,
@@ -279,6 +280,8 @@ class Designers extends Component {
         let expanded = this.state.expanded;
 
         let designers = nextProps.designers ? nextProps.designers : this.state.designers;
+        
+        let totalVendorOrdersOutstadingInDollars = nextProps.totalVendorOrdersOutstadingInDollars ? nextProps.totalVendorOrdersOutstadingInDollars : 0;
 
         let designerOrderData = nextProps.designerOrderData ? nextProps.designerOrderData : this.state.designerOrderData;
 
@@ -348,7 +351,8 @@ class Designers extends Component {
             designerOrderFormIsLoading: nextProps.designerOrderFormIsLoading,
             isSavingDesigners: isSavingDesigners,
             successMessages: successMessages,
-            errors: errors
+            errors: errors,
+            totalVendorOrdersOutstadingInDollars: totalVendorOrdersOutstadingInDollars
         });
 
         if (nextPage !== this.state.page || nextProps.router.params.subpage !== this.state.subpage) {
@@ -361,6 +365,7 @@ class Designers extends Component {
         const scope = this;
         const { error, isLoadingDesigners, totalPages } = this.props;
         const { designers, subpage } = this.state;
+        console.log(this.state);
         let designerRows = [];
         if (designers) {
             designers.map(function (designer, i) {
@@ -446,6 +451,10 @@ class Designers extends Component {
                     <Loader inverted>Loading</Loader>
                 </Dimmer>
                 {searchHeader}
+                {subpage === 'sent' ?(
+                  <p style={{textAlign: 'right', marginRight:"10px", fontSize:"18px"}}> ${this.state.totalVendorOrdersOutstadingInDollars.toFixed(2)} </p>
+                ) : null}
+                
                 <Table className='orders-table'>
                     <Table.Header>
                         <Table.Row>
