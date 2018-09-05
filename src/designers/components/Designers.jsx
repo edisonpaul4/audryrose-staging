@@ -452,7 +452,7 @@ class Designers extends Component {
                 </Dimmer>
                 {searchHeader}
                 {subpage === 'sent' ?(
-                  <p style={{textAlign: 'right', marginRight:"10px", fontSize:"18px"}}> ${this.state.totalVendorOrdersOutstadingInDollars.toFixed(2)} </p>
+                  <p style={{textAlign: 'right', marginRight:"10px", fontSize:"18px"}}> ${this.state.totalVendorOrdersOutstadingInDollars.toFixed(0)} </p>
                 ) : null}
                 
                 <Table className='orders-table'>

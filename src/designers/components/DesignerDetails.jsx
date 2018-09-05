@@ -677,7 +677,7 @@ class VendorOrder extends Component {
                         <Label positive>Email Confirmed</Label> : <Label positive>Email Unconfirmed</Label>
                     ) : null)}
                     {scope.props.subpage === 'sent' ? (
-                        <p style={{textAlign: 'right', marginTop:"5px"}}>${order.outStandingAmountInDollars.toFixed(2)} </p> 
+                        <p style={{textAlign: 'right', marginTop:"5px"}}>${order.outStandingAmountInDollars.toFixed(0)} </p> 
                     ) : null}
                     {scope.props.subpage === 'pending' ? (
                             <CustomProductModal
