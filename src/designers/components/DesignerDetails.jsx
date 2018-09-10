@@ -418,6 +418,57 @@ class CustomProductRow extends Component {
     }
 }
 
+class OutStandingVariant extends Component {
+  constructor(props) {
+      super(props);
+      this.state = {
+          variant: this.props.variant
+      };
+  }
+  
+  render () {
+    let variant = this.state.variant;
+    console.log(variant)
+    let options = [];
+    if (variant) {
+        if (variant.color_value) options.push('COLOR: ' + variant.color_value);
+        if (variant.size_value) options.push('SIZE: ' + variant.size_value);
+        if (variant.gemstone_value) options.push('STONE: ' + variant.gemstone_value);
+        if (variant.length_value) options.push('LENGTH: ' + variant.length_value);
+        if (variant.font_value) options.push('FONT: ' + variant.font_value);
+        if (variant.letter_value) options.push('LETTER: ' + variant.letter_value);
+        if (variant.singlepair_value) options.push('SINGLE/PAIR: ' + variant.singlepair_value);
+    }
+    const productUrl = '/products/search?q=' + variant.productId;
+    const productName = variant.name;
+    const productLink = <a href={productUrl}>{productName}</a>;
+     return (
+      <Table.Row>
+        <Table.Cell>
+          {productLink}
+        </Table.Cell>
+        <Table.Cell>
+          {options.map((option, i) => <span key={i}>{option}<br /></span>)}
+        </Table.Cell>
+        <Table.Cell>
+          {variant.wholesalePrice ? (
+            variant.wholesalePrice.toFixed(0)): null
+          }
+        </Table.Cell>
+        <Table.Cell>
+          {this.state.variant.units - this.state.variant.received}
+        </Table.Cell>
+        <Table.Cell>
+          {this.state.variant.units}
+        </Table.Cell>
+        <Table.Cell>
+          {this.state.variant.received}
+        </Table.Cell>
+      </Table.Row>
+    );
+  }
+}
+
 class VendorOrder extends Component {
     constructor(props) {
         super(props);
@@ -693,6 +744,7 @@ class VendorOrder extends Component {
                         onCancel={() => this.setState({ completeOrderConfirm: false })} />
                       
                 </Header>
+              
                 <Table className='order-products-table' basic='very' compact size='small' columns={6}>
                     <Table.Header>
                         <Table.Row>
@@ -743,7 +795,8 @@ class DesignerDetails extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: this.props.data ? this.props.data : null
+            data: this.props.data ? this.props.data : null,
+            outStandingVariants: this.props.outStandingVariants ? this.props.outStandingVariants : null,
         };
         this.handleSaveVendorOrder = this.handleSaveVendorOrder.bind(this);
         this.handleSendVendorOrder = this.handleSendVendorOrder.bind(this);
@@ -800,10 +853,43 @@ class DesignerDetails extends Component {
                 'hidden': !show
             }
         );
-
+         
+        let outStandingRows = [];
+      
+        if (this.state.outStandingVariants && this.state.outStandingVariants.length > 0) {
+          
+          this.state.outStandingVariants.map(variant => {
+            console.log(variant);
+            outStandingRows.push(
+              <OutStandingVariant
+                variant={variant}
+              />
+            )
+          })
+        }
+        
         return (
             <Table.Row className={rowClass}>
                 <Table.Cell colSpan='10' className='order-product-row'>
+                {subpage === 'sent' ? (
+                  <Table className='order-products-table' basic='very' compact size='small' columns={6}>
+                      <Table.Header>
+                          <Table.Row>
+                              <Table.HeaderCell>Product</Table.HeaderCell>
+                              <Table.HeaderCell>Options</Table.HeaderCell> 
+                              <Table.HeaderCell>Wholesale Price</Table.HeaderCell>
+                            
+                              <Table.HeaderCell>Total Awaiting</Table.HeaderCell>
+                              <Table.HeaderCell>Units Ordered</Table.HeaderCell>
+                              <Table.HeaderCell>Units Received</Table.HeaderCell>
+                            
+                          </Table.Row>
+                      </Table.Header>
+                      <Table.Body>
+                          {outStandingRows}
+                      </Table.Body>
+                  </Table>
+                ): null}
                     <Dimmer.Dimmable as={Segment} vertical blurring dimmed={this.props.isSaving}>
                         <Dimmer active={this.props.isSaving} inverted>
                             <Loader>Loading</Loader>

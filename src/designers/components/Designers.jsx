@@ -109,7 +109,6 @@ class Designer extends Component {
                 </Table.Cell>
                 <Table.Cell verticalAlign='top'>{name}</Table.Cell>
                 <Table.Cell verticalAlign='top'>{data.abbreviation}</Table.Cell>
-
                 <Table.Cell>
                     {this.props.data.orderHasNotes ? 'D' : ''}
                 </Table.Cell>
@@ -130,6 +129,10 @@ class Designer extends Component {
                 <Table.Cell>
                     <Button content='Order' size='mini' primary compact onClick={() => this.handleShowOrderFormClick(data.objectId)} />
                 </Table.Cell>
+                {this.props.subpage == "sent" &&  data.totalOutStandingAmountInDollars ? (
+                  <Table.Cell> <p>${data.totalOutStandingAmountInDollars.toFixed(0)}</p></Table.Cell>
+                ) : <Table.Cell> <p> </p></Table.Cell>}
+                
                 <Table.Cell className='right aligned'>{expandButton}</Table.Cell>
             </Table.Row>
         );
@@ -146,6 +149,7 @@ class Designers extends Component {
             search: search,
             designers: null,
             totalVendorOrdersOutstadingInDollars: 0,
+            outStandingUnitsByDesigner: null,
             products: null,
             expanded: [],
             designerOrderOpen: false,
@@ -283,6 +287,8 @@ class Designers extends Component {
         
         let totalVendorOrdersOutstadingInDollars = nextProps.totalVendorOrdersOutstadingInDollars ? nextProps.totalVendorOrdersOutstadingInDollars : 0;
 
+        let outStandingUnitsByDesigner = nextProps.outStandingUnitsByDesigner ? nextProps.outStandingUnitsByDesigner : null;
+        
         let designerOrderData = nextProps.designerOrderData ? nextProps.designerOrderData : this.state.designerOrderData;
 
         let isSavingDesigners = this.state.isSavingDesigners;
@@ -352,13 +358,25 @@ class Designers extends Component {
             isSavingDesigners: isSavingDesigners,
             successMessages: successMessages,
             errors: errors,
-            totalVendorOrdersOutstadingInDollars: totalVendorOrdersOutstadingInDollars
+            totalVendorOrdersOutstadingInDollars: totalVendorOrdersOutstadingInDollars,
+            outStandingUnitsByDesigner: outStandingUnitsByDesigner
         });
 
         if (nextPage !== this.state.page || nextProps.router.params.subpage !== this.state.subpage) {
             this.props.getDesigners(this.props.token, nextProps.router.params.subpage, nextPage, this.state.search);
         }
 
+    }
+    
+    getOustandingVariants(designerId) {
+      let outStandingVariants = [];
+      for (let i=0; i<this.state.outStandingUnitsByDesigner.length; i++) {
+        if (this.state.outStandingUnitsByDesigner[i].designerId === designerId) {
+          outStandingVariants = this.state.outStandingUnitsByDesigner[i].variantsOutStanding;
+          break;
+        }
+      }
+      return outStandingVariants;
     }
 
     render() {
@@ -386,7 +404,9 @@ class Designers extends Component {
                     objectId: designer.objectId,
                     updatedAt: designer.updatedAt,
                     vendors: designer.vendors,
-                    orderHasNotes
+                    orderHasNotes,
+                    variantsOutStanding: designer.variantsOutStanding,
+                    totalOutStandingAmountInDollars: designer.totalOutStandingAmountInDollars
                 }
                 // console.log(designer)
                 if(subpage == 'unconfirmed'){
@@ -400,6 +420,7 @@ class Designers extends Component {
                         totalVendorOrders={designer.vendorOrders ? designer.vendorOrders.length : 0}
                         isSaving={isSaving}
                         expanded={expanded}
+                        subpage = {subpage}
                         handleSaveVendor={scope.handleSaveVendor}
                         handleToggleClick={scope.handleToggleClick}
                         handleShowOrderFormClick={scope.handleShowOrderFormClick}
@@ -418,6 +439,7 @@ class Designers extends Component {
                         <DesignerDetails
                             data={designerDetailsData}
                             subpage={subpage}
+                            outStandingVariants={scope.getOustandingVariants(designer.designerId)}
                             expanded={expanded}
                             key={`${designer.designerId}-2`}
                             isSaving={isSaving}
@@ -454,7 +476,6 @@ class Designers extends Component {
                 {subpage === 'sent' ?(
                   <p style={{textAlign: 'right', marginRight:"10px", fontSize:"18px"}}> ${this.state.totalVendorOrdersOutstadingInDollars.toFixed(0)} </p>
                 ) : null}
-                
                 <Table className='orders-table'>
                     <Table.Header>
                         <Table.Row>
@@ -463,6 +484,7 @@ class Designers extends Component {
                             <Table.HeaderCell>Abbreviation</Table.HeaderCell>
                             <Table.HeaderCell>Notes</Table.HeaderCell>
                             <Table.HeaderCell className='right aligned'>Vendors</Table.HeaderCell>
+                            <Table.HeaderCell className='right aligned'>&nbsp;</Table.HeaderCell>
                             <Table.HeaderCell className='right aligned'>&nbsp;</Table.HeaderCell>
                             <Table.HeaderCell className='right aligned'>&nbsp;</Table.HeaderCell>
                         </Table.Row>
