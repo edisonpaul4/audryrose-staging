@@ -1,7 +1,8 @@
 const initialState = {
   isLoadingDesigners: false,
   designers: null,
-  totalVendorOrdersOutstadingInDollars: 0
+  totalVendorOrdersOutstadingInDollars: 0,
+  outStandingUnitsByDesigner : null
 };
 
 const mergeUpdatedDesigner = function (designers, updatedDesigner, completedVendorOrders) {
@@ -76,6 +77,11 @@ const designers = (state = initialState, action) => {
             let index = vendorOrdersOutStandingAmount.map(vendorOrder => vendorOrder.vendorOrderNumber).indexOf(vendorOrderNumber);
             return index == -1 ? 0 : vendorOrdersOutStandingAmount[index].outStandingAmountInDollars;
           }
+          const getOutStandingData = function (designerId, outStandingUnitsByDesigner) {
+            let index = outStandingUnitsByDesigner.map(designer => designer.designerId).indexOf(designerId);
+            return index == -1 ? null : outStandingUnitsByDesigner[index];
+          }
+          
           designer.vendorOrders = [];
           var vendorIds = [];
 
@@ -118,12 +124,18 @@ const designers = (state = initialState, action) => {
               }
             }
           }
-
+          
+          let outStandingData = getOutStandingData(designer.designerId, action.res.outStandingUnitsByDesigner);
+          if (outStandingData) {
+            designer.totalOutStandingAmountInDollars = outStandingData.totalAmountOutStanding,
+            designer.variantsOutStanding = outStandingData.variantsOutStanding;
+          }
+          
           designersArray.push(designer);
           //return designer;
         });
       }
-
+      
       return {
         ...state,
         timeout: action.res.timeout ? action.res.timeout : undefined,
@@ -131,7 +143,8 @@ const designers = (state = initialState, action) => {
         designers: designersArray,
         updateProducts: null,
         totalPages: action.res.totalPages,
-        totalVendorOrdersOutstadingInDollars: action.res.totalVendorOrdersOutstadingInDollars
+        totalVendorOrdersOutstadingInDollars: action.res.totalVendorOrdersOutstadingInDollars,
+        outStandingUnitsByDesigner : action.res.outStandingUnitsByDesigner
       };
 
     case 'DESIGNERS_FAILURE':
