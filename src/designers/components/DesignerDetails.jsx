@@ -422,13 +422,32 @@ class OutStandingVariant extends Component {
   constructor(props) {
       super(props);
       this.state = {
-          variant: this.props.variant
+          variant: this.props.variant,
+          productName: this.props.variant.productName ? this.props.variant.productName : "",
+          wholesalePrice: this.props.variant.wholesalePrice ? this.props.variant.wholesalePrice : 0,
+          totalAwaiting: this.props.variant.units - this.props.variant.received > 0 ? this.props.variant.units - this.props.variant.received : 0,
+          units: this.props.variant.units ? this.props.variant.units : 0,
+          received: this.props.variant.received ? this.props.variant.received : 0,
+          variantsOutStanding : this.props.variant.variantsOutStanding ? this.props.variant.variantsOutStanding : [],
+          isSaving: false,
+          saved: false
       };
+      console.log(this.state)
+      this.handleOnReceivedChange = this.handleOnReceivedChange.bind(this);
+  }
+  
+  handleOnReceivedChange (e, {value}) {
+    this.setState({
+      received: parseFloat(value),
+      saved: false
+    })
+    let variant = this.state.variant;
+    variant.received = parseFloat(value);
+    this.props.handleVariantEdited(variant)
   }
   
   render () {
     let variant = this.state.variant;
-    console.log(variant)
     let options = [];
     if (variant) {
         if (variant.color_value) options.push('COLOR: ' + variant.color_value);
@@ -456,13 +475,13 @@ class OutStandingVariant extends Component {
           }
         </Table.Cell>
         <Table.Cell>
-          {this.state.variant.units - this.state.variant.received}
+          {this.state.units - this.state.received > 0 ? this.state.units - this.state.received : 0}
         </Table.Cell>
         <Table.Cell>
           {this.state.variant.units}
         </Table.Cell>
         <Table.Cell>
-          {this.state.variant.received}
+          <Input type='number' value={this.state.variant.received} onChange={this.handleOnReceivedChange} min={0} disabled={this.props.isSaving} />
         </Table.Cell>
       </Table.Row>
     );
@@ -797,9 +816,11 @@ class DesignerDetails extends Component {
         this.state = {
             data: this.props.data ? this.props.data : null,
             outStandingVariants: this.props.outStandingVariants ? this.props.outStandingVariants : null,
+            variantsEdited : false
         };
         this.handleSaveVendorOrder = this.handleSaveVendorOrder.bind(this);
         this.handleSendVendorOrder = this.handleSendVendorOrder.bind(this);
+        this.handleVariantEdited = this.handleVariantEdited.bind(this);
     }
     handleSaveVendorOrder(vendorOrderData) {
         vendorOrderData.designerId = this.state.data.objectId;
@@ -820,7 +841,28 @@ class DesignerDetails extends Component {
     handleDeleteProductFromVendorOrder(productObjectId, vendorOrderNumber) {
         this.props.handleDeleteProductFromVendorOrder(productObjectId, vendorOrderNumber, this.props.data.objectId);
     }
+    
+    handleVariantEdited(data) {
+        const scope = this;
+        let variantsEdited = false;
+        let outStandingVariants = this.state.outStandingVariants.map(function (variant, i) {
+            if (variant.objectId === data.objectId) variant = data;
+            scope.props.outStandingVariants.map(function (outstandingVariant, j) {
+                if (outstandingVariant.objectId === variant.objectId) {
+                    if (outstandingVariant.received !== variant.received) variantsEdited = true;
+                }
+                return outstandingVariant;
+            });
+            return variant;
+        });
+        
+        this.setState({
+            variantsEdited: variantsEdited,
+            outStandingVariants: outStandingVariants
+        });
+    }
     render() {
+    
         const show = this.props.expanded ? true : false;
         const subpage = this.props.subpage;
         const data = this.state.data;
@@ -855,14 +897,14 @@ class DesignerDetails extends Component {
         );
          
         let outStandingRows = [];
-      
+        const scope = this;
         if (this.state.outStandingVariants && this.state.outStandingVariants.length > 0) {
-          
-          this.state.outStandingVariants.map(variant => {
-            console.log(variant);
+          this.state.outStandingVariants.map(function(variant, index) {
             outStandingRows.push(
               <OutStandingVariant
+                key={index}
                 variant={variant}
+                handleVariantEdited={scope.handleVariantEdited}   
               />
             )
           })
