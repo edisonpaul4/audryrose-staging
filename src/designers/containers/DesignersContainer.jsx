@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { getDesigners, saveVendor, saveVendorOrder, sendVendorOrder, getDesignerProducts, addDesignerProductToVendorOrder, completeVendorOrder, deleteProductFromVendorOrder, resetStorage } from '../actions';
+import { getDesigners, saveVendor, saveVendorOrder, saveVendorOrders, sendVendorOrder, getDesignerProducts, addDesignerProductToVendorOrder, completeVendorOrder, deleteProductFromVendorOrder, resetStorage } from '../actions';
 import { Designers } from '../components/components';
 
 const select = state => ({
@@ -23,6 +23,7 @@ const actions = {
 	getDesigners,
 	saveVendor,
 	saveVendorOrder,
+	saveVendorOrders,
 	sendVendorOrder,
 	getDesignerProducts,
 	addDesignerProductToVendorOrder,

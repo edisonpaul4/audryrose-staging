@@ -186,7 +186,36 @@ const designers = (state = initialState, action) => {
         updatedDesigner: action.res.updatedDesigner ? action.res.updatedDesigner.toJSON() : undefined
       };
 
-    case 'VENDOR_ORDER_SAVE_FAILURE':
+      case 'VENDOR_SAVE_FAILURE':
+        return {
+          ...state
+        }
+
+      case 'VENDOR_ORDERS_SAVE_REQUEST':
+        return {
+          ...state
+        }
+
+      case 'VENDOR_ORDERS_SAVE_SUCCESS':
+      /*console.log("RESPUESTA");
+      const getOutStandingData = function (designerId, outStandingUnitsByDesigner) {
+        let index = outStandingUnitsByDesigner.map(designer => designer.designerId).indexOf(designerId);
+        return index == -1 ? null : outStandingUnitsByDesigner[index];
+      }
+      let outStandingUnitsArray = state.outStandingUnitsByDesigner.map(designer => {
+        if (designer.designerId === action.res.designerId) {
+          action.res.variantsByOrder.map(variant => {
+            let indexOutstanding = designer.variantsOutStanding.map(v=>v.objectId).indexOf(variant.)
+          })
+        }
+      })*/
+      if(!alert('Items checked in successfully!')){window.location.reload();}
+      console.log(action.res)
+        return {
+          ...state
+        };
+        
+    case 'VENDOR_ORDERS_SAVE_FAILURE':
       return {
         ...state
       }

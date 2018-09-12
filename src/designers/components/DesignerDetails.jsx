@@ -879,6 +879,7 @@ class DesignerDetails extends Component {
     handleSaveOutstandingVariants () {
       let vendorOrdersToSave = [];
       let outStandingVariants = this.state.outStandingVariants;
+      const scope = this;
       outStandingVariants.map(variant => {
         if (variant.edited) {
           //console.log(variant.vendorOrders[0]);
@@ -895,10 +896,11 @@ class DesignerDetails extends Component {
               if (vendorOrders[0].vendorOrderVariants) {
                 vendorOrders[0].vendorOrderVariants = vendorOrders[0].vendorOrderVariants.map(orderVariant => {
                   if (orderVariant.variant.objectId === variant.objectId) {
-                    orderVariant.received = unitsToCheckin;
+                    orderVariant.received += unitsToCheckin;
                   }
                   return orderVariant;
                 })
+                vendorOrders[0].designerId = scope.props.designerId;
                 vendorOrdersToSave.push(vendorOrders[0]);
                 unitsToCheckin = 0;
               }  
@@ -908,12 +910,12 @@ class DesignerDetails extends Component {
                 order.vendorOrderVariants = order.vendorOrderVariants.map(orderVariant => {
                   if (orderVariant.variant.objectId === variant.objectId) {
                     let unitsToAdd = orderVariant.units - orderVariant.received;
-                    orderVariant.received = unitsToAdd;
+                    orderVariant.received += unitsToAdd;
                     unitsToCheckin -= unitsToAdd;
                   }
                   return orderVariant;
                 })
-                
+                order.designerId = scope.props.designerId;
                 vendorOrdersToSave.push(order);
               }
               
@@ -922,7 +924,7 @@ class DesignerDetails extends Component {
           console.log(vendorOrdersToSave)
         }
       })
-    
+      this.props.handleSaveVendorOrders(vendorOrdersToSave);
       this.setState({
         isSaving:true
       })
@@ -984,7 +986,7 @@ class DesignerDetails extends Component {
             size='small'
             icon='save'
             content='Save Changes'
-            disabled={this.props.isSaving}
+            disabled={this.state.isSaving}
             onClick={this.handleSaveOutstandingVariants}
         /> : null;
         

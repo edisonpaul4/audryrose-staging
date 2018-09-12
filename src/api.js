@@ -367,6 +367,13 @@ export const saveVendor = (token, data) => Parse.Cloud.run('saveVendor',
     }
 );
 
+export const saveVendorOrders = (token, vendorOrders) => axios.post('/functions/saveVendorOrders',
+  {
+    sessionToken: token,
+    vendorOrders: vendorOrders
+  }
+);
+
 export const saveVendorOrder = (token, data) => axios.post('/jobs/saveVendorOrder', {
     data: data
 }).then(function (response) {
@@ -650,6 +657,7 @@ export default {
     getDesignersName,
     saveVendor,
     saveVendorOrder,
+    saveVendorOrders,
     sendVendorOrder,
     getDesignerProducts,
     addDesignerProductToVendorOrder,
