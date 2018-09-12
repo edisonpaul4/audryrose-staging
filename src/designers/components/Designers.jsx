@@ -168,6 +168,7 @@ class Designers extends Component {
         this.handleShowOrderFormClick = this.handleShowOrderFormClick.bind(this);
         this.handleAddToVendorOrder = this.handleAddToVendorOrder.bind(this);
         this.handleDesignerOrderModalClose = this.handleDesignerOrderModalClose.bind(this);
+        this.handleSaveVendorOrders = this.handleSaveVendorOrders.bind(this);
         this._notificationSystem = null;
     }
     componentWillUnmount(){
@@ -267,6 +268,10 @@ class Designers extends Component {
 
     handleDeleteProductFromVendorOrder(productObjectId, vendorOrderNumber, objectId) {
         this.props.deleteProductFromVendorOrder(this.props.token, productObjectId, vendorOrderNumber, objectId);
+    }
+    
+    handleSaveVendorOrders(vendorOrders) {
+      this.props.saveVendorOrders(this.props.token, vendorOrders);
     }
 
     handleDesignerOrderModalClose(data) {
@@ -438,12 +443,14 @@ class Designers extends Component {
                     designerRows.push(
                         <DesignerDetails
                             data={designerDetailsData}
+                            designerId={designerData.designerId}
                             subpage={subpage}
                             outStandingVariants={scope.getOustandingVariants(designer.designerId)}
                             expanded={expanded}
                             key={`${designer.designerId}-2`}
                             isSaving={isSaving}
                             handleSaveVendorOrder={scope.handleSaveVendorOrder}
+                            handleSaveVendorOrders={scope.handleSaveVendorOrders}
                             handleSendVendorOrder={scope.handleSendVendorOrder}
                             handleCompleteVendorOrder={scope.handleCompleteVendorOrder.bind(scope)}
                             handleDeleteProductFromVendorOrder={scope.handleDeleteProductFromVendorOrder.bind(scope)}

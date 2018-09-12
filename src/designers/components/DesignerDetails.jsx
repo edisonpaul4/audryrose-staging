@@ -422,13 +422,38 @@ class OutStandingVariant extends Component {
   constructor(props) {
       super(props);
       this.state = {
-          variant: this.props.variant
+          variant: this.props.variant,
+          productName: this.props.variant.productName ? this.props.variant.productName : "",
+          wholesalePrice: this.props.variant.wholesalePrice ? this.props.variant.wholesalePrice : 0,
+          totalAwaiting: this.props.variant.units - this.props.variant.received > 0 ? this.props.variant.units - this.props.variant.received : 0,
+          units: this.props.variant.units ? this.props.variant.units : 0,
+          received: this.props.variant.received ? this.props.variant.received : 0,
+          originalReceived: this.props.variant.received ? this.props.variant.received : 0,
+          variantsOutStanding : this.props.variant.variantsOutStanding ? this.props.variant.variantsOutStanding : [],
+          isSaving: this.props.isSaving,
+          saved: false,
+          edited: false
       };
+      
+      this.handleOnReceivedChange = this.handleOnReceivedChange.bind(this);
+  }
+  
+  handleOnReceivedChange (e, {value}) {
+    let variant = this.state.variant;
+    variant.received = parseFloat(value);
+    this.setState({
+      received: parseFloat(value),
+      saved: false,
+      edited : variant.received - this.state.originalReceived > 0 ? true : false
+    })
+    
+    this.props.handleVariantEdited(variant, variant.received - this.state.originalReceived);
+    
+    
   }
   
   render () {
     let variant = this.state.variant;
-    console.log(variant)
     let options = [];
     if (variant) {
         if (variant.color_value) options.push('COLOR: ' + variant.color_value);
@@ -456,13 +481,13 @@ class OutStandingVariant extends Component {
           }
         </Table.Cell>
         <Table.Cell>
-          {this.state.variant.units - this.state.variant.received}
+          {this.state.units - this.state.received > 0 ? this.state.units - this.state.received : 0}
         </Table.Cell>
         <Table.Cell>
           {this.state.variant.units}
         </Table.Cell>
         <Table.Cell>
-          {this.state.variant.received}
+          <Input type='number' value={this.state.variant.received} onChange={this.handleOnReceivedChange} min={0} disabled={this.props.isSaving} />
         </Table.Cell>
       </Table.Row>
     );
@@ -797,9 +822,14 @@ class DesignerDetails extends Component {
         this.state = {
             data: this.props.data ? this.props.data : null,
             outStandingVariants: this.props.outStandingVariants ? this.props.outStandingVariants : null,
+            originalOutstandingVariants: null,
+            variantsEdited : false,
+            isSaving:false
         };
         this.handleSaveVendorOrder = this.handleSaveVendorOrder.bind(this);
         this.handleSendVendorOrder = this.handleSendVendorOrder.bind(this);
+        this.handleVariantEdited = this.handleVariantEdited.bind(this);
+        this.handleSaveOutstandingVariants = this.handleSaveOutstandingVariants.bind(this);
     }
     handleSaveVendorOrder(vendorOrderData) {
         vendorOrderData.designerId = this.state.data.objectId;
@@ -820,7 +850,87 @@ class DesignerDetails extends Component {
     handleDeleteProductFromVendorOrder(productObjectId, vendorOrderNumber) {
         this.props.handleDeleteProductFromVendorOrder(productObjectId, vendorOrderNumber, this.props.data.objectId);
     }
+    componentWillMount (){
+      this.setState({
+        originalOutstandingVariants: this.state.outStandingVariants.map(variant => variant)
+      })
+    }
+    handleVariantEdited(data, difference) {
+        const scope = this;
+        let variantEdited = false;
+        let outStandingVariants = this.state.outStandingVariants;
+        if (difference > 0) {
+          variantEdited = true;
+        }
+        outStandingVariants = this.state.outStandingVariants.map(function (variant, i) {
+            if (variant.objectId === data.objectId){
+              variant = data;
+              variant.edited=variantEdited;
+              variant.checkedIn = difference;
+            } 
+            return variant;
+        });
+        
+        this.setState({
+            variantsEdited: true,
+            outStandingVariants: outStandingVariants
+        });
+    }
+    handleSaveOutstandingVariants () {
+      let vendorOrdersToSave = [];
+      let outStandingVariants = this.state.outStandingVariants;
+      const scope = this;
+      outStandingVariants.map(variant => {
+        if (variant.edited) {
+          //console.log(variant.vendorOrders[0]);
+          //console.log(variant.vendorOrders[1]);
+          let vendorOrders = variant.vendorOrders.sort(function(a,b){
+            return new Date(a.createdAt) - new Date(b.createdAt);
+          })
+          //console.log(vendorOrders.length)
+          let unitsToCheckin = variant.checkedIn;
+          while (unitsToCheckin > 0) {
+            console.log(unitsToCheckin)
+            console.log(vendorOrders.length)
+            if (vendorOrders.length == 1) {
+              if (vendorOrders[0].vendorOrderVariants) {
+                vendorOrders[0].vendorOrderVariants = vendorOrders[0].vendorOrderVariants.map(orderVariant => {
+                  if (orderVariant.variant.objectId === variant.objectId) {
+                    orderVariant.received += unitsToCheckin;
+                  }
+                  return orderVariant;
+                })
+                vendorOrders[0].designerId = scope.props.designerId;
+                vendorOrdersToSave.push(vendorOrders[0]);
+                unitsToCheckin = 0;
+              }  
+            } else if (vendorOrders.length > 1) {
+              let order = vendorOrders.splice(0, 1)[0];
+              if (order.vendorOrderVariants) {
+                order.vendorOrderVariants = order.vendorOrderVariants.map(orderVariant => {
+                  if (orderVariant.variant.objectId === variant.objectId) {
+                    let unitsToAdd = orderVariant.units - orderVariant.received;
+                    orderVariant.received += unitsToAdd;
+                    unitsToCheckin -= unitsToAdd;
+                  }
+                  return orderVariant;
+                })
+                order.designerId = scope.props.designerId;
+                vendorOrdersToSave.push(order);
+              }
+              
+            }
+          }
+          console.log(vendorOrdersToSave)
+        }
+      })
+      this.props.handleSaveVendorOrders(vendorOrdersToSave);
+      this.setState({
+        isSaving:true
+      })
+    }
     render() {
+    
         const show = this.props.expanded ? true : false;
         const subpage = this.props.subpage;
         const data = this.state.data;
@@ -855,18 +965,30 @@ class DesignerDetails extends Component {
         );
          
         let outStandingRows = [];
-      
-        if (this.state.outStandingVariants && this.state.outStandingVariants.length > 0) {
-          
-          this.state.outStandingVariants.map(variant => {
-            console.log(variant);
+        const scope = this;
+        if (this.props.outStandingVariants && this.props.outStandingVariants.length > 0) {
+          this.props.outStandingVariants.map(function(variant, index) {
             outStandingRows.push(
               <OutStandingVariant
+                key={index}
                 variant={variant}
+                isSaving= {scope.state.isSaving}
+                handleVariantEdited={scope.handleVariantEdited}   
               />
             )
           })
         }
+        
+        const saveChangesButton = this.state.variantsEdited ? <Button
+            primary
+            circular
+            compact
+            size='small'
+            icon='save'
+            content='Save Changes'
+            disabled={this.state.isSaving}
+            onClick={this.handleSaveOutstandingVariants}
+        /> : null;
         
         return (
             <Table.Row className={rowClass}>
@@ -890,6 +1012,8 @@ class DesignerDetails extends Component {
                       </Table.Body>
                   </Table>
                 ): null}
+                {saveChangesButton}
+                
                     <Dimmer.Dimmable as={Segment} vertical blurring dimmed={this.props.isSaving}>
                         <Dimmer active={this.props.isSaving} inverted>
                             <Loader>Loading</Loader>
