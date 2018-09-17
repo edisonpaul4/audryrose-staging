@@ -57,7 +57,7 @@ class ProductRow extends Component {
         let variant = this.state.product.variants ? this.state.product.variants[0] : null;
         this.props.handleOrderProductEditClick({ orderProductId: this.state.product.orderProductId, variant: variant });
     }
-    getVendorOrderLabel(product, variant, vendorOrderVariant, vendorOrder, orderProductMatch) {
+    getVendorOrderLabel(product, variant, vendorOrderVariant, vendorOrder, orderProductMatch, designerId) {
         if (!vendorOrder) return <Label size='tiny' color='red' key={'product-' + product.objectId + '-' + vendorOrderVariant.objectId}>Error: Missing vendor order data</Label>;
 
         const averageWaitTime = vendorOrder.vendor.waitTime ? vendorOrder.vendor.waitTime : 21;
@@ -82,14 +82,20 @@ class ProductRow extends Component {
         }// else if (vendorOrderVariant.ordered && vendorOrderVariant.received > 0) {
         // 	labelText += ', ' + vendorOrderVariant.received + ' Received';
         // }
-      
+        
         labelText += ' #' + vendorOrder.vendorOrderNumber;
-        //LS-204
-        let orderDesigner = vendorOrder.vendor.designers[vendorOrder.vendor.designers.map(d=>d.abbreviation).indexOf(vendorOrder.vendor.abbreviation)] ? vendorOrder.vendor.designers[vendorOrder.vendor.designers.map(d=>d.abbreviation).indexOf(vendorOrder.vendor.abbreviation)] : null;
+        
+        
         const labelDetailText = vendorOrder.dateOrdered && !vendorOrderVariant.deleted ? daysLeft < 0 ? moment(vendorOrder.dateOrdered.iso).format('M-D-YY') + ' (' + Math.abs(daysLeft) + ' days late)' : moment(vendorOrder.dateOrdered.iso).format('M-D-YY') + ' (' + daysLeft + ' days left)' : (!vendorOrderVariant.deleted ? averageWaitTime + ' days wait' : '');
         const labelDetail = vendorOrderVariant.done === false ? <Label.Detail>{labelDetailText}</Label.Detail> : null;
-        //LS-204   const labelLink = vendorOrderVariant.done === false ? designer.designerId ? '/designers/search?q=' + designer.designerId : '/designers' : null;
-        const labelLink = vendorOrderVariant.done === false ? orderDesigner && orderDesigner.designerId ? '/designers/search?q=' + orderDesigner.designerId : '/designers' : null;
+        
+        var labelLink = "";
+        if (!designerId) {
+          labelLink = vendorOrderVariant.done === false ? variant.designer.designerId ? '/designers/search?q=' + variant.designer.designerId : '/designers' : null;
+        } else {
+          labelLink = vendorOrderVariant.done === false ? designerId ? '/designers/search?q=' + designerId : '/designers' : null;
+        }
+        //const labelLink = vendorOrderVariant.done === false ? orderDesigner && orderDesigner.designerId ? '/designers/search?q=' + orderDesigner.designerId : '/designers' : null;
         let showLabel = true;
         return showLabel ? <Label as={labelLink ? 'a' : null} href={labelLink} size='tiny' color={labelColor} key={'product-' + product.objectId + '-' + vendorOrderVariant.objectId}>{labelIcon}{labelText}{labelDetail}</Label> : null;
     }
@@ -200,7 +206,7 @@ class ProductRow extends Component {
                         });
                     }
                     if (orderProductMatch && variant.objectId === vendorOrderVariant.variant.objectId) {
-                        var vendorOrderLabel = scope.getVendorOrderLabel(product, variant, vendorOrderVariant, vendorOrder, orderProductMatch);
+                        var vendorOrderLabel = scope.getVendorOrderLabel(product, variant, vendorOrderVariant, vendorOrder, orderProductMatch, undefined);
                         if (vendorOrderLabel) vendorOrders.push(vendorOrderLabel);
                     }
                     return vendorOrderVariant;
@@ -235,9 +241,10 @@ class ProductRow extends Component {
                     if (product.awaitingInventoryVendorOrders) {
                         vendorOrderMatch = product.awaitingInventoryVendorOrders.find(vendorO => vendorO.vendorOrderVariants.find(orVar => orVar.variant.productId == variant.productId) != undefined);
                         if (vendorOrderMatch != undefined) {
+                            let designerOrderId = vendorOrderMatch.vendor.designers[0].designerId
                             let vendorOrderOut = vendorOrderMatch.vendorOrderVariants.find(ele => ele.variant.objectId === variant.objectId);
                             vendorOrderOut = vendorOrderOut == undefined ? vendorOrderMatch : vendorOrderOut;
-                            label = scope.getVendorOrderLabel(product, variant, vendorOrderOut, vendorOrderMatch, vendorOrderMatch);
+                            label = scope.getVendorOrderLabel(product, variant, vendorOrderOut, vendorOrderMatch, vendorOrderMatch, designerOrderId);
                         }
                     }
                 } else {
