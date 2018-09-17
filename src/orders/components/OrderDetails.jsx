@@ -89,7 +89,7 @@ class ProductRow extends Component {
         const labelDetailText = vendorOrder.dateOrdered && !vendorOrderVariant.deleted ? daysLeft < 0 ? moment(vendorOrder.dateOrdered.iso).format('M-D-YY') + ' (' + Math.abs(daysLeft) + ' days late)' : moment(vendorOrder.dateOrdered.iso).format('M-D-YY') + ' (' + daysLeft + ' days left)' : (!vendorOrderVariant.deleted ? averageWaitTime + ' days wait' : '');
         const labelDetail = vendorOrderVariant.done === false ? <Label.Detail>{labelDetailText}</Label.Detail> : null;
         //LS-204   const labelLink = vendorOrderVariant.done === false ? designer.designerId ? '/designers/search?q=' + designer.designerId : '/designers' : null;
-        const labelLink = vendorOrderVariant.done === false ? orderDesigner.designerId ? '/designers/search?q=' + orderDesigner.designerId : '/designers' : null;
+        const labelLink = vendorOrderVariant.done === false ? orderDesigner && orderDesigner.designerId ? '/designers/search?q=' + orderDesigner.designerId : '/designers' : null;
         let showLabel = true;
         return showLabel ? <Label as={labelLink ? 'a' : null} href={labelLink} size='tiny' color={labelColor} key={'product-' + product.objectId + '-' + vendorOrderVariant.objectId}>{labelIcon}{labelText}{labelDetail}</Label> : null;
     }
