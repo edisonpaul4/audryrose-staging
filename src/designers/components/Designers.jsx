@@ -225,6 +225,23 @@ class Designers extends Component {
         this.setState({
             isSavingDesigners: currentlySaving
         });
+        let designerObjectId = data.designerId;
+        let designerData = this.state.designers[this.state.designers.map(designer => designer.objectId).indexOf(designerObjectId)];
+        let originalVendorOrder = designerData.vendorOrders[designerData.vendorOrders.map(vendorOrder => vendorOrder.order.objectId).indexOf(data.orderId)];
+        let originalVariants = originalVendorOrder ? originalVendorOrder.order.vendorOrderVariants : [];
+        let newVariantsData = [];
+        if (originalVariants.length > 0) {
+          //Check which variants have changed
+          data.variantsData.map(variant => {
+            let original = originalVariants[originalVariants.map(v => v.objectId).indexOf(variant.objectId)];
+            let originalReceived = original.received !== undefined ? original.received : 0;
+            let newReceived = variant.received;
+            if (newReceived !== undefined && originalReceived !== newReceived) {
+              newVariantsData.push(variant);
+            }
+          })
+          data.variantsData = newVariantsData;
+        }
         this.props.saveVendorOrder(this.props.token, data);
     }
 
