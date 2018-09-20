@@ -178,11 +178,11 @@ const designers = (state = initialState, action) => {
       }
 
     case 'VENDOR_ORDER_SAVE_SUCCESS':
-      designersArray = mergeUpdatedDesigner(state.designers, action.res.updatedDesigner, action.res.completedVendorOrders);
+      //designersArray = mergeUpdatedDesigner(state.designers, action.res.updatedDesigner, action.res.completedVendorOrders); LS-207
       return {
         ...state,
         timeout: action.res.timeout ? action.res.timeout : undefined,
-        designers: designersArray ? designersArray : undefined,
+        //designers: designersArray ? designersArray : undefined, LS-207
         updatedDesigner: action.res.updatedDesigner ? action.res.updatedDesigner.toJSON() : undefined
       };
 
