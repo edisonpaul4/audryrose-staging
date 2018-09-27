@@ -224,7 +224,7 @@ class Designers extends Component {
         }
         this.setState({
             isSavingDesigners: currentlySaving
-        });
+        });/*
         let designerObjectId = data.designerId;
         let designerData = this.state.designers[this.state.designers.map(designer => designer.objectId).indexOf(designerObjectId)];
         let originalVendorOrder = designerData.vendorOrders[designerData.vendorOrders.map(vendorOrder => vendorOrder.order.objectId).indexOf(data.orderId)];
@@ -241,7 +241,7 @@ class Designers extends Component {
             }
           })
           data.variantsData = newVariantsData;
-        }
+        }*/
         this.props.saveVendorOrder(this.props.token, data);
     }
 
