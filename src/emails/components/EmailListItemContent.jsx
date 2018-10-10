@@ -183,7 +183,7 @@ export default class EmailListItemContent extends React.Component {
     return showLabel ? <Label as='a' href={labelLink} size='tiny' color={labelColor} key={'resizeOrder-' + resizeOrder.objectId}>{labelIcon}{labelText}{labelDetail}</Label> : null;
   }
 
-  prepareMessageTemplate(customer, products, user, emailLastLine) {
+  prepareMessageTemplate(customer, products, user, emailLastLine) {    
     const nameToCamelCase = fullName => fullName
       .split(' ')
       .map(name => name.slice(0, 1).toUpperCase() + name.slice(1).toLowerCase())
@@ -201,9 +201,11 @@ export default class EmailListItemContent extends React.Component {
 
     const thirdRule = products
       .filter(product => product.isActive && product.totalInventory === 0 && product.quantity_shipped === 0);
-
-    const msgHeader = `Hi ${nameToCamelCase(customer.firstName)},\n\n`;
-    let msgContent = typeof customer.totalOrders !== 'undefined' && customer.totalOrders >= 2 ? 'Thank you for your continued support' : `Thank you for your order!`;
+    
+    let morningOrEvening = Number(new Date().toLocaleTimeString().split(':')[0]) >= 15 ? "evening" : "afternoon";
+    const msgHeader = `Good ${morningOrEvening},\n\n`; 
+    //const msgHeader = `Hi ${nameToCamelCase(customer.firstName)},\n\n`;
+    let msgContent = typeof customer.totalOrders !== 'undefined' && customer.totalOrders >= 2 ? 'Thank you for your continued support' : `Thank you so much for placing your first order! I wanted to be the first to welcome you to the Audry Rose family. We have free returns and a lifetime warranty so you are in good hands!`;
 
     const getClassificationName = product => {
       if (product.classificationName !== 'Earrings')
@@ -229,11 +231,17 @@ export default class EmailListItemContent extends React.Component {
         const handmadeMessage = `as ${isEarrings ? 'they are': 'it is'} being handmade for you!`
         return `\n\nYour ${product.name} will take approximately ${this.defineWaitTime(product).toLowerCase()} to ship, ${handmadeMessage}`;
       }).join('');
-
-    const msgFooter = `\n\nIf you need ${footerMessages.first} ${footerMessages.second} by a certain date, please let us know so we can do our best to accommodate you.\n\nPlease let me know if you have any question or concerns.\n\n`;
+      
+    let totalOrder = 0;
+    products.map(p=>{
+      totalOrder+=p.price * p.quantity;
+    })
+    
+    const msgFooter = `\n\nI am happy to look into rushing your order, if you need ${footerMessages.first} ${footerMessages.second} by a certain date, please let us know so we can do our best to accommodate you!`;
+    const questions = `If you have any questions or concerns, please don’t hesitate to ask!\n\n`
     const lastLine = emailLastLine + '\n\n';
     const msgBrand = `Tracy Inoue\nwww.loveaudryrose.com\n424.387.8000`;
-    return msgHeader + msgContent + msgFooter + lastLine + msgBrand;
+    return msgHeader + msgContent + (totalOrder >= 300 ? msgFooter+"\n\n": "\n\n") + questions + lastLine + msgBrand;
   }
 
   onDelete() {
@@ -360,6 +368,7 @@ EmailListItemContent.propTypes = {
   products: PropTypes.arrayOf(PropTypes.shape({
     objectId: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
+    price: PropTypes.number.isRequired,
     isActive: PropTypes.bool.isRequired,
     totalInventory: PropTypes.number.isRequired,
     quantity: PropTypes.number.isRequired,
