@@ -205,7 +205,7 @@ export default class EmailListItemContent extends React.Component {
     let morningOrEvening = Number(new Date().toLocaleTimeString().split(':')[0]) >= 15 ? "evening" : "afternoon";
     const msgHeader = `Good ${morningOrEvening},\n\n`; 
     //const msgHeader = `Hi ${nameToCamelCase(customer.firstName)},\n\n`;
-    let msgContent = typeof customer.totalOrders !== 'undefined' && customer.totalOrders >= 2 ? 'Thank you for your continued support' : `Thank you so much for placing your first order! I wanted to be the first to welcome you to the Audry Rose family. We have free returns and a lifetime warranty so you are in good hands!`;
+    let msgContent = typeof customer.totalOrders !== 'undefined' && customer.totalOrders >= 2 ? 'Thank you for your continued support. We feel so lucky to have your trust, and I wanted to remind you of our lifetime warranty, and free 60 day returns' : `Thank you so much for placing your first order! I wanted to be the first to welcome you to the Audry Rose family. We have free returns and a lifetime warranty so you are in good hands!`;
 
     const getClassificationName = product => {
       if (product.classificationName !== 'Earrings')
@@ -220,7 +220,7 @@ export default class EmailListItemContent extends React.Component {
     }
 
     if (firstRule && firstRule.length > 0) 
-      msgContent = msgContent + ` Your ${firstRule} shipped today, hope you love it!`;
+      msgContent = msgContent + `\n\nYour ${firstRule} shipped today, hope you love it!`;
 
     if (secondRule && secondRule.length > 0)
       msgContent = msgContent + `\n\nYour ${secondRule} will take approximately one week to ship!`;
