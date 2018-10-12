@@ -183,12 +183,16 @@ export default class EmailListItemContent extends React.Component {
     return showLabel ? <Label as='a' href={labelLink} size='tiny' color={labelColor} key={'resizeOrder-' + resizeOrder.objectId}>{labelIcon}{labelText}{labelDetail}</Label> : null;
   }
 
-  prepareMessageTemplate(customer, products, user, emailLastLine) {    
+  prepareMessageTemplate(customer, products, productsFromLastOrder, user, emailLastLine) {    
     const nameToCamelCase = fullName => fullName
       .split(' ')
       .map(name => name.slice(0, 1).toUpperCase() + name.slice(1).toLowerCase())
       .join(' ');
 
+    if (productsFromLastOrder) {
+      productsFromLastOrder = productsFromLastOrder.map(p=>p).join(', ');
+    }
+    
     const firstRule = products
       .filter(product => product.isActive && (product.totalInventory !== 0 || product.quantity_shipped > 0))
       .map(product => product.name)
@@ -205,7 +209,7 @@ export default class EmailListItemContent extends React.Component {
     let morningOrEvening = Number(new Date().toLocaleTimeString().split(':')[0]) >= 15 ? "evening" : "afternoon";
     const msgHeader = `Good ${morningOrEvening},\n\n`; 
     //const msgHeader = `Hi ${nameToCamelCase(customer.firstName)},\n\n`;
-    let msgContent = typeof customer.totalOrders !== 'undefined' && customer.totalOrders >= 2 ? 'Thank you for your continued support. We feel so lucky to have your trust, and I wanted to remind you of our lifetime warranty, and free 60 day returns' : `Thank you so much for placing your first order! I wanted to be the first to welcome you to the Audry Rose family. We have free returns and a lifetime warranty so you are in good hands!`;
+    let msgContent = typeof customer.totalOrders !== 'undefined' && customer.totalOrders >= 2 ? ('Thank you for your continued support -' + (productsFromLastOrder? (` I hope you’re loving your ${productsFromLastOrder} so far!`) : '') +' We feel so lucky to have your trust, and I wanted to remind you of our lifetime warranty, and free 60 day returns') : `Thank you so much for placing your first order! I wanted to be the first to welcome you to the Audry Rose family. We have free returns and a lifetime warranty so you are in good hands!`;
 
     const getClassificationName = product => {
       if (product.classificationName !== 'Earrings')
@@ -261,14 +265,14 @@ export default class EmailListItemContent extends React.Component {
   }
 
   componentWillMount(){
-    const { customer, products, user, emailLastLine } = this.props;
+    const { customer, products, user, emailLastLine, productsFromLastOrder} = this.props;
     this.setState({
-      emailMessage: this.prepareMessageTemplate(customer, products, user, emailLastLine)
+      emailMessage: this.prepareMessageTemplate(customer, products, productsFromLastOrder, user, emailLastLine)
     });
   }
 
   componentWillReceiveProps(newProps) {
-    const { customer, products, user, emailLastLine, emailSubject } = newProps;
+    const { customer, products, user, emailLastLine, productsFromLastOrder, emailSubject } = newProps;
 
     if(emailSubject !== this.props.emailSubject)
       this.setState({ emailSubject: emailSubject });
@@ -280,7 +284,7 @@ export default class EmailListItemContent extends React.Component {
       || emailLastLine !== this.props.emailLastLine)
       this.setState({
         segmentLoading: false,
-        emailMessage: this.prepareMessageTemplate(customer, products, user, emailLastLine)
+        emailMessage: this.prepareMessageTemplate(customer, products, productsFromLastOrder, user, emailLastLine)
       });
   }
 
