@@ -112,6 +112,7 @@ export class EmailSectionContainer extends React.Component {
               orderId={current.orderId}
               products={current.orderProducts}
               customer={current.customer}
+              productsFromLastOrder = {current.productsFromLastOrder}
               emailLastLine={emailsLastLine}
               emailSubject={emailsSubject}
               handleSendOrder={this.handleSendOrder.bind(this)}
